@@ -328,3 +328,5 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+coffeecard/appsettings.json
+coffeecard/appsettings.Development.json
