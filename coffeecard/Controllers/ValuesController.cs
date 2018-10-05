@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Coffeecard.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Coffeecard.Controllers
@@ -10,14 +13,29 @@ namespace Coffeecard.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
+         private readonly CoffeecardContext _context;
+         private readonly ITokenService _tokenService;
+
+        public ValuesController(CoffeecardContext context, ITokenService tokenService)
+        {
+            _context = context;
+            _tokenService = tokenService;
+        }
+
         // GET api/values
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
         {
-            return new string[] { "value1", "value2" };
+            var userClaims = new [] 
+            {
+                new Claim(ClaimTypes.Name, "johnny"),                
+                new Claim(ClaimTypes.NameIdentifier, "1")
+            };
+            return Ok(_tokenService.GenerateToken(userClaims));
         }
 
         // GET api/values/5
+        [Authorize]
         [HttpGet("{id}")]
         public ActionResult<string> Get(int id)
         {
