@@ -14,24 +14,17 @@ namespace Coffeecard.Controllers
     public class ValuesController : ControllerBase
     {
          private readonly CoffeecardContext _context;
-         private readonly ITokenService _tokenService;
 
-        public ValuesController(CoffeecardContext context, ITokenService tokenService)
+        public ValuesController(CoffeecardContext context)
         {
             _context = context;
-            _tokenService = tokenService;
         }
 
         // GET api/values
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
         {
-            var userClaims = new [] 
-            {
-                new Claim(ClaimTypes.Name, "johnny"),                
-                new Claim(ClaimTypes.NameIdentifier, "1")
-            };
-            return Ok(_tokenService.GenerateToken(userClaims));
+            return Ok();
         }
 
         // GET api/values/5
