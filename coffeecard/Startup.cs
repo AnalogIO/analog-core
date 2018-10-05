@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
+using coffeecard.Services;
 
 namespace Coffeecard
 {
@@ -30,7 +31,9 @@ namespace Coffeecard
             // TODO: find out the proper way to differ between enviroment based config files
             services.AddDbContext<CoffeecardContext>(opt => 
                 opt.UseSqlServer(Configuration.GetConnectionString("CoffeecardDatabase")));
-            
+
+            services.AddScoped<IPurchaseService, PurchaseService>();
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
