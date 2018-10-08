@@ -22,7 +22,7 @@ public class AccountService : IAccountService
         throw new NotImplementedException();
     }
 
-    public User Login(string username, string password, string version)
+    public Token Login(string username, string password, string version)
     {
         var user = _context.Users.FirstOrDefault(x => x.Email == username);
         if(user == null) throw new NotImplementedException();
@@ -32,7 +32,7 @@ public class AccountService : IAccountService
             var token = new Token(_tokenService.GenerateToken(claims));
             user.Tokens.Add(token);
             _context.SaveChanges();
-            return user;
+            return token;
         }
         return null;
     }

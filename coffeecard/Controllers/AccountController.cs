@@ -21,13 +21,22 @@ namespace coffeecard.Controllers
         {
             _service = service;
         }
-        
+
         [AllowAnonymous]
         [HttpPost("register")]
         public ActionResult Register(RegisterDTO registerDto)
         {
             var user = _service.RegisterAccount(registerDto);
             return CreatedAtRoute("Register", new { id = user.Id }, user);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("login")]
+        public ActionResult Login(LoginDTO loginDto)
+        {
+            var token = _service.Login(loginDto.Email, loginDto.Password, loginDto.Version);
+            if(token == null) return Unauthorized();
+            return Ok(new { token = token.TokenHash });
         }
     }
 }
