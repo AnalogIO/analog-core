@@ -26,7 +26,7 @@ public class AccountService : IAccountService
     {
         var user = _context.Users.FirstOrDefault(x => x.Email == username);
         if(user == null) throw new NotImplementedException();
-        var hashedPw = HashBoi.Hash(password);
+        var hashedPw = HashBoi.Hash(password+user.Salt);
         if(user.Password.Equals(hashedPw)) {
             var claims = new Claim[] { new Claim(ClaimTypes.Email, username), new Claim(ClaimTypes.Name, user.Name) };
             var token = new Token(_tokenService.GenerateToken(claims));

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Coffeecard.Models
 {
@@ -14,6 +15,7 @@ namespace Coffeecard.Models
         public bool Completed { get; set; }
         public string OrderId { get; set; }
         public string TransactionId { get; set; }
+        [ForeignKey("PurchasedBy_Id")]
         public virtual User PurchasedBy { get; set; }
         public virtual ICollection<Ticket> Tickets { get; set; }
         public Purchase() {
