@@ -8,7 +8,7 @@ namespace coffeecard.Services
 {
     public class PurchaseService : IPurchaseService
     {
-        CoffeecardContext _context;
+        private readonly CoffeecardContext _context;
 
         public PurchaseService(CoffeecardContext context)
         {

@@ -14,6 +14,7 @@ public class TokenService : ITokenService
     {
         _configuration = configuration;
     }
+
     public string GenerateToken(IEnumerable<Claim> claims)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["TokenKey"])); // get token from appsettings.json
