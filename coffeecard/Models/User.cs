@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Coffeecard.Models {
     public class User {
@@ -17,6 +18,7 @@ namespace Coffeecard.Models {
         public virtual ICollection<Purchase> Purchases { get; set; }
         public bool IsVerified { get; set; }
         public bool PrivacyActivated { get; set; }
+        [ForeignKey("Programme_Id")]
         public virtual Programme Programme { get; set; }
         public User() {
             Purchases = new List<Purchase>();

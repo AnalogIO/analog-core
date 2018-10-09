@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Coffeecard.Models {
     public class Ticket {
@@ -7,7 +8,9 @@ namespace Coffeecard.Models {
         public DateTime? DateUsed { get; set; }
         public int ProductId { get; set; }
         public bool IsUsed { get; set; }
+        [ForeignKey("Owner_Id")]
         public virtual User Owner { get; set; }
+        [ForeignKey("Purchase_Id")]
         public virtual Purchase Purchase { get; set; }
 
         public Ticket() {
