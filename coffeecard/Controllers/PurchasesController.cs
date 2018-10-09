@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using coffeecard.Models.DataTransferObjects.Purchase;
 using coffeecard.Services;
 using Coffeecard.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -15,24 +16,26 @@ namespace coffeecard.Controllers
     [ApiController]
     public class PurchasesController : ControllerBase
     {
-        IPurchaseService _service;
+        IPurchaseService _purchaseService;
+        IMapperService _mapperService;
 
-        public PurchasesController(IPurchaseService service)
+        public PurchasesController(IPurchaseService service, IMapperService mapper)
         {
-            _service = service;
+            _purchaseService = service;
+            _mapperService = mapper;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Purchase>> Get()
+        public ActionResult<IEnumerable<PurchaseDTO>> Get()
         {
-            return _service.Read();
+            return _mapperService.Map(_purchaseService.Read()).ToList();
         }
 
 
-        [HttpGet]
-        public ActionResult<Purchase> Get(int id)
+        [HttpGet("{id}")]
+        public ActionResult<PurchaseDTO> Get(int id)
         {
-            return _service.Read(id);
+            return _mapperService.Map(_purchaseService.Read(id));
         }
     }
 }

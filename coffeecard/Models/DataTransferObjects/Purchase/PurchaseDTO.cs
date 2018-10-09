@@ -1,14 +1,12 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace Coffeecard.Models
+namespace coffeecard.Models.DataTransferObjects.Purchase
 {
-    public class Purchase
+    public class PurchaseDTO
     {
-        public Purchase()
-        {
-            DateCreated = DateTime.UtcNow;
-        }
         public int Id { get; set; }
         public string ProductName { get; set; }
         public int ProductId { get; set; }
@@ -18,7 +16,5 @@ namespace Coffeecard.Models
         public bool Completed { get; set; }
         public string OrderId { get; set; }
         public string TransactionId { get; set; }
-        public virtual User PurchasedBy { get; set; }
-        public virtual ICollection<Ticket> Tickets { get; set; }
     }
 }
