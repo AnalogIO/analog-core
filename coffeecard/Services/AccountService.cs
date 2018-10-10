@@ -22,16 +22,21 @@ public class AccountService : IAccountService
         throw new NotImplementedException();
     }
 
-    public Token Login(string username, string password, string version)
+    public int GetIdFromEmail(string email)
+    {
+        var user = _context.Users.FirstOrDefault(x => x.Email == email);
+        if (user == null) throw new NotImplementedException(); // use better exceptions that are forwarded back to the controller and returned to the caller
+        return user.Id;
+    }
+
+    public string Login(string username, string password, string version)
     {
         var user = _context.Users.FirstOrDefault(x => x.Email == username);
         if(user == null) throw new NotImplementedException();
         var hashedPw = HashBoi.Hash(password+user.Salt);
         if(user.Password.Equals(hashedPw)) {
             var claims = new Claim[] { new Claim(ClaimTypes.Email, username), new Claim(ClaimTypes.Name, user.Name) };
-            var token = new Token(_tokenService.GenerateToken(claims));
-            user.Tokens.Add(token);
-            _context.SaveChanges();
+            var token =_tokenService.GenerateToken(claims);
             return token;
         }
         return null;

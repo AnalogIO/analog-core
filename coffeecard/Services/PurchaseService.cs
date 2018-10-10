@@ -31,16 +31,6 @@ namespace coffeecard.Services
             return _context.Purchases.Where(x => x.OrderId == orderId).FirstOrDefault();
         }
 
-        public Purchase Read(int id)
-        {
-            return _context.Purchases.Find(id);
-        }
-
-        public List<Purchase> Read()
-        {
-            return _context.Purchases.ToList();
-        }
-
         public List<Purchase> Read(DateTime from, DateTime to)
         {
             return _context.Purchases.Where(x => x.DateCreated >= from && x.DateCreated <= to).ToList();
@@ -73,6 +63,16 @@ namespace coffeecard.Services
         public void Dispose()
         {
             _context.Dispose();
+        }
+
+        public Purchase GetPurchase(int id)
+        {
+            return _context.Purchases.FirstOrDefault(x => x.Id == id);
+        }
+
+        public List<Purchase> GetPurchases(int userId)
+        {
+            return _context.Purchases.Where(x => x.PurchasedBy.Id == userId).ToList();
         }
     }
 }

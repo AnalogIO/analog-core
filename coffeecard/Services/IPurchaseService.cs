@@ -10,8 +10,8 @@ namespace coffeecard.Services
     {
         bool Delete(int id);
         Purchase Read(string orderId);
-        Purchase Read(int id);
-        List<Purchase> Read();
+        Purchase GetPurchase(int id);
+        List<Purchase> GetPurchases(int userId);
         List<Purchase> Read(DateTime from, DateTime to);
         List<Purchase> Read(DateTime from);
         int Update(Purchase purchase);

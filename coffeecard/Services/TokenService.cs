@@ -21,7 +21,7 @@ public class TokenService : ITokenService
 
         var jwt = new JwtSecurityToken(issuer: "AnalogIO",
             audience: "Everyone",
-            claims: claims, //the user's claims, for example new Claim[] { new Claim(ClaimTypes.Name, "The username"), //... 
+            claims: claims,
             notBefore: DateTime.UtcNow,
             expires: DateTime.UtcNow.AddMinutes(5),
             signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)

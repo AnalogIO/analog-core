@@ -36,7 +36,7 @@ namespace coffeecard.Controllers
         {
             var token = _service.Login(loginDto.Email, loginDto.Password, loginDto.Version);
             if(token == null) return Unauthorized();
-            return Ok(new { token = token.TokenHash });
+            return Ok(new { token = token });
         }
     }
 }

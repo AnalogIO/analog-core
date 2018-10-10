@@ -38,6 +38,8 @@ namespace Coffeecard
             services.AddSingleton<IConfiguration>(provider => Configuration);
             services.AddTransient<ITokenService, TokenService>();
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IPurchaseService, PurchaseService>();
+            services.AddScoped<IMapperService, MapperService>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
