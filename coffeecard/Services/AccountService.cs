@@ -1,21 +1,19 @@
-using System.Collections.Generic;
 using System.Security.Claims;
-using Microsoft.Extensions.Configuration;
-using System.Text;
-using System.IdentityModel.Tokens.Jwt;
 using System;
-using Microsoft.IdentityModel.Tokens;
-using System.Security.Cryptography;
 using Coffeecard.Models;
 using System.Linq;
+using coffeecard.Services;
 
 public class AccountService : IAccountService
 {
     private readonly CoffeecardContext _context;
     private readonly ITokenService _tokenService;
-    public AccountService(CoffeecardContext context, ITokenService tokenService) {
+    private readonly IEmailService _emailService;
+
+    public AccountService(CoffeecardContext context, ITokenService tokenService, IEmailService emailService) {
         _context = context;
         _tokenService = tokenService;
+        _emailService = emailService;
     }
     public User GetAccount(string token)
     {

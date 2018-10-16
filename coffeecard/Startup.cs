@@ -24,9 +24,11 @@ namespace Coffeecard
         public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
+            Environment = env;
         }
 
         public IConfiguration Configuration { get; }
+        public IHostingEnvironment Environment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -36,10 +38,12 @@ namespace Coffeecard
                 opt.UseSqlServer(Configuration.GetConnectionString("CoffeecardDatabase")));
             
             services.AddSingleton<IConfiguration>(provider => Configuration);
+            services.AddSingleton<IHostingEnvironment>(Environment);
             services.AddTransient<ITokenService, TokenService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IPurchaseService, PurchaseService>();
             services.AddScoped<IMapperService, MapperService>();
+            services.AddScoped<IEmailService, EmailService>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
