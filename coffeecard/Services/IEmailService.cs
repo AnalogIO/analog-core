@@ -11,9 +11,9 @@ namespace coffeecard.Services
     public interface IEmailService
     {
         void SendEmail(MimeMessage mail);
-        MimeMessage CreateVerificationEmailForChangedPw(User user, string token, string newEmail);
-        MimeMessage CreateVerificationEmail(User user, string token);
-        MimeMessage CreateVerificationEmailForLostPw(User user, string token);
-        MimeMessage CreateVerificationEmailForRecover(User user, int newPassword);
+        void SendVerificationEmailForChangedPw(User user, string token, string newEmail);
+        void SendRegistrationVerificationEmail(User user, string token);
+        void SendVerificationEmailForLostPw(User user, string token);
+        void SendVerificationEmailForRecover(User user, int newPassword);
     }
 }

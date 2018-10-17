@@ -20,7 +20,7 @@ namespace coffeecard.Services
             _env = env;
         }
 
-        public MimeMessage CreateVerificationEmail(User user, string token)
+        public void SendRegistrationVerificationEmail(User user, string token)
         {
             var pathToTemplate = _env.WebRootPath
                             + Path.DirectorySeparatorChar.ToString()
@@ -50,20 +50,20 @@ namespace coffeecard.Services
 
             message.Body = builder.ToMessageBody();
 
-            return message;
+            SendEmail(message);
         }
 
-        public MimeMessage CreateVerificationEmailForChangedPw(User user, string token, string newEmail)
+        public void SendVerificationEmailForChangedPw(User user, string token, string newEmail)
         {
             throw new NotImplementedException();
         }
 
-        public MimeMessage CreateVerificationEmailForLostPw(User user, string token)
+        public void SendVerificationEmailForLostPw(User user, string token)
         {
             throw new NotImplementedException();
         }
 
-        public MimeMessage CreateVerificationEmailForRecover(User user, int newPassword)
+        public void SendVerificationEmailForRecover(User user, int newPassword)
         {
             throw new NotImplementedException();
         }
@@ -74,15 +74,15 @@ namespace coffeecard.Services
             {
                 var client = new SmtpClient();
 
-                client.Connect(_configuration["EmailHost"], int.Parse(_configuration["EmailPort"]), true);
+                client.Connect(_configuration["EmailHost"], int.Parse(_configuration["EmailPort"]), false);
                 client.Authenticate(_configuration["EmailUsername"], _configuration["EmailPassword"]);
                 client.Send(mail);
                 client.Disconnect(true);
-                //Console.WriteLine("Send Mail Success.");
+                Console.WriteLine("success");
             }
             catch (Exception e)
             {
-                //Console.WriteLine("Send Mail Failed : " + e.Message);
+                throw e;
             }
         }
     }
