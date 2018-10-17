@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO;
-using System.Text;
 using Coffeecard.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using MimeKit;
-using MailKit.Net.Smtp;
+using RestSharp;
+using RestSharp.Authenticators;
+using System.Text;
 
 namespace coffeecard.Services
 {
@@ -42,9 +43,8 @@ namespace coffeecard.Services
             builder.HtmlBody = builder.HtmlBody.Replace("{email}", user.Email);
             builder.HtmlBody = builder.HtmlBody.Replace("{name}", user.Name);
             builder.HtmlBody = builder.HtmlBody.Replace("{expiry}", "24 hours");
-            builder.HtmlBody = builder.HtmlBody.Replace("{baseUrl}", _configuration["baseUrl"]);
+            builder.HtmlBody = builder.HtmlBody.Replace("{baseUrl}", _configuration["EmailBaseUrl"]);
 
-            message.From.Add(new MailboxAddress("Café Analog", _configuration["EmailUsername"]));
             message.To.Add(new MailboxAddress(user.Name, user.Email));
             message.Subject = "Verify your Café Analog account";
 
@@ -70,20 +70,21 @@ namespace coffeecard.Services
 
         public void SendEmail(MimeMessage mail)
         {
-            try
-            {
-                var client = new SmtpClient();
+            RestClient client = new RestClient();
+            client.BaseUrl = new Uri("https://api.mailgun.net/v3");
 
-                client.Connect(_configuration["EmailHost"], int.Parse(_configuration["EmailPort"]), false);
-                client.Authenticate(_configuration["EmailUsername"], _configuration["EmailPassword"]);
-                client.Send(mail);
-                client.Disconnect(true);
-                Console.WriteLine("success");
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            client.Authenticator = new HttpBasicAuthenticator("api", _configuration["MailgunAPIKey"]);
+            RestRequest request = new RestRequest();
+            request.AddParameter("domain", _configuration["MailgunDomain"], ParameterType.UrlSegment);
+            request.Resource = "{domain}/messages";
+            request.AddParameter("from", "Café Analog <mailgun@cafeanalog.dk>");
+            request.AddParameter("to", mail.To[0]);
+            request.AddParameter("subject", mail.Subject);
+            request.AddParameter("html", mail.HtmlBody);
+            request.AddParameter("text", mail.TextBody);
+            request.Method = Method.POST;
+            var response = client.Execute(request);
+            Console.WriteLine(response.IsSuccessful);
         }
     }
 }
