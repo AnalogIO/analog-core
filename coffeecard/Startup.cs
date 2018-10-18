@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using coffeecard.Services;
 using coffeecard.Helpers;
+using Microsoft.AspNetCore.Http;
 
 namespace Coffeecard
 {
@@ -40,6 +41,7 @@ namespace Coffeecard
             
             services.AddSingleton<IConfiguration>(provider => Configuration);
             services.AddSingleton<IHostingEnvironment>(Environment);
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IHashService, HashService>();
             services.AddTransient<ITokenService, TokenService>();
             services.AddScoped<IAccountService, AccountService>();

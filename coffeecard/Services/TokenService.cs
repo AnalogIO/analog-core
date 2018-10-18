@@ -23,10 +23,15 @@ public class TokenService : ITokenService
             audience: "Everyone",
             claims: claims,
             notBefore: DateTime.UtcNow,
-            expires: DateTime.UtcNow.AddMinutes(5),
+            expires: DateTime.UtcNow.AddHours(24),
             signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
         );    
 
         return new JwtSecurityTokenHandler().WriteToken(jwt); //the method is called WriteToken but returns a string
+    }
+
+    public JwtSecurityToken ReadToken(string token)
+    {
+        return new JwtSecurityTokenHandler().ReadToken(token) as JwtSecurityToken;
     }
 }

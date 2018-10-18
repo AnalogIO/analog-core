@@ -1,11 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using coffeecard.Services;
-using Coffeecard.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace coffeecard.Controllers
@@ -15,18 +8,18 @@ namespace coffeecard.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        IAccountService _service;
+        IAccountService _accountService;
 
-        public AccountController(IAccountService service)
+        public AccountController(IAccountService accountService)
         {
-            _service = service;
+            _accountService = accountService;
         }
 
         [AllowAnonymous]
         [HttpPost("register")]
         public ActionResult Register(RegisterDTO registerDto)
         {
-            var user = _service.RegisterAccount(registerDto);
+            var user = _accountService.RegisterAccount(registerDto);
             return Created("register", new { message = "Your user has been created! Please check your email to verify your account.\n(Check your spam folder!)" });
         }
 
@@ -34,9 +27,30 @@ namespace coffeecard.Controllers
         [HttpPost("login")]
         public ActionResult Login(LoginDTO loginDto)
         {
-            var token = _service.Login(loginDto.Email, loginDto.Password, loginDto.Version);
+            var token = _accountService.Login(loginDto.Email, loginDto.Password, loginDto.Version);
             if(token == null) return Unauthorized();
             return Ok(new { token = token });
+        }
+
+        [AllowAnonymous]
+        [HttpGet("verify")]
+        public IActionResult Verify(string token)
+        {
+            var verified = _accountService.VerifyRegistration(token);
+            var content = string.Empty;
+            if(verified)
+            {
+                content = $"The account has been verified! You can now login into the app :D";
+            } else
+            {
+                content = $"The account could not be verified :-(";
+            }
+
+            return new ContentResult()
+            {
+                Content = content,
+                ContentType = "text/html",
+            };
         }
     }
 }

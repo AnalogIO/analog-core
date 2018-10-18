@@ -6,4 +6,5 @@ public interface IAccountService
     User RegisterAccount(RegisterDTO registerDto);
     int GetIdFromEmail(string email);
     string Login(string username, string password, string version);
+    bool VerifyRegistration(string token);
 }

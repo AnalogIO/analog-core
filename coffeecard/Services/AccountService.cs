@@ -68,6 +68,19 @@ public class AccountService : IAccountService
         return user;
     }
 
+    public bool VerifyRegistration(string token)
+    {
+        var jwtToken = _tokenService.ReadToken(token);
+
+        if (!jwtToken.Claims.Any(x => x.Type == ClaimTypes.Role && x.Value == "verification_token")) throw new ApiException($"The token is invalid!", 400);
+        var emailClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
+        if(emailClaim == null) throw new ApiException($"The token is invalid!", 400);
+        var user = _context.Users.FirstOrDefault(x => x.Email == emailClaim.Value);
+        if(user == null) throw new ApiException($"The token is invalid!", 400);
+        user.IsVerified = true;
+        return _context.SaveChanges() > 0;
+    }
+
     private string EscapeName(string name)
     {
         return name.Trim(new Char[] { '<', '>', '{', '}' });

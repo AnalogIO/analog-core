@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Hosting;
 using MimeKit;
 using RestSharp;
 using RestSharp.Authenticators;
-using System.Text;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace coffeecard.Services
 {
@@ -15,14 +16,21 @@ namespace coffeecard.Services
 
         private readonly IConfiguration _configuration;
         private readonly IHostingEnvironment _env;
-        public EmailService(IConfiguration configuration, IHostingEnvironment env)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public EmailService(IConfiguration configuration, IHostingEnvironment env, IHttpContextAccessor httpContextAccessor)
         {
             _configuration = configuration;
             _env = env;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public void SendRegistrationVerificationEmail(User user, string token)
         {
+
+            var fullPath = _httpContextAccessor.HttpContext?.Request?.GetDisplayUrl();
+            var baseUrl = fullPath.Substring(0, fullPath.IndexOf("api/"));
+
             var pathToTemplate = _env.WebRootPath
                             + Path.DirectorySeparatorChar.ToString()
                             + "Templates"
@@ -43,7 +51,9 @@ namespace coffeecard.Services
             builder.HtmlBody = builder.HtmlBody.Replace("{email}", user.Email);
             builder.HtmlBody = builder.HtmlBody.Replace("{name}", user.Name);
             builder.HtmlBody = builder.HtmlBody.Replace("{expiry}", "24 hours");
-            builder.HtmlBody = builder.HtmlBody.Replace("{baseUrl}", _configuration["EmailBaseUrl"]);
+            builder.HtmlBody = builder.HtmlBody.Replace("{baseUrl}", baseUrl);
+
+            
 
             message.To.Add(new MailboxAddress(user.Name, user.Email));
             message.Subject = "Verify your Café Analog account";
