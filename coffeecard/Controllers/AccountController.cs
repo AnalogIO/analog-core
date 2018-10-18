@@ -27,7 +27,7 @@ namespace coffeecard.Controllers
         public ActionResult Register(RegisterDTO registerDto)
         {
             var user = _service.RegisterAccount(registerDto);
-            return CreatedAtRoute("Register", new { id = user.Id }, user);
+            return Created("register", new { message = "Your user has been created! Please check your email to verify your account.\n(Check your spam folder!)" });
         }
 
         [AllowAnonymous]

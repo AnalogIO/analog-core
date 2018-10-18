@@ -26,7 +26,7 @@ public class AccountService : IAccountService
     public int GetIdFromEmail(string email)
     {
         var user = _context.Users.FirstOrDefault(x => x.Email == email);
-        if (user == null) throw new NotImplementedException(); // use better exceptions that are forwarded back to the controller and returned to the caller
+        if (user == null) throw new ApiException("No user found with the given email", 401); // use better exceptions that are forwarded back to the controller and returned to the caller
         return user.Id;
     }
 
@@ -48,6 +48,28 @@ public class AccountService : IAccountService
 
     public User RegisterAccount(RegisterDTO registerDto)
     {
-        throw new NotImplementedException();
+        if (_context.Users.Any(x => x.Email == registerDto.Email)) throw new ApiException($"The email {registerDto.Email} is already being used by another user", 400);
+        var salt = _hashService.GenerateSalt();
+        var hashedPassword = _hashService.Hash(registerDto.Password + salt);
+
+        var programme = _context.Programmes.FirstOrDefault(x => x.Id == registerDto.ProgrammeId);
+        if(programme == null) throw new ApiException($"No programme found with the id: {registerDto.ProgrammeId}", 400);
+
+        var user = new User { Name = EscapeName(registerDto.Name), Email = registerDto.Email, Password = hashedPassword, Salt = salt, Programme = programme };
+
+        _context.Users.Add(user);
+        if(_context.SaveChanges() == 0) throw new ApiException($"The user could not be created - try again in a minute", 500);
+
+        var claims = new Claim[] { new Claim(ClaimTypes.Email, user.Email), new Claim(ClaimTypes.Name, user.Name), new Claim(ClaimTypes.Role, "verification_token") };
+        var verificationToken = _tokenService.GenerateToken(claims);
+
+        _emailService.SendRegistrationVerificationEmail(user, verificationToken);
+
+        return user;
+    }
+
+    private string EscapeName(string name)
+    {
+        return name.Trim(new Char[] { '<', '>', '{', '}' });
     }
 }
