@@ -3,17 +3,20 @@ using System;
 using Coffeecard.Models;
 using System.Linq;
 using coffeecard.Services;
+using coffeecard.Helpers;
 
 public class AccountService : IAccountService
 {
     private readonly CoffeecardContext _context;
     private readonly ITokenService _tokenService;
     private readonly IEmailService _emailService;
+    private readonly IHashService _hashService;
 
-    public AccountService(CoffeecardContext context, ITokenService tokenService, IEmailService emailService) {
+    public AccountService(CoffeecardContext context, ITokenService tokenService, IEmailService emailService, IHashService hashService) {
         _context = context;
         _tokenService = tokenService;
         _emailService = emailService;
+        _hashService = hashService;
     }
     public User GetAccount(string token)
     {
@@ -30,14 +33,17 @@ public class AccountService : IAccountService
     public string Login(string username, string password, string version)
     {
         var user = _context.Users.FirstOrDefault(x => x.Email == username);
-        if(user == null) throw new NotImplementedException();
-        var hashedPw = HashBoi.Hash(password+user.Salt);
-        if(user.Password.Equals(hashedPw)) {
-            var claims = new Claim[] { new Claim(ClaimTypes.Email, username), new Claim(ClaimTypes.Name, user.Name) };
-            var token =_tokenService.GenerateToken(claims);
-            return token;
+        if (user != null)
+        {
+            var hashedPw = _hashService.Hash(password + user.Salt);
+            if (user.Password.Equals(hashedPw))
+            {
+                var claims = new Claim[] { new Claim(ClaimTypes.Email, username), new Claim(ClaimTypes.Name, user.Name) };
+                var token = _tokenService.GenerateToken(claims);
+                return token;
+            }
         }
-        return null;
+        throw new ApiException("The username or password does not match", 401);
     }
 
     public User RegisterAccount(RegisterDTO registerDto)

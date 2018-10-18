@@ -16,6 +16,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using coffeecard.Services;
+using coffeecard.Helpers;
 
 namespace Coffeecard
 {
@@ -39,13 +40,17 @@ namespace Coffeecard
             
             services.AddSingleton<IConfiguration>(provider => Configuration);
             services.AddSingleton<IHostingEnvironment>(Environment);
+            services.AddScoped<IHashService, HashService>();
             services.AddTransient<ITokenService, TokenService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IPurchaseService, PurchaseService>();
             services.AddScoped<IMapperService, MapperService>();
             services.AddScoped<IEmailService, EmailService>();
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(new ApiExceptionFilter());
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddAuthentication(options =>
             {
