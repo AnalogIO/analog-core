@@ -48,6 +48,7 @@ namespace Coffeecard
             services.AddScoped<IPurchaseService, PurchaseService>();
             services.AddScoped<IMapperService, MapperService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IProgrammeService, ProgrammeService>();
 
             services.AddMvc(options =>
             {

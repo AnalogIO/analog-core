@@ -1,4 +1,5 @@
-﻿using coffeecard.Models.DataTransferObjects.Purchase;
+﻿using coffeecard.Models.DataTransferObjects.Programme;
+using coffeecard.Models.DataTransferObjects.Purchase;
 using Coffeecard.Models;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,21 @@ namespace coffeecard.Services
         public IEnumerable<PurchaseDTO> Map(IEnumerable<Purchase> purchases)
         {
             return purchases.Select(Map);
+        }
+
+        public ProgrammeDTO Map(Programme progamme)
+        {
+            return new ProgrammeDTO
+            {
+                Id = progamme.Id,
+                ShortName = progamme.ShortName,
+                FullName = progamme.FullName
+            };
+        }
+
+        public IEnumerable<ProgrammeDTO> Map(IEnumerable<Programme> programmes)
+        {
+            return programmes.Select(Map);
         }
     }
 }
