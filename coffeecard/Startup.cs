@@ -19,6 +19,8 @@ using coffeecard.Services;
 using coffeecard.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Versioning;
+using NSwag.AspNetCore;
+using NJsonSchema;
 
 namespace Coffeecard
 {
@@ -57,6 +59,9 @@ namespace Coffeecard
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddApiVersioning(o => o.ApiVersionReader = new HeaderApiVersionReader("api-version"));
+
+            services.AddSwagger();
+
 
             services.AddAuthentication(options =>
             {
@@ -98,6 +103,29 @@ namespace Coffeecard
             {
                 app.UseHsts();
             }
+
+            app.UseSwaggerUi3WithApiExplorer(settings =>
+            {
+                settings.GeneratorSettings.DefaultPropertyNameHandling = PropertyNameHandling.CamelCase;
+                settings.PostProcess = document =>
+                {
+                    document.Info.Version = "v1";
+                    document.Info.Title = "Café Analog CoffeeCard API";
+                    document.Info.Description = "A ASP.NET Core web API for the coffee bar Café Analog";
+                    document.Info.TermsOfService = "None";
+                    document.Info.Contact = new NSwag.SwaggerContact
+                    {
+                        Name = "AnalogIO",
+                        Email = "admin@analogio.dk",
+                        Url = "https://github.com/analogio"
+                    };
+                    document.Info.License = new NSwag.SwaggerLicense
+                    {
+                        Name = "Use under MIT",
+                        Url = "https://github.com/AnalogIO/analog-core/blob/master/LICENSE"
+                    };
+                };
+            });
 
             app.UseAuthentication();
             app.UseHttpsRedirection();
