@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace coffeecard.Controllers
 {
+    [ApiVersion("1")]
     [Route("api/[controller]")]
     [ApiController]
     public class ProgrammesController : ControllerBase

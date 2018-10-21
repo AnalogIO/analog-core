@@ -18,6 +18,7 @@ using System.Text;
 using coffeecard.Services;
 using coffeecard.Helpers;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Versioning;
 
 namespace Coffeecard
 {
@@ -54,6 +55,8 @@ namespace Coffeecard
             {
                 options.Filters.Add(new ApiExceptionFilter());
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.AddApiVersioning(o => o.ApiVersionReader = new HeaderApiVersionReader("api-version"));
 
             services.AddAuthentication(options =>
             {

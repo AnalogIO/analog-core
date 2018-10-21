@@ -35,10 +35,8 @@ namespace coffeecard.Helpers
                 // Unhandled errors
                 #if !DEBUG
                                 var msg = "An unhandled error occurred.";                
-                                string stack = null;
                 #else
                                 var msg = context.Exception.GetBaseException().Message;
-                                string stack = context.Exception.StackTrace;
                 #endif
 
                 apiError = new ApiError(msg);

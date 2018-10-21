@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace coffeecard.Controllers
 {
+    [ApiVersion("1")]
     [Route("api/[controller]")]
     [Authorize]
     [ApiController]
