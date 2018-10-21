@@ -18,6 +18,8 @@ namespace coffeecard.Controllers
 
         [AllowAnonymous]
         [HttpPost("register")]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
         public ActionResult Register(RegisterDTO registerDto)
         {
             var user = _accountService.RegisterAccount(registerDto);
@@ -26,6 +28,9 @@ namespace coffeecard.Controllers
 
         [AllowAnonymous]
         [HttpPost("login")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
         public ActionResult Login(LoginDTO loginDto)
         {
             var token = _accountService.Login(loginDto.Email, loginDto.Password, loginDto.Version);

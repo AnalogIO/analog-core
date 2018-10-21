@@ -30,19 +30,14 @@ namespace coffeecard.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
         public ActionResult<IEnumerable<PurchaseDTO>> Get()
         {
             var emailClaim = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
             if (emailClaim == null) return Unauthorized();
             var userId = _accountService.GetIdFromEmail(emailClaim.Value);
             return _mapperService.Map(_purchaseService.GetPurchases(userId)).ToList();
-        }
-
-
-        [HttpGet("{id}")]
-        public ActionResult<PurchaseDTO> Get(int id)
-        {
-            return _mapperService.Map(_purchaseService.GetPurchase(id));
         }
     }
 }

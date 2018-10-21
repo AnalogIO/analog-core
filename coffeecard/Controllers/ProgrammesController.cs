@@ -26,6 +26,7 @@ namespace coffeecard.Controllers
 
         [AllowAnonymous]
         [HttpGet]
+        [ProducesResponseType(200)]
         public ActionResult<IEnumerable<ProgrammeDTO>> Get()
         {
             var programmes = _programmeService.GetProgrammes();
