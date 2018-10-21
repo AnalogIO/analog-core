@@ -1,5 +1,6 @@
 ﻿using coffeecard.Models.DataTransferObjects.Programme;
 using coffeecard.Models.DataTransferObjects.Purchase;
+using coffeecard.Models.DataTransferObjects.User;
 using Coffeecard.Models;
 using System;
 using System.Collections.Generic;
@@ -44,6 +45,11 @@ namespace coffeecard.Services
         public IEnumerable<ProgrammeDTO> Map(IEnumerable<Programme> programmes)
         {
             return programmes.Select(Map);
+        }
+
+        public UserDTO Map(User user)
+        {
+            return new UserDTO { Email = user.Email, Id = user.Id, Name = user.Name, PrivacyActivated = user.PrivacyActivated };
         }
     }
 }

@@ -1,5 +1,8 @@
+using coffeecard.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
+using System.Security.Claims;
 
 namespace coffeecard.Controllers
 {
@@ -10,10 +13,12 @@ namespace coffeecard.Controllers
     public class AccountController : ControllerBase
     {
         IAccountService _accountService;
+        IMapperService _mapperService;
 
-        public AccountController(IAccountService accountService)
+        public AccountController(IAccountService accountService, IMapperService mapperService)
         {
             _accountService = accountService;
+            _mapperService = mapperService;
         }
 
         [AllowAnonymous]
@@ -36,6 +41,16 @@ namespace coffeecard.Controllers
             var token = _accountService.Login(loginDto.Email, loginDto.Password, loginDto.Version);
             if(token == null) return Unauthorized();
             return Ok(new { token = token });
+        }
+
+        [HttpGet]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        public ActionResult Get()
+        {
+            var user = _accountService.GetAccountByClaims(User.Claims);
+            return Ok(_mapperService.Map(user));
         }
 
         [AllowAnonymous]

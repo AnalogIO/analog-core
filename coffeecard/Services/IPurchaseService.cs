@@ -1,8 +1,7 @@
 ﻿using Coffeecard.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace coffeecard.Services
 {
@@ -11,9 +10,9 @@ namespace coffeecard.Services
         bool Delete(int id);
         Purchase Read(string orderId);
         Purchase GetPurchase(int id);
-        List<Purchase> GetPurchases(int userId);
-        List<Purchase> Read(DateTime from, DateTime to);
-        List<Purchase> Read(DateTime from);
+        IEnumerable<Purchase> GetPurchases(IEnumerable<Claim> claims);
+        IEnumerable<Purchase> Read(DateTime from, DateTime to);
+        IEnumerable<Purchase> Read(DateTime from);
         int Update(Purchase purchase);
         void Update();
         bool DeleteRange(List<Purchase> purchases);

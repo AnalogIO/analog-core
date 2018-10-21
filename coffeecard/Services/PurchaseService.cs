@@ -1,7 +1,9 @@
-﻿using Coffeecard.Models;
+﻿using coffeecard.Helpers;
+using Coffeecard.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace coffeecard.Services
@@ -31,12 +33,12 @@ namespace coffeecard.Services
             return _context.Purchases.Where(x => x.OrderId == orderId).FirstOrDefault();
         }
 
-        public List<Purchase> Read(DateTime from, DateTime to)
+        public IEnumerable<Purchase> Read(DateTime from, DateTime to)
         {
             return _context.Purchases.Where(x => x.DateCreated >= from && x.DateCreated <= to).ToList();
         }
 
-        public List<Purchase> Read(DateTime from)
+        public IEnumerable<Purchase> Read(DateTime from)
         {
             return _context.Purchases.Where(x => x.DateCreated >= from).ToList();
         }
@@ -70,9 +72,12 @@ namespace coffeecard.Services
             return _context.Purchases.FirstOrDefault(x => x.Id == id);
         }
 
-        public List<Purchase> GetPurchases(int userId)
+        public IEnumerable<Purchase> GetPurchases(IEnumerable<Claim> claims)
         {
-            return _context.Purchases.Where(x => x.PurchasedBy.Id == userId).ToList();
+            var emailClaim = claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
+            if (emailClaim == null) throw new ApiException($"The token is invalid!", 401);
+            var email = emailClaim.Value;
+            return _context.Purchases.Where(x => x.PurchasedBy.Email == email);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using coffeecard.Models.DataTransferObjects.Programme;
 using coffeecard.Models.DataTransferObjects.Purchase;
+using coffeecard.Models.DataTransferObjects.User;
 using Coffeecard.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -13,6 +14,7 @@ namespace coffeecard.Services
     {
         PurchaseDTO Map(Purchase purchase);
         ProgrammeDTO Map(Programme progamme);
+        UserDTO Map(User user);
 
         IEnumerable<PurchaseDTO> Map(IEnumerable<Purchase> purchase);
         IEnumerable<ProgrammeDTO> Map(IEnumerable<Programme> programmes);

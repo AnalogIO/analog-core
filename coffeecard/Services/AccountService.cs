@@ -4,6 +4,7 @@ using Coffeecard.Models;
 using System.Linq;
 using coffeecard.Services;
 using coffeecard.Helpers;
+using System.Collections.Generic;
 
 public class AccountService : IAccountService
 {
@@ -18,15 +19,18 @@ public class AccountService : IAccountService
         _emailService = emailService;
         _hashService = hashService;
     }
-    public User GetAccount(string token)
+
+    public User GetAccountByEmail(string email)
     {
-        throw new NotImplementedException();
+        var user = _context.Users.FirstOrDefault(x => x.Email == email);
+        if (user == null) throw new ApiException("No user found with the given email", 401);
+        return user;
     }
 
     public int GetIdFromEmail(string email)
     {
         var user = _context.Users.FirstOrDefault(x => x.Email == email);
-        if (user == null) throw new ApiException("No user found with the given email", 401); // use better exceptions that are forwarded back to the controller and returned to the caller
+        if (user == null) throw new ApiException("No user found with the given email", 401);
         return user.Id;
     }
 
@@ -84,5 +88,14 @@ public class AccountService : IAccountService
     private string EscapeName(string name)
     {
         return name.Trim(new Char[] { '<', '>', '{', '}' });
+    }
+
+    public User GetAccountByClaims(IEnumerable<Claim> claims)
+    {
+        var emailClaim = claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
+        if (emailClaim == null) throw new ApiException($"The token is invalid!", 401);
+        var user = GetAccountByEmail(emailClaim.Value);
+        if(user == null) throw new ApiException($"The user could not be found", 400);
+        return user;
     }
 }
