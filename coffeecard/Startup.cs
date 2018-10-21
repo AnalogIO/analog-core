@@ -111,7 +111,7 @@ namespace Coffeecard
                 {
                     document.Info.Version = "v1";
                     document.Info.Title = "Café Analog CoffeeCard API";
-                    document.Info.Description = "A ASP.NET Core web API for the coffee bar Café Analog";
+                    document.Info.Description = "ASP.NET Core web API for the coffee bar Café Analog";
                     document.Info.TermsOfService = "None";
                     document.Info.Contact = new NSwag.SwaggerContact
                     {
