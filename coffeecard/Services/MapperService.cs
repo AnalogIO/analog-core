@@ -1,4 +1,5 @@
-﻿using coffeecard.Models.DataTransferObjects.Programme;
+﻿using coffeecard.Models.DataTransferObjects.Product;
+using coffeecard.Models.DataTransferObjects.Programme;
 using coffeecard.Models.DataTransferObjects.Purchase;
 using coffeecard.Models.DataTransferObjects.User;
 using Coffeecard.Models;
@@ -50,6 +51,16 @@ namespace coffeecard.Services
         public UserDTO Map(User user)
         {
             return new UserDTO { Email = user.Email, Id = user.Id, Name = user.Name, PrivacyActivated = user.PrivacyActivated };
+        }
+
+        public ProductDTO Map(Product product)
+        {
+            return new ProductDTO { Description = product.Description, Id = product.Id, Name = product.Name, NumberOfTickets = product.NumberOfTickets, Price = product.Price };
+        }
+
+        public IEnumerable<ProductDTO> Map(IEnumerable<Product> products)
+        {
+            return products.Select(Map);
         }
     }
 }
