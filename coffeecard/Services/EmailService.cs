@@ -27,7 +27,6 @@ namespace coffeecard.Services
 
         public void SendRegistrationVerificationEmail(User user, string token)
         {
-
             var fullPath = _httpContextAccessor.HttpContext?.Request?.GetDisplayUrl();
             var baseUrl = fullPath.Substring(0, fullPath.IndexOf("api/"));
 
@@ -53,8 +52,6 @@ namespace coffeecard.Services
             builder.HtmlBody = builder.HtmlBody.Replace("{expiry}", "24 hours");
             builder.HtmlBody = builder.HtmlBody.Replace("{baseUrl}", baseUrl);
 
-            
-
             message.To.Add(new MailboxAddress(user.Name, user.Email));
             message.Subject = "Verify your Café Analog account";
 
@@ -63,19 +60,108 @@ namespace coffeecard.Services
             SendEmail(message);
         }
 
-        public void SendVerificationEmailForChangedPw(User user, string token, string newEmail)
+        public void SendVerificationEmailForChangedEmail(User user, string token, string newEmail)
         {
-            throw new NotImplementedException();
+            var fullPath = _httpContextAccessor.HttpContext?.Request?.GetDisplayUrl();
+            var baseUrl = fullPath.Substring(0, fullPath.IndexOf("api/"));
+
+            var pathToTemplate = _env.WebRootPath
+                            + Path.DirectorySeparatorChar.ToString()
+                            + "Templates"
+                            + Path.DirectorySeparatorChar.ToString()
+                            + "EmailTemplate"
+                            + Path.DirectorySeparatorChar.ToString()
+                            + "email_verify_updatedemail.html";
+
+            var message = new MimeMessage();
+            var builder = new BodyBuilder();
+
+            using (StreamReader SourceReader = File.OpenText(pathToTemplate))
+            {
+                builder.HtmlBody = SourceReader.ReadToEnd();
+            }
+
+            builder.HtmlBody = builder.HtmlBody.Replace("{token}", token);
+            builder.HtmlBody = builder.HtmlBody.Replace("{email}", user.Email);
+            builder.HtmlBody = builder.HtmlBody.Replace("{newEmail}", newEmail);
+            builder.HtmlBody = builder.HtmlBody.Replace("{name}", user.Name);
+            builder.HtmlBody = builder.HtmlBody.Replace("{expiry}", "24 hours");
+            builder.HtmlBody = builder.HtmlBody.Replace("{baseUrl}", baseUrl);
+
+            message.To.Add(new MailboxAddress(user.Name, user.Email));
+            message.Subject = "Verify your new email for your Café Analog account";
+
+            message.Body = builder.ToMessageBody();
+
+            SendEmail(message);
         }
 
         public void SendVerificationEmailForLostPw(User user, string token)
         {
-            throw new NotImplementedException();
+            var fullPath = _httpContextAccessor.HttpContext?.Request?.GetDisplayUrl();
+            var baseUrl = fullPath.Substring(0, fullPath.IndexOf("api/"));
+
+            var pathToTemplate = _env.WebRootPath
+                            + Path.DirectorySeparatorChar.ToString()
+                            + "Templates"
+                            + Path.DirectorySeparatorChar.ToString()
+                            + "EmailTemplate"
+                            + Path.DirectorySeparatorChar.ToString()
+                            + "email_verify_lostpassword.html";
+
+            var message = new MimeMessage();
+            var builder = new BodyBuilder();
+
+            using (StreamReader SourceReader = File.OpenText(pathToTemplate))
+            {
+                builder.HtmlBody = SourceReader.ReadToEnd();
+            }
+
+            builder.HtmlBody = builder.HtmlBody.Replace("{token}", token);
+            builder.HtmlBody = builder.HtmlBody.Replace("{email}", user.Email);
+            builder.HtmlBody = builder.HtmlBody.Replace("{name}", user.Name);
+            builder.HtmlBody = builder.HtmlBody.Replace("{expiry}", "24 hours");
+            builder.HtmlBody = builder.HtmlBody.Replace("{baseUrl}", baseUrl);
+
+            message.To.Add(new MailboxAddress(user.Name, user.Email));
+            message.Subject = "Café Analog account lost PIN request";
+
+            message.Body = builder.ToMessageBody();
+
+            SendEmail(message);
         }
 
         public void SendVerificationEmailForRecover(User user, int newPassword)
         {
-            throw new NotImplementedException();
+            var fullPath = _httpContextAccessor.HttpContext?.Request?.GetDisplayUrl();
+            var baseUrl = fullPath.Substring(0, fullPath.IndexOf("api/"));
+
+            var pathToTemplate = _env.WebRootPath
+                            + Path.DirectorySeparatorChar.ToString()
+                            + "Templates"
+                            + Path.DirectorySeparatorChar.ToString()
+                            + "EmailTemplate"
+                            + Path.DirectorySeparatorChar.ToString()
+                            + "email_newpassword.html";
+
+            var message = new MimeMessage();
+            var builder = new BodyBuilder();
+
+            using (StreamReader SourceReader = File.OpenText(pathToTemplate))
+            {
+                builder.HtmlBody = SourceReader.ReadToEnd();
+            }
+
+            builder.HtmlBody = builder.HtmlBody.Replace("{password}", newPassword.ToString());
+            builder.HtmlBody = builder.HtmlBody.Replace("{email}", user.Email);
+            builder.HtmlBody = builder.HtmlBody.Replace("{name}", user.Name);
+
+            message.To.Add(new MailboxAddress(user.Name, user.Email));
+            message.Subject = "Your new PIN for your Café Analog account";
+
+            message.Body = builder.ToMessageBody();
+
+            SendEmail(message);
         }
 
         public void SendEmail(MimeMessage mail)
