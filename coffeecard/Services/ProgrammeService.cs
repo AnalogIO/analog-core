@@ -18,5 +18,9 @@ namespace coffeecard.Services
         {
             return _context.Programmes.AsEnumerable();
         }
+
+        public Programme GetProgramme(int id) {
+            return _context.Programmes.FirstOrDefault(x => x.Id == id);
+        }
     }
 }

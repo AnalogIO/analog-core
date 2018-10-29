@@ -9,5 +9,6 @@ namespace coffeecard.Services
     public interface IProgrammeService
     {
         IEnumerable<Programme> GetProgrammes();
+        Programme GetProgramme(int id);
     }
 }

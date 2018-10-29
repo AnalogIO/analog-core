@@ -32,5 +32,14 @@ namespace coffeecard.Controllers
             var programmes = _programmeService.GetProgrammes();
             return _mapperService.Map(programmes.OrderBy(x => x.SortPriority)).ToList();
         }
+
+        [AllowAnonymous]
+        [HttpGet("{id}")]
+        [ProducesResponseType(200)]
+        public ActionResult<IEnumerable<ProgrammeDTO>> GetById(int id)
+        {
+            var programmes = _programmeService.GetProgrammes();
+            return _mapperService.Map(programmes.OrderBy(x => x.SortPriority)).ToList();
+        }
     }
 }
