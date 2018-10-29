@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace coffeecard.Controllers
 {
     [ApiVersion("1")]
-    [[Route("api/v{version:apiVersion}[controller]")]
+    [Route("api/v{version:apiVersion}[controller]")]
     [Authorize]
     [ApiController]
     public class PurchasesController : ControllerBase
