@@ -10,6 +10,6 @@ namespace coffeecard.Models.DataTransferObjects.Ticket
         public int Id { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime? DateUsed { get; set; }
-        public int ProductId { get; set; }
+        public String ProductName { get; set; }
     }
 }
