@@ -50,7 +50,7 @@ namespace coffeecard.Services
 
         public UserDTO Map(User user)
         {
-            return new UserDTO { Email = user.Email, Id = user.Id, Name = user.Name, PrivacyActivated = user.PrivacyActivated };
+            return new UserDTO { Email = user.Email, Id = user.Id, Name = user.Name, PrivacyActivated = user.PrivacyActivated, ProgrammeId = user.Programme.Id };
         }
 
         public ProductDTO Map(Product product)

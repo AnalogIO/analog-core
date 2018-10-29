@@ -1,3 +1,4 @@
+using coffeecard.Models.DataTransferObjects.User;
 using coffeecard.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -47,7 +48,17 @@ namespace coffeecard.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
-        public ActionResult Get()
+        public ActionResult<UserDTO> Get()
+        {
+            var user = _accountService.GetAccountByClaims(User.Claims);
+            return Ok(_mapperService.Map(user));
+        }
+
+        [HttpPut]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        public ActionResult Update()
         {
             var user = _accountService.GetAccountByClaims(User.Claims);
             return Ok(_mapperService.Map(user));
