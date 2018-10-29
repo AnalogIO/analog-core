@@ -74,10 +74,10 @@ namespace coffeecard.Services
 
         public IEnumerable<Purchase> GetPurchases(IEnumerable<Claim> claims)
         {
-            var emailClaim = claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
-            if (emailClaim == null) throw new ApiException($"The token is invalid!", 401);
-            var email = emailClaim.Value;
-            return _context.Purchases.Where(x => x.PurchasedBy.Email == email);
+            var userId = claims.FirstOrDefault(x => x.Type == Constants.UserId);
+            if (userId == null) throw new ApiException($"The token is invalid!", 401);
+            var id = int.Parse(userId.Value);
+            return _context.Purchases.Where(x => x.PurchasedBy.Id == id);
         }
     }
 }

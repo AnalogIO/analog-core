@@ -42,7 +42,7 @@ public class AccountService : IAccountService
             var hashedPw = _hashService.Hash(password + user.Salt);
             if (user.Password.Equals(hashedPw))
             {
-                var claims = new Claim[] { new Claim(ClaimTypes.Email, username), new Claim(ClaimTypes.Name, user.Name) };
+                var claims = new Claim[] { new Claim(ClaimTypes.Email, username), new Claim(ClaimTypes.Name, user.Name), new Claim("UserId", user.Id.ToString()) };
                 var token = _tokenService.GenerateToken(claims);
                 return token;
             }
