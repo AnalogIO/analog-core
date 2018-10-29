@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace coffeecard.Controllers
 {
     [ApiVersion("1")]
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}[controller]")]
     [ApiController]
     public class ProductsController : ControllerBase
     {

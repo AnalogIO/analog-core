@@ -11,7 +11,7 @@ using System.Security.Claims;
 namespace coffeecard.Controllers
 {
     [ApiVersion("1")]
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}[controller]")]
     [Authorize]
     [ApiController]
     public class TicketsController : ControllerBase
