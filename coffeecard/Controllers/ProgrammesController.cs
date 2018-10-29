@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace coffeecard.Controllers
 {
     [ApiVersion("1")]
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}[controller]")]
     [ApiController]
     public class ProgrammesController : ControllerBase
     {

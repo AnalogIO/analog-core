@@ -59,7 +59,7 @@ namespace Coffeecard
                 options.Filters.Add(new ApiExceptionFilter());
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            services.AddApiVersioning(o => o.ApiVersionReader = new HeaderApiVersionReader("api-version"));
+            services.AddApiVersioning();
 
             services.AddSwagger();
 
