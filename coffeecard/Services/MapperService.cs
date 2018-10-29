@@ -66,7 +66,7 @@ namespace coffeecard.Services
 
         public TicketDTO Map(Ticket ticket)
         {
-            return new TicketDTO { Id = ticket.Id, DateCreated = ticket.DateCreated, DateUsed = ticket.DateUsed, ProductName = ticket.Purchase.ProductName };
+            return new TicketDTO { Id = ticket.Id, DateCreated = ticket.DateCreated, DateUsed = ticket.DateUsed, ProductName = ticket.Purchase?.ProductName };
         }
 
         public IEnumerable<TicketDTO> Map(IEnumerable<Ticket> tickets)

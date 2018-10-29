@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using coffeecard.Helpers;
 using Coffeecard.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace coffeecard.Services
 {
@@ -23,7 +24,7 @@ namespace coffeecard.Services
             var userId = claims.FirstOrDefault(x => x.Type == Constants.UserId);
             if (userId == null) throw new ApiException($"The token is invalid!", 401);
             var id = int.Parse(userId.Value);
-            return _context.Tickets.Where(x => x.Owner.Id == id && x.IsUsed == used);
+            return _context.Tickets.Include(p => p.Purchase).Where(x => x.Owner.Id == id && x.IsUsed == used);
         }
     }
 }
