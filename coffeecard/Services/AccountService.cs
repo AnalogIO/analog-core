@@ -5,6 +5,7 @@ using System.Linq;
 using coffeecard.Services;
 using coffeecard.Helpers;
 using System.Collections.Generic;
+using coffeecard.Models.DataTransferObjects.User;
 
 public class AccountService : IAccountService
 {
@@ -83,6 +84,15 @@ public class AccountService : IAccountService
         if(user == null) throw new ApiException($"The token is invalid!", 400);
         user.IsVerified = true;
         return _context.SaveChanges() > 0;
+    }
+
+    public User UpdateAccount(IEnumerable<Claim> claims, UpdateUserDTO userDto)
+    {
+        var user = GetAccountByClaims(claims);
+
+        // modify user here based on input from the dto
+
+        return user;
     }
 
     private string EscapeName(string name)

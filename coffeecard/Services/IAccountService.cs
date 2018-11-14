@@ -1,3 +1,4 @@
+using coffeecard.Models.DataTransferObjects.User;
 using Coffeecard.Models;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -10,4 +11,5 @@ public interface IAccountService
     int GetIdFromEmail(string email);
     string Login(string username, string password, string version);
     bool VerifyRegistration(string token);
+    User UpdateAccount(IEnumerable<Claim> claims, UpdateUserDTO userDto);
 }

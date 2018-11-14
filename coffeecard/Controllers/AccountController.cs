@@ -58,9 +58,9 @@ namespace coffeecard.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
-        public ActionResult Update()
+        public ActionResult Update(UpdateUserDTO userDto)
         {
-            var user = _accountService.GetAccountByClaims(User.Claims);
+            var user = _accountService.UpdateAccount(User.Claims, userDto);
             return Ok(_mapperService.Map(user));
         }
 
