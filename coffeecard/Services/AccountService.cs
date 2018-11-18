@@ -130,4 +130,11 @@ public class AccountService : IAccountService
         if (user == null) throw new ApiException($"The user could not be found", 400);
         return user;
     }
+
+    public void UpdateExperience(int userId, int exp)
+    {
+        var user = _context.Users.FirstOrDefault(x => x.Id == userId);
+        user.Experience += exp;
+        _context.SaveChanges();
+    }
 }
