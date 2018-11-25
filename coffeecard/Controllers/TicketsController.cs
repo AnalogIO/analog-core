@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Security.Claims;
 
 namespace coffeecard.Controllers
 {
@@ -32,6 +30,26 @@ namespace coffeecard.Controllers
         {
             var tickets = _ticketService.getTickets(User.Claims, used);
             return _mapperService.Map(tickets).ToList();
+        }
+
+        [HttpPut("use")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        public ActionResult UseTicket(UseTicketDTO ticket)
+        {
+            var usedTicket = _ticketService.UseTicket(User.Claims, ticket);
+            return Ok(_mapperService.Map(usedTicket));
+        }
+
+        [HttpPut("usemultiple")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        public ActionResult UseMultipleTickets(UseMultipleTicketDTO tickets)
+        {
+            var usedTickets = _ticketService.UseMultipleTickets(User.Claims, tickets);
+            return Ok(_mapperService.Map(usedTickets));
         }
     }
 }
