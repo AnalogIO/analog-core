@@ -135,6 +135,7 @@ public class AccountService : IAccountService
     public void UpdateExperience(int userId, int exp)
     {
         var user = _context.Users.FirstOrDefault(x => x.Id == userId);
+        if(user == null) throw new ApiException($"Could not update user", 500);
         user.Experience += exp;
         _context.SaveChanges();
     }

@@ -8,9 +8,7 @@ namespace coffeecard.Services
     public interface ITicketService
     {
         IEnumerable<Ticket> getTickets(IEnumerable<Claim> claims, bool used);
-
-        Ticket UseTicket(IEnumerable<Claim> claims, UseTicketDTO ticket);
-
-        IEnumerable<Ticket> UseMultipleTickets(IEnumerable<Claim> claims, UseMultipleTicketDTO tickets);
+        Ticket UseTicket(IEnumerable<Claim> claims, int ticketId);
+        IEnumerable<Ticket> UseMultipleTickets(IEnumerable<Claim> claims, int[] ticketIds);
     }
 }

@@ -31,34 +31,35 @@ namespace coffeecard.Services
             return _context.Tickets.Include(p => p.Purchase).Where(x => x.Owner.Id == id && x.IsUsed == used);
         }
         
-        public Ticket UseTicket(IEnumerable<Claim> claims, UseTicketDTO ticket)
+        public Ticket UseTicket(IEnumerable<Claim> claims, int ticketId)
         {
-            var userId = claims.FirstOrDefault(x => x.Type == Constants.UserId);
-            if (userId == null) throw new ApiException($"The token is invalid!", 401);
-            var usedTicket = ValidateTicket(ticket.TicketId, int.Parse(userId.Value));
-            if (usedTicket == null) throw new ApiException("Ticket doesn't exists", 400);
+            var userIdClaim = claims.FirstOrDefault(x => x.Type == Constants.UserId);
+            if (userIdClaim == null) throw new ApiException($"The token is invalid!", 401);
+            var userId = int.Parse(userIdClaim.Value);
 
-            UpdateTicket(usedTicket, int.Parse(userId.Value));
+            var usedTicket = ValidateTicket(ticketId, userId);
+
+            UpdateTicket(usedTicket, userId);
 
             return usedTicket;
         }
 
-        public IEnumerable<Ticket> UseMultipleTickets(IEnumerable<Claim> claims, UseMultipleTicketDTO tickets)
+        public IEnumerable<Ticket> UseMultipleTickets(IEnumerable<Claim> claims, int[] ticketIds)
         {
-            var userId = claims.FirstOrDefault(x => x.Type == Constants.UserId);
-            if (userId == null) throw new ApiException($"The token is invalid!", 401);
+            var userIdClaim = claims.FirstOrDefault(x => x.Type == Constants.UserId);
+            if (userIdClaim == null) throw new ApiException($"The token is invalid!", 401);
+            var userId = int.Parse(userIdClaim.Value);
+
             var usedTickets = new List<Ticket>();
-            foreach(int ticketId in tickets.ticketIds)
+            foreach(int ticketId in ticketIds)
             {
-                var usedTicket = ValidateTicket(ticketId, int.Parse(userId.Value));
-                if (usedTicket == null) throw new ApiException("Ticket doesn't exists", 400);
+                var usedTicket = ValidateTicket(ticketId, userId);
                 usedTickets.Add(usedTicket);
             }
             
             foreach(var ticket in usedTickets)
             {
-                UpdateTicket(ticket, int.Parse(userId.Value));
-
+                UpdateTicket(ticket, userId);
             }
 
             return usedTickets;
@@ -66,8 +67,8 @@ namespace coffeecard.Services
 
         private Ticket ValidateTicket(int ticketId, int userId)
         {
-            var usedTicket = _context.Tickets.Include(t => t.Owner).FirstOrDefault(x => x.Id == ticketId);
-            if (usedTicket.Owner.Id != userId) throw new ApiException("User don't own ticket", 400);
+            var usedTicket = _context.Tickets.FirstOrDefault(x => x.Id == ticketId && !x.IsUsed && x.Owner.Id == userId);
+            if (usedTicket == null) throw new ApiException("User don't own ticket", 400);
             return usedTicket;
         }
 

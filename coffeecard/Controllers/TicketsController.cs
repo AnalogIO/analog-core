@@ -32,13 +32,13 @@ namespace coffeecard.Controllers
             return _mapperService.Map(tickets).ToList();
         }
 
-        [HttpPut("use")]
+        [HttpPut("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
-        public ActionResult UseTicket(UseTicketDTO ticket)
+        public ActionResult UseTicket(int ticketId)
         {
-            var usedTicket = _ticketService.UseTicket(User.Claims, ticket);
+            var usedTicket = _ticketService.UseTicket(User.Claims, ticketId);
             return Ok(_mapperService.Map(usedTicket));
         }
 
@@ -46,9 +46,9 @@ namespace coffeecard.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
-        public ActionResult UseMultipleTickets(UseMultipleTicketDTO tickets)
+        public ActionResult UseMultipleTickets(int[] ticketIds)
         {
-            var usedTickets = _ticketService.UseMultipleTickets(User.Claims, tickets);
+            var usedTickets = _ticketService.UseMultipleTickets(User.Claims, ticketIds);
             return Ok(_mapperService.Map(usedTickets));
         }
     }
