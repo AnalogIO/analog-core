@@ -106,7 +106,8 @@ public class AccountService : IAccountService
             if (programme == null) throw new ApiException($"No programme with id {userDto.ProgrammeId} exists!", 400);
         }
 
-        if(userDto.Password != null) {
+        if (userDto.Password != null)
+        {
             var salt = _hashService.GenerateSalt();
             var hashedPassword = _hashService.Hash(userDto.Password + salt);
             user.Salt = salt;
