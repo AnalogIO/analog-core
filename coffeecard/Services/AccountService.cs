@@ -6,6 +6,7 @@ using coffeecard.Services;
 using coffeecard.Helpers;
 using System.Collections.Generic;
 using coffeecard.Models.DataTransferObjects.User;
+using Microsoft.EntityFrameworkCore;
 
 public class AccountService : IAccountService
 {
@@ -24,7 +25,7 @@ public class AccountService : IAccountService
 
     public User GetAccountByEmail(string email)
     {
-        var user = _context.Users.FirstOrDefault(x => x.Email == email);
+        var user = _context.Users.Include(x => x.Programme).FirstOrDefault(x => x.Email == email);
         if (user == null) throw new ApiException("No user found with the given email", 401);
         return user;
     }

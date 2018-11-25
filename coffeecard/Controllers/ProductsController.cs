@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using coffeecard.Models.DataTransferObjects.Product;
-using coffeecard.Models.DataTransferObjects.Purchase;
 using coffeecard.Services;
-using Coffeecard.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace coffeecard.Controllers
