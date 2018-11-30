@@ -13,6 +13,7 @@ namespace coffeecard.Controllers
     {
         IAccountService _accountService;
         IMapperService _mapperService;
+        IMobilePayService _mobilePayService;
 
         public AccountController(IAccountService accountService, IMapperService mapperService)
         {
