@@ -27,7 +27,6 @@ namespace coffeecard.Controllers
         [ProducesResponseType(400)]
         public ActionResult Register(RegisterDTO registerDto)
         {
-            Log.Information($"Trying to register user with email: { registerDto.Email } name: { registerDto.Name } and programmeId: { registerDto.ProgrammeId }");
             var user = _accountService.RegisterAccount(registerDto);
             return Created("register", new { message = "Your user has been created! Please check your email to verify your account.\n(Check your spam folder!)" });
         }
@@ -39,7 +38,6 @@ namespace coffeecard.Controllers
         [ProducesResponseType(401)]
         public ActionResult Login(LoginDTO loginDto)
         {
-            Log.Information($"Trying to login user { loginDto.Email } with defined version { loginDto.Version }");
             var token = _accountService.Login(loginDto.Email, loginDto.Password, loginDto.Version);
             if(token == null) return Unauthorized();
             return Ok(new { token = token });

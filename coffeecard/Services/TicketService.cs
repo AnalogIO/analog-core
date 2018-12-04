@@ -8,6 +8,7 @@ using coffeecard.Helpers;
 using coffeecard.Models.DataTransferObjects.Ticket;
 using Coffeecard.Models;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace coffeecard.Services
 {
@@ -33,6 +34,7 @@ namespace coffeecard.Services
         
         public Ticket UseTicket(IEnumerable<Claim> claims, int ticketId)
         {
+            Log.Information($"Using ticket with id: {ticketId}");
             var userIdClaim = claims.FirstOrDefault(x => x.Type == Constants.UserId);
             if (userIdClaim == null) throw new ApiException($"The token is invalid!", 401);
             var userId = int.Parse(userIdClaim.Value);
@@ -46,6 +48,7 @@ namespace coffeecard.Services
 
         public IEnumerable<Ticket> UseMultipleTickets(IEnumerable<Claim> claims, int[] ticketIds)
         {
+            Log.Information($"Using multiple tickets {string.Join(",", ticketIds)}");
             var userIdClaim = claims.FirstOrDefault(x => x.Type == Constants.UserId);
             if (userIdClaim == null) throw new ApiException($"The token is invalid!", 401);
             var userId = int.Parse(userIdClaim.Value);
@@ -67,6 +70,7 @@ namespace coffeecard.Services
 
         private Ticket ValidateTicket(int ticketId, int userId)
         {
+            Log.Information($"Validating that ticketId: {ticketId} belongs to userId: {userId} and is not used");
             var usedTicket = _context.Tickets.FirstOrDefault(x => x.Id == ticketId && !x.IsUsed && x.Owner.Id == userId);
             if (usedTicket == null) throw new ApiException("User don't own ticket", 400);
             return usedTicket;
@@ -77,6 +81,8 @@ namespace coffeecard.Services
             ticket.IsUsed = true;
             ticket.DateUsed = DateTime.UtcNow;
             _context.SaveChanges();
+
+            Log.Information($"Updating ticket with id: {ticket.Id} for user {userId}");
 
             _accountService.UpdateExperience(userId, GetExperienceByTicket(ticket.ProductId));
         }

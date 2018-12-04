@@ -8,6 +8,7 @@ using RestSharp;
 using RestSharp.Authenticators;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
+using Serilog;
 
 namespace coffeecard.Services
 {
@@ -27,6 +28,7 @@ namespace coffeecard.Services
 
         public void SendRegistrationVerificationEmail(User user, string token)
         {
+            Log.Information($"Sending registration verification email to {user.Email} ({user.Id} with token: {token})");
             var fullPath = _httpContextAccessor.HttpContext?.Request?.GetDisplayUrl();
             var baseUrl = fullPath.Substring(0, fullPath.IndexOf("api/"));
 

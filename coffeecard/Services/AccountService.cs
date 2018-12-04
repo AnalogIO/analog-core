@@ -7,6 +7,7 @@ using coffeecard.Helpers;
 using System.Collections.Generic;
 using coffeecard.Models.DataTransferObjects.User;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 public class AccountService : IAccountService
 {
@@ -32,6 +33,7 @@ public class AccountService : IAccountService
 
     public string Login(string username, string password, string version)
     {
+        Log.Information($"Logging in user with username: {username} version: {version}");
         var user = _context.Users.FirstOrDefault(x => x.Email == username);
         if (user != null)
         {
@@ -48,6 +50,7 @@ public class AccountService : IAccountService
 
     public User RegisterAccount(RegisterDTO registerDto)
     {
+        Log.Information($"Trying to register new user. Name: {registerDto.Name} Email: {registerDto.Email} ProgrammeId: {registerDto.ProgrammeId}");
         if (_context.Users.Any(x => x.Email == registerDto.Email)) throw new ApiException($"The email {registerDto.Email} is already being used by another user", 400);
         var salt = _hashService.GenerateSalt();
         var hashedPassword = _hashService.Hash(registerDto.Password + salt);
@@ -70,8 +73,8 @@ public class AccountService : IAccountService
 
     public bool VerifyRegistration(string token)
     {
+        Log.Information($"Trying to verify registration with token: {token}");
         var jwtToken = _tokenService.ReadToken(token);
-
         if (!jwtToken.Claims.Any(x => x.Type == ClaimTypes.Role && x.Value == "verification_token")) throw new ApiException($"The token is invalid!", 400);
         var emailClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
         if (emailClaim == null) throw new ApiException($"The token is invalid!", 400);
@@ -84,6 +87,8 @@ public class AccountService : IAccountService
     public User UpdateAccount(IEnumerable<Claim> claims, UpdateUserDTO userDto)
     {
         var user = GetAccountByClaims(claims);
+
+        Log.Information($"Updating user with id {user.Id}. Email: {userDto.Email} Name: {userDto.Name} PrivacyActivated: {userDto.PrivacyActivated} ProgrammeId: {userDto.ProgrammeId}");
 
         if (userDto.Email != null)
         {

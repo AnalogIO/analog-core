@@ -2,6 +2,7 @@
 using coffeecard.Models.DataTransferObjects.Purchase;
 using Coffeecard.Models;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -153,6 +154,7 @@ namespace coffeecard.Services
         }
 
         public string InitiatePurchase(int productId, IEnumerable<Claim> claims) {
+            Log.Information($"Initiating new purchase for productId: {productId}");
             var product = _context.Products.FirstOrDefault(x => x.Id == productId);
             if (product == null) throw new ApiException($"Product with id {productId} could not be found!", 400);
 
@@ -184,6 +186,8 @@ namespace coffeecard.Services
             _context.Attach(user);
             _context.Entry(user).State = EntityState.Modified;
             _context.SaveChanges();
+
+            Log.Information($"Purchase initiated with orderId: {purchase.OrderId} purchaseId: {purchase.Id} for user: {user.Id}");
 
             return orderId;
         }

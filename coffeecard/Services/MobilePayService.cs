@@ -10,6 +10,7 @@ using Jose;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
+using Serilog;
 
 namespace coffeecard.Services
 {
@@ -46,6 +47,7 @@ namespace coffeecard.Services
 
         public async Task<HttpResponseMessage> CheckOrderIdAgainstMPBackendAsync(string orderId)
         {
+            Log.Information($"Checking order against mobilepay with orderId: {orderId}");
             var payload = $"https://api.mobeco.dk/appswitch/api/v1/merchants/{_configuration["MPMerchantID"]}/orders/{orderId}";
 
             var response = await SendRequest(payload);
