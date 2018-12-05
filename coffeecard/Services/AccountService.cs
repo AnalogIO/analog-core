@@ -88,21 +88,22 @@ public class AccountService : IAccountService
     {
         var user = GetAccountByClaims(claims);
 
-        Log.Information($"Updating user with id {user.Id}. Email: {userDto.Email} Name: {userDto.Name} PrivacyActivated: {userDto.PrivacyActivated} ProgrammeId: {userDto.ProgrammeId}");
-
         if (userDto.Email != null)
         {
             if (_context.Users.Any(x => x.Email == userDto.Email)) throw new ApiException($"The email {userDto.Email} is already in use!", 400);
+            Log.Information($"Changing email of user from {user.Email} to {userDto.Email}");
             user.Email = userDto.Email;
         }
 
         if (userDto.Name != null)
         {
+            Log.Information($"Changing name of user from {user.Name} to {EscapeName(userDto.Name)}");
             user.Name = EscapeName(userDto.Name);
         }
 
         if (userDto.PrivacyActivated != null)
         {
+            Log.Information($"Changing privacy of user from {user.PrivacyActivated} to {(bool)userDto.PrivacyActivated}");
             user.PrivacyActivated = (bool)userDto.PrivacyActivated;
         }
 
@@ -110,6 +111,8 @@ public class AccountService : IAccountService
         {
             var programme = _context.Programmes.FirstOrDefault(x => x.Id == userDto.ProgrammeId);
             if (programme == null) throw new ApiException($"No programme with id {userDto.ProgrammeId} exists!", 400);
+            Log.Information($"Changing programme of user from {user.Programme.Id} to {programme.Id}");
+            user.Programme = programme;
         }
 
         if (userDto.Password != null)
@@ -118,6 +121,7 @@ public class AccountService : IAccountService
             var hashedPassword = _hashService.Hash(userDto.Password + salt);
             user.Salt = salt;
             user.Password = hashedPassword;
+            Log.Information($"User changed password");
         }
 
         _context.SaveChanges();

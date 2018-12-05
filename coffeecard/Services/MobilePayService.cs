@@ -17,14 +17,13 @@ namespace coffeecard.Services
     public class MobilePayService : IMobilePayService
     {
         private readonly HttpClient _client;
-        //private RSACryptoServiceProvider _privateKey;
         private readonly IConfiguration _configuration;
         private readonly X509Certificate2 _cert;
 
         public MobilePayService(IConfiguration configuration, IHostingEnvironment env)
         {
             _configuration = configuration;
-            var provider = env.WebRootFileProvider;
+            var provider = env.ContentRootFileProvider;
             var contents = provider.GetDirectoryContents(string.Empty);
             var certPath = contents.FirstOrDefault(x => x.Name.Equals("www.analogio.dk.pfx")).PhysicalPath;
 
