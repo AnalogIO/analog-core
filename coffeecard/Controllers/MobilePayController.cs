@@ -34,5 +34,14 @@ namespace coffeecard.Controllers
             return Ok(new { OrderId = orderId });
         }
 
+        [HttpPost("completepurchase")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        public ActionResult CompletePurchase(CompletePurchaseDTO dto)
+        {
+            var purchase = _purchaseService.CompletePurchase(dto, User.Claims);
+            return Ok(new { Message = "The purchase was completed with success!" });
+        }
+
     }
 }
