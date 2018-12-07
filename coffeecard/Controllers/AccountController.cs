@@ -1,3 +1,4 @@
+using coffeecard.Helpers;
 using coffeecard.Models.DataTransferObjects.User;
 using coffeecard.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -21,48 +22,63 @@ namespace coffeecard.Controllers
             _mapperService = mapperService;
         }
 
+        /// <summary>
+        ///  Registers the user supplied in the body and returns 201 on success
+        /// </summary>
         [AllowAnonymous]
         [HttpPost("register")]
         [ProducesResponseType(201)]
-        [ProducesResponseType(400)]
-        public ActionResult Register(RegisterDTO registerDto)
+        [ProducesResponseType(typeof(ApiError), 400)]
+        public ActionResult<CreatedResult> Register(RegisterDTO registerDto)
         {
             var user = _accountService.RegisterAccount(registerDto);
             return Created("register", new { message = "Your user has been created! Please check your email to verify your account.\n(Check your spam folder!)" });
         }
 
+        /// <summary>
+        ///  Returns a token that is used to identify the user
+        /// </summary>
         [AllowAnonymous]
         [HttpPost("login")]
         [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        public ActionResult Login(LoginDTO loginDto)
+        [ProducesResponseType(typeof(ApiError), 400)]
+        [ProducesResponseType(typeof(ApiError), 401)]
+        public ActionResult<TokenDTO> Login(LoginDTO loginDto)
         {
             var token = _accountService.Login(loginDto.Email, loginDto.Password, loginDto.Version);
             if(token == null) return Unauthorized();
-            return Ok(new { token = token });
+            return Ok(new TokenDTO { Token = token });
         }
 
+        /// <summary>
+        ///  Returns basic data about the user
+        /// </summary>
         [HttpGet]
         [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(ApiError), 400)]
+        [ProducesResponseType(typeof(ApiError), 401)]
         public ActionResult<UserDTO> Get()
         {
             var user = _accountService.GetAccountByClaims(User.Claims);
             return Ok(_mapperService.Map(user));
         }
 
+        /// <summary>
+        ///  Updates the user and returns the updated values
+        /// </summary>
         [HttpPut]
         [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        public ActionResult Update(UpdateUserDTO userDto)
+        [ProducesResponseType(typeof(ApiError), 400)]
+        [ProducesResponseType(typeof(ApiError), 401)]
+        public ActionResult<UserDTO> Update(UpdateUserDTO userDto)
         {
             var user = _accountService.UpdateAccount(User.Claims, userDto);
             return Ok(_mapperService.Map(user));
         }
 
+        /// <summary>
+        ///  Verifies the user from a token delivered via email
+        /// </summary>
         [AllowAnonymous]
         [HttpGet("verify")]
         public IActionResult Verify(string token)

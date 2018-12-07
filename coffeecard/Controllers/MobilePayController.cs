@@ -1,10 +1,8 @@
+using coffeecard.Helpers;
 using coffeecard.Models.DataTransferObjects.MobilePay;
-using coffeecard.Models.DataTransferObjects.Ticket;
 using coffeecard.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace coffeecard.Controllers
 {
@@ -25,19 +23,25 @@ namespace coffeecard.Controllers
             _mapperService = mapperService;
         }
 
+        /// <summary>
+        ///  Initiates a purchase from the given productId and returns an orderId
+        /// </summary>
         [HttpPost("initiatepurchase")]
         [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
-        public ActionResult InitiatePurchase(InitiatePurchaseDTO initiatePurchaseDto)
+        [ProducesResponseType(typeof(ApiError), 400)]
+        public ActionResult<InitiatePurchaseResponseDTO> InitiatePurchase(InitiatePurchaseDTO initiatePurchaseDto)
         {
             var orderId = _purchaseService.InitiatePurchase(initiatePurchaseDto.ProductId, User.Claims);
-            return Ok(new { OrderId = orderId });
+            return Ok(new InitiatePurchaseResponseDTO { OrderId = orderId });
         }
 
+        /// <summary>
+        ///  Validates the purchase against mobilepay backend and delivers the tickets if succeeded
+        /// </summary>
         [HttpPost("completepurchase")]
         [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
-        public ActionResult CompletePurchase(CompletePurchaseDTO dto)
+        [ProducesResponseType(typeof(ApiError), 400)]
+        public ActionResult<OkResult> CompletePurchase(CompletePurchaseDTO dto)
         {
             var purchase = _purchaseService.CompletePurchase(dto, User.Claims);
             return Ok(new { Message = "The purchase was completed with success!" });
