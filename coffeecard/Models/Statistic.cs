@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Coffeecard.Models
 {
@@ -18,6 +19,8 @@ namespace Coffeecard.Models
         public int SwipeCount { get; set; }
         public DateTime LastSwipe { get; set; }
         public DateTime ExpiryDate { get; set; }
+        [ForeignKey("User_Id")]
+        public virtual User User { get; set; }
 
         public static DateTime GetSemesterStart(DateTime currentTime)
         {

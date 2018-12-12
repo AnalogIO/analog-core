@@ -27,7 +27,7 @@ public class AccountService : IAccountService
     {
         var user = _context.Users
             .Include(x => x.Programme)
-            .Include(x => x.Statistics)
+            //.Include(x => x.Statistics)
             .FirstOrDefault(x => x.Email == email);
         if (user == null) throw new ApiException("No user found with the given email", 401);
         return user;
