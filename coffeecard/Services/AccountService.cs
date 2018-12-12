@@ -15,13 +15,15 @@ public class AccountService : IAccountService
     private readonly ITokenService _tokenService;
     private readonly IEmailService _emailService;
     private readonly IHashService _hashService;
+    private readonly IPurchaseService _purchaseService;
 
-    public AccountService(CoffeecardContext context, ITokenService tokenService, IEmailService emailService, IHashService hashService)
+    public AccountService(CoffeecardContext context, ITokenService tokenService, IEmailService emailService, IHashService hashService, IPurchaseService purchaseService)
     {
         _context = context;
         _tokenService = tokenService;
         _emailService = emailService;
         _hashService = hashService;
+        _purchaseService = purchaseService;
     }
 
     public User GetAccountByEmail(string email)
@@ -45,6 +47,10 @@ public class AccountService : IAccountService
             {
                 var claims = new Claim[] { new Claim(ClaimTypes.Email, username), new Claim(ClaimTypes.Name, user.Name), new Claim("UserId", user.Id.ToString()) };
                 var token = _tokenService.GenerateToken(claims);
+                
+                // check for incomplete purchases
+                _purchaseService.CheckIncompletePurchases(user);
+
                 return token;
             }
         }

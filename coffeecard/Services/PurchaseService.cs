@@ -244,5 +244,42 @@ namespace coffeecard.Services
             Log.Warning($"Could not validate transction with orderid: {payment.OrderId} and transctionId: {payment.TransactionId}");
             return false;
         }
+
+        public async Task CheckIncompletePurchases(User user)
+        {
+            var incompletePurchases = user.Purchases.Where(x => !x.Completed).ToList();
+            Log.Information($"Checking {incompletePurchases.Count} purchases against mobilepay");
+            foreach (var purchase in incompletePurchases)
+            {
+                var response = await ValidateTransactionWithoutId(purchase.OrderId);
+                if (response != null)
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var status = await response.Content.ReadAsAsync<MobilePayPaymentStatusDTO>();
+                        if (status.LatestPaymentStatus.Equals("Captured") &&
+                            status.OriginalAmount.Equals(purchase.Price))
+                        {
+                            var transactionId = status.TransactionId;
+                            DeliverProductToUser(purchase, user, transactionId);
+                        }
+                        else if(status.LatestPaymentStatus.Equals("Rejected"))
+                        {
+                            _context.Purchases.Remove(purchase);
+                        }
+                    }
+                    else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        _context.Purchases.Remove(purchase);
+                    }
+                }
+            }
+        }
+
+        public async Task<HttpResponseMessage> ValidateTransactionWithoutId(string orderId)
+        {
+            var response = await _mobilePayService.CheckOrderIdAgainstMPBackendAsync(orderId);
+            return response;
+        }
     }
 }
