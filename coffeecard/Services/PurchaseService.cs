@@ -133,10 +133,10 @@ namespace coffeecard.Services
             if(userId == null) throw new ApiException($"The token is invalid!", 401);
             var id = int.Parse(userId.Value);
 
-            var user = _context.Users.FirstOrDefault(x => x.Id == id);
+            var user = _context.Users.Include(x => x.Purchases).FirstOrDefault(x => x.Id == id);
             if(user == null) throw new ApiException($"The user could not be found");
 
-            var purchase = user.Purchases.Where(x => x.OrderId == completeDto.OrderId).FirstOrDefault();
+            var purchase = user.Purchases.FirstOrDefault(x => x.OrderId == completeDto.OrderId);
             if (purchase == null) throw new ApiException($"Purchase could not be found");
 
             if(purchase.PurchasedBy.Id != user.Id) throw new ApiException($"You cannot complete a purchase that you did not initiate!", 401);
