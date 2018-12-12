@@ -3,6 +3,7 @@ using coffeecard.Models.DataTransferObjects.MobilePay;
 using coffeecard.Models.DataTransferObjects.Purchase;
 using Coffeecard.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -17,11 +18,13 @@ namespace coffeecard.Services
     {
         private readonly CoffeecardContext _context;
         private readonly IMobilePayService _mobilePayService;
+        private readonly IConfiguration _configuration;
 
-        public PurchaseService(CoffeecardContext context, IMobilePayService mobilePayService)
+        public PurchaseService(CoffeecardContext context, IMobilePayService mobilePayService, IConfiguration configuration)
         {
             _context = context;
             _mobilePayService = mobilePayService;
+            _configuration = configuration;
         }
 
         public bool Delete(int id)
@@ -204,7 +207,12 @@ namespace coffeecard.Services
 
         public async Task<Purchase> CompletePurchase(CompletePurchaseDTO dto, IEnumerable<Claim> claims) {
             Log.Information($"Trying to complete purchase with orderid: {dto.OrderId} and transactionId: {dto.TransactionId}");
-            var valid = await ValidateTransaction(dto);
+            var valid = true;
+            if (!_configuration["MPMerchantID"].Equals("APPDK0000000000"))
+            {
+                valid = await ValidateTransaction(dto);
+            }
+            
             if(!valid) throw new ApiException($"The purchase is invalid", 400);
 
             var purchase = DeliverProduct(dto, claims);
