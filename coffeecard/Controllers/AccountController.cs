@@ -55,12 +55,17 @@ namespace coffeecard.Controllers
         /// </summary>
         [HttpGet]
         [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(ApiError), 400)]
-        [ProducesResponseType(typeof(ApiError), 401)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
         public ActionResult<UserDTO> Get()
         {
             var user = _accountService.GetAccountByClaims(User.Claims);
-            return Ok(_mapperService.Map(user));
+            var userDTO = _mapperService.Map(user);
+            var leaderBoardPlacement = _accountService.GetLeaderboardPlacement(user);
+            userDTO.RankAllTime = leaderBoardPlacement[0];
+            userDTO.RankSemester = leaderBoardPlacement[1];
+            userDTO.RankMonth = leaderBoardPlacement[2];
+            return Ok(userDTO);
         }
 
         /// <summary>

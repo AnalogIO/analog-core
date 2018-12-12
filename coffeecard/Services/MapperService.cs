@@ -51,7 +51,9 @@ namespace coffeecard.Services
 
         public UserDTO Map(User user)
         {
-            return new UserDTO { Email = user.Email, Id = user.Id, Name = user.Name, PrivacyActivated = user.PrivacyActivated, ProgrammeId = user.Programme.Id };
+
+
+            return new UserDTO { Email = user.Email, Id = user.Id, Name = user.Name, PrivacyActivated = user.PrivacyActivated, ProgrammeId = user.Programme.Id, Level = user.CalculateLevelFromXp(), RequiredExp = user.CalculateRequiredXpByLevel() };
         }
 
         public ProductDTO Map(Product product)

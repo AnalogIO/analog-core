@@ -11,6 +11,6 @@ public interface IAccountService
     string Login(string username, string password, string version);
     bool VerifyRegistration(string token);
     User UpdateAccount(IEnumerable<Claim> claims, UpdateUserDTO userDto);
-
     void UpdateExperience(int userId, int exp);
+    int[] GetLeaderboardPlacement(User user);
 }
