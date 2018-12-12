@@ -17,5 +17,7 @@ namespace Coffeecard.Models
         public DbSet<LoginAttempt> LoginAttempts { get; set; }
         public DbSet<Programme> Programmes { get; set; }
         public DbSet<Voucher> Vouchers { get; set; }
+        public DbSet<Statistic> Statistics { get; set; }
+
     }
 }

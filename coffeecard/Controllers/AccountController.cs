@@ -30,6 +30,7 @@ namespace coffeecard.Controllers
             return Created("register", new { message = "Your user has been created! Please check your email to verify your account.\n(Check your spam folder!)" });
         }
 
+
         [AllowAnonymous]
         [HttpPost("login")]
         [ProducesResponseType(200)]
@@ -49,7 +50,12 @@ namespace coffeecard.Controllers
         public ActionResult<UserDTO> Get()
         {
             var user = _accountService.GetAccountByClaims(User.Claims);
-            return Ok(_mapperService.Map(user));
+            var userDTO = _mapperService.Map(user);
+            var leaderBoardPlacement = _accountService.GetLeaderboardPlacement(user);
+            userDTO.RankAllTime = leaderBoardPlacement[0];
+            userDTO.RankSemester = leaderBoardPlacement[1];
+            userDTO.RankMonth = leaderBoardPlacement[2];
+            return Ok(userDTO);
         }
 
         [HttpPut]
@@ -60,6 +66,12 @@ namespace coffeecard.Controllers
         {
             var user = _accountService.UpdateAccount(User.Claims, userDto);
             return Ok(_mapperService.Map(user));
+        }
+
+        public ActionResult Profile()
+        {
+            //Name, mail, rank, cups drunk, programme
+            return Ok();
         }
 
         [AllowAnonymous]

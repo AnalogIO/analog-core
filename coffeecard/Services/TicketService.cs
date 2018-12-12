@@ -41,6 +41,8 @@ namespace coffeecard.Services
 
             UpdateTicket(usedTicket, userId);
 
+            UpdateUserRank(userId, 1);
+
             return usedTicket;
         }
 
@@ -56,11 +58,16 @@ namespace coffeecard.Services
                 var usedTicket = ValidateTicket(ticketId, userId);
                 usedTickets.Add(usedTicket);
             }
-            
+
+            var countTicketForRank = 0;
             foreach(var ticket in usedTickets)
             {
                 UpdateTicket(ticket, userId);
+                if (ticket.ProductId != 4)
+                    countTicketForRank++;
             }
+
+            UpdateUserRank(userId, countTicketForRank);
 
             return usedTickets;
         }
@@ -85,6 +92,12 @@ namespace coffeecard.Services
         {
             var product = _context.Products.FirstOrDefault(x => x.Id == productId);
             return product != null ? product.ExperienceWorth : 0;
+        }
+
+        private void UpdateUserRank(int userId, int tickets)
+        {
+            var user = _context.Users.FirstOrDefault(x => x.Id == userId);
+            user.IncreaseStatisticsBy(tickets);
         }
     }
 }

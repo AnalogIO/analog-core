@@ -25,7 +25,10 @@ public class AccountService : IAccountService
 
     public User GetAccountByEmail(string email)
     {
-        var user = _context.Users.Include(x => x.Programme).FirstOrDefault(x => x.Email == email);
+        var user = _context.Users
+            .Include(x => x.Programme)
+            .Include(x => x.Statistics)
+            .FirstOrDefault(x => x.Email == email);
         if (user == null) throw new ApiException("No user found with the given email", 401);
         return user;
     }
@@ -130,6 +133,8 @@ public class AccountService : IAccountService
         if (emailClaim == null) throw new ApiException($"The token is invalid!", 401);
         var user = GetAccountByEmail(emailClaim.Value);
         if (user == null) throw new ApiException($"The user could not be found", 400);
+
+
         return user;
     }
 
@@ -139,5 +144,25 @@ public class AccountService : IAccountService
         if(user == null) throw new ApiException($"Could not update user", 500);
         user.Experience += exp;
         _context.SaveChanges();
+    }
+
+    public int[] GetLeaderboardPlacement(User user)
+    {
+        int[] leaderBoardPlacement = new int[3];
+
+        var totalUsers = _context.Statistics.OrderByDescending( s => s.Preset == StatisticPreset.Total).ToList();
+        var totalSwipeRank = totalUsers.FindIndex(x => x.Id == user.Id) + 1;
+
+        var semesterUsers = _context.Statistics.OrderByDescending(s => s.Preset == StatisticPreset.Semester).ToList();
+        var semesterSwipeRank = semesterUsers.FindIndex(x => x.Id == user.Id) + 1;
+
+        var monthUsers = _context.Statistics.OrderByDescending(s => s.Preset == StatisticPreset.Monthly).ToList();
+        var monthSwipeRank = monthUsers.FindIndex(x => x.Id == user.Id) + 1;
+
+        leaderBoardPlacement[0] = totalSwipeRank;
+        leaderBoardPlacement[1] = semesterSwipeRank;
+        leaderBoardPlacement[2] = monthSwipeRank;
+
+        return leaderBoardPlacement;
     }
 }
