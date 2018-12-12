@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using coffeecard.Helpers;
 using coffeecard.Models.DataTransferObjects.Purchase;
 using coffeecard.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -24,9 +25,12 @@ namespace coffeecard.Controllers
             _accountService = accountService;
         }
 
+        /// <summary>
+        ///  Returns a list of purchases for the given user via the supplied token in the header
+        /// </summary>
         [HttpGet]
         [ProducesResponseType(200)]
-        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(ApiError), 401)]
         public ActionResult<IEnumerable<PurchaseDTO>> Get()
         {
             var purchases = _purchaseService.GetPurchases(User.Claims);
