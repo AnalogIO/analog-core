@@ -26,7 +26,11 @@ namespace Coffeecard.Models
         {
             if (currentTime.Month < 7)
             {
-                return new DateTime(currentTime.Year, 1, 29);
+                var jan1 = new DateTime(currentTime.Year, 1, 1);
+                var dayOffset = DayOfWeek.Monday - jan1.DayOfWeek;
+                var startDate = 29 - dayOffset;
+               
+                return new DateTime(currentTime.Year, 1, startDate);
             }
             else
             {
@@ -42,7 +46,7 @@ namespace Coffeecard.Models
             }
             else
             {
-                return new DateTime(currentTime.Year, 12, 31);
+                return new DateTime(currentTime.Year, 12, 23);
             }
         }
 
