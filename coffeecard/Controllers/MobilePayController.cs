@@ -3,6 +3,7 @@ using coffeecard.Models.DataTransferObjects.MobilePay;
 using coffeecard.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace coffeecard.Controllers
 {
@@ -26,7 +27,7 @@ namespace coffeecard.Controllers
         /// <summary>
         ///  Initiates a purchase from the given productId and returns an orderId
         /// </summary>
-        [HttpPost("initiatepurchase")]
+        [HttpPost("initiate")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(ApiError), 400)]
         public ActionResult<InitiatePurchaseResponseDTO> InitiatePurchase(InitiatePurchaseDTO initiatePurchaseDto)
@@ -38,12 +39,12 @@ namespace coffeecard.Controllers
         /// <summary>
         ///  Validates the purchase against mobilepay backend and delivers the tickets if succeeded
         /// </summary>
-        [HttpPost("completepurchase")]
+        [HttpPost("complete")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(ApiError), 400)]
-        public ActionResult<OkResult> CompletePurchase(CompletePurchaseDTO dto)
+        public async Task<ActionResult<OkResult>> CompletePurchase(CompletePurchaseDTO dto)
         {
-            var purchase = _purchaseService.CompletePurchase(dto, User.Claims);
+            var purchase = await _purchaseService.CompletePurchase(dto, User.Claims);
             return Ok(new { Message = "The purchase was completed with success!" });
         }
 
