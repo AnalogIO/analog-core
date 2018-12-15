@@ -274,6 +274,7 @@ namespace coffeecard.Services
                     }
                 }
             }
+            _context.SaveChanges();
         }
 
         public async Task<HttpResponseMessage> ValidateTransactionWithoutId(string orderId)
