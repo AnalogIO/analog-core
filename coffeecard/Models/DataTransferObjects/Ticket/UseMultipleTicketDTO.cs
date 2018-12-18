@@ -7,6 +7,6 @@ namespace coffeecard.Models.DataTransferObjects.Ticket
 {
     public class UseMultipleTicketDTO
     {
-        public IEnumerable<int> ticketIds { get; set; }
+        public int[] ticketIds { get; set; }
     }
 }

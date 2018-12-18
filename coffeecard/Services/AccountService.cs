@@ -47,7 +47,7 @@ public class AccountService : IAccountService
             {
                 var claims = new Claim[] { new Claim(ClaimTypes.Email, username), new Claim(ClaimTypes.Name, user.Name), new Claim("UserId", user.Id.ToString()) };
                 var token = _tokenService.GenerateToken(claims);
-                
+
                 // check for incomplete purchases
                 _purchaseService.CheckIncompletePurchases(user);
 
@@ -156,7 +156,7 @@ public class AccountService : IAccountService
     public void UpdateExperience(int userId, int exp)
     {
         var user = _context.Users.FirstOrDefault(x => x.Id == userId);
-        if(user == null) throw new ApiException($"Could not update user", 500);
+        if (user == null) throw new ApiException($"Could not update user", 500);
         user.Experience += exp;
         _context.SaveChanges();
     }
@@ -165,7 +165,7 @@ public class AccountService : IAccountService
     {
         int[] leaderBoardPlacement = new int[3];
 
-        var totalUsers = _context.Statistics.OrderByDescending( s => s.Preset == StatisticPreset.Total).ToList();
+        var totalUsers = _context.Statistics.OrderByDescending(s => s.Preset == StatisticPreset.Total).ToList();
         var totalSwipeRank = totalUsers.FindIndex(x => x.Id == user.Id) + 1;
 
         var semesterUsers = _context.Statistics.OrderByDescending(s => s.Preset == StatisticPreset.Semester).ToList();

@@ -31,7 +31,7 @@ namespace coffeecard.Services
             var id = int.Parse(userId.Value);
             return _context.Tickets.Include(p => p.Purchase).Where(x => x.Owner.Id == id && x.IsUsed == used);
         }
-        
+
         public Ticket UseTicket(IEnumerable<Claim> claims, int ticketId)
         {
             Log.Information($"Using ticket with id: {ticketId}");
@@ -56,14 +56,14 @@ namespace coffeecard.Services
             var userId = int.Parse(userIdClaim.Value);
 
             var usedTickets = new List<Ticket>();
-            foreach(int ticketId in ticketIds)
+            foreach (int ticketId in ticketIds)
             {
                 var usedTicket = ValidateTicket(ticketId, userId);
                 usedTickets.Add(usedTicket);
             }
 
             var countTicketForRank = 0;
-            foreach(var ticket in usedTickets)
+            foreach (var ticket in usedTickets)
             {
                 UpdateTicket(ticket, userId);
                 if (ticket.ProductId != 4)
@@ -72,26 +72,35 @@ namespace coffeecard.Services
 
             UpdateUserRank(userId, countTicketForRank);
 
+            // only save changes if all tickets was successfully used!
+            if (usedTickets.Count == ticketIds.Count())
+            {
+                // update user experience
+                usedTickets.ForEach(x => _accountService.UpdateExperience(userId, GetExperienceByTicket(x.ProductId)));
+                _context.SaveChanges();
+                Log.Information($"All tickets were successfully used, updated and saved!");
+            }
+            else
+            {
+                Log.Error($"All tickets could not be used :-( ticketIds: {string.Join(",", ticketIds)}");
+                throw new ApiException($"Could not use the supplied tickets - try again later or contact AnalogIO!", 500);
+            }
+
             return usedTickets;
         }
 
         private Ticket ValidateTicket(int ticketId, int userId)
         {
             Log.Information($"Validating that ticketId: {ticketId} belongs to userId: {userId} and is not used");
-            var usedTicket = _context.Tickets.FirstOrDefault(x => x.Id == ticketId && !x.IsUsed && x.Owner.Id == userId);
-            if (usedTicket == null) throw new ApiException("User don't own ticket", 400);
-            return usedTicket;
+            var ticket = _context.Tickets.Include(x => x.Purchase).FirstOrDefault(x => x.Id == ticketId && !x.IsUsed && x.Owner.Id == userId);
+            if (ticket == null) throw new ApiException("The ticket is invalid", 400);
+            return ticket;
         }
 
         private void UpdateTicket(Ticket ticket, int userId)
         {
             ticket.IsUsed = true;
             ticket.DateUsed = DateTime.UtcNow;
-            _context.SaveChanges();
-
-            Log.Information($"Updating ticket with id: {ticket.Id} for user {userId}");
-
-            _accountService.UpdateExperience(userId, GetExperienceByTicket(ticket.ProductId));
         }
 
         private int GetExperienceByTicket(int productId)
@@ -102,7 +111,7 @@ namespace coffeecard.Services
 
         private void UpdateUserRank(int userId, int tickets)
         {
-            var user = _context.Users.FirstOrDefault(x => x.Id == userId);
+            var user = _context.Users.Include(x => x.Statistics).FirstOrDefault(x => x.Id == userId);
             user.IncreaseStatisticsBy(tickets);
         }
     }

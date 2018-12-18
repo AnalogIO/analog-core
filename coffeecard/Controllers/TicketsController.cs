@@ -36,28 +36,15 @@ namespace coffeecard.Controllers
         }
 
         /// <summary>
-        ///  Uses the ticket via the ticketId supplied as parameter
-        /// </summary>
-        [HttpPut("{id}")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(ApiError), 400)]
-        [ProducesResponseType(typeof(ApiError), 401)]
-        public ActionResult<TicketDTO> UseTicket(int ticketId)
-        {
-            var usedTicket = _ticketService.UseTicket(User.Claims, ticketId);
-            return Ok(_mapperService.Map(usedTicket));
-        }
-
-        /// <summary>
         ///  Uses the tickets supplied via ticketIds in the body
         /// </summary>
-        [HttpPut("usemultiple")]
+        [HttpPut("use")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(ApiError), 400)]
         [ProducesResponseType(typeof(ApiError), 401)]
-        public ActionResult<IEnumerable<TicketDTO>> UseMultipleTickets(int[] ticketIds)
+        public ActionResult<IEnumerable<TicketDTO>> UseMultipleTickets([FromBody] UseMultipleTicketDTO dto)
         {
-            var usedTickets = _ticketService.UseMultipleTickets(User.Claims, ticketIds);
+            var usedTickets = _ticketService.UseMultipleTickets(User.Claims, dto.ticketIds);
             return Ok(_mapperService.Map(usedTickets));
         }
     }

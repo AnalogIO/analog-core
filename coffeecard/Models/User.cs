@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
-namespace Coffeecard.Models {
-    public class User {
+namespace Coffeecard.Models
+{
+    public class User
+    {
         public int Id { get; set; }
         public string Email { get; set; }
         public string Name { get; set; }
@@ -23,7 +25,9 @@ namespace Coffeecard.Models {
         [ForeignKey("Programme_Id")]
         public virtual Programme Programme { get; set; }
 
-        public User() {
+        public User()
+        {
+            Statistics = new List<Statistic>();
             Purchases = new List<Purchase>();
             Tickets = new List<Ticket>();
             Tokens = new List<Token>();
@@ -52,7 +56,7 @@ namespace Coffeecard.Models {
             var totalStatistics = Statistics.FirstOrDefault(x => x.Preset == StatisticPreset.Total);
             if (totalStatistics == null)
             {
-                totalStatistics = new Statistic { ExpiryDate = DateTime.UtcNow.AddYears(100), Preset = StatisticPreset.Total, SwipeCount = Tickets.Count(t => t.IsUsed)-increaseBy, LastSwipe = utcNow };
+                totalStatistics = new Statistic { ExpiryDate = DateTime.UtcNow.AddYears(100), Preset = StatisticPreset.Total, SwipeCount = Tickets.Count(t => t.IsUsed) - increaseBy, LastSwipe = utcNow };
                 Statistics.Add(totalStatistics);
             }
             totalStatistics.SwipeCount += increaseBy;
@@ -65,7 +69,7 @@ namespace Coffeecard.Models {
 
             if (semesterStatistics == null)
             {
-                semesterStatistics = new Statistic { ExpiryDate = semesterEnd, Preset = StatisticPreset.Semester, SwipeCount = Tickets.Count(t => t.IsUsed && t.DateUsed > semesterStart && t.DateUsed < semesterEnd)-increaseBy, LastSwipe = utcNow };
+                semesterStatistics = new Statistic { ExpiryDate = semesterEnd, Preset = StatisticPreset.Semester, SwipeCount = Tickets.Count(t => t.IsUsed && t.DateUsed > semesterStart && t.DateUsed < semesterEnd) - increaseBy, LastSwipe = utcNow };
                 Statistics.Add(semesterStatistics);
             }
             else
