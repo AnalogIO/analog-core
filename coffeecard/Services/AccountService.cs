@@ -192,24 +192,4 @@ public class AccountService : IAccountService
         user.Experience += exp;
         _context.SaveChanges();
     }
-
-    public (int Total, int Semester, int Month) GetLeaderboardPlacement(User user)
-    {
-        var leaderBoardPlacement = (Total: 0, Semester: 0, Month: 0);
-
-        var totalUsers = _context.Statistics.Include(x => x.User).Where(s => s.Preset == StatisticPreset.Total).OrderByDescending(x => x.SwipeCount).ThenBy(x => x.LastSwipe).ToList();
-        var totalSwipeRank = totalUsers.FindIndex(x => x.User.Id == user.Id) + 1;
-
-        var semesterUsers = _context.Statistics.Include(x => x.User).Where(s => s.Preset == StatisticPreset.Semester && Statistic.ValidateSemesterExpired(s.LastSwipe)).OrderByDescending(x => x.SwipeCount).ThenBy(x => x.LastSwipe).ToList();
-        var semesterSwipeRank = semesterUsers.FindIndex(x => x.User.Id == user.Id) + 1;
-
-        var monthUsers = _context.Statistics.Include(x => x.User).Where(s => s.Preset == StatisticPreset.Monthly && Statistic.ValidateMonthlyExpired(s.LastSwipe)).OrderByDescending(x => x.SwipeCount).ThenBy(x => x.LastSwipe).ToList();
-        var monthSwipeRank = monthUsers.FindIndex(x => x.User.Id == user.Id) + 1;
-
-        leaderBoardPlacement.Total = totalSwipeRank;
-        leaderBoardPlacement.Semester = semesterSwipeRank;
-        leaderBoardPlacement.Month = monthSwipeRank;
-
-        return leaderBoardPlacement;
-    }
 }

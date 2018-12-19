@@ -14,11 +14,13 @@ namespace coffeecard.Controllers
     public class AccountController : ControllerBase
     {
         IAccountService _accountService;
+        ILeaderboardService _leaderboardService;
         IMapperService _mapperService;
 
-        public AccountController(IAccountService accountService, IMapperService mapperService)
+        public AccountController(IAccountService accountService, ILeaderboardService leaderboardService, IMapperService mapperService)
         {
             _accountService = accountService;
+            _leaderboardService = leaderboardService;
             _mapperService = mapperService;
         }
 
@@ -61,7 +63,7 @@ namespace coffeecard.Controllers
         {
             var user = _accountService.GetAccountByClaims(User.Claims);
             var userDTO = _mapperService.Map(user);
-            var leaderBoardPlacement = _accountService.GetLeaderboardPlacement(user);
+            var leaderBoardPlacement = _leaderboardService.GetLeaderboardPlacement(user);
             userDTO.RankAllTime = leaderBoardPlacement.Total;
             userDTO.RankSemester = leaderBoardPlacement.Semester;
             userDTO.RankMonth = leaderBoardPlacement.Month;

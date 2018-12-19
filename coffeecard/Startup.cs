@@ -55,6 +55,7 @@ namespace Coffeecard
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ITicketService, TicketService>();
             services.AddScoped<IMobilePayService, MobilePayService>();
+            services.AddScoped<ILeaderboardService, LeaderboardService>();
 
             services.AddMvc(options =>
             {

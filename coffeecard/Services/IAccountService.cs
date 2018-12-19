@@ -12,5 +12,4 @@ public interface IAccountService
     bool VerifyRegistration(string token);
     User UpdateAccount(IEnumerable<Claim> claims, UpdateUserDTO userDto);
     void UpdateExperience(int userId, int exp);
-    (int Total, int Semester, int Month) GetLeaderboardPlacement(User user);
 }
