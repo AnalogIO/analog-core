@@ -8,18 +8,22 @@ using System.Collections.Generic;
 using coffeecard.Models.DataTransferObjects.User;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using System.Text.RegularExpressions;
+using Microsoft.Extensions.Configuration;
 
 public class AccountService : IAccountService
 {
     private readonly CoffeecardContext _context;
+    private readonly IConfiguration _configuration;
     private readonly ITokenService _tokenService;
     private readonly IEmailService _emailService;
     private readonly IHashService _hashService;
     private readonly IPurchaseService _purchaseService;
 
-    public AccountService(CoffeecardContext context, ITokenService tokenService, IEmailService emailService, IHashService hashService, IPurchaseService purchaseService)
+    public AccountService(CoffeecardContext context, IConfiguration configuration, ITokenService tokenService, IEmailService emailService, IHashService hashService, IPurchaseService purchaseService)
     {
         _context = context;
+        _configuration = configuration;
         _tokenService = tokenService;
         _emailService = emailService;
         _hashService = hashService;
@@ -39,6 +43,9 @@ public class AccountService : IAccountService
     public string Login(string username, string password, string version)
     {
         Log.Information($"Logging in user with username: {username} version: {version}");
+
+        ValidateVersion(version);
+
         var user = _context.Users.FirstOrDefault(x => x.Email == username);
         if (user != null)
         {
@@ -140,6 +147,31 @@ public class AccountService : IAccountService
     private string EscapeName(string name)
     {
         return name.Trim(new Char[] { '<', '>', '{', '}' });
+    }
+
+    private bool ValidateVersion(string version)
+    {
+        var regex = new Regex(@"(\d+.)(\d+.)(\d+)");
+        var match = regex.Match(version);
+        if (match.Success && match.Groups.Count == 4)
+        {
+            var major = int.Parse(match.Groups[1].Value.TrimEnd('.'));
+            var minor = int.Parse(match.Groups[2].Value.TrimEnd('.'));
+            var patch = int.Parse(match.Groups[3].Value);
+
+            var versionSum = major + minor;
+
+            var requiredMatch = regex.Match(_configuration["MinAppVersion"]);
+            var requiredMajor = int.Parse(requiredMatch.Groups[1].Value.TrimEnd('.'));
+            var requiredMinor = int.Parse(requiredMatch.Groups[2].Value.TrimEnd('.'));
+
+            if (requiredMajor <= major && requiredMinor <= minor) return true;
+        }
+        else
+        {
+            throw new ApiException($"Malformed version number", 400);
+        }
+        throw new ApiException($"Your App is out of date - please update!", 409);
     }
 
     public User GetAccountByClaims(IEnumerable<Claim> claims)
