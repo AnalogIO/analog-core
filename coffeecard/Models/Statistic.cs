@@ -29,7 +29,7 @@ namespace Coffeecard.Models
                 var jan1 = new DateTime(currentTime.Year, 1, 1);
                 var dayOffset = DayOfWeek.Monday - jan1.DayOfWeek;
                 var startDate = 29 - dayOffset;
-               
+
                 return new DateTime(currentTime.Year, 1, startDate);
             }
             else
@@ -48,6 +48,20 @@ namespace Coffeecard.Models
             {
                 return new DateTime(currentTime.Year, 12, 23);
             }
+        }
+
+        public static bool ValidateMonthlyExpired(DateTime lastswipe)
+        {
+            var now = DateTime.Now;
+            if (lastswipe.Month != now.Month) return false;
+            return true;
+        }
+
+        public static bool ValidateSemesterExpired(DateTime lastswipe)
+        {
+            var now = DateTime.Now;
+            if (lastswipe < GetSemesterStart(now)) return false;
+            return true;
         }
 
         public static DateTime[] PresetToDateArr(string preset)

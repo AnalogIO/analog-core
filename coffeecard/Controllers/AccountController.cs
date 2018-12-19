@@ -46,7 +46,7 @@ namespace coffeecard.Controllers
         public ActionResult<TokenDTO> Login(LoginDTO loginDto)
         {
             var token = _accountService.Login(loginDto.Email, loginDto.Password, loginDto.Version);
-            if(token == null) return Unauthorized();
+            if (token == null) return Unauthorized();
             return Ok(new TokenDTO { Token = token });
         }
 
@@ -62,9 +62,9 @@ namespace coffeecard.Controllers
             var user = _accountService.GetAccountByClaims(User.Claims);
             var userDTO = _mapperService.Map(user);
             var leaderBoardPlacement = _accountService.GetLeaderboardPlacement(user);
-            userDTO.RankAllTime = leaderBoardPlacement[0];
-            userDTO.RankSemester = leaderBoardPlacement[1];
-            userDTO.RankMonth = leaderBoardPlacement[2];
+            userDTO.RankAllTime = leaderBoardPlacement.Total;
+            userDTO.RankSemester = leaderBoardPlacement.Semester;
+            userDTO.RankMonth = leaderBoardPlacement.Month;
             return Ok(userDTO);
         }
 
@@ -90,10 +90,11 @@ namespace coffeecard.Controllers
         {
             var verified = _accountService.VerifyRegistration(token);
             var content = string.Empty;
-            if(verified)
+            if (verified)
             {
                 content = $"The account has been verified! You can now login into the app :D";
-            } else
+            }
+            else
             {
                 content = $"The account could not be verified :-(";
             }
