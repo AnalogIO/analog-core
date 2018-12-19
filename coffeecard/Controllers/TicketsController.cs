@@ -38,7 +38,7 @@ namespace coffeecard.Controllers
         /// <summary>
         ///  Uses the tickets supplied via ticketIds in the body
         /// </summary>
-        [HttpPut("use")]
+        [HttpPost("use")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(ApiError), 400)]
         [ProducesResponseType(typeof(ApiError), 401)]
