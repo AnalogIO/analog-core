@@ -85,22 +85,23 @@ namespace coffeecard.Services
         public IEnumerable<Purchase> GetPurchases(IEnumerable<Claim> claims)
         {
             var userId = claims.FirstOrDefault(x => x.Type == Constants.UserId);
-            if(userId == null) throw new ApiException($"The token is invalid!", 401);
+            if (userId == null) throw new ApiException($"The token is invalid!", 401);
             var id = int.Parse(userId.Value);
             return _context.Purchases.Where(x => x.PurchasedBy.Id == id);
         }
 
-        public Purchase RedeemVoucher(string voucherCode, IEnumerable<Claim> claims) {
+        public Purchase RedeemVoucher(string voucherCode, IEnumerable<Claim> claims)
+        {
             var userId = claims.FirstOrDefault(x => x.Type == Constants.UserId);
-            if(userId == null) throw new ApiException($"The token is invalid!", 401);
+            if (userId == null) throw new ApiException($"The token is invalid!", 401);
             var id = int.Parse(userId.Value);
 
             var user = _context.Users.FirstOrDefault(x => x.Id == id);
-            if(user == null) throw new ApiException($"The user could not be found");
+            if (user == null) throw new ApiException($"The user could not be found");
 
-            var voucher = _context.Vouchers.FirstOrDefault(x => x.Code.Equals(voucherCode));
-            if(voucher == null) throw new ApiException($"Voucher '{voucherCode}' does not exist!");
-            if(voucher.User != null) throw new ApiException($"Voucher has already been redeemed!");
+            var voucher = _context.Vouchers.Include(x => x.Product).FirstOrDefault(x => x.Code.Equals(voucherCode));
+            if (voucher == null) throw new ApiException($"Voucher '{voucherCode}' does not exist!");
+            if (voucher.User != null) throw new ApiException($"Voucher has already been redeemed!");
 
             var purchase = new Purchase
             {
@@ -114,7 +115,7 @@ namespace coffeecard.Services
             };
 
             user.Purchases.Add(purchase);
-            
+
             DeliverProductToUser(purchase, user, $"VOUCHER: {voucher.Id}");
 
             voucher.DateUsed = DateTime.UtcNow;
@@ -130,16 +131,16 @@ namespace coffeecard.Services
         public Purchase DeliverProduct(CompletePurchaseDTO completeDto, IEnumerable<Claim> claims)
         {
             var userId = claims.FirstOrDefault(x => x.Type == Constants.UserId);
-            if(userId == null) throw new ApiException($"The token is invalid!", 401);
+            if (userId == null) throw new ApiException($"The token is invalid!", 401);
             var id = int.Parse(userId.Value);
 
             var user = _context.Users.Include(x => x.Purchases).FirstOrDefault(x => x.Id == id);
-            if(user == null) throw new ApiException($"The user could not be found");
+            if (user == null) throw new ApiException($"The user could not be found");
 
             var purchase = user.Purchases.FirstOrDefault(x => x.OrderId == completeDto.OrderId);
             if (purchase == null) throw new ApiException($"Purchase could not be found");
 
-            if(purchase.PurchasedBy.Id != user.Id) throw new ApiException($"You cannot complete a purchase that you did not initiate!", 401);
+            if (purchase.PurchasedBy.Id != user.Id) throw new ApiException($"You cannot complete a purchase that you did not initiate!", 401);
 
             return DeliverProductToUser(purchase, user, completeDto.TransactionId);
         }
@@ -157,7 +158,7 @@ namespace coffeecard.Services
 
             purchase.TransactionId = transactionId;
             purchase.Completed = true;
-            
+
             _context.Users.Attach(user);
             _context.Entry(user).State = EntityState.Modified;
             _context.SaveChanges();
@@ -166,16 +167,18 @@ namespace coffeecard.Services
             return purchase;
         }
 
-        public string InitiatePurchase(int productId, IEnumerable<Claim> claims) {
+        public string InitiatePurchase(int productId, IEnumerable<Claim> claims)
+        {
             Log.Information($"Initiating new purchase for productId: {productId}");
             var product = _context.Products.FirstOrDefault(x => x.Id == productId);
             if (product == null) throw new ApiException($"Product with id {productId} could not be found!", 400);
 
             var orderId = "";
 
-            while(orderId == "") {
+            while (orderId == "")
+            {
                 var guid = Guid.NewGuid();
-                if(!_context.Purchases.Any(x => x.OrderId.Equals(guid))) orderId = guid.ToString();
+                if (!_context.Purchases.Any(x => x.OrderId.Equals(guid))) orderId = guid.ToString();
             }
 
             var purchase = new Purchase()
@@ -188,11 +191,11 @@ namespace coffeecard.Services
             };
 
             var userId = claims.FirstOrDefault(x => x.Type == Constants.UserId);
-            if(userId == null) throw new ApiException($"The token is invalid!", 401);
+            if (userId == null) throw new ApiException($"The token is invalid!", 401);
             var id = int.Parse(userId.Value);
 
             var user = _context.Users.FirstOrDefault(x => x.Id == id);
-            if(user == null) throw new ApiException($"The user could not be found");
+            if (user == null) throw new ApiException($"The user could not be found");
 
             user.Purchases.Add(purchase);
 
@@ -205,18 +208,19 @@ namespace coffeecard.Services
             return orderId;
         }
 
-        public async Task<Purchase> CompletePurchase(CompletePurchaseDTO dto, IEnumerable<Claim> claims) {
+        public async Task<Purchase> CompletePurchase(CompletePurchaseDTO dto, IEnumerable<Claim> claims)
+        {
             Log.Information($"Trying to complete purchase with orderid: {dto.OrderId} and transactionId: {dto.TransactionId}");
             var valid = true;
             if (!_configuration["MPMerchantID"].Equals("APPDK0000000000"))
             {
                 valid = await ValidateTransaction(dto);
             }
-            
-            if(!valid) throw new ApiException($"The purchase is invalid", 400);
+
+            if (!valid) throw new ApiException($"The purchase is invalid", 400);
 
             var purchase = DeliverProduct(dto, claims);
-            
+
             Log.Information($"Completed purchase with success! OrderId: {dto.OrderId} transactionId: {dto.TransactionId}");
             return purchase;
         }
@@ -224,12 +228,13 @@ namespace coffeecard.Services
         private async Task<bool> ValidateTransaction(CompletePurchaseDTO payment)
         {
             var purchase = _context.Purchases.FirstOrDefault(x => x.OrderId == payment.OrderId);
-            if(purchase == null) throw new ApiException($"The purchase with orderid {payment.OrderId} does not exist", 400);
-            if(purchase.Completed) throw new ApiException($"The given purchase has already been completed", 400);
+            if (purchase == null) throw new ApiException($"The purchase with orderid {payment.OrderId} does not exist", 400);
+            if (purchase.Completed) throw new ApiException($"The given purchase has already been completed", 400);
 
             var response = await _mobilePayService.CheckOrderIdAgainstMPBackendAsync(payment.OrderId);
 
-            if(!response.IsSuccessStatusCode) {
+            if (!response.IsSuccessStatusCode)
+            {
                 Log.Warning($"Validating transaction at mobilepay failed with statuscode: {response.StatusCode}");
                 throw new ApiException($"The purchase is not valid", 400);
             }
@@ -240,7 +245,7 @@ namespace coffeecard.Services
                 Log.Information($"Validting transction with orderid: {payment.OrderId} and transactionId: {payment.TransactionId} succeeded!");
                 return true;
             }
-            
+
             Log.Warning($"Could not validate transction with orderid: {payment.OrderId} and transctionId: {payment.TransactionId}");
             return false;
         }
@@ -263,7 +268,7 @@ namespace coffeecard.Services
                             var transactionId = status.TransactionId;
                             DeliverProductToUser(purchase, user, transactionId);
                         }
-                        else if(status.LatestPaymentStatus.Equals("Rejected"))
+                        else if (status.LatestPaymentStatus.Equals("Rejected"))
                         {
                             _context.Purchases.Remove(purchase);
                         }

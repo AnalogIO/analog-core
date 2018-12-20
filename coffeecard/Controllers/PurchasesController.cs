@@ -36,5 +36,17 @@ namespace coffeecard.Controllers
             var purchases = _purchaseService.GetPurchases(User.Claims);
             return _mapperService.Map(purchases).ToList();
         }
+
+        /// <summary>
+        ///  Redeems the voucher supplied as parameter in the path
+        /// </summary>
+        [HttpPost("redeemvoucher")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(ApiError), 401)]
+        public ActionResult<PurchaseDTO> RedeemVoucher(string voucherCode)
+        {
+            var purchase = _purchaseService.RedeemVoucher(voucherCode, User.Claims);
+            return _mapperService.Map(purchase);
+        }
     }
 }
