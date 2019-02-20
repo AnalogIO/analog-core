@@ -287,5 +287,10 @@ namespace coffeecard.Services
             var response = await _mobilePayService.CheckOrderIdAgainstMPBackendAsync(orderId);
             return response;
         }
+
+        public Purchase IssuePurchase(IssuePurchaseDTO issuePurchase)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -26,6 +26,6 @@ namespace coffeecard.Services
         void Update();
         bool DeleteRange(List<Purchase> purchases);
         void Dispose();
-
+        Purchase IssuePurchase(IssuePurchaseDTO issuePurchase);
     }
 }

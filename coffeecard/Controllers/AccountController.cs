@@ -84,6 +84,37 @@ namespace coffeecard.Controllers
         }
 
         /// <summary>
+        /// Returns the requested user id
+        /// </summary>
+        [HttpGet]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(ApiError), 400)]
+        public ActionResult<UserDTO> LookUpUserId(int userId)
+        {
+            var user = _accountService.GetUserById(userId);
+            return Ok(_mapperService.Map(user));
+        }
+
+        /// <summary>
+        /// Sends email to user if they forgot password
+        /// </summary>
+        /// <param name="emailDTO"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(ApiError), 400)]
+        public IActionResult ForgotPassword(EmailDTO emailDTO)
+        {
+            _accountService.ForgotPassword(emailDTO.Email);
+
+            return new ContentResult()
+            {
+                Content = "Please check your email",
+                ContentType = "text/html",
+            };
+        }
+
+        /// <summary>
         ///  Verifies the user from a token delivered via email
         /// </summary>
         [AllowAnonymous]

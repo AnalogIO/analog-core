@@ -48,5 +48,10 @@ namespace coffeecard.Controllers
             var purchase = _purchaseService.RedeemVoucher(voucherCode, User.Claims);
             return _mapperService.Map(purchase);
         }
+
+        public ActionResult<PurchaseDTO> IssuePurchase(IssueProductDTO issueProduct)
+        {
+            
+        }
     }
 }

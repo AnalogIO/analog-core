@@ -192,4 +192,23 @@ public class AccountService : IAccountService
         user.Experience += exp;
         _context.SaveChanges();
     }
+
+    public User GetUserById(int userId)
+    {
+        var user = _context.Users.FirstOrDefault(x => x.Id == userId);
+        if (user == null) throw new ApiException($"Could not find user with id {userId}", 400);
+        return user;
+    }
+
+    public void ForgotPassword(string email)
+    {
+        var user = GetAccountByEmail(email);
+        if (user == null) throw new ApiException($"The user could not be found {email}", 400);
+
+        var claims = new Claim[] { new Claim(ClaimTypes.Email, user.Email), new Claim(ClaimTypes.Name, user.Name), new Claim(ClaimTypes.Role, "verification_token") };
+        var verificationToken = _tokenService.GenerateToken(claims);
+        _emailService.SendVerificationEmailForLostPw(user, verificationToken);
+
+        return true;
+    }
 }
