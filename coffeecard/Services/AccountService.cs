@@ -208,7 +208,5 @@ public class AccountService : IAccountService
         var claims = new Claim[] { new Claim(ClaimTypes.Email, user.Email), new Claim(ClaimTypes.Name, user.Name), new Claim(ClaimTypes.Role, "verification_token") };
         var verificationToken = _tokenService.GenerateToken(claims);
         _emailService.SendVerificationEmailForLostPw(user, verificationToken);
-
-        return true;
     }
 }

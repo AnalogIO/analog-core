@@ -1,0 +1,30 @@
+2019-03-07 20:55:49.378 +01:00 [INF] Starting web host
+2019-03-07 20:56:11.892 +01:00 [ERR] An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: The method 'Get' on path '/api/v1/Account' is registered multiple times.
+   at NSwag.AspNetCore.Middlewares.AspNetCoreToSwaggerMiddleware.GenerateSwaggerAsync(HttpContext context)
+   at NSwag.AspNetCore.Middlewares.AspNetCoreToSwaggerMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware.Invoke(HttpContext context)
+2019-03-07 21:01:01.584 +01:00 [INF] Starting web host
+2019-03-07 21:01:11.174 +01:00 [ERR] An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: The method 'Get' on path '/api/v1/Account' is registered multiple times.
+   at NSwag.AspNetCore.Middlewares.AspNetCoreToSwaggerMiddleware.GenerateSwaggerAsync(HttpContext context)
+   at NSwag.AspNetCore.Middlewares.AspNetCoreToSwaggerMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware.Invoke(HttpContext context)
+2019-03-07 21:03:57.647 +01:00 [INF] Starting web host
+2019-03-07 21:04:06.664 +01:00 [ERR] An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: The method 'Get' on path '/api/v1/Account' is registered multiple times.
+   at NSwag.AspNetCore.Middlewares.AspNetCoreToSwaggerMiddleware.GenerateSwaggerAsync(HttpContext context)
+   at NSwag.AspNetCore.Middlewares.AspNetCoreToSwaggerMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware.Invoke(HttpContext context)
+2019-03-07 21:07:14.520 +01:00 [INF] Starting web host
+2019-03-07 21:07:19.395 +01:00 [ERR] An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: The method 'Get' on path '/api/v1/Account' is registered multiple times.
+   at NSwag.AspNetCore.Middlewares.AspNetCoreToSwaggerMiddleware.GenerateSwaggerAsync(HttpContext context)
+   at NSwag.AspNetCore.Middlewares.AspNetCoreToSwaggerMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware.Invoke(HttpContext context)
+2019-03-07 21:08:16.038 +01:00 [ERR] An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: The method 'Get' on path '/api/v1/Account' is registered multiple times.
+   at NSwag.AspNetCore.Middlewares.AspNetCoreToSwaggerMiddleware.GenerateSwaggerAsync(HttpContext context)
+   at NSwag.AspNetCore.Middlewares.AspNetCoreToSwaggerMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware.Invoke(HttpContext context)
+2019-03-07 21:10:14.713 +01:00 [INF] Starting web host

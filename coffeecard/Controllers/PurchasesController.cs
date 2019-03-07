@@ -49,9 +49,17 @@ namespace coffeecard.Controllers
             return _mapperService.Map(purchase);
         }
 
+        /// <summary>
+        /// Issue purchase used by the ipad in the cafe
+        /// </summary>
+        /// <param name="issueProduct"></param>
+        /// <returns></returns>
+        [HttpPost("issuepurchase")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(ApiError), 401)]
         public ActionResult<PurchaseDTO> IssuePurchase(IssueProductDTO issueProduct)
         {
-            
+            return NotFound();
         }
     }
 }

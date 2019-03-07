@@ -86,7 +86,7 @@ namespace coffeecard.Controllers
         /// <summary>
         /// Returns the requested user id
         /// </summary>
-        [HttpGet]
+        [HttpGet("lookupuserid")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(ApiError), 400)]
         public ActionResult<UserDTO> LookUpUserId(int userId)
