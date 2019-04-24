@@ -32,17 +32,26 @@ namespace coffeecard.Services
             return _context.Tickets.Include(p => p.Purchase).Where(x => x.Owner.Id == id && x.IsUsed == used);
         }
 
-        public Ticket UseTicket(IEnumerable<Claim> claims, int ticketId)
+        private int GetTicketIdFromProduct(int productId, int userId)
         {
-            Log.Information($"Using ticket with id: {ticketId}");
+            return _context.Tickets.Include(p => p.Purchase)
+                .Where(x => x.Owner.Id == userId && x.ProductId == productId && x.IsUsed == false)
+                .FirstOrDefault().Id;
+        }
+
+        public Ticket UseTicket(IEnumerable<Claim> claims, int productId)
+        {
             var userIdClaim = claims.FirstOrDefault(x => x.Type == Constants.UserId);
             if (userIdClaim == null) throw new ApiException($"The token is invalid!", 401);
             var userId = int.Parse(userIdClaim.Value);
 
+            Log.Information($"Using product with id, {productId}");
+            int ticketId = GetTicketIdFromProduct(productId, userId);
+
+            Log.Information($"Using ticket with id: {ticketId}");
             var usedTicket = ValidateTicket(ticketId, userId);
 
             UpdateTicket(usedTicket, userId);
-
             UpdateUserRank(userId, 1);
 
             return usedTicket;

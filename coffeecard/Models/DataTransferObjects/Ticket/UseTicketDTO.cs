@@ -2,6 +2,6 @@
 {
     public class UseTicketDTO
     {
-        public int TicketId { get; set; }
+        public int ProductId { get; set; }
     }
 }

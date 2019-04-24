@@ -38,7 +38,7 @@ namespace coffeecard.Controllers
         /// <summary>
         ///  Uses the tickets supplied via ticketIds in the body
         /// </summary>
-        [HttpPost("use")]
+        [HttpPost("useMultible")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(ApiError), 400)]
         [ProducesResponseType(typeof(ApiError), 401)]
@@ -46,6 +46,22 @@ namespace coffeecard.Controllers
         {
             var usedTickets = _ticketService.UseMultipleTickets(User.Claims, dto.ticketIds);
             return Ok(_mapperService.Map(usedTickets));
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns
+        [HttpPost("use")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(ApiError), 400)]
+        [ProducesResponseType(typeof(ApiError), 401)]
+        public ActionResult<TicketDTO> Use(UseTicketDTO dto)
+        {
+            var usedTicket = _ticketService.UseTicket(User.Claims, dto.ProductId);
+            return Ok(_mapperService.Map(usedTicket));
         }
     }
 }

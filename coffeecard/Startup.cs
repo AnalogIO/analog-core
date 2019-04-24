@@ -3,12 +3,9 @@ using System.Threading.Tasks;
 using Coffeecard.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -16,7 +13,6 @@ using System.Text;
 using coffeecard.Services;
 using coffeecard.Helpers;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Versioning;
 using NSwag.AspNetCore;
 using NJsonSchema;
 
@@ -63,7 +59,6 @@ namespace Coffeecard
 
             services.AddApiVersioning();
 
-            //services.AddSwagger();
             services.AddSwagger();
 
 
@@ -90,6 +85,7 @@ namespace Coffeecard
                         {
                             context.Response.Headers.Add("Token-Expired", "true");
                         }
+
                         return Task.CompletedTask;
                     }
                 };
