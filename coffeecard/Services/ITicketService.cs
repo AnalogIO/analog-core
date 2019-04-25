@@ -1,5 +1,4 @@
-﻿using coffeecard.Models.DataTransferObjects.Ticket;
-using Coffeecard.Models;
+﻿using Coffeecard.Models;
 using System.Collections.Generic;
 using System.Security.Claims;
 
@@ -10,5 +9,6 @@ namespace coffeecard.Services
         IEnumerable<Ticket> getTickets(IEnumerable<Claim> claims, bool used);
         Ticket UseTicket(IEnumerable<Claim> claims, int productId);
         IEnumerable<Ticket> UseMultipleTickets(IEnumerable<Claim> claims, int[] ticketIds);
+        IEnumerable<CoffeCard> GetCoffeCards(IEnumerable<Claim> claims);
     }
 }

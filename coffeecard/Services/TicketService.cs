@@ -32,7 +32,7 @@ namespace coffeecard.Services
             return _context.Tickets.Include(p => p.Purchase).Where(x => x.Owner.Id == id && x.IsUsed == used);
         }
 
-        private int GetTicketIdFromProduct(int productId, int userId)
+        private int GetFirstTicketIdFromProduct(int productId, int userId)
         {
             return _context.Tickets.Include(p => p.Purchase)
                 .Where(x => x.Owner.Id == userId && x.ProductId == productId && x.IsUsed == false)
@@ -46,7 +46,7 @@ namespace coffeecard.Services
             var userId = int.Parse(userIdClaim.Value);
 
             Log.Information($"Using product with id, {productId}");
-            int ticketId = GetTicketIdFromProduct(productId, userId);
+            int ticketId = GetFirstTicketIdFromProduct(productId, userId);
 
             Log.Information($"Using ticket with id: {ticketId}");
             var usedTicket = ValidateTicket(ticketId, userId);
@@ -96,6 +96,33 @@ namespace coffeecard.Services
             }
 
             return usedTickets;
+        }
+
+        public IEnumerable<CoffeCard> GetCoffeCards(IEnumerable<Claim> claims)
+        {
+            var userIdClaim = claims.FirstOrDefault(x => x.Type == Constants.UserId);
+            if (userIdClaim == null) throw new ApiException($"The token is invalid!", 401);
+            var userId = int.Parse(userIdClaim.Value);
+
+            return _context.Tickets
+                .Include(p => p.Purchase)
+                .Join(_context.Products,
+                ticket => ticket.ProductId,
+                product => product.Id,
+                (ticket, product) => new { Ticket = ticket, Product = product })
+                .Where(tp => tp.Ticket.Owner.Id == userId && tp.Ticket.IsUsed == false)
+                .GroupBy(
+                    tp => tp.Product,
+                    tp => tp.Ticket,
+                    (product, tp) =>
+                    new CoffeCard
+                    {
+                        ProductId = product.Id,
+                        Name = product.Name,
+                        Price = product.Price,
+                        Quantity = product.NumberOfTickets,
+                        TicketsLeft = tp.Count()
+                    });
         }
 
         private Ticket ValidateTicket(int ticketId, int userId)
