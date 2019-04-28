@@ -54,6 +54,8 @@ namespace coffeecard.Services
             UpdateTicket(usedTicket, userId);
             UpdateUserRank(userId, 1);
 
+            _context.SaveChanges();
+
             return usedTicket;
         }
 
@@ -104,7 +106,7 @@ namespace coffeecard.Services
             if (userIdClaim == null) throw new ApiException($"The token is invalid!", 401);
             var userId = int.Parse(userIdClaim.Value);
 
-            return _context.Tickets
+            var coffeCards = _context.Tickets
                 .Include(p => p.Purchase)
                 .Join(_context.Products,
                 ticket => ticket.ProductId,
@@ -122,7 +124,11 @@ namespace coffeecard.Services
                         Price = product.Price,
                         Quantity = product.NumberOfTickets,
                         TicketsLeft = tp.Count()
-                    });
+                    }).ToList();
+
+            var products = _context.Products.Select(p => new CoffeCard { ProductId = p.Id, Name = p.Name, Price = p.Price, Quantity = p.NumberOfTickets, TicketsLeft = 0});
+
+            return coffeCards.Union(products, new CoffeeCardComparer());
         }
 
         private Ticket ValidateTicket(int ticketId, int userId)
