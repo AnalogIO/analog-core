@@ -61,6 +61,10 @@ namespace Coffeecard
 
             services.AddSwagger();
 
+            services.AddMvc().AddJsonOptions(options =>
+            {
+                options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+            });
 
             services.AddAuthentication(options =>
             {
