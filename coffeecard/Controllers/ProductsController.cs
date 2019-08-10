@@ -3,6 +3,7 @@ using System.Linq;
 using coffeecard.Helpers;
 using coffeecard.Models.DataTransferObjects.Product;
 using coffeecard.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace coffeecard.Controllers
@@ -24,6 +25,7 @@ namespace coffeecard.Controllers
         /// <summary>
         ///  Returns a list of products
         /// </summary>
+        [AllowAnonymous]
         [HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(ApiError), 401)]

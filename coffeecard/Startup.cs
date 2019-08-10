@@ -15,6 +15,7 @@ using coffeecard.Helpers;
 using Microsoft.AspNetCore.Http;
 using NSwag.AspNetCore;
 using NJsonSchema;
+using Newtonsoft.Json;
 
 namespace Coffeecard
 {

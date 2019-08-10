@@ -6,4 +6,5 @@ public interface ITokenService
 {
     string GenerateToken(IEnumerable<Claim> claims);
     JwtSecurityToken ReadToken(string token);
+    bool ValidateToken(JwtSecurityToken token);
 }

@@ -14,4 +14,5 @@ public interface IAccountService
     User UpdateAccount(IEnumerable<Claim> claims, UpdateUserDTO userDto);
     void UpdateExperience(int userId, int exp);
     void ForgotPassword(string email);
+    bool RecoverUser(string token);
 }

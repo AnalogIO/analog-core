@@ -1,4 +1,5 @@
-﻿using coffeecard.Helpers;
+﻿using coffeecard.Controllers;
+using coffeecard.Helpers;
 using coffeecard.Models.DataTransferObjects.MobilePay;
 using coffeecard.Models.DataTransferObjects.Purchase;
 using Coffeecard.Models;
@@ -87,7 +88,7 @@ namespace coffeecard.Services
             var userId = claims.FirstOrDefault(x => x.Type == Constants.UserId);
             if (userId == null) throw new ApiException($"The token is invalid!", 401);
             var id = int.Parse(userId.Value);
-            return _context.Purchases.Where(x => x.PurchasedBy.Id == id);
+            return _context.Purchases.Where(x => x.PurchasedBy.Id == id && x.Completed == true);
         }
 
         public Purchase RedeemVoucher(string voucherCode, IEnumerable<Claim> claims)
@@ -288,9 +289,39 @@ namespace coffeecard.Services
             return response;
         }
 
-        public Purchase IssuePurchase(IssuePurchaseDTO issuePurchase)
+        public Purchase IssueProduct(IssueProductDTO issueProduct)
         {
-            throw new NotImplementedException();
+            Log.Information($"Issuing product {issueProduct.ProductId} for user {issueProduct.UserId} with {issueProduct.IssuedBy} issuer id");
+            //Check if the user exists
+            var user = _context.Users.FirstOrDefault(x => x.Id == issueProduct.UserId);
+            if (user == null) throw new ApiException("Invalid user id", 400);
+            var product = _context.Products.FirstOrDefault(x => x.Id == issueProduct.ProductId);
+            if (product == null) throw new ApiException("Invalid product ud", 400);
+
+            Purchase purchase = new Purchase
+            {
+                Completed = true,
+                NumberOfTickets = product.NumberOfTickets,
+                OrderId = "Analog",
+                Price = product.Price,
+                ProductId = issueProduct.ProductId,
+                ProductName = product.Name,
+                DateCreated = DateTime.UtcNow,
+                PurchasedBy = user,
+                TransactionId = issueProduct.IssuedBy
+            };
+
+            for (var i = 0; i < product.NumberOfTickets; i++)
+            {
+                var ticket = new Ticket() { ProductId = product.Id, Purchase = purchase };
+                user.Tickets.Add(ticket);
+            }
+
+            user.Purchases.Add(purchase);
+
+            _context.Update(user);
+
+            return purchase;
         }
     }
 }

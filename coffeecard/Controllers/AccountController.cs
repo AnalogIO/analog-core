@@ -2,8 +2,12 @@ using coffeecard.Helpers;
 using coffeecard.Models.DataTransferObjects.User;
 using coffeecard.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Serilog;
+using MimeKit;
+using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace coffeecard.Controllers
 {
@@ -16,12 +20,14 @@ namespace coffeecard.Controllers
         IAccountService _accountService;
         ILeaderboardService _leaderboardService;
         IMapperService _mapperService;
+        IHostingEnvironment _env;
 
-        public AccountController(IAccountService accountService, ILeaderboardService leaderboardService, IMapperService mapperService)
+        public AccountController(IAccountService accountService, ILeaderboardService leaderboardService, IMapperService mapperService, IHostingEnvironment env)
         {
             _accountService = accountService;
             _leaderboardService = leaderboardService;
             _mapperService = mapperService;
+            _env = env;
         }
 
         /// <summary>
@@ -100,18 +106,15 @@ namespace coffeecard.Controllers
         /// </summary>
         /// <param name="emailDTO"></param>
         /// <returns></returns>
-        [HttpPost]
+        [AllowAnonymous]
+        [HttpPost("forgotpassword")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(ApiError), 400)]
         public IActionResult ForgotPassword(EmailDTO emailDTO)
         {
             _accountService.ForgotPassword(emailDTO.Email);
 
-            return new ContentResult()
-            {
-                Content = "Please check your email",
-                ContentType = "text/html",
-            };
+            return Ok("{ \"message\":\"We have send you a confirmation email\"}");
         }
 
         /// <summary>
@@ -137,6 +140,38 @@ namespace coffeecard.Controllers
                 Content = content,
                 ContentType = "text/html",
             };
+        }
+
+        [AllowAnonymous]
+        [HttpGet("recover")]
+        public HttpResponseMessage Recover(string token)
+        {
+            var response = new HttpResponseMessage();
+
+            if (_accountService.RecoverUser(token))
+            {
+                var pathToTemplate = _env.WebRootPath
+                            + Path.DirectorySeparatorChar.ToString()
+                            + "Templates"
+                            + Path.DirectorySeparatorChar.ToString()
+                            + "EmailTemplate"
+                            + Path.DirectorySeparatorChar.ToString()
+                            + "account_recover_success.html";
+
+                var builder = new BodyBuilder();
+
+                using (StreamReader SourceReader = System.IO.File.OpenText(pathToTemplate))
+                {
+                    builder.HtmlBody = SourceReader.ReadToEnd();
+                }
+                response.Content = new StringContent(builder.ToString());
+                response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/html");
+                return response;
+            }
+
+            response.Content = new StringContent("<html><body><h1>Token not found!</h1></body></html>");
+            response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/html");
+            return response;
         }
     }
 }

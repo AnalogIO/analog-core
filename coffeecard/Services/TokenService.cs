@@ -34,4 +34,22 @@ public class TokenService : ITokenService
     {
         return new JwtSecurityTokenHandler().ReadToken(token) as JwtSecurityToken;
     }
+
+    /// <summary>
+    /// Checks if the JWT token is valid (Based on its lifetime)
+    /// </summary>
+    /// <param name="token"></param>
+    /// <returns></returns>
+    public bool ValidateToken(JwtSecurityToken token)
+    {
+        try
+        {
+            if (token.ValidTo > DateTime.UtcNow) return true;
+            else return false;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
 }

@@ -10,6 +10,9 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Mvc;
+using System.Net.Http;
+using System.IdentityModel.Tokens.Jwt;
 
 public class AccountService : IAccountService
 {
@@ -46,7 +49,7 @@ public class AccountService : IAccountService
 
         ValidateVersion(version);
 
-        var user = _context.Users.FirstOrDefault(x => x.Email == username);
+        var user = _context.Users.FirstOrDefault(x => x.Email == username && x.IsVerified == true);
         if (user != null)
         {
             var hashedPw = _hashService.Hash(password + user.Salt);
@@ -61,18 +64,19 @@ public class AccountService : IAccountService
                 return token;
             }
         }
-        throw new ApiException("The username or password does not match", 401);
+        throw new ApiException("The username or password does not match. Please check that your email is verified", 401);
     }
 
     public User RegisterAccount(RegisterDTO registerDto)
     {
-        Log.Information($"Trying to register new user. Name: {registerDto.Name} Email: {registerDto.Email} ProgrammeId: {registerDto.ProgrammeId}");
+        Log.Information($"Trying to register new user. Name: {registerDto.Name} Email: {registerDto.Email}");
         if (_context.Users.Any(x => x.Email == registerDto.Email)) throw new ApiException($"The email {registerDto.Email} is already being used by another user", 400);
         var salt = _hashService.GenerateSalt();
         var hashedPassword = _hashService.Hash(registerDto.Password + salt);
 
-        var programme = _context.Programmes.FirstOrDefault(x => x.Id == registerDto.ProgrammeId);
-        if (programme == null) throw new ApiException($"No programme found with the id: {registerDto.ProgrammeId}", 400);
+        //This can potentially be implemented again, but is just sat to 1 for now
+        var programme = _context.Programmes.FirstOrDefault(x => x.Id == 1);
+        if (programme == null) throw new ApiException($"No programme found with the id: 0", 400);
 
         var user = new User { Name = EscapeName(registerDto.Name), Email = registerDto.Email, Password = hashedPassword, Salt = salt, Programme = programme };
 
@@ -185,6 +189,7 @@ public class AccountService : IAccountService
         return user;
     }
 
+
     public void UpdateExperience(int userId, int exp)
     {
         var user = _context.Users.FirstOrDefault(x => x.Id == userId);
@@ -208,5 +213,35 @@ public class AccountService : IAccountService
         var claims = new Claim[] { new Claim(ClaimTypes.Email, user.Email), new Claim(ClaimTypes.Name, user.Name), new Claim(ClaimTypes.Role, "verification_token") };
         var verificationToken = _tokenService.GenerateToken(claims);
         _emailService.SendVerificationEmailForLostPw(user, verificationToken);
+    }
+
+    public bool RecoverUser(string token)
+    {
+        var tokenObj = _tokenService.ReadToken(token);
+        if (tokenObj != null)
+        {
+            Log.Information("User tried to recover");
+            if (_tokenService.ValidateToken(tokenObj))
+            {
+                var user = GetAccountByClaims(tokenObj.Claims);
+                if (user != null)
+                {
+                    Log.Information($"{ user.Email} tried to recover user");
+                    Random rdm = new Random();
+                    var newPassword = rdm.Next(1000, 9999);
+                    var sha256Pw = _hashService.Hash(newPassword.ToString());
+                    var salt = _hashService.GenerateSalt();
+                    var hashedPassword = _hashService.Hash(sha256Pw + salt);
+                    user.Salt = salt;
+                    user.Password = hashedPassword;
+                    user.IsVerified = true;
+                    user.Tokens.Clear();
+                    _context.SaveChanges();
+                    _emailService.SendVerificationEmailForRecover(user, newPassword);
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

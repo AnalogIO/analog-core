@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
-using coffeecard.Controllers;
 using coffeecard.Helpers;
 using coffeecard.Models.DataTransferObjects.Ticket;
 using Coffeecard.Models;
@@ -39,6 +37,13 @@ namespace coffeecard.Services
                 .FirstOrDefault().Id;
         }
 
+        private IEnumerable<Ticket> GetMultipleTicketsFromProduct(int productId, int userId, int count)
+        {
+            return _context.Tickets.Include(p => p.Purchase)
+                .Where(x => x.Owner.Id == userId && x.ProductId == productId && x.IsUsed == false)
+                .Take(count);
+        }
+
         public Ticket UseTicket(IEnumerable<Claim> claims, int productId)
         {
             var userIdClaim = claims.FirstOrDefault(x => x.Type == Constants.UserId);
@@ -59,17 +64,39 @@ namespace coffeecard.Services
             return usedTicket;
         }
 
-        public IEnumerable<Ticket> UseMultipleTickets(IEnumerable<Claim> claims, int[] ticketIds)
+        public IEnumerable<Ticket> UseMultipleTickets(IEnumerable<Claim> claims, UseMultipleTicketDTO dto)
         {
-            Log.Information($"Using multiple tickets {string.Join(",", ticketIds)}");
+            //Throws exception if the list is empty
+            if(dto.ProductIds.Count() == 0) throw new ApiException($"The list is empty", 400);
+
+            Log.Information($"Using multiple tickets {string.Join(",", dto.ProductIds)}");
             var userIdClaim = claims.FirstOrDefault(x => x.Type == Constants.UserId);
             if (userIdClaim == null) throw new ApiException($"The token is invalid!", 401);
             var userId = int.Parse(userIdClaim.Value);
 
-            var usedTickets = new List<Ticket>();
-            foreach (int ticketId in ticketIds)
+            //Count number of each product
+            var groupedProductIds = new Dictionary<int, int>();
+            foreach(int productId in dto.ProductIds)
             {
-                var usedTicket = ValidateTicket(ticketId, userId);
+                if (!groupedProductIds.ContainsKey(productId))
+                {
+                    groupedProductIds.Add(productId, 0);
+                }
+                groupedProductIds[productId] += 1;
+            }
+
+            //First get the tickets from the products used
+            var tickets = new List<Ticket>();
+            foreach(KeyValuePair<int, int> keyValye in groupedProductIds) 
+            {
+                tickets.AddRange(GetMultipleTicketsFromProduct(keyValye.Key, userId, keyValye.Value));
+            }
+
+            //Use the tickets
+            var usedTickets = new List<Ticket>();
+            foreach (var ticket in tickets)
+            {
+                var usedTicket = ValidateTicket(ticket.Id, userId);
                 usedTickets.Add(usedTicket);
             }
 
@@ -84,7 +111,7 @@ namespace coffeecard.Services
             UpdateUserRank(userId, countTicketForRank);
 
             // only save changes if all tickets was successfully used!
-            if (usedTickets.Count == ticketIds.Count())
+            if (usedTickets.Count == tickets.Count())
             {
                 // update user experience
                 usedTickets.ForEach(x => _accountService.UpdateExperience(userId, GetExperienceByTicket(x.ProductId)));
@@ -93,7 +120,7 @@ namespace coffeecard.Services
             }
             else
             {
-                Log.Error($"All tickets could not be used :-( ticketIds: {string.Join(",", ticketIds)}");
+                Log.Error($"All tickets could not be used :-( ticketIds: {string.Join(",", tickets)}");
                 throw new ApiException($"Could not use the supplied tickets - try again later or contact AnalogIO!", 500);
             }
 

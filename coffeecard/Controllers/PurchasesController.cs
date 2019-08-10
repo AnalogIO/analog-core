@@ -5,6 +5,8 @@ using coffeecard.Models.DataTransferObjects.Purchase;
 using coffeecard.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Serilog;
 
 namespace coffeecard.Controllers
 {
@@ -14,15 +16,17 @@ namespace coffeecard.Controllers
     [ApiController]
     public class PurchasesController : ControllerBase
     {
+        IConfiguration _configuration;
         IPurchaseService _purchaseService;
         IMapperService _mapperService;
         IAccountService _accountService;
 
-        public PurchasesController(IPurchaseService purchaseService, IMapperService mapper, IAccountService accountService)
+        public PurchasesController(IPurchaseService purchaseService, IMapperService mapper, IAccountService accountService, IConfiguration configuration)
         {
             _purchaseService = purchaseService;
             _mapperService = mapper;
             _accountService = accountService;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -54,12 +58,17 @@ namespace coffeecard.Controllers
         /// </summary>
         /// <param name="issueProduct"></param>
         /// <returns></returns>
-        [HttpPost("issuepurchase")]
+        [AllowAnonymous]
+        [HttpPost("issueproduct")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(ApiError), 401)]
-        public ActionResult<PurchaseDTO> IssuePurchase(IssueProductDTO issueProduct)
+        public ActionResult<PurchaseDTO> IssueProduct(IssueProductDTO issueProduct)
         {
-            return NotFound();
+            var adminToken = Request.Headers.FirstOrDefault(x => x.Key == "admintoken").Value.FirstOrDefault();
+            Log.Information(adminToken);
+            if (adminToken != _configuration["AdminToken"]) throw new ApiException("AdminToken was invalid", 401);
+            var purchase = _purchaseService.IssueProduct(issueProduct);
+            return _mapperService.Map(purchase);
         }
     }
 }

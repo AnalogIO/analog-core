@@ -1,5 +1,5 @@
-﻿using coffeecard.Models.DataTransferObjects.MobilePay;
-using coffeecard.Models.DataTransferObjects.Purchase;
+﻿using coffeecard.Controllers;
+using coffeecard.Models.DataTransferObjects.MobilePay;
 using Coffeecard.Models;
 using System;
 using System.Collections.Generic;
@@ -26,6 +26,6 @@ namespace coffeecard.Services
         void Update();
         bool DeleteRange(List<Purchase> purchases);
         void Dispose();
-        Purchase IssuePurchase(IssuePurchaseDTO issuePurchase);
+        Purchase IssueProduct(IssueProductDTO issueProduct);
     }
 }

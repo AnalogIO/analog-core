@@ -135,6 +135,7 @@ namespace coffeecard.Services
 
         public void SendVerificationEmailForRecover(User user, int newPassword)
         {
+            Log.Information($"Sending email to {user.Email} ");
             var fullPath = _httpContextAccessor.HttpContext?.Request?.GetDisplayUrl();
             var baseUrl = fullPath.Substring(0, fullPath.IndexOf("api/"));
 
