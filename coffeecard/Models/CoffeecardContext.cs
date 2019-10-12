@@ -1,13 +1,17 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System.Configuration;
 
 namespace Coffeecard.Models
 {
     public class CoffeecardContext : DbContext
     {
-        public CoffeecardContext(DbContextOptions<CoffeecardContext> options)
+        private readonly IConfiguration _configuration;
+
+        public CoffeecardContext(DbContextOptions<CoffeecardContext> options, IConfiguration configuration)
             : base(options)
         {
+            _configuration = configuration;
         }
 
         public DbSet<User> Users { get; set; }
@@ -22,7 +26,7 @@ namespace Coffeecard.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasDefaultSchema(ConfigurationManager.AppSettings["databaseSchema"]);
+            modelBuilder.HasDefaultSchema(_configuration["databaseSchema"]);
         }
 
     }
