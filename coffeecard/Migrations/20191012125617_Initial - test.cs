@@ -4,12 +4,16 @@ using System;
 
 namespace coffeecard.Migrations
 {
-    public partial class initialcreate : Migration
+    public partial class Initialtest : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "test");
+
             migrationBuilder.CreateTable(
                 name: "Products",
+                schema: "test",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -27,6 +31,7 @@ namespace coffeecard.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Programmes",
+                schema: "test",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -42,6 +47,7 @@ namespace coffeecard.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Users",
+                schema: "test",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -63,6 +69,7 @@ namespace coffeecard.Migrations
                     table.ForeignKey(
                         name: "FK_Users_Programmes_Programme_Id",
                         column: x => x.Programme_Id,
+                        principalSchema: "test",
                         principalTable: "Programmes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -70,6 +77,7 @@ namespace coffeecard.Migrations
 
             migrationBuilder.CreateTable(
                 name: "LoginAttempts",
+                schema: "test",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -83,6 +91,7 @@ namespace coffeecard.Migrations
                     table.ForeignKey(
                         name: "FK_LoginAttempts_Users_User_Id",
                         column: x => x.User_Id,
+                        principalSchema: "test",
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -90,6 +99,7 @@ namespace coffeecard.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Purchases",
+                schema: "test",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -110,6 +120,7 @@ namespace coffeecard.Migrations
                     table.ForeignKey(
                         name: "FK_Purchases_Users_PurchasedBy_Id",
                         column: x => x.PurchasedBy_Id,
+                        principalSchema: "test",
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -117,6 +128,7 @@ namespace coffeecard.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Statistics",
+                schema: "test",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -133,6 +145,7 @@ namespace coffeecard.Migrations
                     table.ForeignKey(
                         name: "FK_Statistics_Users_User_Id",
                         column: x => x.User_Id,
+                        principalSchema: "test",
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -140,6 +153,7 @@ namespace coffeecard.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Tokens",
+                schema: "test",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -153,6 +167,7 @@ namespace coffeecard.Migrations
                     table.ForeignKey(
                         name: "FK_Tokens_Users_User_Id",
                         column: x => x.User_Id,
+                        principalSchema: "test",
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -160,6 +175,7 @@ namespace coffeecard.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Vouchers",
+                schema: "test",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -176,12 +192,14 @@ namespace coffeecard.Migrations
                     table.ForeignKey(
                         name: "FK_Vouchers_Products_Product_Id",
                         column: x => x.Product_Id,
+                        principalSchema: "test",
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Vouchers_Users_User_Id",
                         column: x => x.User_Id,
+                        principalSchema: "test",
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -189,6 +207,7 @@ namespace coffeecard.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Tickets",
+                schema: "test",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -206,12 +225,14 @@ namespace coffeecard.Migrations
                     table.ForeignKey(
                         name: "FK_Tickets_Users_Owner_Id",
                         column: x => x.Owner_Id,
+                        principalSchema: "test",
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Tickets_Purchases_Purchase_Id",
                         column: x => x.Purchase_Id,
+                        principalSchema: "test",
                         principalTable: "Purchases",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -219,46 +240,55 @@ namespace coffeecard.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_LoginAttempts_User_Id",
+                schema: "test",
                 table: "LoginAttempts",
                 column: "User_Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Purchases_PurchasedBy_Id",
+                schema: "test",
                 table: "Purchases",
                 column: "PurchasedBy_Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Statistics_User_Id",
+                schema: "test",
                 table: "Statistics",
                 column: "User_Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tickets_Owner_Id",
+                schema: "test",
                 table: "Tickets",
                 column: "Owner_Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tickets_Purchase_Id",
+                schema: "test",
                 table: "Tickets",
                 column: "Purchase_Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tokens_User_Id",
+                schema: "test",
                 table: "Tokens",
                 column: "User_Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Programme_Id",
+                schema: "test",
                 table: "Users",
                 column: "Programme_Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Vouchers_Product_Id",
+                schema: "test",
                 table: "Vouchers",
                 column: "Product_Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Vouchers_User_Id",
+                schema: "test",
                 table: "Vouchers",
                 column: "User_Id");
         }
@@ -266,31 +296,40 @@ namespace coffeecard.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "LoginAttempts");
+                name: "LoginAttempts",
+                schema: "test");
 
             migrationBuilder.DropTable(
-                name: "Statistics");
+                name: "Statistics",
+                schema: "test");
 
             migrationBuilder.DropTable(
-                name: "Tickets");
+                name: "Tickets",
+                schema: "test");
 
             migrationBuilder.DropTable(
-                name: "Tokens");
+                name: "Tokens",
+                schema: "test");
 
             migrationBuilder.DropTable(
-                name: "Vouchers");
+                name: "Vouchers",
+                schema: "test");
 
             migrationBuilder.DropTable(
-                name: "Purchases");
+                name: "Purchases",
+                schema: "test");
 
             migrationBuilder.DropTable(
-                name: "Products");
+                name: "Products",
+                schema: "test");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "Users",
+                schema: "test");
 
             migrationBuilder.DropTable(
-                name: "Programmes");
+                name: "Programmes",
+                schema: "test");
         }
     }
 }
