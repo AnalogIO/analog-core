@@ -23,7 +23,7 @@ namespace coffeecard.Services
             _configuration = configuration;
             var provider = env.ContentRootFileProvider;
             var contents = provider.GetDirectoryContents(string.Empty);
-            var certPath = contents.FirstOrDefault(x => x.Name.Equals("www.analogio.dk.pfx")).PhysicalPath;
+            var certPath = contents.FirstOrDefault(x => x.Name.Equals("test_MobilePay_AnalogIO.pfx")).PhysicalPath;
 
             _cert = new X509Certificate2(certPath, _configuration["CertificatePassword"], X509KeyStorageFlags.MachineKeySet);
 

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Configuration;
 
 namespace Coffeecard.Models
 {
@@ -18,6 +19,11 @@ namespace Coffeecard.Models
         public DbSet<Programme> Programmes { get; set; }
         public DbSet<Voucher> Vouchers { get; set; }
         public DbSet<Statistic> Statistics { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.HasDefaultSchema(ConfigurationManager.AppSettings["databaseSchema"]);
+        }
 
     }
 }
