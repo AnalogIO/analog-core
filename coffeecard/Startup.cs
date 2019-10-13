@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using NJsonSchema;
+using NJsonSchema.Generation;
 using NSwag.AspNetCore;
 using System;
 using System.Text;
@@ -60,7 +61,27 @@ namespace Coffeecard
 
             services.AddApiVersioning();
 
-            services.AddSwagger();
+            services.AddSwaggerDocument(config =>
+            {
+                config.PostProcess = document =>
+                {
+                    document.Info.Version = "v1";
+                    document.Info.Title = "Café Analog CoffeeCard API";
+                    document.Info.Description = "ASP.NET Core web API for the coffee bar Café Analog";
+                    document.Info.TermsOfService = "None";
+                    document.Info.Contact = new NSwag.OpenApiContact
+                    {
+                        Name = "AnalogIO",
+                        Email = "admin@analogio.dk",
+                        Url = "https://github.com/analogio"
+                    };
+                    document.Info.License = new NSwag.OpenApiLicense
+                    {
+                        Name = "Use under MIT",
+                        Url = "https://github.com/AnalogIO/analog-core/blob/master/LICENSE"
+                    };
+                };
+            });
 
             services.AddMvc().AddJsonOptions(options =>
             {
@@ -109,28 +130,8 @@ namespace Coffeecard
                 app.UseHsts();
             }
 
-            app.UseSwaggerUi3WithApiExplorer(settings =>
-            {
-                settings.GeneratorSettings.DefaultPropertyNameHandling = PropertyNameHandling.CamelCase;
-                settings.PostProcess = document =>
-                {
-                    document.Info.Version = "v1";
-                    document.Info.Title = "Café Analog CoffeeCard API";
-                    document.Info.Description = "ASP.NET Core web API for the coffee bar Café Analog";
-                    document.Info.TermsOfService = "None";
-                    document.Info.Contact = new NSwag.SwaggerContact
-                    {
-                        Name = "AnalogIO",
-                        Email = "admin@analogio.dk",
-                        Url = "https://github.com/analogio"
-                    };
-                    document.Info.License = new NSwag.SwaggerLicense
-                    {
-                        Name = "Use under MIT",
-                        Url = "https://github.com/AnalogIO/analog-core/blob/master/LICENSE"
-                    };
-                };
-            });
+            app.UseOpenApi();
+            app.UseSwaggerUi3();
 
             app.UseAuthentication();
             app.UseHttpsRedirection();
