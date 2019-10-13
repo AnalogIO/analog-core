@@ -35,9 +35,9 @@ namespace Coffeecard
         public void ConfigureServices(IServiceCollection services)
         {
             // TODO: find out the proper way to differ between enviroment based config files
-            services.AddDbContext<CoffeecardContext>(opt => 
+            services.AddDbContext<CoffeecardContext>(opt =>
                 opt.UseSqlServer(Configuration.GetConnectionString("CoffeecardDatabase")));
-            
+
             services.AddSingleton<IConfiguration>(provider => Configuration);
             services.AddSingleton<IHostingEnvironment>(Environment);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -56,7 +56,7 @@ namespace Coffeecard
             services.AddMvc(options =>
             {
                 options.Filters.Add(new ApiExceptionFilter());
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddApiVersioning();
 
