@@ -1,11 +1,6 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace coffeecard.Helpers
 {
@@ -33,11 +28,11 @@ namespace coffeecard.Helpers
             else
             {
                 // Unhandled errors
-                #if !DEBUG
+#if !DEBUG
                                 var msg = "An unhandled error occurred.";                
-                #else
-                                var msg = context.Exception.GetBaseException().Message;
-                #endif
+#else
+                var msg = context.Exception.GetBaseException().Message;
+#endif
 
                 apiError = new ApiError(msg);
 

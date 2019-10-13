@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using coffeecard.Helpers;
+﻿using coffeecard.Helpers;
 using coffeecard.Models.DataTransferObjects.Product;
 using coffeecard.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace coffeecard.Controllers
 {

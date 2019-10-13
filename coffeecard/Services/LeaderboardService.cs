@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using coffeecard.Helpers;
+﻿using coffeecard.Helpers;
 using coffeecard.Models;
 using Coffeecard.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace coffeecard.Services
 {
@@ -20,15 +18,17 @@ namespace coffeecard.Services
 
         public List<LeaderboardUser> GetLeaderboard(int preset, int top)
         {
-            if (preset == (int) StatisticPreset.Total )
+            if (preset == (int)StatisticPreset.Total)
             {
                 var users = _context.Statistics.Include(x => x.User).Where(s => s.Preset == StatisticPreset.Total).OrderByDescending(x => x.SwipeCount).ThenBy(x => x.LastSwipe).ToList().Take(top);
                 return users.Select(s => new LeaderboardUser { Name = s.User.Name, Score = s.SwipeCount }).ToList();
-            } else if (preset == (int) StatisticPreset.Semester)
+            }
+            else if (preset == (int)StatisticPreset.Semester)
             {
                 var users = _context.Statistics.Include(x => x.User).Where(s => s.Preset == StatisticPreset.Semester && Statistic.ValidateSemesterExpired(s.LastSwipe)).OrderByDescending(x => x.SwipeCount).ThenBy(x => x.LastSwipe).ToList().Take(top);
                 return users.Select(s => new LeaderboardUser { Name = s.User.Name, Score = s.SwipeCount }).ToList();
-            } else if (preset == (int) StatisticPreset.Monthly)
+            }
+            else if (preset == (int)StatisticPreset.Monthly)
             {
                 var users = _context.Statistics.Include(x => x.User).Where(s => s.Preset == StatisticPreset.Monthly && Statistic.ValidateMonthlyExpired(s.LastSwipe)).OrderByDescending(x => x.SwipeCount).ThenBy(x => x.LastSwipe).ToList().Take(top);
                 return users.Select(s => new LeaderboardUser { Name = s.User.PrivacyActivated ? "Anonymous" : s.User.Name, Score = s.SwipeCount }).ToList();

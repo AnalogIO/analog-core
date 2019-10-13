@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using coffeecard.Helpers;
+﻿using coffeecard.Helpers;
 using coffeecard.Models.DataTransferObjects.Purchase;
 using coffeecard.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Serilog;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace coffeecard.Controllers
 {
