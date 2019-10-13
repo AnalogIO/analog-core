@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using coffeecard.Helpers;
+﻿using coffeecard.Helpers;
 using coffeecard.Models.DataTransferObjects.Ticket;
 using Coffeecard.Models;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 
 namespace coffeecard.Services
 {
@@ -67,7 +67,7 @@ namespace coffeecard.Services
         public IEnumerable<Ticket> UseMultipleTickets(IEnumerable<Claim> claims, UseMultipleTicketDTO dto)
         {
             //Throws exception if the list is empty
-            if(dto.ProductIds.Count() == 0) throw new ApiException($"The list is empty", 400);
+            if (dto.ProductIds.Count() == 0) throw new ApiException($"The list is empty", 400);
 
             Log.Information($"Using multiple tickets {string.Join(",", dto.ProductIds)}");
             var userIdClaim = claims.FirstOrDefault(x => x.Type == Constants.UserId);
@@ -76,7 +76,7 @@ namespace coffeecard.Services
 
             //Count number of each product
             var groupedProductIds = new Dictionary<int, int>();
-            foreach(int productId in dto.ProductIds)
+            foreach (int productId in dto.ProductIds)
             {
                 if (!groupedProductIds.ContainsKey(productId))
                 {
@@ -87,7 +87,7 @@ namespace coffeecard.Services
 
             //First get the tickets from the products used
             var tickets = new List<Ticket>();
-            foreach(KeyValuePair<int, int> keyValye in groupedProductIds) 
+            foreach (KeyValuePair<int, int> keyValye in groupedProductIds)
             {
                 tickets.AddRange(GetMultipleTicketsFromProduct(keyValye.Key, userId, keyValye.Value));
             }
@@ -153,7 +153,7 @@ namespace coffeecard.Services
                         TicketsLeft = tp.Count()
                     }).ToList();
 
-            var products = _context.Products.Select(p => new CoffeCard { ProductId = p.Id, Name = p.Name, Price = p.Price, Quantity = p.NumberOfTickets, TicketsLeft = 0});
+            var products = _context.Products.Select(p => new CoffeCard { ProductId = p.Id, Name = p.Name, Price = p.Price, Quantity = p.NumberOfTickets, TicketsLeft = 0 });
 
             return coffeCards.Union(products, new CoffeeCardComparer());
         }

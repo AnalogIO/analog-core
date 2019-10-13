@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace coffeecard.Models.DataTransferObjects.Product
+﻿namespace coffeecard.Models.DataTransferObjects.Product
 {
     public class ProductDTO
     {

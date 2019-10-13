@@ -1,7 +1,6 @@
 ﻿using coffeecard.Controllers;
 using coffeecard.Helpers;
 using coffeecard.Models.DataTransferObjects.MobilePay;
-using coffeecard.Models.DataTransferObjects.Purchase;
 using Coffeecard.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

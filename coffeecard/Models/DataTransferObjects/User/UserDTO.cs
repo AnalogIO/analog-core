@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using coffeecard.Models.DataTransferObjects.Programme;
-
-namespace coffeecard.Models.DataTransferObjects.User
+﻿namespace coffeecard.Models.DataTransferObjects.User
 {
     public class UserDTO
     {

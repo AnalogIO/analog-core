@@ -1,8 +1,10 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Coffeecard.Models {
-    public class Ticket {
+namespace Coffeecard.Models
+{
+    public class Ticket
+    {
         public int Id { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime? DateUsed { get; set; }
@@ -13,7 +15,8 @@ namespace Coffeecard.Models {
         [ForeignKey("Purchase_Id")]
         public virtual Purchase Purchase { get; set; }
 
-        public Ticket() {
+        public Ticket()
+        {
             DateCreated = DateTime.UtcNow;
             DateUsed = null;
         }

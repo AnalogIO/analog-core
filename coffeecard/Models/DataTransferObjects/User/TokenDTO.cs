@@ -1,5 +1,4 @@
-using System.ComponentModel.DataAnnotations;
-
-public class TokenDTO {
-    public string Token {get;set;}
+public class TokenDTO
+{
+    public string Token { get; set; }
 }

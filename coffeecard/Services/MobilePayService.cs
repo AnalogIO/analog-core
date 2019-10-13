@@ -1,16 +1,14 @@
+using Jose;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Serilog;
 using System;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
-using Jose;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.FileProviders;
-using Serilog;
 
 namespace coffeecard.Services
 {
@@ -41,7 +39,7 @@ namespace coffeecard.Services
                 var signature = JWT.Encode(hash, rsa, JwsAlgorithm.RS256);
                 return signature;
             }
-            
+
         }
 
         public async Task<HttpResponseMessage> CheckOrderIdAgainstMPBackendAsync(string orderId)

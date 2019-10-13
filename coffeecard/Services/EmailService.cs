@@ -1,14 +1,14 @@
-﻿using System;
-using System.IO;
-using Coffeecard.Models;
-using Microsoft.Extensions.Configuration;
+﻿using Coffeecard.Models;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.Extensions.Configuration;
 using MimeKit;
 using RestSharp;
 using RestSharp.Authenticators;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Extensions;
 using Serilog;
+using System;
+using System.IO;
 
 namespace coffeecard.Services
 {

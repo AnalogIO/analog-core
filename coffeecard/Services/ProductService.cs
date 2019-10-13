@@ -1,8 +1,6 @@
-﻿using System;
+﻿using Coffeecard.Models;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Coffeecard.Models;
 
 namespace coffeecard.Services
 {

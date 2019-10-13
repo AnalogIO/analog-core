@@ -1,18 +1,15 @@
-using System.Security.Claims;
-using System;
-using Coffeecard.Models;
-using System.Linq;
-using coffeecard.Services;
 using coffeecard.Helpers;
-using System.Collections.Generic;
 using coffeecard.Models.DataTransferObjects.User;
+using coffeecard.Services;
+using Coffeecard.Models;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
-using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Mvc;
-using System.Net.Http;
-using System.IdentityModel.Tokens.Jwt;
+using Serilog;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Text.RegularExpressions;
 
 public class AccountService : IAccountService
 {

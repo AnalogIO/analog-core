@@ -1,11 +1,10 @@
-using System.Collections.Generic;
-using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
-using System.Text;
-using System.IdentityModel.Tokens.Jwt;
-using System;
 using Microsoft.IdentityModel.Tokens;
-using System.Security.Cryptography;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 public class TokenService : ITokenService
 {
@@ -25,7 +24,7 @@ public class TokenService : ITokenService
             notBefore: DateTime.UtcNow,
             expires: DateTime.UtcNow.AddHours(24),
             signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
-        );    
+        );
 
         return new JwtSecurityTokenHandler().WriteToken(jwt); //the method is called WriteToken but returns a string
     }

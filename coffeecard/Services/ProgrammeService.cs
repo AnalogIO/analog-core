@@ -1,8 +1,6 @@
-﻿using System;
+﻿using Coffeecard.Models;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Coffeecard.Models;
 
 namespace coffeecard.Services
 {
@@ -19,7 +17,8 @@ namespace coffeecard.Services
             return _context.Programmes.AsEnumerable();
         }
 
-        public Programme GetProgramme(int id) {
+        public Programme GetProgramme(int id)
+        {
             return _context.Programmes.FirstOrDefault(x => x.Id == id);
         }
     }
