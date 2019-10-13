@@ -1,8 +1,0 @@
-2019-06-19 14:54:21.349 +02:00 [INF] Starting web host
-2019-06-19 14:55:45.898 +02:00 [INF] User tried to recover
-2019-06-19 14:55:47.734 +02:00 [INF] sstl@itu.dk tried to recover user
-2019-06-19 14:56:24.804 +02:00 [INF] Starting web host
-2019-06-19 14:56:39.867 +02:00 [INF] Starting web host
-2019-06-19 14:57:05.564 +02:00 [INF] User tried to recover
-2019-06-19 14:57:06.304 +02:00 [INF] sstl@itu.dk tried to recover user
-2019-06-19 14:57:10.392 +02:00 [INF] Sending email to sstl@itu.dk 

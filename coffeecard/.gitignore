@@ -278,5 +278,5 @@ __pycache__/
 !.vscode/launch.json
 !.vscode/extensions.json
 
-
-# End of https://www.gitignore.io/api/aspnetcore,visualstudiocode
+# Logs
+**/logs/
