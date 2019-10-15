@@ -19,10 +19,14 @@ namespace coffeecard.Services
         //TODO throw exception if EnvironmentType and MerchantID is null or empty-string.
         public AppConfigDTO RetreiveConfiguration()
         {
+            var _environmentType = _configuration["EnvironmentType"];
+            var _merchantId = _configuration["MobilePayMerchantId"];
+            if(string.IsNullOrEmpty(_environmentType)) throw new KeyNotFoundException();
+            if(string.IsNullOrEmpty(_merchantId)) throw new KeyNotFoundException();
             return new AppConfigDTO
             {
-                EnvironmentType = _configuration["EnvironmentType"],
-                MerchantId = _configuration["MobilePayMerchantId"]
+                EnvironmentType = _environmentType,
+                MerchantId = _merchantId
             };
         }
     }
