@@ -15,7 +15,7 @@ namespace coffeecard.Controllers
     [ApiController]
     public class AppConfigController : ControllerBase
     {
-        private IAppConfigService _appConfigService;
+        private readonly IAppConfigService _appConfigService;
 
         public AppConfigController(IAppConfigService appConfigService)
         {
@@ -26,7 +26,6 @@ namespace coffeecard.Controllers
         public ActionResult<IEnumerable<AppConfigDTO>> Get()
         {
             var appConfig = _appConfigService.RetreiveConfiguration();
-            if(appConfig == null) return NotFound();
             return Ok(appConfig);
         }
     }
