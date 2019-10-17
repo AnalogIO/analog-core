@@ -231,7 +231,7 @@ namespace coffeecard.Services
             if (purchase == null) throw new ApiException($"The purchase with orderid {payment.OrderId} does not exist", 400);
             if (purchase.Completed) throw new ApiException($"The given purchase has already been completed", 400);
 
-            var response = await _mobilePayService.CheckOrderIdAgainstMPBackendAsync(payment.OrderId);
+            var response = await _mobilePayService.CapturePayment(payment.OrderId);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -284,7 +284,7 @@ namespace coffeecard.Services
 
         public async Task<HttpResponseMessage> ValidateTransactionWithoutId(string orderId)
         {
-            var response = await _mobilePayService.CheckOrderIdAgainstMPBackendAsync(orderId);
+            var response = await _mobilePayService.CapturePayment(orderId);
             return response;
         }
 

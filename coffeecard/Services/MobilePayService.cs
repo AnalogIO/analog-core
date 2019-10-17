@@ -42,30 +42,49 @@ namespace coffeecard.Services
 
         }
 
-        public async Task<HttpResponseMessage> CheckOrderIdAgainstMPBackendAsync(string orderId)
+        public async Task<HttpResponseMessage> GetPaymentStatus(string orderId)
         {
             Log.Information($"Checking order against mobilepay with orderId: {orderId}");
-            var payload = $"https://api.mobeco.dk/appswitch/api/v1/merchants/{_configuration["MPMerchantID"]}/orders/{orderId}";
+            var merchantId = _configuration["MPMerchantID"];
+            var payload = $"https://api.mobeco.dk/appswitch/api/v1/merchants/{merchantId}/orders/{orderId}";
 
-            var response = await SendRequest(payload);
+            var response = await SendRequest(payload, HttpMethod.Get);
             return response;
         }
 
-        private async Task<HttpResponseMessage> SendRequest(string payload)
+        public async Task<HttpResponseMessage> CaptureAmount(string orderId)
+        {
+            var merchantId = _configuration["MPMerchantID"];
+            var payload = $"https://api.mobeco.dk/appswitch/api/v1/reservations/merchants/{merchantId}/orders/{orderId}";
+
+            var response = await SendRequest(payload, HttpMethod.Put);
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> CancelPaymentReservation(string orderId)
+        {
+            var merchantId = _configuration["MPMerchantID"];
+            var payload = $"https://api.mobeco.dk/appswitch/api/v1/reservations/merchants/{merchantId}/orders/{orderId}";
+
+            var response = await SendRequest(payload, HttpMethod.Delete);
+            return response;
+        }
+
+        private async Task<HttpResponseMessage> SendRequest(string payload, HttpMethod httpMethod)
         {
             var signature = GetSignatureForPayload(payload);
 
             HttpRequestMessage request = new HttpRequestMessage()
             {
                 Headers = { { "AuthenticationSignature", signature }, { "Ocp-Apim-Subscription-Key", _configuration["MPSubscriptionKey"] } },
-                Method = HttpMethod.Get,
+                Method = httpMethod,
                 RequestUri = new Uri(payload)
             };
 
             var response = await _client.SendAsync(request);
             return response;
         }
-
+        
         public void Dispose()
         {
             _client.Dispose();
