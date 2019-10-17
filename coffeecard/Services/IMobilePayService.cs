@@ -5,6 +5,10 @@ namespace CoffeeCard.Services
 {
     public interface IMobilePayService
     {
-        Task<HttpResponseMessage> CheckOrderIdAgainstMPBackendAsync(string orderId);
+        Task<HttpResponseMessage> CapturePayment(string orderId);
+
+        Task<HttpResponseMessage> GetPaymentStatus(string orderId);
+
+        Task<HttpResponseMessage> CancelPaymentReservation(string orderId);
     }
 }
