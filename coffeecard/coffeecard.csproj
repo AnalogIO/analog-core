@@ -5,12 +5,12 @@
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="www.analogio.dk.pfx" />
+    <ItemGroup>
+    <None Remove="test_MobilePay_AnalogIO.pfx" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="www.analogio.dk.pfx">
+    <Content Include="test_MobilePay_AnalogIO.pfx">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
