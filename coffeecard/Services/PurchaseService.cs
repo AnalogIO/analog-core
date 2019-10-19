@@ -231,7 +231,7 @@ namespace coffeecard.Services
             if (purchase == null) throw new ApiException($"The purchase with orderid {payment.OrderId} does not exist", 400);
             if (purchase.Completed) throw new ApiException($"The given purchase has already been completed", 400);
 
-            var response = await _mobilePayService.CapturePayment(payment.OrderId);
+            var response = await _mobilePayService.GetPaymentStatus(payment.OrderId);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -244,6 +244,17 @@ namespace coffeecard.Services
             {
                 Log.Information($"Validting transction with orderid: {payment.OrderId} and transactionId: {payment.TransactionId} succeeded!");
                 return true;
+            } 
+            else if (status.LatestPaymentStatus.Equals("Reserved") && status.OriginalAmount.Equals(purchase.Price) && status.TransactionId.Equals(payment.TransactionId))
+            {
+                var captureResponse = await _mobilePayService.CapturePayment(payment.OrderId);
+                if (captureResponse.IsSuccessStatusCode)
+                {
+                    Log.Information($"Validting transction with orderid: {payment.OrderId} and transactionId: {payment.TransactionId} succeeded!");
+                    return true;
+                }
+                Log.Warning($"Validating transaction at mobilepay failed with statuscode: {response.StatusCode}");
+                throw new ApiException($"The purchase is not valid", 400);
             }
 
             Log.Warning($"Could not validate transction with orderid: {payment.OrderId} and transctionId: {payment.TransactionId}");
