@@ -23,7 +23,7 @@ namespace coffeecard.Services
             _configuration = configuration;
             var provider = env.ContentRootFileProvider;
             var contents = provider.GetDirectoryContents(string.Empty);
-            var certPath = contents.FirstOrDefault(x => x.Name.Equals("test_MobilePay_AnalogIO.pfx")).PhysicalPath;
+            var certPath = contents.FirstOrDefault(x => x.Name.Equals("www.analogio.dk.pfx")).PhysicalPath;
 
             _cert = new X509Certificate2(certPath, _configuration["CertificatePassword"], X509KeyStorageFlags.MachineKeySet);
 
@@ -52,7 +52,7 @@ namespace coffeecard.Services
             return response;
         }
 
-        public async Task<HttpResponseMessage> CaptureAmount(string orderId)
+        public async Task<HttpResponseMessage> CapturePayment(string orderId)
         {
             var merchantId = _configuration["MPMerchantID"];
             var payload = $"https://api.mobeco.dk/appswitch/api/v1/reservations/merchants/{merchantId}/orders/{orderId}";
