@@ -9,6 +9,7 @@ using RestSharp.Authenticators;
 using Serilog;
 using System;
 using System.IO;
+using coffeecard.Models.DataTransferObjects.Purchase;
 
 namespace coffeecard.Services
 {
@@ -26,27 +27,32 @@ namespace coffeecard.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
+        public void SendReceipt(User user, PurchaseDTO purchase)
+        {
+            var message = new MimeMessage();
+            var builder = RetrieveTemplate("receipt.html").Item1;
+
+            builder.HtmlBody = builder.HtmlBody.Replace("{email}", user.Email);
+            builder.HtmlBody = builder.HtmlBody.Replace("{name}", user.Name);
+            builder.HtmlBody = builder.HtmlBody.Replace("{product}", purchase.ProductName);
+            builder.HtmlBody = builder.HtmlBody.Replace("{price}", purchase.Price.ToString() );
+            builder.HtmlBody = builder.HtmlBody.Replace("{orderId}", purchase.OrderId.ToString());
+
+            message.To.Add(new MailboxAddress(user.Name, user.Email));
+            message.Subject = "Thank you for your purchase at Café Analog";
+
+            message.Body = builder.ToMessageBody();
+
+            SendEmail(message);
+        }
+
         public void SendRegistrationVerificationEmail(User user, string token)
         {
             Log.Information($"Sending registration verification email to {user.Email} ({user.Id} with token: {token})");
-            var fullPath = _httpContextAccessor.HttpContext?.Request?.GetDisplayUrl();
-            var baseUrl = fullPath.Substring(0, fullPath.IndexOf("api/"));
-
-            var pathToTemplate = _env.WebRootPath
-                            + Path.DirectorySeparatorChar.ToString()
-                            + "Templates"
-                            + Path.DirectorySeparatorChar.ToString()
-                            + "EmailTemplate"
-                            + Path.DirectorySeparatorChar.ToString()
-                            + "email_verify_registration.html";
-
             var message = new MimeMessage();
-            var builder = new BodyBuilder();
-
-            using (StreamReader SourceReader = File.OpenText(pathToTemplate))
-            {
-                builder.HtmlBody = SourceReader.ReadToEnd();
-            }
+            var builderAndBaseUrl = RetrieveTemplate("email_verify_registration.html");
+            var builder = builderAndBaseUrl.Item1;
+            var baseUrl = builderAndBaseUrl.Item2;
 
             builder.HtmlBody = builder.HtmlBody.Replace("{token}", token);
             builder.HtmlBody = builder.HtmlBody.Replace("{email}", user.Email);
@@ -64,24 +70,10 @@ namespace coffeecard.Services
 
         public void SendVerificationEmailForChangedEmail(User user, string token, string newEmail)
         {
-            var fullPath = _httpContextAccessor.HttpContext?.Request?.GetDisplayUrl();
-            var baseUrl = fullPath.Substring(0, fullPath.IndexOf("api/"));
-
-            var pathToTemplate = _env.WebRootPath
-                            + Path.DirectorySeparatorChar.ToString()
-                            + "Templates"
-                            + Path.DirectorySeparatorChar.ToString()
-                            + "EmailTemplate"
-                            + Path.DirectorySeparatorChar.ToString()
-                            + "email_verify_updatedemail.html";
-
             var message = new MimeMessage();
-            var builder = new BodyBuilder();
-
-            using (StreamReader SourceReader = File.OpenText(pathToTemplate))
-            {
-                builder.HtmlBody = SourceReader.ReadToEnd();
-            }
+            var builderAndBaseUrl = RetrieveTemplate("email_verify_updatedemail.html");
+            var builder = builderAndBaseUrl.Item1;
+            var baseUrl = builderAndBaseUrl.Item2;
 
             builder.HtmlBody = builder.HtmlBody.Replace("{token}", token);
             builder.HtmlBody = builder.HtmlBody.Replace("{email}", user.Email);
@@ -100,24 +92,10 @@ namespace coffeecard.Services
 
         public void SendVerificationEmailForLostPw(User user, string token)
         {
-            var fullPath = _httpContextAccessor.HttpContext?.Request?.GetDisplayUrl();
-            var baseUrl = fullPath.Substring(0, fullPath.IndexOf("api/"));
-
-            var pathToTemplate = _env.WebRootPath
-                            + Path.DirectorySeparatorChar.ToString()
-                            + "Templates"
-                            + Path.DirectorySeparatorChar.ToString()
-                            + "EmailTemplate"
-                            + Path.DirectorySeparatorChar.ToString()
-                            + "email_verify_lostpassword.html";
-
             var message = new MimeMessage();
-            var builder = new BodyBuilder();
-
-            using (StreamReader SourceReader = File.OpenText(pathToTemplate))
-            {
-                builder.HtmlBody = SourceReader.ReadToEnd();
-            }
+            var builderAndBaseUrl = RetrieveTemplate("email_verify_lostpassword.html");
+            var builder = builderAndBaseUrl.Item1;
+            var baseUrl = builderAndBaseUrl.Item2;
 
             builder.HtmlBody = builder.HtmlBody.Replace("{token}", token);
             builder.HtmlBody = builder.HtmlBody.Replace("{email}", user.Email);
@@ -136,24 +114,9 @@ namespace coffeecard.Services
         public void SendVerificationEmailForRecover(User user, int newPassword)
         {
             Log.Information($"Sending email to {user.Email} ");
-            var fullPath = _httpContextAccessor.HttpContext?.Request?.GetDisplayUrl();
-            var baseUrl = fullPath.Substring(0, fullPath.IndexOf("api/"));
-
-            var pathToTemplate = _env.WebRootPath
-                            + Path.DirectorySeparatorChar.ToString()
-                            + "Templates"
-                            + Path.DirectorySeparatorChar.ToString()
-                            + "EmailTemplate"
-                            + Path.DirectorySeparatorChar.ToString()
-                            + "email_newpassword.html";
-
+            
             var message = new MimeMessage();
-            var builder = new BodyBuilder();
-
-            using (StreamReader SourceReader = File.OpenText(pathToTemplate))
-            {
-                builder.HtmlBody = SourceReader.ReadToEnd();
-            }
+            var builder = RetrieveTemplate("email_newpassword.html").Item1;
 
             builder.HtmlBody = builder.HtmlBody.Replace("{password}", newPassword.ToString());
             builder.HtmlBody = builder.HtmlBody.Replace("{email}", user.Email);
@@ -167,7 +130,31 @@ namespace coffeecard.Services
             SendEmail(message);
         }
 
-        public void SendEmail(MimeMessage mail)
+        private (BodyBuilder, string) RetrieveTemplate(string templateName)
+        {
+            var fullPath = _httpContextAccessor.HttpContext?.Request?.GetDisplayUrl();
+            var baseUrl = fullPath.Substring(0, fullPath.IndexOf("api/"));
+
+            var pathToTemplate = _env.WebRootPath
+                            + Path.DirectorySeparatorChar.ToString()
+                            + "Templates"
+                            + Path.DirectorySeparatorChar.ToString()
+                            + "EmailTemplate"
+                            + Path.DirectorySeparatorChar.ToString()
+                            + templateName;
+
+            var message = new MimeMessage();
+            var builder = new BodyBuilder();
+
+            using (StreamReader SourceReader = File.OpenText(pathToTemplate))
+            {
+                builder.HtmlBody = SourceReader.ReadToEnd();
+            }
+
+            return (builder, baseUrl);
+        }
+
+        private void SendEmail(MimeMessage mail)
         {
             RestClient client = new RestClient();
             client.BaseUrl = new Uri("https://api.mailgun.net/v3");
