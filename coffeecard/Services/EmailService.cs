@@ -10,6 +10,8 @@ using Serilog;
 using System;
 using System.IO;
 using coffeecard.Models.DataTransferObjects.Purchase;
+using coffeecard.Models.DataTransferObjects.User;
+
 
 namespace coffeecard.Services
 {
@@ -27,14 +29,17 @@ namespace coffeecard.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public void SendReceipt(User user, PurchaseDTO purchase)
+        public void SendInvoice(UserDTO user, PurchaseDTO purchase)
         {
             var message = new MimeMessage();
-            var builder = RetrieveTemplate("receipt.html").Item1;
+            var builder = RetrieveTemplate("invoice.html").Item1;
+            var time = DateTime.UtcNow;
 
             builder.HtmlBody = builder.HtmlBody.Replace("{email}", user.Email);
             builder.HtmlBody = builder.HtmlBody.Replace("{name}", user.Name);
+            builder.HtmlBody = builder.HtmlBody.Replace("{quantity}", purchase.NumberOfTickets.ToString() );
             builder.HtmlBody = builder.HtmlBody.Replace("{product}", purchase.ProductName);
+            builder.HtmlBody = builder.HtmlBody.Replace("{vat}", (purchase.Price * 0.2).ToString());
             builder.HtmlBody = builder.HtmlBody.Replace("{price}", purchase.Price.ToString() );
             builder.HtmlBody = builder.HtmlBody.Replace("{orderId}", purchase.OrderId.ToString());
 
