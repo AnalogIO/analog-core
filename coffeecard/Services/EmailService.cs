@@ -33,7 +33,8 @@ namespace coffeecard.Services
         {
             var message = new MimeMessage();
             var builder = RetrieveTemplate("invoice.html").Item1;
-            var time = DateTime.UtcNow;
+            var utcTime = DateTime.UtcNow;
+            var cetTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utcTime, "Central Europe Standard Time");
 
             builder.HtmlBody = builder.HtmlBody.Replace("{email}", user.Email);
             builder.HtmlBody = builder.HtmlBody.Replace("{name}", user.Name);
@@ -42,9 +43,10 @@ namespace coffeecard.Services
             builder.HtmlBody = builder.HtmlBody.Replace("{vat}", (purchase.Price * 0.2).ToString());
             builder.HtmlBody = builder.HtmlBody.Replace("{price}", purchase.Price.ToString() );
             builder.HtmlBody = builder.HtmlBody.Replace("{orderId}", purchase.OrderId.ToString());
+            builder.HtmlBody = builder.HtmlBody.Replace("{date}", cetTime.ToShortDateString());
 
             message.To.Add(new MailboxAddress(user.Name, user.Email));
-            message.Subject = "Thank you for your purchase at Café Analog";
+            message.Subject = "Thank you for your purchase at Cafe Analog";
 
             message.Body = builder.ToMessageBody();
 
