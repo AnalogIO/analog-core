@@ -1,10 +1,4 @@
-﻿using coffeecard.Helpers.MobilePay.RequestMessage;
-using coffeecard.Helpers.MobilePay.ResponseMessage;
-using Jose;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Serilog;
-using System;
+﻿using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -12,9 +6,15 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
-using coffeecard.Helpers.MobilePay.ErrorMessage;
+using CoffeeCard.Helpers.MobilePay.ErrorMessage;
+using CoffeeCard.Helpers.MobilePay.RequestMessage;
+using CoffeeCard.Helpers.MobilePay.ResponseMessage;
+using Jose;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Serilog;
 
-namespace coffeecard.Helpers.MobilePay
+namespace CoffeeCard.Helpers.MobilePay
 {
     public class MobilePayApiHttpClient : IMobilePayApiHttpClient
     {

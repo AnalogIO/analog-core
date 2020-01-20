@@ -1,6 +1,6 @@
 ﻿using System.Net.Http;
 
-namespace coffeecard.Helpers.MobilePay.RequestMessage
+namespace CoffeeCard.Helpers.MobilePay.RequestMessage
 {
     public interface IMobilePayAPIRequestMessage
     {

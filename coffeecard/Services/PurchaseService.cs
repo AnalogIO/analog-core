@@ -1,20 +1,16 @@
-﻿using coffeecard.Controllers;
-using coffeecard.Helpers;
-using coffeecard.Helpers.MobilePay;
-using coffeecard.Helpers.MobilePay.ResponseMessage;
-using coffeecard.Models.DataTransferObjects.MobilePay;
-using Coffeecard.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using CoffeeCard.Helpers.MobilePay;
+using CoffeeCard.Helpers.MobilePay.ResponseMessage;
+using CoffeeCard.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
-namespace coffeecard.Services
+namespace CoffeeCard.Services
 {
     public class PurchaseService : IPurchaseService
     {
