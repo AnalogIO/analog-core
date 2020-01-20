@@ -1,12 +1,12 @@
-﻿using coffeecard.Controllers;
-using coffeecard.Models.DataTransferObjects.MobilePay;
-using Coffeecard.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using CoffeeCard.Models;
+using CoffeeCard.Models.DataTransferObjects.MobilePay;
+using CoffeeCard.Models.DataTransferObjects.Purchase;
 
-namespace coffeecard.Services
+namespace CoffeeCard.Services
 {
     public interface IPurchaseService
     {

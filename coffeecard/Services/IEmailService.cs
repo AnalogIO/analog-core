@@ -1,7 +1,7 @@
-﻿using Coffeecard.Models;
+﻿using CoffeeCard.Models;
 using MimeKit;
 
-namespace coffeecard.Services
+namespace CoffeeCard.Services
 {
     public interface IEmailService
     {

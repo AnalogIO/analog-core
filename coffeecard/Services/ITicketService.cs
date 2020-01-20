@@ -1,9 +1,9 @@
-﻿using coffeecard.Models.DataTransferObjects.Ticket;
-using Coffeecard.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Security.Claims;
+using CoffeeCard.Models;
+using CoffeeCard.Models.DataTransferObjects.Ticket;
 
-namespace coffeecard.Services
+namespace CoffeeCard.Services
 {
     public interface ITicketService
     {

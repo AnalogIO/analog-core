@@ -1,4 +1,4 @@
-﻿namespace coffeecard.Models.DataTransferObjects.Ticket
+﻿namespace CoffeeCard.Models.DataTransferObjects.Ticket
 {
     public class UseTicketDTO
     {

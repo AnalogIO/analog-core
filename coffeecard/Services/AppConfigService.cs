@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using coffeecard.Models.DataTransferObjects.AppConfig;
+using CoffeeCard.Models.DataTransferObjects.AppConfig;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 
-namespace coffeecard.Services
+namespace CoffeeCard.Services
 {
     public class AppConfigService : IAppConfigService
     {

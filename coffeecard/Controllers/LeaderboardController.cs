@@ -1,10 +1,10 @@
-﻿using coffeecard.Helpers;
-using coffeecard.Models;
-using coffeecard.Services;
+﻿using System.Collections.Generic;
+using CoffeeCard.Helpers;
+using CoffeeCard.Models;
+using CoffeeCard.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 
-namespace coffeecard.Controllers
+namespace CoffeeCard.Controllers
 {
 
     [ApiVersion("1")]

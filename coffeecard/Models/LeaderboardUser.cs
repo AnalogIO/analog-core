@@ -1,4 +1,4 @@
-﻿namespace coffeecard.Models
+﻿namespace CoffeeCard.Models
 {
     public class LeaderboardUser
     {

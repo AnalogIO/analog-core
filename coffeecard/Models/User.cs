@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
-namespace Coffeecard.Models
+namespace CoffeeCard.Models
 {
     public class User
     {

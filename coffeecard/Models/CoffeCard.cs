@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Coffeecard.Models
+namespace CoffeeCard.Models
 {
     public class CoffeCard
     {

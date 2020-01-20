@@ -1,4 +1,4 @@
-﻿namespace coffeecard.Controllers
+﻿namespace CoffeeCard.Models.DataTransferObjects.Purchase
 {
     public class IssueProductDTO
     {

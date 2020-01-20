@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace coffeecard.Models.DataTransferObjects.Ticket
+namespace CoffeeCard.Models.DataTransferObjects.Ticket
 {
     public class UseMultipleTicketDTO
     {

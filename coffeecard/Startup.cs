@@ -1,6 +1,9 @@
-﻿using coffeecard.Helpers;
-using coffeecard.Services;
-using Coffeecard.Models;
+﻿using System;
+using System.Text;
+using System.Threading.Tasks;
+using CoffeeCard.Helpers;
+using CoffeeCard.Models;
+using CoffeeCard.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -11,14 +14,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
-using NJsonSchema;
-using NJsonSchema.Generation;
-using NSwag.AspNetCore;
-using System;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Coffeecard
+namespace CoffeeCard
 {
     public class Startup
     {

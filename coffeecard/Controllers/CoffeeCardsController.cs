@@ -1,11 +1,11 @@
-﻿using coffeecard.Helpers;
-using coffeecard.Services;
-using Coffeecard.Models;
+﻿using System.Collections.Generic;
+using CoffeeCard.Helpers;
+using CoffeeCard.Models;
+using CoffeeCard.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 
-namespace coffeecard.Controllers
+namespace CoffeeCard.Controllers
 {
     [ApiVersion("1")]
     [Route("api/v{version:apiVersion}/[controller]")]

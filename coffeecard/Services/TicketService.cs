@@ -1,14 +1,14 @@
-﻿using coffeecard.Helpers;
-using coffeecard.Models.DataTransferObjects.Ticket;
-using Coffeecard.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using CoffeeCard.Helpers;
+using CoffeeCard.Models;
+using CoffeeCard.Models.DataTransferObjects.Ticket;
 
-namespace coffeecard.Services
+namespace CoffeeCard.Services
 {
     public class TicketService : ITicketService
     {

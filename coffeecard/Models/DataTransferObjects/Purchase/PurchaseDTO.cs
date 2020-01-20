@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace coffeecard.Models.DataTransferObjects.Purchase
+namespace CoffeeCard.Models.DataTransferObjects.Purchase
 {
     public class PurchaseDTO
     {

@@ -1,11 +1,10 @@
-﻿using coffeecard.Helpers;
-using coffeecard.Models;
-using Coffeecard.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using CoffeeCard.Helpers;
+using CoffeeCard.Models;
 
-namespace coffeecard.Services
+namespace CoffeeCard.Services
 {
     public class LeaderboardService : ILeaderboardService
     {

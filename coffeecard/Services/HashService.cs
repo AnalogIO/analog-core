@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography;
 
-namespace coffeecard.Services
+namespace CoffeeCard.Services
 {
     public class HashService : IHashService
     {

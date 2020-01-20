@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace Coffeecard.Models
+namespace CoffeeCard.Models
 {
     public class CoffeecardContext : DbContext
     {

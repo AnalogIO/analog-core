@@ -1,11 +1,11 @@
-using coffeecard.Helpers;
-using coffeecard.Models.DataTransferObjects.MobilePay;
-using coffeecard.Services;
+using System.Threading.Tasks;
+using CoffeeCard.Helpers;
+using CoffeeCard.Models.DataTransferObjects.MobilePay;
+using CoffeeCard.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
-namespace coffeecard.Controllers
+namespace CoffeeCard.Controllers
 {
     [ApiVersion("1")]
     [Route("api/v{version:apiVersion}/[controller]")]

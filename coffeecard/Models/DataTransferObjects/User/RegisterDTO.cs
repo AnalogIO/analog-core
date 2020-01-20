@@ -1,11 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 
-public class RegisterDTO
+namespace CoffeeCard.Models.DataTransferObjects.User
 {
-    [Required]
-    public string Name { get; set; }
-    [Required]
-    public string Email { get; set; }
-    [Required]
-    public string Password { get; set; }
+    public class RegisterDTO
+    {
+        [Required]
+        public string Name { get; set; }
+        [Required]
+        public string Email { get; set; }
+        [Required]
+        public string Password { get; set; }
+    }
 }

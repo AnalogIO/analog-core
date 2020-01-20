@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using coffeecard.Models.DataTransferObjects.AppConfig;
+using CoffeeCard.Models.DataTransferObjects.AppConfig;
 
-namespace coffeecard.Services
+namespace CoffeeCard.Services
 {
     public interface IAppConfigService
     {

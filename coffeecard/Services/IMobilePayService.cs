@@ -1,7 +1,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace coffeecard.Services
+namespace CoffeeCard.Services
 {
     public interface IMobilePayService
     {

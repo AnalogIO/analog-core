@@ -10,7 +10,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace coffeecard.Services
+namespace CoffeeCard.Services
 {
     public class MobilePayService : IMobilePayService
     {

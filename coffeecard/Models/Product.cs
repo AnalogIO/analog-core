@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Coffeecard.Models
+namespace CoffeeCard.Models
 {
     public class Product
     {

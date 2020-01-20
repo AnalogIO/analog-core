@@ -1,5 +1,4 @@
-﻿using Coffeecard.Models;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Configuration;
@@ -9,8 +8,9 @@ using RestSharp.Authenticators;
 using Serilog;
 using System;
 using System.IO;
+using CoffeeCard.Models;
 
-namespace coffeecard.Services
+namespace CoffeeCard.Services
 {
     public class EmailService : IEmailService
     {

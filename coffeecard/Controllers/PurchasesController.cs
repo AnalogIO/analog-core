@@ -1,14 +1,14 @@
-﻿using coffeecard.Helpers;
-using coffeecard.Models.DataTransferObjects.Purchase;
-using coffeecard.Services;
+﻿using System.Collections.Generic;
+using System.Linq;
+using CoffeeCard.Helpers;
+using CoffeeCard.Models.DataTransferObjects.Purchase;
+using CoffeeCard.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Serilog;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace coffeecard.Controllers
+namespace CoffeeCard.Controllers
 {
     [ApiVersion("1")]
     [Route("api/v{version:apiVersion}/[controller]")]

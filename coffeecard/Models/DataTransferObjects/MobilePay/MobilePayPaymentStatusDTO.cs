@@ -1,4 +1,4 @@
-namespace coffeecard.Models.DataTransferObjects.MobilePay
+namespace CoffeeCard.Models.DataTransferObjects.MobilePay
 {
     public class MobilePayPaymentStatusDTO
     {

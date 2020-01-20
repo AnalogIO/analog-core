@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore;
+﻿using System;
+using System.IO;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Serilog;
-using System;
-using System.IO;
 
-namespace Coffeecard
+namespace CoffeeCard
 {
     public class Program
     {

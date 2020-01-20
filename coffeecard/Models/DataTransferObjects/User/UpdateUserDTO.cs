@@ -1,4 +1,4 @@
-namespace coffeecard.Models.DataTransferObjects.User
+namespace CoffeeCard.Models.DataTransferObjects.User
 {
     public class UpdateUserDTO
     {

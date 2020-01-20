@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using System;
 
-namespace coffeecard.Helpers
+namespace CoffeeCard.Helpers
 {
     public class ApiExceptionFilter : ExceptionFilterAttribute
     {

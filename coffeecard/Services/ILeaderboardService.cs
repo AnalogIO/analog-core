@@ -1,8 +1,7 @@
-﻿using coffeecard.Models;
-using Coffeecard.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using CoffeeCard.Models;
 
-namespace coffeecard.Services
+namespace CoffeeCard.Services
 {
     public interface ILeaderboardService
     {

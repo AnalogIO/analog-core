@@ -1,15 +1,15 @@
-using coffeecard.Helpers;
-using coffeecard.Models.DataTransferObjects.User;
-using coffeecard.Services;
+using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using CoffeeCard.Helpers;
+using CoffeeCard.Models.DataTransferObjects.User;
+using CoffeeCard.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using MimeKit;
-using System.IO;
-using System.Net.Http;
-using System.Net.Http.Headers;
 
-namespace coffeecard.Controllers
+namespace CoffeeCard.Controllers
 {
     [ApiVersion("1")]
     [Route("api/v{version:apiVersion}/[controller]")]

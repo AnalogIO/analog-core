@@ -1,13 +1,13 @@
-﻿using coffeecard.Models.DataTransferObjects.Product;
-using coffeecard.Models.DataTransferObjects.Programme;
-using coffeecard.Models.DataTransferObjects.Purchase;
-using coffeecard.Models.DataTransferObjects.Ticket;
-using coffeecard.Models.DataTransferObjects.User;
-using Coffeecard.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using CoffeeCard.Models;
+using CoffeeCard.Models.DataTransferObjects.Product;
+using CoffeeCard.Models.DataTransferObjects.Programme;
+using CoffeeCard.Models.DataTransferObjects.Purchase;
+using CoffeeCard.Models.DataTransferObjects.Ticket;
+using CoffeeCard.Models.DataTransferObjects.User;
 
-namespace coffeecard.Services
+namespace CoffeeCard.Services
 {
     public class MapperService : IMapperService
     {

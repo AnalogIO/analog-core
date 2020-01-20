@@ -1,4 +1,7 @@
-public class TokenDTO
+namespace CoffeeCard.Models.DataTransferObjects.User
 {
-    public string Token { get; set; }
+    public class TokenDTO
+    {
+        public string Token { get; set; }
+    }
 }

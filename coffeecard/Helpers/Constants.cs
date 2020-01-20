@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace coffeecard.Helpers
+namespace CoffeeCard.Helpers
 {
     public static class Constants
     {

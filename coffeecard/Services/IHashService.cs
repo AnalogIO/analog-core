@@ -1,4 +1,4 @@
-﻿namespace coffeecard.Services
+﻿namespace CoffeeCard.Services
 {
     public interface IHashService
     {
