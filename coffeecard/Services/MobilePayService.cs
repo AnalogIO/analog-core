@@ -1,93 +1,115 @@
-using Jose;
-using Microsoft.AspNetCore.Hosting;
+using coffeecard.Helpers.MobilePay;
+using coffeecard.Helpers.MobilePay.RequestMessage;
+using coffeecard.Helpers.MobilePay.ResponseMessage;
 using Microsoft.Extensions.Configuration;
 using Serilog;
-using System;
-using System.Linq;
-using System.Net.Http;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace coffeecard.Services
 {
     public class MobilePayService : IMobilePayService
     {
-        private readonly HttpClient _client;
-        private readonly IConfiguration _configuration;
-        private readonly X509Certificate2 _cert;
+        private readonly MobilePayApiHttpClient _mobilePayAPIClient;
+        private readonly string _merchantId;
 
-        public MobilePayService(IConfiguration configuration, IHostingEnvironment env)
+        public MobilePayService(MobilePayApiHttpClient mobilePayAPIClient, IConfiguration configuration)
         {
-            _configuration = configuration;
-            var provider = env.ContentRootFileProvider;
-            var contents = provider.GetDirectoryContents(string.Empty);
-            var certPath = contents.FirstOrDefault(x => x.Name.Equals("www.analogio.dk.pfx")).PhysicalPath;
-
-            _cert = new X509Certificate2(certPath, _configuration["CertificatePassword"], X509KeyStorageFlags.MachineKeySet);
-
-            _client = new HttpClient();
+            _mobilePayAPIClient = mobilePayAPIClient;
+            _merchantId = configuration["MPMerchantID"];
         }
 
-        private string GetSignatureForPayload(string payload)
+        public async Task<GetPaymentStatusResponse> GetPaymentStatus(string orderId)
         {
-            var sha1 = new SHA1Managed();
-            var hash = Convert.ToBase64String(sha1.ComputeHash(Encoding.UTF8.GetBytes(payload)));
-            using (RSA rsa = _cert.GetRSAPrivateKey())
+            Log.Information($"Checking order against MobilePay with orderId = {orderId}");
+
+            try
             {
-                var signature = JWT.Encode(hash, rsa, JwsAlgorithm.RS256);
-                return signature;
+                var response = await _mobilePayAPIClient.SendRequest<GetPaymentStatusResponse>(new GetPaymentStatusRequest(_merchantId, orderId));
+
+                Log.Information($"MobilePay transactionId = {response.TransactionId}, orderId = {orderId} has PaymentStatus = {response.LatestPaymentStatus}");
+
+                return response;
             }
-
-        }
-
-        public async Task<HttpResponseMessage> GetPaymentStatus(string orderId)
-        {
-            Log.Information($"Checking order against mobilepay with orderId: {orderId}");
-            var merchantId = _configuration["MPMerchantID"];
-            var payload = $"https://api.mobeco.dk/appswitch/api/v1/merchants/{merchantId}/orders/{orderId}";
-
-            var response = await SendRequest(payload, HttpMethod.Get);
-            return response;
-        }
-
-        public async Task<HttpResponseMessage> CapturePayment(string orderId)
-        {
-            var merchantId = _configuration["MPMerchantID"];
-            var payload = $"https://api.mobeco.dk/appswitch/api/v1/reservations/merchants/{merchantId}/orders/{orderId}";
-
-            var response = await SendRequest(payload, HttpMethod.Put);
-            return response;
-        }
-
-        public async Task<HttpResponseMessage> CancelPaymentReservation(string orderId)
-        {
-            var merchantId = _configuration["MPMerchantID"];
-            var payload = $"https://api.mobeco.dk/appswitch/api/v1/reservations/merchants/{merchantId}/orders/{orderId}";
-
-            var response = await SendRequest(payload, HttpMethod.Delete);
-            return response;
-        }
-
-        private async Task<HttpResponseMessage> SendRequest(string payload, HttpMethod httpMethod)
-        {
-            var signature = GetSignatureForPayload(payload);
-
-            HttpRequestMessage request = new HttpRequestMessage()
+            catch (MobilePayException exception)
             {
-                Headers = { { "AuthenticationSignature", signature }, { "Ocp-Apim-Subscription-Key", _configuration["MPSubscriptionKey"] } },
-                Method = httpMethod,
-                RequestUri = new Uri(payload)
-            };
+                // If exception is InternalServerError or RequestTimeOut, we try one more time since the MobilePay API
+                // in rare case (according to documentation) can fail with one of these mistakes and should retry if so
+                if (!exception.GetHttpStatusCode().Equals(HttpStatusCode.InternalServerError) &&
+                    !exception.GetHttpStatusCode().Equals(HttpStatusCode.RequestTimeout)) throw;
+                
+                try
+                {
+                    Log.Warning($"Retrying to retrieve Payment Status. Last call failed with {exception}");
+                    
+                    var response = await _mobilePayAPIClient.SendRequest<GetPaymentStatusResponse>(new GetPaymentStatusRequest(_merchantId, orderId));
+                    return response;
+                }
+                catch (MobilePayException retryException)
+                {
+                    Log.Error($"Retry failed. Exception thrown = {retryException}");
+                    throw;
+                }
+            }
+        }
 
-            var response = await _client.SendAsync(request);
-            return response;
+        public async Task<CaptureAmountResponse> CapturePayment(string orderId)
+        {
+            try
+            {
+                var response = await _mobilePayAPIClient.SendRequest<CaptureAmountResponse>(new CaptureAmountRequest(_merchantId, orderId));
+                Log.Information($"MobilePay transactionId = {response.TransactionId}, orderId = {orderId} has been captured from the MobilePay API");
+                return response;
+            }
+            catch (MobilePayException exception)
+            {
+                if (!exception.GetHttpStatusCode().Equals(HttpStatusCode.InternalServerError) &&
+                    !exception.GetHttpStatusCode().Equals(HttpStatusCode.RequestTimeout)) throw;
+                
+                var paymentStatus = await GetPaymentStatus(orderId);
+                if (paymentStatus.LatestPaymentStatus.Equals(PaymentStatus.Captured))
+                {
+                    return new CaptureAmountResponse
+                    {
+                        TransactionId = paymentStatus.TransactionId
+                    };
+                }
+
+                // If Transaction is not in State captured, throw the causing exception
+                throw;
+            }
+        }
+
+        public async Task<CancelReservationResponse> CancelPaymentReservation(string orderId)
+        {
+            try
+            {
+                var response = await _mobilePayAPIClient.SendRequest<CancelReservationResponse>(new CancelReservationRequest(_merchantId, orderId));
+                Log.Information($"MobilePay transactionId = {response.TransactionId}, orderId = {orderId} has been cancelled from the MobilePay API");
+                return response;
+            }
+            catch (MobilePayException e)
+            {
+                if (!e.GetHttpStatusCode().Equals(HttpStatusCode.InternalServerError) &&
+                    !e.GetHttpStatusCode().Equals(HttpStatusCode.RequestTimeout)) throw;
+                
+                var paymentStatus = await GetPaymentStatus(orderId);
+                if (paymentStatus.LatestPaymentStatus.Equals(PaymentStatus.Cancelled))
+                {
+                    return new CancelReservationResponse
+                    {
+                        TransactionId = paymentStatus.TransactionId
+                    };
+                }
+
+                // If Transaction is not in state Cancelled, throw the causing exception
+                throw;
+            }
         }
         
         public void Dispose()
         {
-            _client.Dispose();
+            _mobilePayAPIClient.Dispose();
         }
     }
 }

@@ -1,12 +1,12 @@
-﻿namespace CoffeeCard.Helpers
+﻿namespace coffeecard.Helpers
 {
     public class ApiError
     {
+        public string Message { get; set; }
+
         public ApiError(string message)
         {
-            this.message = message;
+            this.Message = message;
         }
-
-        public string message { get; set; }
     }
 }

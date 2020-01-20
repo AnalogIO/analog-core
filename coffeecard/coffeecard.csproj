@@ -6,11 +6,11 @@
   </PropertyGroup>
 
     <ItemGroup>
-    <None Remove="test_MobilePay_AnalogIO.pfx" />
+    <None Remove="www.analogio.dk.pfx" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="test_MobilePay_AnalogIO.pfx">
+    <Content Include="www.analogio.dk.pfx">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
