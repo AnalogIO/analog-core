@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 
 namespace CoffeeCard.Helpers.MobilePay.RequestMessage
 {
@@ -28,6 +29,24 @@ namespace CoffeeCard.Helpers.MobilePay.RequestMessage
         public HttpMethod GetHttpMethod()
         {
             return HttpMethod.Get;
+        }
+
+        private bool Equals(GetPaymentStatusRequest other)
+        {
+            return _merchantId == other._merchantId && _orderId == other._orderId;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((GetPaymentStatusRequest) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(_merchantId, _orderId);
         }
     }
 }

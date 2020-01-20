@@ -37,11 +37,11 @@ namespace CoffeeCard.Services
                 // in rare case (according to documentation) can fail with one of these mistakes and should retry if so
                 if (!exception.GetHttpStatusCode().Equals(HttpStatusCode.InternalServerError) &&
                     !exception.GetHttpStatusCode().Equals(HttpStatusCode.RequestTimeout)) throw;
-                
+
                 try
                 {
                     Log.Warning($"Retrying to retrieve Payment Status. Last call failed with {exception}");
-                    
+
                     var response = await _mobilePayAPIClient.SendRequest<GetPaymentStatusResponse>(new GetPaymentStatusRequest(_merchantId, orderId));
                     return response;
                 }
@@ -65,7 +65,7 @@ namespace CoffeeCard.Services
             {
                 if (!exception.GetHttpStatusCode().Equals(HttpStatusCode.InternalServerError) &&
                     !exception.GetHttpStatusCode().Equals(HttpStatusCode.RequestTimeout)) throw;
-                
+
                 var paymentStatus = await GetPaymentStatus(orderId);
                 if (paymentStatus.LatestPaymentStatus.Equals(PaymentStatus.Captured))
                 {
@@ -75,7 +75,7 @@ namespace CoffeeCard.Services
                     };
                 }
 
-                // If Transaction is not in State captured, throw the causing exception
+                Log.Error($"Error capturing payment reservation. TransactionId = {paymentStatus.TransactionId} has status {paymentStatus.LatestPaymentStatus} at MobilePay");
                 throw;
             }
         }
@@ -92,7 +92,7 @@ namespace CoffeeCard.Services
             {
                 if (!e.GetHttpStatusCode().Equals(HttpStatusCode.InternalServerError) &&
                     !e.GetHttpStatusCode().Equals(HttpStatusCode.RequestTimeout)) throw;
-                
+
                 var paymentStatus = await GetPaymentStatus(orderId);
                 if (paymentStatus.LatestPaymentStatus.Equals(PaymentStatus.Cancelled))
                 {
@@ -102,11 +102,11 @@ namespace CoffeeCard.Services
                     };
                 }
 
-                // If Transaction is not in state Cancelled, throw the causing exception
+                Log.Error($"Error cancelling payment reservation. TransactionId = {paymentStatus.TransactionId} has status {paymentStatus.LatestPaymentStatus} at MobilePay");
                 throw;
             }
         }
-        
+
         public void Dispose()
         {
             _mobilePayAPIClient.Dispose();

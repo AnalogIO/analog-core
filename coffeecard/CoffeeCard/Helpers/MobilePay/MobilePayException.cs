@@ -5,7 +5,7 @@ using CoffeeCard.Helpers.MobilePay.ErrorMessage;
 namespace CoffeeCard.Helpers.MobilePay
 {
     [Serializable]
-    internal class MobilePayException : Exception
+    public class MobilePayException : Exception
     {
         private readonly IMobilePayErrorMessage _errorMessage;
         private readonly HttpStatusCode _httpStatusCode;
