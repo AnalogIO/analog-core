@@ -1,5 +1,7 @@
 ﻿using coffeecard.Controllers;
 using coffeecard.Helpers;
+using coffeecard.Helpers.MobilePay;
+using coffeecard.Helpers.MobilePay.ResponseMessage;
 using coffeecard.Models.DataTransferObjects.MobilePay;
 using Coffeecard.Models;
 using Microsoft.EntityFrameworkCore;
@@ -40,7 +42,7 @@ namespace coffeecard.Services
 
         public Purchase Read(string orderId)
         {
-            return _context.Purchases.Where(x => x.OrderId == orderId).FirstOrDefault();
+            return _context.Purchases.FirstOrDefault(x => x.OrderId == orderId);
         }
 
         public IEnumerable<Purchase> Read(DateTime from, DateTime to)
@@ -70,11 +72,6 @@ namespace coffeecard.Services
         {
             _context.Purchases.RemoveRange(purchases);
             return _context.SaveChanges() > 0;
-        }
-
-        public void Dispose()
-        {
-            _context.Dispose();
         }
 
         public Purchase GetPurchase(int id)
@@ -211,13 +208,40 @@ namespace coffeecard.Services
         public async Task<Purchase> CompletePurchase(CompletePurchaseDTO dto, IEnumerable<Claim> claims)
         {
             Log.Information($"Trying to complete purchase with orderid: {dto.OrderId} and transactionId: {dto.TransactionId}");
-            var valid = true;
-            if (!_configuration["MPMerchantID"].Equals("APPDK0000000000"))
+            PaymentStatus paymentStatus;
+            try
             {
-                valid = await ValidateTransaction(dto);
-            }
+                //TODO Figure out the purpose of this check, and probably fix it in regard to test environment
+                if (!_configuration["MPMerchantID"].Equals("APPDK0000000000"))
+                {
+                    paymentStatus = await ValidateTransaction(dto);
 
-            if (!valid) throw new ApiException($"The purchase is invalid", 400);
+                    switch (paymentStatus)
+                    {
+                        case PaymentStatus.Captured:
+                            {
+                                Log.Information($"Validating transaction with orderId: {dto.OrderId} and transactionId: {dto.TransactionId} succeeded!");
+                                break;
+                            }
+                        case PaymentStatus.Reserved:
+                            {
+                                var captureResponse = await _mobilePayService.CapturePayment(dto.OrderId);
+                                Log.Information($"Validating transaction with orderId: {dto.OrderId} and transactionId: {captureResponse.TransactionId} succeeded!");
+                                break;
+                            }
+                        default:
+                            {
+                                Log.Warning($"Validating transaction at MobilePay failed with status: {paymentStatus}");
+                                throw new ApiException($"The purchase could not be completed", 400);
+                            }
+                    }
+                }
+            }
+            catch (MobilePayException e)
+            {
+                Log.Warning($"Complete purchase failed with error message: {e.Message} and status code: {e.GetHttpStatusCode()}" );
+                throw new ApiException("Failed to complete purchase using MobilePay", 400);
+            }
 
             var purchase = DeliverProduct(dto, claims);
 
@@ -225,42 +249,18 @@ namespace coffeecard.Services
             return purchase;
         }
 
-        private async Task<bool> ValidateTransaction(CompletePurchaseDTO payment)
+        private async Task<PaymentStatus> ValidateTransaction(CompletePurchaseDTO payment)
         {
             var purchase = _context.Purchases.FirstOrDefault(x => x.OrderId == payment.OrderId);
-            if (purchase == null) throw new ApiException($"The purchase with orderid {payment.OrderId} does not exist", 400);
+            if (purchase == null) throw new ApiException($"The purchase with orderId {payment.OrderId} does not exist", 400);
             if (purchase.Completed) throw new ApiException($"The given purchase has already been completed", 400);
 
             var response = await _mobilePayService.GetPaymentStatus(payment.OrderId);
 
-            if (!response.IsSuccessStatusCode)
-            {
-                Log.Warning($"Validating transaction at mobilepay failed with statuscode: {response.StatusCode}");
-                throw new ApiException($"The purchase is not valid", 400);
-            }
-
-            var status = await response.Content.ReadAsAsync<MobilePayPaymentStatusDTO>();
-            if (status.LatestPaymentStatus.Equals("Captured") && status.OriginalAmount.Equals(purchase.Price) && status.TransactionId.Equals(payment.TransactionId))
-            {
-                Log.Information($"Validting transction with orderid: {payment.OrderId} and transactionId: {payment.TransactionId} succeeded!");
-                return true;
-            } 
-            else if (status.LatestPaymentStatus.Equals("Reserved") && status.OriginalAmount.Equals(purchase.Price) && status.TransactionId.Equals(payment.TransactionId))
-            {
-                var captureResponse = await _mobilePayService.CapturePayment(payment.OrderId);
-                if (captureResponse.IsSuccessStatusCode)
-                {
-                    Log.Information($"Validting transction with orderid: {payment.OrderId} and transactionId: {payment.TransactionId} succeeded!");
-                    return true;
-                }
-                Log.Warning($"Validating transaction at mobilepay failed with statuscode: {response.StatusCode}");
-                throw new ApiException($"The purchase is not valid", 400);
-            }
-
-            Log.Warning($"Could not validate transction with orderid: {payment.OrderId} and transctionId: {payment.TransactionId}");
-            return false;
+            return response.LatestPaymentStatus;
         }
 
+        /*  //TODO Reimplement
         public async Task CheckIncompletePurchases(User user)
         {
             var incompletePurchases = user.Purchases.Where(x => !x.Completed).ToList();
@@ -297,7 +297,7 @@ namespace coffeecard.Services
         {
             var response = await _mobilePayService.CapturePayment(orderId);
             return response;
-        }
+        }*/
 
         public Purchase IssueProduct(IssueProductDTO issueProduct)
         {
@@ -332,6 +332,11 @@ namespace coffeecard.Services
             _context.Update(user);
 
             return purchase;
+        }
+        
+        public void Dispose()
+        {
+            _context.Dispose();
         }
     }
 }
