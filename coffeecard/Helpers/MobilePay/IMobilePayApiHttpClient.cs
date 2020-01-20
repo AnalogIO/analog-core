@@ -1,9 +1,9 @@
 using System;
 using System.Threading.Tasks;
-using coffeecard.Helpers.MobilePay.RequestMessage;
-using coffeecard.Helpers.MobilePay.ResponseMessage;
+using CoffeeCard.Helpers.MobilePay.RequestMessage;
+using CoffeeCard.Helpers.MobilePay.ResponseMessage;
 
-namespace coffeecard.Helpers.MobilePay
+namespace CoffeeCard.Helpers.MobilePay
 {
     public interface IMobilePayApiHttpClient : IDisposable
     {

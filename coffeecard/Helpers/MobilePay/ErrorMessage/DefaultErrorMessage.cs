@@ -1,4 +1,4 @@
-﻿namespace coffeecard.Helpers.MobilePay.ErrorMessage
+﻿namespace CoffeeCard.Helpers.MobilePay.ErrorMessage
 {
     public class DefaultErrorMessage : IMobilePayErrorMessage
     {

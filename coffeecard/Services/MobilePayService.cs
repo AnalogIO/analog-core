@@ -1,12 +1,12 @@
-using coffeecard.Helpers.MobilePay;
-using coffeecard.Helpers.MobilePay.RequestMessage;
-using coffeecard.Helpers.MobilePay.ResponseMessage;
-using Microsoft.Extensions.Configuration;
-using Serilog;
 using System.Net;
 using System.Threading.Tasks;
+using CoffeeCard.Helpers.MobilePay;
+using CoffeeCard.Helpers.MobilePay.RequestMessage;
+using CoffeeCard.Helpers.MobilePay.ResponseMessage;
+using Microsoft.Extensions.Configuration;
+using Serilog;
 
-namespace coffeecard.Services
+namespace CoffeeCard.Services
 {
     public class MobilePayService : IMobilePayService
     {

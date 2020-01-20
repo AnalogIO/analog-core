@@ -1,4 +1,4 @@
-﻿namespace coffeecard.Helpers.MobilePay.ResponseMessage
+﻿namespace CoffeeCard.Helpers.MobilePay.ResponseMessage
 {
     public class CaptureAmountResponse : IMobilePayAPIResponse
     {

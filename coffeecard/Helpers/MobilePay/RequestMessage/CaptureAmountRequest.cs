@@ -1,7 +1,6 @@
 ﻿using System.Net.Http;
-using Newtonsoft.Json;
 
-namespace coffeecard.Helpers.MobilePay.RequestMessage
+namespace CoffeeCard.Helpers.MobilePay.RequestMessage
 {
     public class CaptureAmountRequest : IMobilePayAPIRequestMessage
     {

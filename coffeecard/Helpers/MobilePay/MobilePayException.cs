@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Net;
-using System.Runtime.Serialization;
-using coffeecard.Helpers.MobilePay.ErrorMessage;
+using CoffeeCard.Helpers.MobilePay.ErrorMessage;
 
-namespace coffeecard.Helpers.MobilePay
+namespace CoffeeCard.Helpers.MobilePay
 {
     [Serializable]
     internal class MobilePayException : Exception

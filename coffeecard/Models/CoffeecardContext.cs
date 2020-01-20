@@ -1,8 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System.Configuration;
 
-namespace Coffeecard.Models
+namespace CoffeeCard.Models
 {
     public class CoffeecardContext : DbContext
     {

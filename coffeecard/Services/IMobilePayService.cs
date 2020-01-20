@@ -1,6 +1,6 @@
-using coffeecard.Helpers.MobilePay.ResponseMessage;
 using System.Net.Http;
 using System.Threading.Tasks;
+using CoffeeCard.Helpers.MobilePay.ResponseMessage;
 
 namespace CoffeeCard.Services
 {
