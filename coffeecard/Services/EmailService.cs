@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System;
+using System.IO;
+using CoffeeCard.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Configuration;
@@ -6,20 +9,17 @@ using MimeKit;
 using RestSharp;
 using RestSharp.Authenticators;
 using Serilog;
-using System;
-using System.IO;
-using CoffeeCard.Models;
 
 namespace CoffeeCard.Services
 {
     public class EmailService : IEmailService
     {
-
         private readonly IConfiguration _configuration;
         private readonly IHostingEnvironment _env;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public EmailService(IConfiguration configuration, IHostingEnvironment env, IHttpContextAccessor httpContextAccessor)
+        public EmailService(IConfiguration configuration, IHostingEnvironment env,
+            IHttpContextAccessor httpContextAccessor)
         {
             _configuration = configuration;
             _env = env;
@@ -33,17 +33,17 @@ namespace CoffeeCard.Services
             var baseUrl = fullPath.Substring(0, fullPath.IndexOf("api/"));
 
             var pathToTemplate = _env.WebRootPath
-                            + Path.DirectorySeparatorChar.ToString()
-                            + "Templates"
-                            + Path.DirectorySeparatorChar.ToString()
-                            + "EmailTemplate"
-                            + Path.DirectorySeparatorChar.ToString()
-                            + "email_verify_registration.html";
+                                 + Path.DirectorySeparatorChar
+                                 + "Templates"
+                                 + Path.DirectorySeparatorChar
+                                 + "EmailTemplate"
+                                 + Path.DirectorySeparatorChar
+                                 + "email_verify_registration.html";
 
             var message = new MimeMessage();
             var builder = new BodyBuilder();
 
-            using (StreamReader SourceReader = File.OpenText(pathToTemplate))
+            using (var SourceReader = File.OpenText(pathToTemplate))
             {
                 builder.HtmlBody = SourceReader.ReadToEnd();
             }
@@ -68,17 +68,17 @@ namespace CoffeeCard.Services
             var baseUrl = fullPath.Substring(0, fullPath.IndexOf("api/"));
 
             var pathToTemplate = _env.WebRootPath
-                            + Path.DirectorySeparatorChar.ToString()
-                            + "Templates"
-                            + Path.DirectorySeparatorChar.ToString()
-                            + "EmailTemplate"
-                            + Path.DirectorySeparatorChar.ToString()
-                            + "email_verify_updatedemail.html";
+                                 + Path.DirectorySeparatorChar
+                                 + "Templates"
+                                 + Path.DirectorySeparatorChar
+                                 + "EmailTemplate"
+                                 + Path.DirectorySeparatorChar
+                                 + "email_verify_updatedemail.html";
 
             var message = new MimeMessage();
             var builder = new BodyBuilder();
 
-            using (StreamReader SourceReader = File.OpenText(pathToTemplate))
+            using (var SourceReader = File.OpenText(pathToTemplate))
             {
                 builder.HtmlBody = SourceReader.ReadToEnd();
             }
@@ -104,17 +104,17 @@ namespace CoffeeCard.Services
             var baseUrl = fullPath.Substring(0, fullPath.IndexOf("api/"));
 
             var pathToTemplate = _env.WebRootPath
-                            + Path.DirectorySeparatorChar.ToString()
-                            + "Templates"
-                            + Path.DirectorySeparatorChar.ToString()
-                            + "EmailTemplate"
-                            + Path.DirectorySeparatorChar.ToString()
-                            + "email_verify_lostpassword.html";
+                                 + Path.DirectorySeparatorChar
+                                 + "Templates"
+                                 + Path.DirectorySeparatorChar
+                                 + "EmailTemplate"
+                                 + Path.DirectorySeparatorChar
+                                 + "email_verify_lostpassword.html";
 
             var message = new MimeMessage();
             var builder = new BodyBuilder();
 
-            using (StreamReader SourceReader = File.OpenText(pathToTemplate))
+            using (var SourceReader = File.OpenText(pathToTemplate))
             {
                 builder.HtmlBody = SourceReader.ReadToEnd();
             }
@@ -140,17 +140,17 @@ namespace CoffeeCard.Services
             var baseUrl = fullPath.Substring(0, fullPath.IndexOf("api/"));
 
             var pathToTemplate = _env.WebRootPath
-                            + Path.DirectorySeparatorChar.ToString()
-                            + "Templates"
-                            + Path.DirectorySeparatorChar.ToString()
-                            + "EmailTemplate"
-                            + Path.DirectorySeparatorChar.ToString()
-                            + "email_newpassword.html";
+                                 + Path.DirectorySeparatorChar
+                                 + "Templates"
+                                 + Path.DirectorySeparatorChar
+                                 + "EmailTemplate"
+                                 + Path.DirectorySeparatorChar
+                                 + "email_newpassword.html";
 
             var message = new MimeMessage();
             var builder = new BodyBuilder();
 
-            using (StreamReader SourceReader = File.OpenText(pathToTemplate))
+            using (var SourceReader = File.OpenText(pathToTemplate))
             {
                 builder.HtmlBody = SourceReader.ReadToEnd();
             }
@@ -169,11 +169,11 @@ namespace CoffeeCard.Services
 
         public void SendEmail(MimeMessage mail)
         {
-            RestClient client = new RestClient();
+            var client = new RestClient();
             client.BaseUrl = new Uri("https://api.mailgun.net/v3");
 
             client.Authenticator = new HttpBasicAuthenticator("api", _configuration["MailgunAPIKey"]);
-            RestRequest request = new RestRequest();
+            var request = new RestRequest();
             request.AddParameter("domain", _configuration["MailgunDomain"], ParameterType.UrlSegment);
             request.Resource = "{domain}/messages";
             request.AddParameter("from", "Café Analog <mailgun@cafeanalog.dk>");

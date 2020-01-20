@@ -6,14 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CoffeeCard.Controllers
 {
-
     [ApiVersion("1")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     public class LeaderboardController : ControllerBase
     {
-        ILeaderboardService _leaderboardService;
-        IMapperService _mapperService;
+        private readonly ILeaderboardService _leaderboardService;
+        private IMapperService _mapperService;
 
         public LeaderboardController(ILeaderboardService leaderboardService, IMapperService mapperService)
         {
@@ -23,7 +22,7 @@ namespace CoffeeCard.Controllers
 
 
         /// <summary>
-        ///  Gets the highscore of the specified preset 0 - Monthly, 1 - Semester and 2 - Total
+        ///     Gets the highscore of the specified preset 0 - Monthly, 1 - Semester and 2 - Total
         /// </summary>
         [HttpGet]
         [ProducesResponseType(200)]

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace CoffeeCard.Models
 {
@@ -12,17 +11,16 @@ namespace CoffeeCard.Models
         public int Quantity { get; set; }
     }
 
-    class CoffeeCardComparer : IEqualityComparer<CoffeCard>
+    internal class CoffeeCardComparer : IEqualityComparer<CoffeCard>
     {
         // CoffeeCards are equal if their id is equal.
         public bool Equals(CoffeCard x, CoffeCard y)
         {
-
             //Check whether the compared objects reference the same data.
-            if (Object.ReferenceEquals(x, y)) return true;
+            if (ReferenceEquals(x, y)) return true;
 
             //Check whether any of the compared objects is null.
-            if (Object.ReferenceEquals(x, null) || Object.ReferenceEquals(y, null))
+            if (ReferenceEquals(x, null) || ReferenceEquals(y, null))
                 return false;
 
             return x.ProductId == y.ProductId;
@@ -34,13 +32,12 @@ namespace CoffeeCard.Models
         public int GetHashCode(CoffeCard coffeCard)
         {
             //Check whether the object is null
-            if (Object.ReferenceEquals(coffeCard, null)) return 0;
+            if (ReferenceEquals(coffeCard, null)) return 0;
 
             //Get hash code for the ProductId field.
-            int hashProductCode = coffeCard.ProductId.GetHashCode();
+            var hashProductCode = coffeCard.ProductId.GetHashCode();
 
             return hashProductCode;
         }
-
     }
 }

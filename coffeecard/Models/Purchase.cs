@@ -10,6 +10,7 @@ namespace CoffeeCard.Models
         {
             DateCreated = DateTime.UtcNow;
         }
+
         public int Id { get; set; }
         public string ProductName { get; set; }
         public int ProductId { get; set; }
@@ -19,8 +20,9 @@ namespace CoffeeCard.Models
         public bool Completed { get; set; }
         public string OrderId { get; set; }
         public string TransactionId { get; set; }
-        [ForeignKey("PurchasedBy_Id")]
-        public virtual User PurchasedBy { get; set; }
+
+        [ForeignKey("PurchasedBy_Id")] public virtual User PurchasedBy { get; set; }
+
         public virtual ICollection<Ticket> Tickets { get; set; }
     }
 }

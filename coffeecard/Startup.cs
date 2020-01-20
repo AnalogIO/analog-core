@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using NSwag;
 
 namespace CoffeeCard
 {
@@ -36,8 +37,8 @@ namespace CoffeeCard
             services.AddDbContext<CoffeecardContext>(opt =>
                 opt.UseSqlServer(Configuration.GetConnectionString("CoffeecardDatabase")));
 
-            services.AddSingleton<IConfiguration>(provider => Configuration);
-            services.AddSingleton<IHostingEnvironment>(Environment);
+            services.AddSingleton(provider => Configuration);
+            services.AddSingleton(Environment);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IHashService, HashService>();
             services.AddTransient<ITokenService, TokenService>();
@@ -52,10 +53,8 @@ namespace CoffeeCard
             services.AddScoped<ILeaderboardService, LeaderboardService>();
             services.AddScoped<IAppConfigService, AppConfigService>();
 
-            services.AddMvc(options =>
-            {
-                options.Filters.Add(new ApiExceptionFilter());
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc(options => { options.Filters.Add(new ApiExceptionFilter()); })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddApiVersioning();
 
@@ -67,13 +66,13 @@ namespace CoffeeCard
                     document.Info.Title = "Café Analog CoffeeCard API";
                     document.Info.Description = "ASP.NET Core web API for the coffee bar Café Analog";
                     document.Info.TermsOfService = "None";
-                    document.Info.Contact = new NSwag.OpenApiContact
+                    document.Info.Contact = new OpenApiContact
                     {
                         Name = "AnalogIO",
                         Email = "admin@analogio.dk",
                         Url = "https://github.com/analogio"
                     };
-                    document.Info.License = new NSwag.OpenApiLicense
+                    document.Info.License = new OpenApiLicense
                     {
                         Name = "Use under MIT",
                         Url = "https://github.com/AnalogIO/analog-core/blob/master/LICENSE"
@@ -106,9 +105,7 @@ namespace CoffeeCard
                     OnAuthenticationFailed = context =>
                     {
                         if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
-                        {
                             context.Response.Headers.Add("Token-Expired", "true");
-                        }
 
                         return Task.CompletedTask;
                     }
@@ -120,13 +117,9 @@ namespace CoffeeCard
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
-            {
                 app.UseDeveloperExceptionPage();
-            }
             else
-            {
                 app.UseHsts();
-            }
 
             app.UseOpenApi();
             app.UseSwaggerUi3();

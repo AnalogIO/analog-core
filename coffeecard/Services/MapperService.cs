@@ -49,14 +49,21 @@ namespace CoffeeCard.Services
 
         public UserDTO Map(User user)
         {
-
-
-            return new UserDTO { Email = user.Email, Id = user.Id, Name = user.Name, PrivacyActivated = user.PrivacyActivated, ProgrammeId = user.Programme.Id, Level = user.CalculateLevelFromXp(), RequiredExp = user.CalculateRequiredXpByLevel() };
+            return new UserDTO
+            {
+                Email = user.Email, Id = user.Id, Name = user.Name, PrivacyActivated = user.PrivacyActivated,
+                ProgrammeId = user.Programme.Id, Level = user.CalculateLevelFromXp(),
+                RequiredExp = user.CalculateRequiredXpByLevel()
+            };
         }
 
         public ProductDTO Map(Product product)
         {
-            return new ProductDTO { Description = product.Description, Id = product.Id, Name = product.Name, NumberOfTickets = product.NumberOfTickets, Price = product.Price };
+            return new ProductDTO
+            {
+                Description = product.Description, Id = product.Id, Name = product.Name,
+                NumberOfTickets = product.NumberOfTickets, Price = product.Price
+            };
         }
 
         public IEnumerable<ProductDTO> Map(IEnumerable<Product> products)
@@ -66,7 +73,11 @@ namespace CoffeeCard.Services
 
         public TicketDTO Map(Ticket ticket)
         {
-            return new TicketDTO { Id = ticket.Id, DateCreated = ticket.DateCreated, DateUsed = ticket.DateUsed, ProductName = ticket.Purchase?.ProductName };
+            return new TicketDTO
+            {
+                Id = ticket.Id, DateCreated = ticket.DateCreated, DateUsed = ticket.DateUsed,
+                ProductName = ticket.Purchase?.ProductName
+            };
         }
 
         public IEnumerable<TicketDTO> Map(IEnumerable<Ticket> tickets)

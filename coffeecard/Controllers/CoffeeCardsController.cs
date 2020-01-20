@@ -13,7 +13,7 @@ namespace CoffeeCard.Controllers
     [ApiController]
     public class CoffeeCardsController : ControllerBase
     {
-        private ITicketService _ticketService;
+        private readonly ITicketService _ticketService;
 
         public CoffeeCardsController(ITicketService ticketService)
         {

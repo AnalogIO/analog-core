@@ -29,7 +29,7 @@ namespace CoffeeCard.Helpers
             {
                 // Unhandled errors
 #if !DEBUG
-                                var msg = "An unhandled error occurred.";                
+                                var msg = "An unhandled error occurred.";
 #else
                 var msg = context.Exception.GetBaseException().Message;
 #endif

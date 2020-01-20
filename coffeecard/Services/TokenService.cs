@@ -11,6 +11,7 @@ namespace CoffeeCard.Services
     public class TokenService : ITokenService
     {
         private readonly IConfiguration _configuration;
+
         public TokenService(IConfiguration configuration)
         {
             _configuration = configuration;
@@ -18,14 +19,15 @@ namespace CoffeeCard.Services
 
         public string GenerateToken(IEnumerable<Claim> claims)
         {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["TokenKey"])); // get token from appsettings.json
+            var key = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(_configuration["TokenKey"])); // get token from appsettings.json
 
-            var jwt = new JwtSecurityToken(issuer: "AnalogIO",
-                audience: "Everyone",
-                claims: claims,
-                notBefore: DateTime.UtcNow,
-                expires: DateTime.UtcNow.AddHours(24),
-                signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
+            var jwt = new JwtSecurityToken("AnalogIO",
+                "Everyone",
+                claims,
+                DateTime.UtcNow,
+                DateTime.UtcNow.AddHours(24),
+                new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
             );
 
             return new JwtSecurityTokenHandler().WriteToken(jwt); //the method is called WriteToken but returns a string
@@ -37,7 +39,7 @@ namespace CoffeeCard.Services
         }
 
         /// <summary>
-        /// Checks if the JWT token is valid (Based on its lifetime)
+        ///     Checks if the JWT token is valid (Based on its lifetime)
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
@@ -46,7 +48,7 @@ namespace CoffeeCard.Services
             try
             {
                 if (token.ValidTo > DateTime.UtcNow) return true;
-                else return false;
+                return false;
             }
             catch (Exception)
             {

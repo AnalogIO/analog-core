@@ -18,6 +18,5 @@ namespace CoffeeCard.Models
         public DbSet<Programme> Programmes { get; set; }
         public DbSet<Voucher> Vouchers { get; set; }
         public DbSet<Statistic> Statistics { get; set; }
-
     }
 }

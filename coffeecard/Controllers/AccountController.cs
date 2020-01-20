@@ -17,12 +17,13 @@ namespace CoffeeCard.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        IAccountService _accountService;
-        ILeaderboardService _leaderboardService;
-        IMapperService _mapperService;
-        IHostingEnvironment _env;
+        private readonly IAccountService _accountService;
+        private readonly IHostingEnvironment _env;
+        private readonly ILeaderboardService _leaderboardService;
+        private readonly IMapperService _mapperService;
 
-        public AccountController(IAccountService accountService, ILeaderboardService leaderboardService, IMapperService mapperService, IHostingEnvironment env)
+        public AccountController(IAccountService accountService, ILeaderboardService leaderboardService,
+            IMapperService mapperService, IHostingEnvironment env)
         {
             _accountService = accountService;
             _leaderboardService = leaderboardService;
@@ -31,7 +32,7 @@ namespace CoffeeCard.Controllers
         }
 
         /// <summary>
-        ///  Registers the user supplied in the body and returns 201 on success
+        ///     Registers the user supplied in the body and returns 201 on success
         /// </summary>
         [AllowAnonymous]
         [HttpPost("register")]
@@ -40,11 +41,16 @@ namespace CoffeeCard.Controllers
         public ActionResult<CreatedResult> Register(RegisterDTO registerDto)
         {
             var user = _accountService.RegisterAccount(registerDto);
-            return Created("register", new { message = "Your user has been created! Please check your email to verify your account.\n(Check your spam folder!)" });
+            return Created("register",
+                new
+                {
+                    message =
+                        "Your user has been created! Please check your email to verify your account.\n(Check your spam folder!)"
+                });
         }
 
         /// <summary>
-        ///  Returns a token that is used to identify the user
+        ///     Returns a token that is used to identify the user
         /// </summary>
         [AllowAnonymous]
         [HttpPost("login")]
@@ -55,11 +61,11 @@ namespace CoffeeCard.Controllers
         {
             var token = _accountService.Login(loginDto.Email, loginDto.Password, loginDto.Version);
             if (token == null) return Unauthorized();
-            return Ok(new TokenDTO { Token = token });
+            return Ok(new TokenDTO {Token = token});
         }
 
         /// <summary>
-        ///  Returns basic data about the user
+        ///     Returns basic data about the user
         /// </summary>
         [HttpGet]
         [ProducesResponseType(200)]
@@ -77,7 +83,7 @@ namespace CoffeeCard.Controllers
         }
 
         /// <summary>
-        ///  Updates the user and returns the updated values
+        ///     Updates the user and returns the updated values
         /// </summary>
         [HttpPut]
         [ProducesResponseType(200)]
@@ -90,7 +96,7 @@ namespace CoffeeCard.Controllers
         }
 
         /// <summary>
-        /// Returns the requested user id
+        ///     Returns the requested user id
         /// </summary>
         [HttpGet("lookupuserid")]
         [ProducesResponseType(200)]
@@ -102,7 +108,7 @@ namespace CoffeeCard.Controllers
         }
 
         /// <summary>
-        /// Sends email to user if they forgot password
+        ///     Sends email to user if they forgot password
         /// </summary>
         /// <param name="emailDTO"></param>
         /// <returns></returns>
@@ -118,7 +124,7 @@ namespace CoffeeCard.Controllers
         }
 
         /// <summary>
-        ///  Verifies the user from a token delivered via email
+        ///     Verifies the user from a token delivered via email
         /// </summary>
         [AllowAnonymous]
         [HttpGet("verify")]
@@ -127,18 +133,14 @@ namespace CoffeeCard.Controllers
             var verified = _accountService.VerifyRegistration(token);
             var content = string.Empty;
             if (verified)
-            {
-                content = $"The account has been verified! You can now login into the app :D";
-            }
+                content = "The account has been verified! You can now login into the app :D";
             else
-            {
-                content = $"The account could not be verified :-(";
-            }
+                content = "The account could not be verified :-(";
 
-            return new ContentResult()
+            return new ContentResult
             {
                 Content = content,
-                ContentType = "text/html",
+                ContentType = "text/html"
             };
         }
 
@@ -151,19 +153,20 @@ namespace CoffeeCard.Controllers
             if (_accountService.RecoverUser(token))
             {
                 var pathToTemplate = _env.WebRootPath
-                            + Path.DirectorySeparatorChar.ToString()
-                            + "Templates"
-                            + Path.DirectorySeparatorChar.ToString()
-                            + "EmailTemplate"
-                            + Path.DirectorySeparatorChar.ToString()
-                            + "account_recover_success.html";
+                                     + Path.DirectorySeparatorChar
+                                     + "Templates"
+                                     + Path.DirectorySeparatorChar
+                                     + "EmailTemplate"
+                                     + Path.DirectorySeparatorChar
+                                     + "account_recover_success.html";
 
                 var builder = new BodyBuilder();
 
-                using (StreamReader SourceReader = System.IO.File.OpenText(pathToTemplate))
+                using (var SourceReader = System.IO.File.OpenText(pathToTemplate))
                 {
                     builder.HtmlBody = SourceReader.ReadToEnd();
                 }
+
                 response.Content = new StringContent(builder.ToString());
                 response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/html");
                 return response;

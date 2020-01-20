@@ -16,12 +16,13 @@ namespace CoffeeCard.Controllers
     [ApiController]
     public class PurchasesController : ControllerBase
     {
-        IConfiguration _configuration;
-        IPurchaseService _purchaseService;
-        IMapperService _mapperService;
-        IAccountService _accountService;
+        private IAccountService _accountService;
+        private readonly IConfiguration _configuration;
+        private readonly IMapperService _mapperService;
+        private readonly IPurchaseService _purchaseService;
 
-        public PurchasesController(IPurchaseService purchaseService, IMapperService mapper, IAccountService accountService, IConfiguration configuration)
+        public PurchasesController(IPurchaseService purchaseService, IMapperService mapper,
+            IAccountService accountService, IConfiguration configuration)
         {
             _purchaseService = purchaseService;
             _mapperService = mapper;
@@ -30,7 +31,7 @@ namespace CoffeeCard.Controllers
         }
 
         /// <summary>
-        ///  Returns a list of purchases for the given user via the supplied token in the header
+        ///     Returns a list of purchases for the given user via the supplied token in the header
         /// </summary>
         [HttpGet]
         [ProducesResponseType(200)]
@@ -42,7 +43,7 @@ namespace CoffeeCard.Controllers
         }
 
         /// <summary>
-        ///  Redeems the voucher supplied as parameter in the path
+        ///     Redeems the voucher supplied as parameter in the path
         /// </summary>
         [HttpPost("redeemvoucher")]
         [ProducesResponseType(200)]
@@ -54,7 +55,7 @@ namespace CoffeeCard.Controllers
         }
 
         /// <summary>
-        /// Issue purchase used by the ipad in the cafe
+        ///     Issue purchase used by the ipad in the cafe
         /// </summary>
         /// <param name="issueProduct"></param>
         /// <returns></returns>

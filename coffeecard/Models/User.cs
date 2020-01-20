@@ -7,6 +7,16 @@ namespace CoffeeCard.Models
 {
     public class User
     {
+        public User()
+        {
+            Statistics = new List<Statistic>();
+            Purchases = new List<Purchase>();
+            Tickets = new List<Ticket>();
+            Tokens = new List<Token>();
+            DateCreated = DateTime.UtcNow;
+            DateUpdated = DateTime.UtcNow;
+        }
+
         public int Id { get; set; }
         public string Email { get; set; }
         public string Name { get; set; }
@@ -22,22 +32,12 @@ namespace CoffeeCard.Models
         public virtual ICollection<Statistic> Statistics { get; set; }
         public bool IsVerified { get; set; }
         public bool PrivacyActivated { get; set; }
-        [ForeignKey("Programme_Id")]
-        public virtual Programme Programme { get; set; }
 
-        public User()
-        {
-            Statistics = new List<Statistic>();
-            Purchases = new List<Purchase>();
-            Tickets = new List<Ticket>();
-            Tokens = new List<Token>();
-            DateCreated = DateTime.UtcNow;
-            DateUpdated = DateTime.UtcNow;
-        }
+        [ForeignKey("Programme_Id")] public virtual Programme Programme { get; set; }
 
         public int CalculateLevelFromXp()
         {
-            var level = Math.Floor(1 + (1.0 / 10) * (Math.Sqrt(4 * Experience + 25) - 5));
+            var level = Math.Floor(1 + 1.0 / 10 * (Math.Sqrt(4 * Experience + 25) - 5));
             return Convert.ToInt32(level);
         }
 
@@ -56,9 +56,14 @@ namespace CoffeeCard.Models
             var totalStatistics = Statistics.FirstOrDefault(x => x.Preset == StatisticPreset.Total);
             if (totalStatistics == null)
             {
-                totalStatistics = new Statistic { ExpiryDate = DateTime.UtcNow.AddYears(100), Preset = StatisticPreset.Total, SwipeCount = Tickets.Count(t => t.IsUsed) - increaseBy, LastSwipe = utcNow };
+                totalStatistics = new Statistic
+                {
+                    ExpiryDate = DateTime.UtcNow.AddYears(100), Preset = StatisticPreset.Total,
+                    SwipeCount = Tickets.Count(t => t.IsUsed) - increaseBy, LastSwipe = utcNow
+                };
                 Statistics.Add(totalStatistics);
             }
+
             totalStatistics.SwipeCount += increaseBy;
             totalStatistics.LastSwipe = utcNow;
 
@@ -69,7 +74,14 @@ namespace CoffeeCard.Models
 
             if (semesterStatistics == null)
             {
-                semesterStatistics = new Statistic { ExpiryDate = semesterEnd, Preset = StatisticPreset.Semester, SwipeCount = Tickets.Count(t => t.IsUsed && t.DateUsed > semesterStart && t.DateUsed < semesterEnd) - increaseBy, LastSwipe = utcNow };
+                semesterStatistics = new Statistic
+                {
+                    ExpiryDate = semesterEnd, Preset = StatisticPreset.Semester,
+                    SwipeCount =
+                        Tickets.Count(t => t.IsUsed && t.DateUsed > semesterStart && t.DateUsed < semesterEnd) -
+                        increaseBy,
+                    LastSwipe = utcNow
+                };
                 Statistics.Add(semesterStatistics);
             }
             else
@@ -81,6 +93,7 @@ namespace CoffeeCard.Models
                     semesterStatistics.SwipeCount = 0;
                 }
             }
+
             semesterStatistics.SwipeCount += increaseBy;
             semesterStatistics.LastSwipe = utcNow;
 
@@ -92,7 +105,13 @@ namespace CoffeeCard.Models
 
             if (monthStatistics == null)
             {
-                monthStatistics = new Statistic { ExpiryDate = monthEnd, Preset = StatisticPreset.Monthly, SwipeCount = Tickets.Count(t => t.IsUsed && t.DateUsed > monthStart && t.DateUsed < monthEnd) - increaseBy, LastSwipe = utcNow };
+                monthStatistics = new Statistic
+                {
+                    ExpiryDate = monthEnd, Preset = StatisticPreset.Monthly,
+                    SwipeCount = Tickets.Count(t => t.IsUsed && t.DateUsed > monthStart && t.DateUsed < monthEnd) -
+                                 increaseBy,
+                    LastSwipe = utcNow
+                };
                 Statistics.Add(monthStatistics);
             }
             else
@@ -104,6 +123,7 @@ namespace CoffeeCard.Models
                     monthStatistics.SwipeCount = 0;
                 }
             }
+
             monthStatistics.SwipeCount += increaseBy;
             monthStatistics.LastSwipe = utcNow;
         }

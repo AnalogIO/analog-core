@@ -12,6 +12,7 @@ namespace CoffeeCard.Services
         {
             _context = context;
         }
+
         public IEnumerable<Programme> GetProgrammes()
         {
             return _context.Programmes.AsEnumerable();

@@ -13,8 +13,8 @@ namespace CoffeeCard.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        IProductService _productService;
-        IMapperService _mapperService;
+        private readonly IMapperService _mapperService;
+        private readonly IProductService _productService;
 
         public ProductsController(IProductService productService, IMapperService mapper)
         {
@@ -23,7 +23,7 @@ namespace CoffeeCard.Controllers
         }
 
         /// <summary>
-        ///  Returns a list of products
+        ///     Returns a list of products
         /// </summary>
         [AllowAnonymous]
         [HttpGet]

@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using CoffeeCard.Models.DataTransferObjects.AppConfig;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 
 namespace CoffeeCard.Services
@@ -14,14 +10,15 @@ namespace CoffeeCard.Services
 
         public AppConfigService(IConfiguration configuration)
         {
-            _configuration = configuration;          
+            _configuration = configuration;
         }
-   
+
         public AppConfigDTO RetreiveConfiguration()
         {
             var _environmentType = _configuration["EnvironmentType"];
             var _merchantId = _configuration["MPMerchantID"];
-            if(string.IsNullOrEmpty(_environmentType) || string.IsNullOrEmpty(_merchantId)) throw new ArgumentNullException();
+            if (string.IsNullOrEmpty(_environmentType) || string.IsNullOrEmpty(_merchantId))
+                throw new ArgumentNullException();
             return new AppConfigDTO
             {
                 EnvironmentType = _environmentType,

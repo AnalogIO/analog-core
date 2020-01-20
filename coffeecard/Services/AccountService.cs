@@ -14,14 +14,15 @@ namespace CoffeeCard.Services
 {
     public class AccountService : IAccountService
     {
-        private readonly CoffeecardContext _context;
         private readonly IConfiguration _configuration;
-        private readonly ITokenService _tokenService;
+        private readonly CoffeecardContext _context;
         private readonly IEmailService _emailService;
         private readonly IHashService _hashService;
         private readonly IPurchaseService _purchaseService;
+        private readonly ITokenService _tokenService;
 
-        public AccountService(CoffeecardContext context, IConfiguration configuration, ITokenService tokenService, IEmailService emailService, IHashService hashService, IPurchaseService purchaseService)
+        public AccountService(CoffeecardContext context, IConfiguration configuration, ITokenService tokenService,
+            IEmailService emailService, IHashService hashService, IPurchaseService purchaseService)
         {
             _context = context;
             _configuration = configuration;
@@ -47,13 +48,17 @@ namespace CoffeeCard.Services
 
             ValidateVersion(version);
 
-            var user = _context.Users.FirstOrDefault(x => x.Email == username && x.IsVerified == true);
+            var user = _context.Users.FirstOrDefault(x => x.Email == username && x.IsVerified);
             if (user != null)
             {
                 var hashedPw = _hashService.Hash(password + user.Salt);
                 if (user.Password.Equals(hashedPw))
                 {
-                    var claims = new Claim[] { new Claim(ClaimTypes.Email, username), new Claim(ClaimTypes.Name, user.Name), new Claim("UserId", user.Id.ToString()) };
+                    var claims = new[]
+                    {
+                        new Claim(ClaimTypes.Email, username), new Claim(ClaimTypes.Name, user.Name),
+                        new Claim("UserId", user.Id.ToString())
+                    };
                     var token = _tokenService.GenerateToken(claims);
 
                     // check for incomplete purchases
@@ -62,26 +67,38 @@ namespace CoffeeCard.Services
                     return token;
                 }
             }
-            throw new ApiException("The username or password does not match. Please check that your email is verified", 401);
+
+            throw new ApiException("The username or password does not match. Please check that your email is verified",
+                401);
         }
 
         public User RegisterAccount(RegisterDTO registerDto)
         {
             Log.Information($"Trying to register new user. Name: {registerDto.Name} Email: {registerDto.Email}");
-            if (_context.Users.Any(x => x.Email == registerDto.Email)) throw new ApiException($"The email {registerDto.Email} is already being used by another user", 400);
+            if (_context.Users.Any(x => x.Email == registerDto.Email))
+                throw new ApiException($"The email {registerDto.Email} is already being used by another user", 400);
             var salt = _hashService.GenerateSalt();
             var hashedPassword = _hashService.Hash(registerDto.Password + salt);
 
             //This can potentially be implemented again, but is just sat to 1 for now
             var programme = _context.Programmes.FirstOrDefault(x => x.Id == 1);
-            if (programme == null) throw new ApiException($"No programme found with the id: 0", 400);
+            if (programme == null) throw new ApiException("No programme found with the id: 0", 400);
 
-            var user = new User { Name = EscapeName(registerDto.Name), Email = registerDto.Email, Password = hashedPassword, Salt = salt, Programme = programme };
+            var user = new User
+            {
+                Name = EscapeName(registerDto.Name), Email = registerDto.Email, Password = hashedPassword, Salt = salt,
+                Programme = programme
+            };
 
             _context.Users.Add(user);
-            if (_context.SaveChanges() == 0) throw new ApiException($"The user could not be created - try again in a minute", 500);
+            if (_context.SaveChanges() == 0)
+                throw new ApiException("The user could not be created - try again in a minute");
 
-            var claims = new Claim[] { new Claim(ClaimTypes.Email, user.Email), new Claim(ClaimTypes.Name, user.Name), new Claim(ClaimTypes.Role, "verification_token") };
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Email, user.Email), new Claim(ClaimTypes.Name, user.Name),
+                new Claim(ClaimTypes.Role, "verification_token")
+            };
             var verificationToken = _tokenService.GenerateToken(claims);
 
             _emailService.SendRegistrationVerificationEmail(user, verificationToken);
@@ -93,11 +110,12 @@ namespace CoffeeCard.Services
         {
             Log.Information($"Trying to verify registration with token: {token}");
             var jwtToken = _tokenService.ReadToken(token);
-            if (!jwtToken.Claims.Any(x => x.Type == ClaimTypes.Role && x.Value == "verification_token")) throw new ApiException($"The token is invalid!", 400);
+            if (!jwtToken.Claims.Any(x => x.Type == ClaimTypes.Role && x.Value == "verification_token"))
+                throw new ApiException("The token is invalid!", 400);
             var emailClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
-            if (emailClaim == null) throw new ApiException($"The token is invalid!", 400);
+            if (emailClaim == null) throw new ApiException("The token is invalid!", 400);
             var user = _context.Users.FirstOrDefault(x => x.Email == emailClaim.Value);
-            if (user == null) throw new ApiException($"The token is invalid!", 400);
+            if (user == null) throw new ApiException("The token is invalid!", 400);
             user.IsVerified = true;
             return _context.SaveChanges() > 0;
         }
@@ -108,7 +126,8 @@ namespace CoffeeCard.Services
 
             if (userDto.Email != null)
             {
-                if (_context.Users.Any(x => x.Email == userDto.Email)) throw new ApiException($"The email {userDto.Email} is already in use!", 400);
+                if (_context.Users.Any(x => x.Email == userDto.Email))
+                    throw new ApiException($"The email {userDto.Email} is already in use!", 400);
                 Log.Information($"Changing email of user from {user.Email} to {userDto.Email}");
                 user.Email = userDto.Email;
             }
@@ -121,14 +140,16 @@ namespace CoffeeCard.Services
 
             if (userDto.PrivacyActivated != null)
             {
-                Log.Information($"Changing privacy of user from {user.PrivacyActivated} to {(bool)userDto.PrivacyActivated}");
-                user.PrivacyActivated = (bool)userDto.PrivacyActivated;
+                Log.Information(
+                    $"Changing privacy of user from {user.PrivacyActivated} to {(bool) userDto.PrivacyActivated}");
+                user.PrivacyActivated = (bool) userDto.PrivacyActivated;
             }
 
             if (userDto.ProgrammeId != null)
             {
                 var programme = _context.Programmes.FirstOrDefault(x => x.Id == userDto.ProgrammeId);
-                if (programme == null) throw new ApiException($"No programme with id {userDto.ProgrammeId} exists!", 400);
+                if (programme == null)
+                    throw new ApiException($"No programme with id {userDto.ProgrammeId} exists!", 400);
                 Log.Information($"Changing programme of user from {user.Programme.Id} to {programme.Id}");
                 user.Programme = programme;
             }
@@ -139,16 +160,88 @@ namespace CoffeeCard.Services
                 var hashedPassword = _hashService.Hash(userDto.Password + salt);
                 user.Salt = salt;
                 user.Password = hashedPassword;
-                Log.Information($"User changed password");
+                Log.Information("User changed password");
             }
 
             _context.SaveChanges();
             return user;
         }
 
+        public User GetAccountByClaims(IEnumerable<Claim> claims)
+        {
+            var emailClaim = claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
+            if (emailClaim == null) throw new ApiException("The token is invalid!", 401);
+            var user = GetAccountByEmail(emailClaim.Value);
+            if (user == null) throw new ApiException("The user could not be found", 400);
+
+
+            return user;
+        }
+
+
+        public void UpdateExperience(int userId, int exp)
+        {
+            var user = _context.Users.FirstOrDefault(x => x.Id == userId);
+            if (user == null) throw new ApiException("Could not update user");
+            user.Experience += exp;
+            _context.SaveChanges();
+        }
+
+        public User GetUserById(int userId)
+        {
+            var user = _context.Users.FirstOrDefault(x => x.Id == userId);
+            if (user == null) throw new ApiException($"Could not find user with id {userId}", 400);
+            return user;
+        }
+
+        public void ForgotPassword(string email)
+        {
+            var user = GetAccountByEmail(email);
+            if (user == null) throw new ApiException($"The user could not be found {email}", 400);
+
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Email, user.Email), new Claim(ClaimTypes.Name, user.Name),
+                new Claim(ClaimTypes.Role, "verification_token")
+            };
+            var verificationToken = _tokenService.GenerateToken(claims);
+            _emailService.SendVerificationEmailForLostPw(user, verificationToken);
+        }
+
+        public bool RecoverUser(string token)
+        {
+            var tokenObj = _tokenService.ReadToken(token);
+            if (tokenObj != null)
+            {
+                Log.Information("User tried to recover");
+                if (_tokenService.ValidateToken(tokenObj))
+                {
+                    var user = GetAccountByClaims(tokenObj.Claims);
+                    if (user != null)
+                    {
+                        Log.Information($"{user.Email} tried to recover user");
+                        var rdm = new Random();
+                        var newPassword = rdm.Next(1000, 9999);
+                        var sha256Pw = _hashService.Hash(newPassword.ToString());
+                        var salt = _hashService.GenerateSalt();
+                        var hashedPassword = _hashService.Hash(sha256Pw + salt);
+                        user.Salt = salt;
+                        user.Password = hashedPassword;
+                        user.IsVerified = true;
+                        user.Tokens.Clear();
+                        _context.SaveChanges();
+                        _emailService.SendVerificationEmailForRecover(user, newPassword);
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         private string EscapeName(string name)
         {
-            return name.Trim(new Char[] { '<', '>', '{', '}' });
+            return name.Trim('<', '>', '{', '}');
         }
 
         private bool ValidateVersion(string version)
@@ -171,76 +264,10 @@ namespace CoffeeCard.Services
             }
             else
             {
-                throw new ApiException($"Malformed version number", 400);
+                throw new ApiException("Malformed version number", 400);
             }
-            throw new ApiException($"Your App is out of date - please update!", 409);
-        }
 
-        public User GetAccountByClaims(IEnumerable<Claim> claims)
-        {
-            var emailClaim = claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
-            if (emailClaim == null) throw new ApiException($"The token is invalid!", 401);
-            var user = GetAccountByEmail(emailClaim.Value);
-            if (user == null) throw new ApiException($"The user could not be found", 400);
-
-
-            return user;
-        }
-
-
-        public void UpdateExperience(int userId, int exp)
-        {
-            var user = _context.Users.FirstOrDefault(x => x.Id == userId);
-            if (user == null) throw new ApiException($"Could not update user", 500);
-            user.Experience += exp;
-            _context.SaveChanges();
-        }
-
-        public User GetUserById(int userId)
-        {
-            var user = _context.Users.FirstOrDefault(x => x.Id == userId);
-            if (user == null) throw new ApiException($"Could not find user with id {userId}", 400);
-            return user;
-        }
-
-        public void ForgotPassword(string email)
-        {
-            var user = GetAccountByEmail(email);
-            if (user == null) throw new ApiException($"The user could not be found {email}", 400);
-
-            var claims = new Claim[] { new Claim(ClaimTypes.Email, user.Email), new Claim(ClaimTypes.Name, user.Name), new Claim(ClaimTypes.Role, "verification_token") };
-            var verificationToken = _tokenService.GenerateToken(claims);
-            _emailService.SendVerificationEmailForLostPw(user, verificationToken);
-        }
-
-        public bool RecoverUser(string token)
-        {
-            var tokenObj = _tokenService.ReadToken(token);
-            if (tokenObj != null)
-            {
-                Log.Information("User tried to recover");
-                if (_tokenService.ValidateToken(tokenObj))
-                {
-                    var user = GetAccountByClaims(tokenObj.Claims);
-                    if (user != null)
-                    {
-                        Log.Information($"{ user.Email} tried to recover user");
-                        Random rdm = new Random();
-                        var newPassword = rdm.Next(1000, 9999);
-                        var sha256Pw = _hashService.Hash(newPassword.ToString());
-                        var salt = _hashService.GenerateSalt();
-                        var hashedPassword = _hashService.Hash(sha256Pw + salt);
-                        user.Salt = salt;
-                        user.Password = hashedPassword;
-                        user.IsVerified = true;
-                        user.Tokens.Clear();
-                        _context.SaveChanges();
-                        _emailService.SendVerificationEmailForRecover(user, newPassword);
-                        return true;
-                    }
-                }
-            }
-            return false;
+            throw new ApiException("Your App is out of date - please update!", 409);
         }
     }
 }

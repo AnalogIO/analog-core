@@ -14,8 +14,8 @@ namespace CoffeeCard.Controllers
     [ApiController]
     public class TicketsController : ControllerBase
     {
-        ITicketService _ticketService;
-        IMapperService _mapperService;
+        private readonly IMapperService _mapperService;
+        private readonly ITicketService _ticketService;
 
         public TicketsController(ITicketService ticketService, IMapperService mapperService)
         {
@@ -24,7 +24,7 @@ namespace CoffeeCard.Controllers
         }
 
         /// <summary>
-        ///  Returns a list of tickets. Use 'used' parameter to define what kind of tickets are returned
+        ///     Returns a list of tickets. Use 'used' parameter to define what kind of tickets are returned
         /// </summary>
         [HttpGet]
         [ProducesResponseType(200)]
@@ -36,7 +36,7 @@ namespace CoffeeCard.Controllers
         }
 
         /// <summary>
-        ///  Uses the tickets supplied via ticketIds in the body
+        ///     Uses the tickets supplied via ticketIds in the body
         /// </summary>
         [HttpPost("useMultiple")]
         [ProducesResponseType(200)]
@@ -50,7 +50,6 @@ namespace CoffeeCard.Controllers
 
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="dto"></param>
         /// <returns></returns

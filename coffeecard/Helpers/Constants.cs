@@ -1,9 +1,7 @@
-﻿using System;
-
-namespace CoffeeCard.Helpers
+﻿namespace CoffeeCard.Helpers
 {
     public static class Constants
     {
-        public static readonly String UserId = "UserId";
+        public static readonly string UserId = "UserId";
     }
 }

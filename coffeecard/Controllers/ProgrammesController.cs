@@ -12,8 +12,8 @@ namespace CoffeeCard.Controllers
     [ApiController]
     public class ProgrammesController : ControllerBase
     {
-        IMapperService _mapperService;
-        IProgrammeService _programmeService;
+        private readonly IMapperService _mapperService;
+        private readonly IProgrammeService _programmeService;
 
         public ProgrammesController(IMapperService mapper, IProgrammeService programmeService)
         {
@@ -22,7 +22,7 @@ namespace CoffeeCard.Controllers
         }
 
         /// <summary>
-        ///  Returns a list of available programmes
+        ///     Returns a list of available programmes
         /// </summary>
         [AllowAnonymous]
         [HttpGet]
