@@ -10,10 +10,10 @@ namespace coffeecard.Services
 {
     public class MobilePayService : IMobilePayService
     {
-        private readonly MobilePayApiHttpClient _mobilePayAPIClient;
+        private readonly IMobilePayApiHttpClient _mobilePayAPIClient;
         private readonly string _merchantId;
 
-        public MobilePayService(MobilePayApiHttpClient mobilePayAPIClient, IConfiguration configuration)
+        public MobilePayService(IMobilePayApiHttpClient mobilePayAPIClient, IConfiguration configuration)
         {
             _mobilePayAPIClient = mobilePayAPIClient;
             _merchantId = configuration["MPMerchantID"];

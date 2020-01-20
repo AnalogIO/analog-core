@@ -16,7 +16,7 @@ using coffeecard.Helpers.MobilePay.ErrorMessage;
 
 namespace coffeecard.Helpers.MobilePay
 {
-    public class MobilePayApiHttpClient : IDisposable
+    public class MobilePayApiHttpClient : IMobilePayApiHttpClient
     {
         private const string MobilePayBaseEndpoint = "https://api.mobeco.dk/appswitch/api/v1/";
         private const string CertificateName = "www.analogio.dk.pfx";

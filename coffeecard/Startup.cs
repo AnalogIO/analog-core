@@ -55,7 +55,7 @@ namespace Coffeecard
             services.AddScoped<IMobilePayService, MobilePayService>();
             services.AddScoped<ILeaderboardService, LeaderboardService>();
             services.AddScoped<IAppConfigService, AppConfigService>();
-            services.AddHttpClient<MobilePayApiHttpClient>();
+            services.AddHttpClient<IMobilePayApiHttpClient, MobilePayApiHttpClient>();
 
             services.AddMvc(options =>
             {
