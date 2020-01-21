@@ -19,7 +19,6 @@ namespace CoffeeCard.Helpers.MobilePay
     public class MobilePayApiHttpClient : IMobilePayApiHttpClient
     {
         private const string MobilePayBaseEndpoint = "https://api.mobeco.dk/appswitch/api/v1/";
-        private const string CertificateName = "www.analogio.dk.pfx";
 
         private readonly HttpClient _client;
         private readonly IConfiguration _configuration;
@@ -87,9 +86,11 @@ namespace CoffeeCard.Helpers.MobilePay
 
         private X509Certificate2 LoadCertificate(IHostingEnvironment environment)
         {
+	        var certName = _configuration["MobilePayAPI-CertificateName"];
+
             var provider = environment.ContentRootFileProvider;
             var contents = provider.GetDirectoryContents(string.Empty);
-            var certPath = contents.FirstOrDefault(file => file.Name.Equals(CertificateName)).PhysicalPath;
+            var certPath = contents.FirstOrDefault(file => file.Name.Equals(certName)).PhysicalPath;
 
             return new X509Certificate2(certPath, _configuration["CertificatePassword"], X509KeyStorageFlags.MachineKeySet);
         }
