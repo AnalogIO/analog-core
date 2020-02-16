@@ -5,7 +5,7 @@
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
   </PropertyGroup>
 
-    <ItemGroup>
+  <ItemGroup>
     <None Remove="www.analogio.dk.pfx" />
   </ItemGroup>
 
