@@ -242,26 +242,26 @@ namespace CoffeeCard.Services
             }
             catch (MobilePayException e)
             {
-                Log.Warning($"Complete purchase failed with error message: {e.Message} and status code: {e.GetHttpStatusCode()}" );
+                Log.Warning($"Complete purchase failed with error message: {e.Message} and status code: {e.GetHttpStatusCode()}");
                 throw new ApiException("Failed to complete purchase using MobilePay", 400);
             }
 
             var purchase = DeliverProduct(dto, claims);
+            SendInvoiceEmail(purchase);
 
             Log.Information($"Completed purchase with success! OrderId: {dto.OrderId} transactionId: {dto.TransactionId}");
 
-            var userId = claims.FirstOrDefault(x => x.Type == Constants.UserId);
-            if (userId == null) throw new ApiException($"The token is invalid!", 401);
-            var id = int.Parse(userId.Value);
+            return purchase;
+        }
 
-            var user = _context.Users.FirstOrDefault(x => x.Id == id);
-            if (user == null) throw new ApiException($"The user could not be found");
+        private void SendInvoiceEmail(Purchase purchase)
+        {
+            var user = _context.Users.FirstOrDefault(x => x.Id == purchase.PurchasedBy.Id);
+            
             var purchaseDTO = _mapper.Map(purchase);
             var userDTO = _mapper.Map(user);
 
             _emailService.SendInvoice(userDTO, purchaseDTO);
-
-            return purchase;
         }
 
         private async Task<PaymentStatus> ValidateTransaction(CompletePurchaseDTO payment)
