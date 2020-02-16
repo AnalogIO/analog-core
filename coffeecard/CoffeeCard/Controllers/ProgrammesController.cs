@@ -26,11 +26,10 @@ namespace CoffeeCard.Controllers
         /// </summary>
         [AllowAnonymous]
         [HttpGet]
-        [ProducesResponseType(200)]
-        public ActionResult<IEnumerable<ProgrammeDTO>> Get()
+        public IActionResult Get()
         {
             var programmes = _programmeService.GetProgrammes();
-            return _mapperService.Map(programmes.OrderBy(x => x.SortPriority)).ToList();
+            return Ok(_mapperService.Map(programmes.OrderBy(x => x.SortPriority)).ToList());
         }
     }
 }

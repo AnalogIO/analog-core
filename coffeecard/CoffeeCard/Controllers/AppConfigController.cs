@@ -20,7 +20,7 @@ namespace CoffeeCard.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<AppConfigDTO>> Get()
+        public IActionResult Get()
         {
             var appConfig = _appConfigService.RetreiveConfiguration();
             return Ok(appConfig);

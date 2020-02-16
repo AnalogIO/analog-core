@@ -27,9 +27,7 @@ namespace CoffeeCard.Controllers
         /// </summary>
         [AllowAnonymous]
         [HttpGet]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(ApiError), 401)]
-        public ActionResult<IEnumerable<ProductDTO>> Get()
+        public IActionResult Get()
         {
             var products = _productService.GetProducts();
             return Ok(_mapperService.Map(products).ToList());

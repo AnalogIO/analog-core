@@ -21,9 +21,7 @@ namespace CoffeeCard.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(ApiError), 401)]
-        public ActionResult<IEnumerable<CoffeCard>> Get()
+        public IActionResult Get()
         {
             return Ok(_ticketService.GetCoffeCards(User.Claims));
         }

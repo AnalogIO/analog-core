@@ -34,24 +34,20 @@ namespace CoffeeCard.Controllers
         ///     Returns a list of purchases for the given user via the supplied token in the header
         /// </summary>
         [HttpGet]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(ApiError), 401)]
-        public ActionResult<IEnumerable<PurchaseDTO>> Get()
+        public IActionResult Get()
         {
             var purchases = _purchaseService.GetPurchases(User.Claims);
-            return _mapperService.Map(purchases).ToList();
+            return Ok(_mapperService.Map(purchases).ToList());
         }
 
         /// <summary>
         ///     Redeems the voucher supplied as parameter in the path
         /// </summary>
         [HttpPost("redeemvoucher")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(ApiError), 401)]
-        public ActionResult<PurchaseDTO> RedeemVoucher(string voucherCode)
+        public IActionResult RedeemVoucher(string voucherCode)
         {
             var purchase = _purchaseService.RedeemVoucher(voucherCode, User.Claims);
-            return _mapperService.Map(purchase);
+            return Ok(_mapperService.Map(purchase));
         }
 
         /// <summary>
@@ -61,15 +57,13 @@ namespace CoffeeCard.Controllers
         /// <returns></returns>
         [AllowAnonymous]
         [HttpPost("issueproduct")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(ApiError), 401)]
-        public ActionResult<PurchaseDTO> IssueProduct(IssueProductDTO issueProduct)
+        public IActionResult IssueProduct(IssueProductDTO issueProduct)
         {
             var adminToken = Request.Headers.FirstOrDefault(x => x.Key == "admintoken").Value.FirstOrDefault();
             Log.Information(adminToken);
             if (adminToken != _configuration["AdminToken"]) throw new ApiException("AdminToken was invalid", 401);
             var purchase = _purchaseService.IssueProduct(issueProduct);
-            return _mapperService.Map(purchase);
+            return Ok(_mapperService.Map(purchase));
         }
     }
 }

@@ -36,9 +36,7 @@ namespace CoffeeCard.Controllers
         /// </summary>
         [AllowAnonymous]
         [HttpPost("register")]
-        [ProducesResponseType(201)]
-        [ProducesResponseType(typeof(ApiError), 400)]
-        public ActionResult<CreatedResult> Register(RegisterDTO registerDto)
+        public IActionResult Register(RegisterDTO registerDto)
         {
             var user = _accountService.RegisterAccount(registerDto);
             return Created("register",
@@ -54,10 +52,7 @@ namespace CoffeeCard.Controllers
         /// </summary>
         [AllowAnonymous]
         [HttpPost("login")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(ApiError), 400)]
-        [ProducesResponseType(typeof(ApiError), 401)]
-        public ActionResult<TokenDTO> Login(LoginDTO loginDto)
+        public IActionResult Login(LoginDTO loginDto)
         {
             var token = _accountService.Login(loginDto.Email, loginDto.Password, loginDto.Version);
             if (token == null) return Unauthorized();
@@ -68,10 +63,7 @@ namespace CoffeeCard.Controllers
         ///     Returns basic data about the user
         /// </summary>
         [HttpGet]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        public ActionResult<UserDTO> Get()
+        public IActionResult Get()
         {
             var user = _accountService.GetAccountByClaims(User.Claims);
             var userDTO = _mapperService.Map(user);
@@ -86,10 +78,7 @@ namespace CoffeeCard.Controllers
         ///     Updates the user and returns the updated values
         /// </summary>
         [HttpPut]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(ApiError), 400)]
-        [ProducesResponseType(typeof(ApiError), 401)]
-        public ActionResult<UserDTO> Update(UpdateUserDTO userDto)
+        public IActionResult Update(UpdateUserDTO userDto)
         {
             var user = _accountService.UpdateAccount(User.Claims, userDto);
             return Ok(_mapperService.Map(user));
@@ -99,9 +88,7 @@ namespace CoffeeCard.Controllers
         ///     Returns the requested user id
         /// </summary>
         [HttpGet("lookupuserid")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(ApiError), 400)]
-        public ActionResult<UserDTO> LookUpUserId(int userId)
+        public IActionResult LookUpUserId(int userId)
         {
             var user = _accountService.GetUserById(userId);
             return Ok(_mapperService.Map(user));
@@ -114,8 +101,6 @@ namespace CoffeeCard.Controllers
         /// <returns></returns>
         [AllowAnonymous]
         [HttpPost("forgotpassword")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(ApiError), 400)]
         public IActionResult ForgotPassword(EmailDTO emailDTO)
         {
             _accountService.ForgotPassword(emailDTO.Email);

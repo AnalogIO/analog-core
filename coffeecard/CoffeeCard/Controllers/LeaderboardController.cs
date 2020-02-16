@@ -25,12 +25,10 @@ namespace CoffeeCard.Controllers
         ///     Gets the highscore of the specified preset 0 - Monthly, 1 - Semester and 2 - Total
         /// </summary>
         [HttpGet]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(ApiError), 400)]
-        public ActionResult<IEnumerable<LeaderboardUser>> Get(int preset, int top = 10)
+        public IActionResult Get(int preset, int top = 10)
         {
             var leaderboard = _leaderboardService.GetLeaderboard(preset, top);
-            return leaderboard;
+            return Ok(leaderboard);
         }
     }
 }

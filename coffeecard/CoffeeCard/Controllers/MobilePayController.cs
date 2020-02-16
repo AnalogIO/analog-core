@@ -9,7 +9,7 @@ namespace CoffeeCard.Controllers
 {
     [ApiVersion("1")]
     [Route("api/v{version:apiVersion}/[controller]")]
-    [Authorize]
+    [Authorize] 
     [ApiController]
     public class MobilePayController : ControllerBase
     {
@@ -29,9 +29,7 @@ namespace CoffeeCard.Controllers
         ///     Initiates a purchase from the given productId and returns an orderId
         /// </summary>
         [HttpPost("initiate")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(ApiError), 400)]
-        public ActionResult<InitiatePurchaseResponseDTO> InitiatePurchase(InitiatePurchaseDTO initiatePurchaseDto)
+        public IActionResult InitiatePurchase(InitiatePurchaseDTO initiatePurchaseDto)
         {
             var orderId = _purchaseService.InitiatePurchase(initiatePurchaseDto.ProductId, User.Claims);
             return Ok(new InitiatePurchaseResponseDTO {OrderId = orderId});
@@ -41,9 +39,7 @@ namespace CoffeeCard.Controllers
         ///     Validates the purchase against mobilepay backend and delivers the tickets if succeeded
         /// </summary>
         [HttpPost("complete")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(ApiError), 400)]
-        public async Task<ActionResult<OkResult>> CompletePurchase(CompletePurchaseDTO dto)
+        public async Task<IActionResult> CompletePurchase(CompletePurchaseDTO dto)
         {
             var purchase = await _purchaseService.CompletePurchase(dto, User.Claims);
             return Ok(new {Message = "The purchase was completed with success!"});
