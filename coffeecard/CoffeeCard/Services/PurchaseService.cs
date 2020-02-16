@@ -18,14 +18,18 @@ namespace CoffeeCard.Services
     public class PurchaseService : IPurchaseService
     {
         private readonly CoffeecardContext _context;
+        private readonly IEmailService _emailService;
         private readonly IMobilePayService _mobilePayService;
         private readonly IConfiguration _configuration;
+        private readonly IMapperService _mapper;
 
-        public PurchaseService(CoffeecardContext context, IMobilePayService mobilePayService, IConfiguration configuration)
+        public PurchaseService(CoffeecardContext context, IMobilePayService mobilePayService, IConfiguration configuration, IEmailService emailService, IMapperService mapper)
         {
             _context = context;
             _mobilePayService = mobilePayService;
             _configuration = configuration;
+            _emailService = emailService;
+            _mapper = mapper;
         }
 
         public bool Delete(int id)
@@ -245,6 +249,18 @@ namespace CoffeeCard.Services
             var purchase = DeliverProduct(dto, claims);
 
             Log.Information($"Completed purchase with success! OrderId: {dto.OrderId} transactionId: {dto.TransactionId}");
+
+            var userId = claims.FirstOrDefault(x => x.Type == Constants.UserId);
+            if (userId == null) throw new ApiException($"The token is invalid!", 401);
+            var id = int.Parse(userId.Value);
+
+            var user = _context.Users.FirstOrDefault(x => x.Id == id);
+            if (user == null) throw new ApiException($"The user could not be found");
+            var purchaseDTO = _mapper.Map(purchase);
+            var userDTO = _mapper.Map(user);
+
+            _emailService.SendInvoice(userDTO, purchaseDTO);
+
             return purchase;
         }
 

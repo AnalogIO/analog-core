@@ -13,8 +13,8 @@ namespace CoffeeCard.Controllers
     [ApiController]
     public class MobilePayController : ControllerBase
     {
-        private IMapperService _mapperService;
-        private IMobilePayService _mobilePayService;
+        private readonly IMapperService _mapperService;
+        private readonly IMobilePayService _mobilePayService;
         private readonly IPurchaseService _purchaseService;
 
         public MobilePayController(IMobilePayService mobilePayService, IPurchaseService purchaseService,
