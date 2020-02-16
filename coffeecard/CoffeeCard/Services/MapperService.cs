@@ -52,7 +52,7 @@ namespace CoffeeCard.Services
             return new UserDTO
             {
                 Email = user.Email, Id = user.Id, Name = user.Name, PrivacyActivated = user.PrivacyActivated,
-                ProgrammeId = user.Programme.Id, Level = user.CalculateLevelFromXp(),
+                ProgrammeId = user.Programme?.Id, Level = user.CalculateLevelFromXp(),
                 RequiredExp = user.CalculateRequiredXpByLevel()
             };
         }
