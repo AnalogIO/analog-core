@@ -12,7 +12,7 @@ namespace CoffeeCardTests.Helpers
 {
 	public class MobilePayApiHttpClientTests
 	{
-		[Fact(DisplayName = "")]
+		//[Fact(DisplayName = "")]
 		public void test()
 		{
 			var testCertificateName = "testCertificate.pfx";
