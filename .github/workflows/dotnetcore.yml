@@ -1,0 +1,26 @@
+name: Build and test solution
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    # Create an empty certificate file since it it a build dependency
+    - uses: "finnp/create-file-action@master"
+      env:
+        FILE_NAME: "coffeecard/CoffeeCard/www.analogio.dk.pfx"
+        FILE_DATA: "empty file"
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 2.2.108
+    - name: Build CoffeeCard project
+      run: dotnet build coffeecard/CoffeeCard --configuration Release
+    - name: Build CoffeeCardTests project
+      run: dotnet build coffeecard/CoffeeCardTests --configuration Release
+    - name: Run tests
+      run: dotnet test coffeecard/CoffeeCardTests
