@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Serilog;
 
 namespace CoffeeCard.Helpers
 {
@@ -38,7 +39,7 @@ namespace CoffeeCard.Helpers
 
                 context.HttpContext.Response.StatusCode = 500;
 
-                // handle logging here
+                Log.Error("Unhandled exception caught. Exception={exception}", context.Exception);
             }
 
             // always return a JSON result
