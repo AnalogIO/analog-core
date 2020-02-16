@@ -55,7 +55,7 @@ namespace CoffeeCard.Services
 
         public void SendRegistrationVerificationEmail(User user, string token)
         {
-            Log.Information($"Sending registration verification email to {user.Email} ({user.Id} with token: {token})");
+            Log.Information($"Sending registration verification email to {user.Email} ({user.Id})");
             var message = new MimeMessage();
             var builderAndBaseUrl = RetrieveTemplate("email_verify_registration.html");
             var builder = builderAndBaseUrl.Item1;
