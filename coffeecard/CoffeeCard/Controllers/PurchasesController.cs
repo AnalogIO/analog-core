@@ -37,7 +37,7 @@ namespace CoffeeCard.Controllers
         public IActionResult Get()
         {
             var purchases = _purchaseService.GetPurchases(User.Claims);
-            return Ok(_mapperService.Map(purchases).ToList());
+            return Ok(_mapperService.Map(purchases).OrderBy(p => p.DateCreated).ToList());
         }
 
         /// <summary>

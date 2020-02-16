@@ -30,7 +30,7 @@ namespace CoffeeCard.Controllers
         public IActionResult Get(bool used)
         {
             var tickets = _ticketService.getTickets(User.Claims, used);
-            return Ok(_mapperService.Map(tickets).ToList());
+            return Ok(_mapperService.Map(tickets).OrderBy(t => t.DateUsed).ToList());
         }
 
         /// <summary>
