@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
@@ -17,10 +18,15 @@ namespace CoffeeCard.Models
             DateUpdated = DateTime.UtcNow;
         }
 
+        [Required]
         public int Id { get; set; }
+        [Required]
         public string Email { get; set; }
+        [Required]
         public string Name { get; set; }
+        [Required]
         public string Password { get; set; }
+        [Required]
         public string Salt { get; set; }
         public int Experience { get; set; }
         public DateTime DateCreated { get; set; }
@@ -30,8 +36,12 @@ namespace CoffeeCard.Models
         public virtual ICollection<Ticket> Tickets { get; set; }
         public virtual ICollection<Purchase> Purchases { get; set; }
         public virtual ICollection<Statistic> Statistics { get; set; }
+        [Required]
         public bool IsVerified { get; set; }
+        [Required]
         public bool PrivacyActivated { get; set; }
+        [Required]
+        public bool IsBarista { get; set; }
 
         [ForeignKey("Programme_Id")] public virtual Programme Programme { get; set; }
 
