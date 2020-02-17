@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using CoffeeCard.Helpers;
 using CoffeeCard.Models;
 using CoffeeCard.Models.DataTransferObjects.User;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Serilog;
@@ -20,8 +21,9 @@ namespace CoffeeCard.Services
         private readonly IEmailService _emailService;
         private readonly IHashService _hashService;
         private readonly IPurchaseService _purchaseService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AccountService(CoffeecardContext context, IConfiguration configuration, ITokenService tokenService, IEmailService emailService, IHashService hashService, IPurchaseService purchaseService)
+        public AccountService(CoffeecardContext context, IConfiguration configuration, ITokenService tokenService, IEmailService emailService, IHashService hashService, IPurchaseService purchaseService, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _configuration = configuration;
@@ -29,6 +31,7 @@ namespace CoffeeCard.Services
             _emailService = emailService;
             _hashService = hashService;
             _purchaseService = purchaseService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public User GetAccountByEmail(string email)
@@ -62,6 +65,8 @@ namespace CoffeeCard.Services
                     return token;
                 }
             }
+
+            Log.Information("Unsuccessful login for e-mail = {username} from IP = {ipadress} ", username, _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
             throw new ApiException("The username or password does not match. Please check that your email is verified", 401);
         }
 

@@ -6,8 +6,10 @@ using CoffeeCard.Models.DataTransferObjects.User;
 using CoffeeCard.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MimeKit;
+using Serilog;
 
 namespace CoffeeCard.Controllers
 {
@@ -21,14 +23,16 @@ namespace CoffeeCard.Controllers
         private readonly IHostingEnvironment _env;
         private readonly ILeaderboardService _leaderboardService;
         private readonly IMapperService _mapperService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public AccountController(IAccountService accountService, ILeaderboardService leaderboardService,
-            IMapperService mapperService, IHostingEnvironment env)
+            IMapperService mapperService, IHostingEnvironment env, IHttpContextAccessor httpContextAccessor)
         {
             _accountService = accountService;
             _leaderboardService = leaderboardService;
             _mapperService = mapperService;
             _env = env;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         /// <summary>
@@ -46,7 +50,7 @@ namespace CoffeeCard.Controllers
                         "Your user has been created! Please check your email to verify your account.\n(Check your spam folder!)"
                 });
         }
-
+        
         /// <summary>
         ///     Returns a token that is used to identify the user
         /// </summary>
@@ -55,7 +59,11 @@ namespace CoffeeCard.Controllers
         public IActionResult Login(LoginDTO loginDto)
         {
             var token = _accountService.Login(loginDto.Email, loginDto.Password, loginDto.Version);
-            if (token == null) return Unauthorized();
+            if (token == null)
+            {
+                Log.Information("Unsuccessful login for e-mail = {email} from IP = {ipadress} ", loginDto.Email, _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
+                return Unauthorized();
+            }
             return Ok(new TokenDTO {Token = token});
         }
 
@@ -104,6 +112,8 @@ namespace CoffeeCard.Controllers
         public IActionResult ForgotPassword(EmailDTO emailDTO)
         {
             _accountService.ForgotPassword(emailDTO.Email);
+
+            Log.Information("Password reset requested for e-mail = {email} from IP = {ipaddress}", emailDTO.Email, _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
 
             return Ok("{ \"message\":\"We have send you a confirmation email\"}");
         }
