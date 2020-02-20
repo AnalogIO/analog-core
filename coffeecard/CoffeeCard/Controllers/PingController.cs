@@ -8,7 +8,7 @@ namespace CoffeeCard.Controllers
     public class PingController : ControllerBase
     {
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult Ping()
         {
             return Ok("pong");
         }
