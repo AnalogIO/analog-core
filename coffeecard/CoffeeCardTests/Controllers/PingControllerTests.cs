@@ -20,8 +20,8 @@ namespace CoffeeCardTests.Controllers
         public void PingReturnsPong()
         {
             var controller = new PingController();
-        
-            OkObjectResult result = (OkObjectResult) controller.Ping();
+
+            var result = (OkObjectResult) controller.Ping();
 
             Assert.Equal("pong", result.Value);
         }

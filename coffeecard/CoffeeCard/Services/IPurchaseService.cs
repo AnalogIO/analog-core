@@ -16,7 +16,9 @@ namespace CoffeeCard.Services
         IEnumerable<Purchase> GetPurchases(IEnumerable<Claim> claims);
         Purchase RedeemVoucher(string voucherCode, IEnumerable<Claim> claims);
         string InitiatePurchase(int productId, IEnumerable<Claim> claims);
+
         Task<Purchase> CompletePurchase(CompletePurchaseDTO dto, IEnumerable<Claim> claims);
+
         //Task CheckIncompletePurchases(User user); //TODO Reimplement
         Purchase DeliverProduct(CompletePurchaseDTO completeDto, IEnumerable<Claim> claims);
         Purchase DeliverProductToUser(Purchase purchase, User user, string transactionId);

@@ -1,264 +1,352 @@
-﻿<!DOCTYPE html "-//w3c//dtd xhtml 1.0 transitional //en" "http://www.w3.org/tr/xhtml1/dtd/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+﻿<!DOCTYPE html "-//w3c//dtd xhtml 1.0 transitional //en" "http://www.w3.org/tr/xhtml1/dtd/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
     <!--[if gte mso 9]><xml>
-     <o:OfficeDocumentSettings>
-      <o:AllowPNG/>
-      <o:PixelsPerInch>96</o:PixelsPerInch>
-     </o:OfficeDocumentSettings>
+        <o:OfficeDocumentSettings>
+            <o:AllowPNG/>
+            <o:PixelsPerInch>96</o:PixelsPerInch>
+        </o:OfficeDocumentSettings>
     </xml><![endif]-->
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width">
     <meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7; IE=EDGE">
     <title>Template Base</title>
     <!--[if !mso]><!- - --><link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css"><!--<![endif]-->
-    
-    
+
+
 </head>
-<body style="width: 100% !important;min-width: 100%;-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100% !important;margin: 0;padding: 0;background-color: #FFFFFF">
-  <style id="media-query">
+<body style="-ms-text-size-adjust: 100% !important; -webkit-text-size-adjust: 100%; background-color: #FFFFFF; margin: 0; min-width: 100%; padding: 0; width: 100% !important;">
+<style id="media-query">
     /* Client-specific Styles & Reset */
-    #outlook a {
-        padding: 0;
-    }
+    #outlook a { padding: 0; }
 
     /* .ExternalClass applies to Outlook.com (the artist formerly known as Hotmail) */
-    .ExternalClass {
-        width: 100%;
-    }
+
+    .ExternalClass { width: 100%; }
 
     .ExternalClass,
     .ExternalClass p,
     .ExternalClass span,
     .ExternalClass font,
     .ExternalClass td,
-    .ExternalClass div {
-        line-height: 100%;
-    }
+    .ExternalClass div { line-height: 100%; }
 
     #backgroundTable {
+        line-height: 100% !important;
         margin: 0;
         padding: 0;
         width: 100% !important;
-        line-height: 100% !important;
     }
 
     /* Buttons */
+
     .button a {
-        display: inline-block;
-        text-decoration: none;
         -webkit-text-size-adjust: none;
+        display: inline-block;
         text-align: center;
+        text-decoration: none;
     }
 
-    .button a div {
-        text-align: center !important;
-    }
+    .button a div { text-align: center !important; }
 
     /* Outlook First */
-    body.outlook p {
-        display: inline !important;
-    }
+
+    body.outlook p { display: inline !important; }
 
     /*  Media Queries */
-@media only screen and (max-width: 500px) {
-  table[class="body"] img {
-    height: auto !important;
-    width: 100% !important; }
-  table[class="body"] img.fullwidth {
-    max-width: 100% !important; }
-  table[class="body"] center {
-    min-width: 0 !important; }
-  table[class="body"] .container {
-    width: 95% !important; }
-  table[class="body"] .row {
-    width: 100% !important;
-    display: block !important; }
-  table[class="body"] .wrapper {
-    display: block !important;
-    padding-right: 0 !important; }
-  table[class="body"] .columns, table[class="body"] .column {
-    table-layout: fixed !important;
-    float: none !important;
-    width: 100% !important;
-    padding-right: 0px !important;
-    padding-left: 0px !important;
-    display: block !important; }
-  table[class="body"] .wrapper.first .columns, table[class="body"] .wrapper.first .column {
-    display: table !important; }
-  table[class="body"] table.columns td, table[class="body"] table.column td, .col {
-    width: 100% !important; }
-  table[class="body"] table.columns td.expander {
-    width: 1px !important; }
-  table[class="body"] .right-text-pad, table[class="body"] .text-pad-right {
-    padding-left: 10px !important; }
-  table[class="body"] .left-text-pad, table[class="body"] .text-pad-left {
-    padding-right: 10px !important; }
-  table[class="body"] .hide-for-small, table[class="body"] .show-for-desktop {
-    display: none !important; }
-  table[class="body"] .show-for-small, table[class="body"] .hide-for-desktop {
-    display: inherit !important; }
-  .mixed-two-up .col {
-    width: 100% !important; } }
- @media screen and (max-width: 500px) {
-      div[class="col"] {
-          width: 100% !important;
-      }
+
+    @media only screen and (max-width: 500px) {
+        table[class="body"] img {
+            height: auto !important;
+            width: 100% !important;
+        }
+
+        table[class="body"] img.fullwidth { max-width: 100% !important; }
+
+        table[class="body"] center { min-width: 0 !important; }
+
+        table[class="body"] .container { width: 95% !important; }
+
+        table[class="body"] .row {
+            display: block !important;
+            width: 100% !important;
+        }
+
+        table[class="body"] .wrapper {
+            display: block !important;
+            padding-right: 0 !important;
+        }
+
+        table[class="body"] .columns, table[class="body"] .column {
+            display: block !important;
+            float: none !important;
+            padding-left: 0px !important;
+            padding-right: 0px !important;
+            table-layout: fixed !important;
+            width: 100% !important;
+        }
+
+        table[class="body"] .wrapper.first .columns, table[class="body"] .wrapper.first .column { display: table !important; }
+
+        table[class="body"] table.columns td, table[class="body"] table.column td, .col { width: 100% !important; }
+
+        table[class="body"] table.columns td.expander { width: 1px !important; }
+
+        table[class="body"] .right-text-pad, table[class="body"] .text-pad-right { padding-left: 10px !important; }
+
+        table[class="body"] .left-text-pad, table[class="body"] .text-pad-left { padding-right: 10px !important; }
+
+        table[class="body"] .hide-for-small, table[class="body"] .show-for-desktop { display: none !important; }
+
+        table[class="body"] .show-for-small, table[class="body"] .hide-for-desktop { display: inherit !important; }
+
+        .mixed-two-up .col { width: 100% !important; }
+    }
+
+    @media screen and (max-width: 500px) {
+        div[class="col"] { width: 100% !important; }
     }
 
     @media screen and (min-width: 501px) {
-      table[class="container"] {
-          width: 500px !important;
-      }
+        table[class="container"] { width: 500px !important; }
     }
-  </style>
-  <table class="body" style="border-spacing: 0;border-collapse: collapse;vertical-align: top;height: 100%;width: 100%;table-layout: fixed" cellpadding="0" cellspacing="0" width="100%" border="0">
-      <tbody><tr style="vertical-align: top">
-          <td class="center" style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;text-align: center;background-color: #FFFFFF" align="center" valign="top">
+</style>
+<table class="body" style="border-collapse: collapse; border-spacing: 0; height: 100%; table-layout: fixed; vertical-align: top; width: 100%;" cellpadding="0" cellspacing="0" width="100%" border="0">
+<tbody>
+<tr style="vertical-align: top">
+<td class="center" style="background-color: #FFFFFF; border-collapse: collapse !important; text-align: center; vertical-align: top; word-break: break-word;" align="center" valign="top">
 
-              <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top;background-color: #EBDFBF" cellpadding="0" cellspacing="0" align="center" width="100%" border="0">
-                <tbody><tr style="vertical-align: top">
-                  <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top" width="100%">
-                    <!--[if gte mso 9]>
-                    <table id="outlookholder" border="0" cellspacing="0" cellpadding="0" align="center"><tr><td>
-                    <![endif]-->
-                    <!--[if (IE)]>
-                    <table width="500" align="center" cellpadding="0" cellspacing="0" border="0">
-                        <tr>
-                            <td>
-                    <![endif]-->
-                    <table class="container" style="border-spacing: 0;border-collapse: collapse;vertical-align: top;max-width: 500px;margin: 0 auto;text-align: inherit" cellpadding="0" cellspacing="0" align="center" width="100%" border="0"><tbody><tr style="vertical-align: top"><td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top" width="100%"><table class="block-grid" style="border-spacing: 0;border-collapse: collapse;vertical-align: top;width: 100%;max-width: 500px;color: #000000;background-color: transparent" cellpadding="0" cellspacing="0" width="100%" bgcolor="transparent"><tbody><tr style="vertical-align: top"><td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;text-align: center;font-size: 0"><!--[if (gte mso 9)|(IE)]><table width="100%" align="center" bgcolor="transparent" cellpadding="0" cellspacing="0" border="0"><tr><![endif]--><!--[if (gte mso 9)|(IE)]><td valign="top" width="500"><![endif]--><div class="col num12" style="display: inline-block;vertical-align: top;width: 100%"><table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" cellpadding="0" cellspacing="0" align="center" width="100%" border="0"><tbody><tr style="vertical-align: top"><td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;background-color: transparent;padding-top: 0px;padding-right: 0px;padding-bottom: 0px;padding-left: 0px;border-top: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;border-left: 0px solid transparent"><table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" align="center" width="100%" border="0" cellpadding="0" cellspacing="0">
-    <tbody><tr style="vertical-align: top">
-        <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-top: 10px;padding-right: 10px;padding-bottom: 10px;padding-left: 10px" align="center">
-            <div style="height: 10px;">
-                <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top;border-top: 10px solid transparent;width: 100%" align="center" border="0" cellspacing="0">
-                    <tbody><tr style="vertical-align: top">
-                        <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top" align="center"></td>
-                    </tr>
-                </tbody></table>
-            </div>
+<table style="background-color: #EBDFBF; border-collapse: collapse; border-spacing: 0; vertical-align: top;" cellpadding="0" cellspacing="0" align="center" width="100%" border="0">
+    <tbody>
+    <tr style="vertical-align: top">
+        <td style="border-collapse: collapse !important; vertical-align: top; word-break: break-word;" width="100%">
+            <!--[if gte mso 9]>
+                <table id="outlookholder" border="0" cellspacing="0" cellpadding="0" align="center"><tr><td>
+            <![endif]-->
+            <!--[if (IE)]>
+                <table width="500" align="center" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                <td>
+            <![endif]-->
+            <table class="container" style="border-collapse: collapse; border-spacing: 0; margin: 0 auto; max-width: 500px; text-align: inherit; vertical-align: top;" cellpadding="0" cellspacing="0" align="center" width="100%" border="0">
+                <tbody>
+                <tr style="vertical-align: top">
+                    <td style="border-collapse: collapse !important; vertical-align: top; word-break: break-word;" width="100%">
+                        <table class="block-grid" style="background-color: transparent; border-collapse: collapse; border-spacing: 0; color: #000000; max-width: 500px; vertical-align: top; width: 100%;" cellpadding="0" cellspacing="0" width="100%" bgcolor="transparent">
+                            <tbody>
+                            <tr style="vertical-align: top">
+                                <td style="border-collapse: collapse !important; font-size: 0; text-align: center; vertical-align: top; word-break: break-word;"><!--[if (gte mso 9)|(IE)]><table width="100%" align="center" bgcolor="transparent" cellpadding="0" cellspacing="0" border="0"><tr><![endif]--><!--[if (gte mso 9)|(IE)]>
+                                <td valign="top" width="500">
+                                    <![endif]-->
+                                    <div class="col num12" style="display: inline-block; vertical-align: top; width: 100%">
+                                        <table style="border-collapse: collapse; border-spacing: 0; vertical-align: top" cellpadding="0" cellspacing="0" align="center" width="100%" border="0">
+                                            <tbody>
+                                            <tr style="vertical-align: top">
+                                                <td style="background-color: transparent; border-bottom: 0px solid transparent; border-collapse: collapse !important; border-left: 0px solid transparent; border-right: 0px solid transparent; border-top: 0px solid transparent; padding-bottom: 0px; padding-left: 0px; padding-right: 0px; padding-top: 0px; vertical-align: top; word-break: break-word;">
+                                                    <table style="border-collapse: collapse; border-spacing: 0; vertical-align: top" align="center" width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                        <tbody>
+                                                        <tr style="vertical-align: top">
+                                                            <td style="border-collapse: collapse !important; padding-bottom: 10px; padding-left: 10px; padding-right: 10px; padding-top: 10px; vertical-align: top; word-break: break-word;" align="center">
+                                                                <div style="height: 10px;">
+                                                                    <table style="border-collapse: collapse; border-spacing: 0; border-top: 10px solid transparent; vertical-align: top; width: 100%" align="center" border="0" cellspacing="0">
+                                                                        <tbody>
+                                                                        <tr style="vertical-align: top">
+                                                                            <td style="border-collapse: collapse !important; vertical-align: top; word-break: break-word;" align="center"></td>
+                                                                        </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                    <table style="border-collapse: collapse; border-spacing: 0; vertical-align: top" cellpadding="0" cellspacing="0" width="100%">
+                                                        <tbody>
+                                                        <tr style="vertical-align: top">
+                                                            <td style="border-collapse: collapse !important; padding-bottom: 30px; padding-left: 0px; padding-right: 0px; padding-top: 30px; vertical-align: top; word-break: break-word;">
+                                                                <div style="color: #250100; font-family: 'Roboto', Tahoma, Verdana, Segoe, sans-serif; line-height: 120%;">
+                                                                    <div style="color: #250100; font-family: Roboto, Tahoma, Verdana, Segoe, sans-serif; font-size: 12px; line-height: 14px; text-align: left;">
+                                                                        <p style="font-size: 14px; line-height: 17px; margin: 0; text-align: center">
+                                                                            <span style="font-size: 36px; line-height: 43px;">
+                                                                                <strong>
+                                                                                    <span style="font-size: 36px; line-height: 43px;">Caf&#233; Analog</span>
+                                                                                </strong>
+                                                                            </span>
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                    <table style="border-collapse: collapse; border-spacing: 0; vertical-align: top" cellpadding="0" cellspacing="0" width="100%">
+                                                        <tbody>
+                                                        <tr style="vertical-align: top">
+                                                            <td style="border-collapse: collapse !important; padding-bottom: 30px; padding-left: 0px; padding-right: 0px; padding-top: 30px; vertical-align: top; word-break: break-word;">
+                                                                <div style="color: #7B4117; font-family: 'Roboto', Tahoma, Verdana, Segoe, sans-serif; line-height: 120%;">
+                                                                    <div style="color: #7B4117; font-family: Roboto, Tahoma, Verdana, Segoe, sans-serif; font-size: 12px; line-height: 14px; text-align: left;">
+                                                                        <p style="font-size: 14px; line-height: 17px; margin: 0; text-align: center">
+                                                                            <span style="font-size: 22px; line-height: 26px;">
+                                                                                <strong>
+                                                                                    <span style="font-size: 22px; line-height: 26px;">Verify your newly updated email for your account&nbsp;within {expiry} to use the app</span>
+                                                                                </strong>
+                                                                            </span>
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                    <table style="border-collapse: collapse; border-spacing: 0; vertical-align: top" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tbody>
+                                                        <tr style="vertical-align: top">
+                                                            <td class="button-container" style="border-collapse: collapse !important; padding-bottom: 10px; padding-left: 10px; padding-right: 10px; padding-top: 15px; vertical-align: top; word-break: break-word;" align="center">
+                                                                <table style="border-collapse: collapse; border-spacing: 0; vertical-align: top" width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+                                                                    <tbody>
+                                                                    <tr style="vertical-align: top">
+                                                                        <td class="button" style="border-collapse: collapse !important; vertical-align: top; word-break: break-word;" width="100%" align="center" valign="middle">
+                                                                            <!--[if mso]>
+                                                                                <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href=""
+                                                                                             style="height: 42px; v-text-anchor: middle; width: 218px;"
+                                                                                             arcsize="60%"
+                                                                                             strokecolor="#6BADB9"
+                                                                                             fillcolor="#6BADB9" >
+                                                                                <w:anchorlock/>
+                                                                                <center 
+                                                                                    style="color: #ffffff; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 16px;">
+                                                                            <![endif]-->
+                                                                            <!--[if !mso]><!- - --><div style="-moz-border-radius: 25px; -webkit-border-radius: 25px; border-bottom: 0px solid transparent; border-left: 0px solid transparent; border-radius: 25px; border-right: 0px solid transparent; border-top: 0px solid transparent; display: inline-block; max-width: 40%; width: 100%;" align="center">
+
+                                                                                <table style="border-collapse: collapse; border-spacing: 0; height: 42; vertical-align: top;" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                                <tbody><tr style="vertical-align: top"><td style="-moz-border-radius: 25px; -webkit-border-radius: 25px; background-color: #6BADB9; border-collapse: collapse !important; border-radius: 25px; color: #ffffff; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; padding-bottom: 5px; padding-left: 20px; padding-right: 20px; padding-top: 5px; text-align: center; vertical-align: top; word-break: break-word;" valign="middle"><!--<![endif]-->
+                                                                            <a style="-webkit-text-size-adjust: none; background-color: #6BADB9; color: #ffffff; display: inline-block; text-align: center; text-decoration: none;" href="{baseUrl}/coffeecard/api/account/verify?token={token}" target="_blank">
+                                                                                <span style="font-size: 16px; line-height: 32px;">
+                                                                                    <span style="font-size: 14px; line-height: 28px;" data-mce-style="font-size: 14px;">Verify now</span>
+                                                                                </span>
+                                                                            </a>
+                                                                            <!--[if !mso]><!- - --></td></tr></tbody></table>
+                                                                                </div><!--<![endif]-->
+                                                                            <!--[if mso]>
+                                                                                </center>
+                                                                                </v:roundrect>
+                                                                            <![endif]-->
+                                                                        </td>
+                                                                    </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                    <table style="border-collapse: collapse; border-spacing: 0; vertical-align: top" align="center" width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                        <tbody>
+                                                        <tr style="vertical-align: top">
+                                                            <td style="border-collapse: collapse !important; padding-bottom: 10px; padding-left: 10px; padding-right: 10px; padding-top: 10px; vertical-align: top; word-break: break-word;" align="center">
+                                                                <div style="height: 10px;">
+                                                                    <table style="border-collapse: collapse; border-spacing: 0; border-top: 10px solid transparent; vertical-align: top; width: 100%" align="center" border="0" cellspacing="0">
+                                                                        <tbody>
+                                                                        <tr style="vertical-align: top">
+                                                                            <td style="border-collapse: collapse !important; vertical-align: top; word-break: break-word;" align="center"></td>
+                                                                        </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div><!--[if (gte mso 9)|(IE)]></td><![endif]--><!--[if (gte mso 9)|(IE)]></td></tr></table><![endif]-->
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <!--[if mso]>
+                </td></tr></table>
+            <![endif]-->
+            <!--[if (IE)]>
+                </td></tr></table>
+            <![endif]-->
         </td>
     </tr>
-</tbody></table><table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" cellpadding="0" cellspacing="0" width="100%">
-  <tbody><tr style="vertical-align: top">
-    <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-top: 30px;padding-right: 0px;padding-bottom: 30px;padding-left: 0px">
-        <div style="color:#250100;line-height:120%;font-family:'Roboto', Tahoma, Verdana, Segoe, sans-serif;">            
-        	<div style="font-size:12px;line-height:14px;font-family:Roboto, Tahoma, Verdana, Segoe, sans-serif;color:#250100;text-align:left;"><p style="margin: 0;font-size: 14px;line-height: 17px;text-align: center"><span style="font-size: 36px; line-height: 43px;"><strong><span style="line-height: 43px; font-size: 36px;">Caf&#233; Analog</span></strong></span></p></div>
-        </div>
-    </td>
-  </tr>
-</tbody></table>
-<table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" cellpadding="0" cellspacing="0" width="100%">
-  <tbody><tr style="vertical-align: top">
-    <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-top: 30px;padding-right: 0px;padding-bottom: 30px;padding-left: 0px">
-        <div style="color:#7B4117;line-height:120%;font-family:'Roboto', Tahoma, Verdana, Segoe, sans-serif;">            
-        	<div style="font-size:12px;line-height:14px;font-family:Roboto, Tahoma, Verdana, Segoe, sans-serif;color:#7B4117;text-align:left;"><p style="margin: 0;font-size: 14px;line-height: 17px;text-align: center"><span style="font-size: 22px; line-height: 26px;"><strong><span style="line-height: 26px; font-size: 22px;">Verify your newly updated email for your account&nbsp;within {expiry} to use the app</span></strong></span></p></div>
-        </div>
-    </td>
-  </tr>
-</tbody></table>
-<table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" width="100%" border="0" cellspacing="0" cellpadding="0">
-  <tbody><tr style="vertical-align: top">
-    <td class="button-container" style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-top: 15px;padding-right: 10px;padding-bottom: 10px;padding-left: 10px" align="center">
-      <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
-        <tbody><tr style="vertical-align: top">
-          <td class="button" style="word-break: break-word;border-collapse: collapse !important;vertical-align: top" width="100%" align="center" valign="middle">
-              <!--[if mso]>
-                <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href=""
-                  style="
-                    height:42px;
-                    v-text-anchor:middle;
-                    width:218px;"
-                    arcsize="60%"
-                    strokecolor="#6BADB9"
-                    fillcolor="#6BADB9" >
-                <w:anchorlock/>
-                  <center 
-                    style="color:#ffffff;
-                      font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;
-                      font-size:16px;">
-              <![endif]-->
-             <!--[if !mso]><!- - --><div style="display: inline-block;
-              border-radius: 25px; 
-              -webkit-border-radius: 25px; 
-              -moz-border-radius: 25px; 
-              max-width: 40%;
-              width: 100%;
-              border-top: 0px solid transparent;
-              border-right: 0px solid transparent;
-              border-bottom: 0px solid transparent;
-              border-left: 0px solid transparent;" align="center">
-
-              <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top;height: 42" width="100%" border="0" cellspacing="0" cellpadding="0">
-                <tbody><tr style="vertical-align: top"><td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;border-radius: 25px;                   -webkit-border-radius: 25px;                   -moz-border-radius: 25px;                  color: #ffffff;                  background-color: #6BADB9;                  padding-top: 5px;                   padding-right: 20px;                  padding-bottom: 5px;                  padding-left: 20px;                  font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;text-align: center" valign="middle"><!--<![endif]-->
-                  <a style="display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;background-color: #6BADB9;color: #ffffff" href="{baseUrl}/coffeecard/api/account/verify?token={token}" target="_blank">
-                        <span style="font-size:16px;line-height:32px;"><span style="font-size: 14px; line-height: 28px;" data-mce-style="font-size: 14px;">Verify now</span></span>
-                  </a>
-                <!--[if !mso]><!- - --></td></tr></tbody></table>
-              </div><!--<![endif]-->
-              <!--[if mso]>
-                    </center>
-                </v:roundrect>
-              <![endif]-->
-          </td>
-        </tr>
-      </tbody></table>
-    </td>
-  </tr>
-</tbody></table>
-<table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" align="center" width="100%" border="0" cellpadding="0" cellspacing="0">
-    <tbody><tr style="vertical-align: top">
-        <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-top: 10px;padding-right: 10px;padding-bottom: 10px;padding-left: 10px" align="center">
-            <div style="height: 10px;">
-                <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top;border-top: 10px solid transparent;width: 100%" align="center" border="0" cellspacing="0">
-                    <tbody><tr style="vertical-align: top">
-                        <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top" align="center"></td>
-                    </tr>
-                </tbody></table>
-            </div>
+    </tbody>
+</table>
+<table style="background-color: #433025; border-collapse: collapse; border-spacing: 0; vertical-align: top;" cellpadding="0" cellspacing="0" align="center" width="100%" border="0">
+    <tbody>
+    <tr style="vertical-align: top">
+        <td style="border-collapse: collapse !important; vertical-align: top; word-break: break-word;" width="100%">
+            <!--[if gte mso 9]>
+                <table id="outlookholder" border="0" cellspacing="0" cellpadding="0" align="center"><tr><td>
+            <![endif]-->
+            <!--[if (IE)]>
+                <table width="500" align="center" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                <td>
+            <![endif]-->
+            <table class="container" style="border-collapse: collapse; border-spacing: 0; margin: 0 auto; max-width: 500px; text-align: inherit; vertical-align: top;" cellpadding="0" cellspacing="0" align="center" width="100%" border="0">
+                <tbody>
+                <tr style="vertical-align: top">
+                    <td style="border-collapse: collapse !important; vertical-align: top; word-break: break-word;" width="100%">
+                        <table class="block-grid" style="background-color: transparent; border-collapse: collapse; border-spacing: 0; color: #333; max-width: 500px; vertical-align: top; width: 100%;" cellpadding="0" cellspacing="0" width="100%" bgcolor="transparent">
+                            <tbody>
+                            <tr style="vertical-align: top">
+                                <td style="border-collapse: collapse !important; font-size: 0; text-align: center; vertical-align: top; word-break: break-word;"><!--[if (gte mso 9)|(IE)]><table width="100%" align="center" bgcolor="transparent" cellpadding="0" cellspacing="0" border="0"><tr><![endif]--><!--[if (gte mso 9)|(IE)]>
+                                <td valign="top" width="500">
+                                    <![endif]-->
+                                    <div class="col num12" style="display: inline-block; vertical-align: top; width: 100%">
+                                        <table style="border-collapse: collapse; border-spacing: 0; vertical-align: top" cellpadding="0" cellspacing="0" align="center" width="100%" border="0">
+                                            <tbody>
+                                            <tr style="vertical-align: top">
+                                                <td style="background-color: transparent; border-bottom: 0px solid transparent; border-collapse: collapse !important; border-left: 0px solid transparent; border-right: 0px solid transparent; border-top: 0px solid transparent; padding-bottom: 30px; padding-left: 0px; padding-right: 0px; padding-top: 30px; vertical-align: top; word-break: break-word;">
+                                                    <table style="border-collapse: collapse; border-spacing: 0; vertical-align: top" cellpadding="0" cellspacing="0" width="100%">
+                                                        <tbody>
+                                                        <tr style="vertical-align: top">
+                                                            <td style="border-collapse: collapse !important; padding-bottom: 10px; padding-left: 10px; padding-right: 10px; padding-top: 15px; vertical-align: top; word-break: break-word;">
+                                                                <div style="color: #EBDFBF; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; line-height: 150%;">
+                                                                    <div style="color: #EBDFBF; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 12px; line-height: 18px; text-align: left;">
+                                                                        <p style="font-size: 14px; line-height: 21px; margin: 0; text-align: center">@analogio<br></p>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div><!--[if (gte mso 9)|(IE)]></td><![endif]--><!--[if (gte mso 9)|(IE)]></td></tr></table><![endif]-->
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <!--[if mso]>
+                </td></tr></table>
+            <![endif]-->
+            <!--[if (IE)]>
+                </td></tr></table>
+            <![endif]-->
         </td>
     </tr>
-</tbody></table></td></tr></tbody></table></div><!--[if (gte mso 9)|(IE)]></td><![endif]--><!--[if (gte mso 9)|(IE)]></td></tr></table><![endif]--></td></tr></tbody></table></td></tr></tbody></table>
-                    <!--[if mso]>
-                    </td></tr></table>
-                    <![endif]-->
-                    <!--[if (IE)]>
-                    </td></tr></table>
-                    <![endif]-->
-                  </td>
-                </tr>
-              </tbody></table>
-              <table style="border-spacing: 0;border-collapse: collapse;vertical-align: top;background-color: #433025" cellpadding="0" cellspacing="0" align="center" width="100%" border="0">
-                <tbody><tr style="vertical-align: top">
-                  <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top" width="100%">
-                    <!--[if gte mso 9]>
-                    <table id="outlookholder" border="0" cellspacing="0" cellpadding="0" align="center"><tr><td>
-                    <![endif]-->
-                    <!--[if (IE)]>
-                    <table width="500" align="center" cellpadding="0" cellspacing="0" border="0">
-                        <tr>
-                            <td>
-                    <![endif]-->
-                    <table class="container" style="border-spacing: 0;border-collapse: collapse;vertical-align: top;max-width: 500px;margin: 0 auto;text-align: inherit" cellpadding="0" cellspacing="0" align="center" width="100%" border="0"><tbody><tr style="vertical-align: top"><td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top" width="100%"><table class="block-grid" style="border-spacing: 0;border-collapse: collapse;vertical-align: top;width: 100%;max-width: 500px;color: #333;background-color: transparent" cellpadding="0" cellspacing="0" width="100%" bgcolor="transparent"><tbody><tr style="vertical-align: top"><td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;text-align: center;font-size: 0"><!--[if (gte mso 9)|(IE)]><table width="100%" align="center" bgcolor="transparent" cellpadding="0" cellspacing="0" border="0"><tr><![endif]--><!--[if (gte mso 9)|(IE)]><td valign="top" width="500"><![endif]--><div class="col num12" style="display: inline-block;vertical-align: top;width: 100%"><table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" cellpadding="0" cellspacing="0" align="center" width="100%" border="0"><tbody><tr style="vertical-align: top"><td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;background-color: transparent;padding-top: 30px;padding-right: 0px;padding-bottom: 30px;padding-left: 0px;border-top: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;border-left: 0px solid transparent"><table style="border-spacing: 0;border-collapse: collapse;vertical-align: top" cellpadding="0" cellspacing="0" width="100%">
-  <tbody><tr style="vertical-align: top">
-    <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;padding-top: 15px;padding-right: 10px;padding-bottom: 10px;padding-left: 10px">
-        <div style="color:#EBDFBF;line-height:150%;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;">            
-        	<div style="font-size:12px;line-height:18px;color:#EBDFBF;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;text-align:left;"><p style="margin: 0;font-size: 14px;line-height: 21px;text-align: center">@analogio<br></p></div>
-        </div>
-    </td>
-  </tr>
-</tbody></table>
-</td></tr></tbody></table></div><!--[if (gte mso 9)|(IE)]></td><![endif]--><!--[if (gte mso 9)|(IE)]></td></tr></table><![endif]--></td></tr></tbody></table></td></tr></tbody></table>
-                    <!--[if mso]>
-                    </td></tr></table>
-                    <![endif]-->
-                    <!--[if (IE)]>
-                    </td></tr></table>
-                    <![endif]-->
-                  </td>
-                </tr>
-              </tbody></table>
-          </td>
-      </tr>
-  </tbody></table>
+    </tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
 
 
-</body></html>
+</body>
+</html>

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using CoffeeCard.Helpers;
+﻿using System.Linq;
 using CoffeeCard.Models.DataTransferObjects.Ticket;
 using CoffeeCard.Services;
 using Microsoft.AspNetCore.Authorization;

@@ -10,8 +10,8 @@ namespace CoffeeCard.Services
 {
     public class MobilePayService : IMobilePayService
     {
-        private readonly IMobilePayApiHttpClient _mobilePayAPIClient;
         private readonly string _merchantId;
+        private readonly IMobilePayApiHttpClient _mobilePayAPIClient;
 
         public MobilePayService(IMobilePayApiHttpClient mobilePayAPIClient, IConfiguration configuration)
         {
@@ -25,9 +25,12 @@ namespace CoffeeCard.Services
 
             try
             {
-                var response = await _mobilePayAPIClient.SendRequest<GetPaymentStatusResponse>(new GetPaymentStatusRequest(_merchantId, orderId));
+                var response =
+                    await _mobilePayAPIClient.SendRequest<GetPaymentStatusResponse>(
+                        new GetPaymentStatusRequest(_merchantId, orderId));
 
-                Log.Information($"MobilePay transactionId = {response.TransactionId}, orderId = {orderId} has PaymentStatus = {response.LatestPaymentStatus}");
+                Log.Information(
+                    $"MobilePay transactionId = {response.TransactionId}, orderId = {orderId} has PaymentStatus = {response.LatestPaymentStatus}");
 
                 return response;
             }
@@ -42,7 +45,9 @@ namespace CoffeeCard.Services
                 {
                     Log.Warning($"Retrying to retrieve Payment Status. Last call failed with {exception}");
 
-                    var response = await _mobilePayAPIClient.SendRequest<GetPaymentStatusResponse>(new GetPaymentStatusRequest(_merchantId, orderId));
+                    var response =
+                        await _mobilePayAPIClient.SendRequest<GetPaymentStatusResponse>(
+                            new GetPaymentStatusRequest(_merchantId, orderId));
                     return response;
                 }
                 catch (MobilePayException retryException)
@@ -57,8 +62,11 @@ namespace CoffeeCard.Services
         {
             try
             {
-                var response = await _mobilePayAPIClient.SendRequest<CaptureAmountResponse>(new CaptureAmountRequest(_merchantId, orderId));
-                Log.Information($"MobilePay transactionId = {response.TransactionId}, orderId = {orderId} has been captured from the MobilePay API");
+                var response =
+                    await _mobilePayAPIClient.SendRequest<CaptureAmountResponse>(
+                        new CaptureAmountRequest(_merchantId, orderId));
+                Log.Information(
+                    $"MobilePay transactionId = {response.TransactionId}, orderId = {orderId} has been captured from the MobilePay API");
                 return response;
             }
             catch (MobilePayException exception)
@@ -68,14 +76,13 @@ namespace CoffeeCard.Services
 
                 var paymentStatus = await GetPaymentStatus(orderId);
                 if (paymentStatus.LatestPaymentStatus.Equals(PaymentStatus.Captured))
-                {
                     return new CaptureAmountResponse
                     {
                         TransactionId = paymentStatus.TransactionId
                     };
-                }
 
-                Log.Error($"Error capturing payment reservation. TransactionId = {paymentStatus.TransactionId} has status {paymentStatus.LatestPaymentStatus} at MobilePay");
+                Log.Error(
+                    $"Error capturing payment reservation. TransactionId = {paymentStatus.TransactionId} has status {paymentStatus.LatestPaymentStatus} at MobilePay");
                 throw;
             }
         }
@@ -84,8 +91,11 @@ namespace CoffeeCard.Services
         {
             try
             {
-                var response = await _mobilePayAPIClient.SendRequest<CancelReservationResponse>(new CancelReservationRequest(_merchantId, orderId));
-                Log.Information($"MobilePay transactionId = {response.TransactionId}, orderId = {orderId} has been cancelled from the MobilePay API");
+                var response =
+                    await _mobilePayAPIClient.SendRequest<CancelReservationResponse>(
+                        new CancelReservationRequest(_merchantId, orderId));
+                Log.Information(
+                    $"MobilePay transactionId = {response.TransactionId}, orderId = {orderId} has been cancelled from the MobilePay API");
                 return response;
             }
             catch (MobilePayException e)
@@ -95,14 +105,13 @@ namespace CoffeeCard.Services
 
                 var paymentStatus = await GetPaymentStatus(orderId);
                 if (paymentStatus.LatestPaymentStatus.Equals(PaymentStatus.Cancelled))
-                {
                     return new CancelReservationResponse
                     {
                         TransactionId = paymentStatus.TransactionId
                     };
-                }
 
-                Log.Error($"Error cancelling payment reservation. TransactionId = {paymentStatus.TransactionId} has status {paymentStatus.LatestPaymentStatus} at MobilePay");
+                Log.Error(
+                    $"Error cancelling payment reservation. TransactionId = {paymentStatus.TransactionId} has status {paymentStatus.LatestPaymentStatus} at MobilePay");
                 throw;
             }
         }

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using CoffeeCard.Models.DataTransferObjects.AppConfig;
-using CoffeeCard.Services;
+﻿using CoffeeCard.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

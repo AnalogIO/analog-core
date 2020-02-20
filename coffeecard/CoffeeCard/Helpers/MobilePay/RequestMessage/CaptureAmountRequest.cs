@@ -36,10 +36,10 @@ namespace CoffeeCard.Helpers.MobilePay.RequestMessage
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((CaptureAmountRequest) obj);
         }
-        
+
         private bool Equals(CaptureAmountRequest other)
         {
             return _merchantId == other._merchantId && _orderId == other._orderId;
@@ -49,6 +49,5 @@ namespace CoffeeCard.Helpers.MobilePay.RequestMessage
         {
             return HashCode.Combine(_merchantId, _orderId);
         }
-
     }
 }

@@ -19,10 +19,10 @@ namespace CoffeeCard.Helpers.MobilePay
     public class MobilePayApiHttpClient : IMobilePayApiHttpClient
     {
         private const string MobilePayBaseEndpoint = "https://api.mobeco.dk/appswitch/api/v1/";
+        private readonly X509Certificate2 _certificate;
 
         private readonly HttpClient _client;
         private readonly IConfiguration _configuration;
-        private readonly X509Certificate2 _certificate;
 
         public MobilePayApiHttpClient(HttpClient client, IConfiguration configuration, IHostingEnvironment environment)
         {
@@ -32,16 +32,19 @@ namespace CoffeeCard.Helpers.MobilePay
             _client = client;
         }
 
-        public async Task<T> SendRequest<T>(IMobilePayAPIRequestMessage requestMessage) where T: IMobilePayAPIResponse
+        public async Task<T> SendRequest<T>(IMobilePayAPIRequestMessage requestMessage) where T : IMobilePayAPIResponse
         {
             var requestUri = new Uri(MobilePayBaseEndpoint + requestMessage.GetEndPointUri());
 
-            var request = new HttpRequestMessage()
+            var request = new HttpRequestMessage
             {
                 Headers =
                 {
-                    { "AuthenticationSignature", GenerateAuthenticationSignature(requestUri.ToString(), requestMessage.GetRequestBody()) },
-                    { "Ocp-Apim-Subscription-Key", _configuration["MPSubscriptionKey"] }
+                    {
+                        "AuthenticationSignature",
+                        GenerateAuthenticationSignature(requestUri.ToString(), requestMessage.GetRequestBody())
+                    },
+                    {"Ocp-Apim-Subscription-Key", _configuration["MPSubscriptionKey"]}
                 },
                 Method = requestMessage.GetHttpMethod(),
                 RequestUri = requestUri,
@@ -50,49 +53,53 @@ namespace CoffeeCard.Helpers.MobilePay
 
             var response = await _client.SendAsync(request);
 
-            if (!response.IsSuccessStatusCode)
-            {
-                await HandleHttpErrorAsync(response);
-            }
+            if (!response.IsSuccessStatusCode) await HandleHttpErrorAsync(response);
 
             return await response.Content.ReadAsAsync<T>();
         }
 
+        public void Dispose()
+        {
+            _client.Dispose();
+        }
+
         private static async Task HandleHttpErrorAsync(HttpResponseMessage response)
         {
-            Log.Error($"HTTP Response failed with statusCode = {response.StatusCode} and message = {response.Content.ReadAsStringAsync().Result}");
+            Log.Error(
+                $"HTTP Response failed with statusCode = {response.StatusCode} and message = {response.Content.ReadAsStringAsync().Result}");
 
             switch (response.StatusCode)
             {
                 case HttpStatusCode.InternalServerError:
-                    {
-                        var errorMessage = await response.Content.ReadAsAsync<InternalServerErrorMessage>();
-                        throw new MobilePayException(errorMessage, HttpStatusCode.InternalServerError);
-                    }
+                {
+                    var errorMessage = await response.Content.ReadAsAsync<InternalServerErrorMessage>();
+                    throw new MobilePayException(errorMessage, HttpStatusCode.InternalServerError);
+                }
                 case HttpStatusCode.RequestTimeout:
+                {
+                    throw new MobilePayException(new DefaultErrorMessage
                     {
-                        throw new MobilePayException(new DefaultErrorMessage()
-                        {
-                            Reason = MobilePayErrorReason.Other
-                        }, HttpStatusCode.RequestTimeout);
-                    }
+                        Reason = MobilePayErrorReason.Other
+                    }, HttpStatusCode.RequestTimeout);
+                }
                 default:
-                    {
-                        var errorMessage = await response.Content.ReadAsAsync<DefaultErrorMessage>();
-                        throw new MobilePayException(errorMessage, response.StatusCode);
-                    }
+                {
+                    var errorMessage = await response.Content.ReadAsAsync<DefaultErrorMessage>();
+                    throw new MobilePayException(errorMessage, response.StatusCode);
+                }
             }
         }
 
         private X509Certificate2 LoadCertificate(IHostingEnvironment environment)
         {
-	        var certName = _configuration["MobilePayAPI-CertificateName"];
+            var certName = _configuration["MobilePayAPI-CertificateName"];
 
             var provider = environment.ContentRootFileProvider;
             var contents = provider.GetDirectoryContents(string.Empty);
             var certPath = contents.FirstOrDefault(file => file.Name.Equals(certName)).PhysicalPath;
 
-            return new X509Certificate2(certPath, _configuration["CertificatePassword"], X509KeyStorageFlags.MachineKeySet);
+            return new X509Certificate2(certPath, _configuration["CertificatePassword"],
+                X509KeyStorageFlags.MachineKeySet);
         }
 
         private string GenerateAuthenticationSignature(string requestUri, string requestBody)
@@ -104,16 +111,11 @@ namespace CoffeeCard.Helpers.MobilePay
 #pragma warning restore CA5350
             var hash = Convert.ToBase64String(sha1.ComputeHash(Encoding.UTF8.GetBytes(combinedRequest)));
 
-            using (RSA rsa = _certificate.GetRSAPrivateKey())
+            using (var rsa = _certificate.GetRSAPrivateKey())
             {
                 var signature = JWT.Encode(hash, rsa, JwsAlgorithm.RS256);
                 return signature;
             }
-        }
-
-        public void Dispose()
-        {
-            _client.Dispose();
         }
     }
 }

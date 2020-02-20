@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using CoffeeCard.Helpers;
 using CoffeeCard.Models.DataTransferObjects.Purchase;
 using CoffeeCard.Services;
@@ -16,10 +15,10 @@ namespace CoffeeCard.Controllers
     [ApiController]
     public class PurchasesController : ControllerBase
     {
-        private IAccountService _accountService;
         private readonly IConfiguration _configuration;
         private readonly IMapperService _mapperService;
         private readonly IPurchaseService _purchaseService;
+        private IAccountService _accountService;
 
         public PurchasesController(IPurchaseService purchaseService, IMapperService mapper,
             IAccountService accountService, IConfiguration configuration)

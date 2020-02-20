@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using CoffeeCard.Models;
+using CoffeeCard.Models.DataTransferObjects.Purchase;
+using CoffeeCard.Models.DataTransferObjects.User;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
@@ -9,9 +11,6 @@ using MimeKit;
 using RestSharp;
 using RestSharp.Authenticators;
 using Serilog;
-using CoffeeCard.Models.DataTransferObjects.Purchase;
-using CoffeeCard.Models.DataTransferObjects.User;
-
 
 namespace CoffeeCard.Services
 {
@@ -38,11 +37,11 @@ namespace CoffeeCard.Services
 
             builder.HtmlBody = builder.HtmlBody.Replace("{email}", user.Email);
             builder.HtmlBody = builder.HtmlBody.Replace("{name}", user.Name);
-            builder.HtmlBody = builder.HtmlBody.Replace("{quantity}", purchase.NumberOfTickets.ToString() );
+            builder.HtmlBody = builder.HtmlBody.Replace("{quantity}", purchase.NumberOfTickets.ToString());
             builder.HtmlBody = builder.HtmlBody.Replace("{product}", purchase.ProductName);
             builder.HtmlBody = builder.HtmlBody.Replace("{vat}", (purchase.Price * 0.2).ToString());
-            builder.HtmlBody = builder.HtmlBody.Replace("{price}", purchase.Price.ToString() );
-            builder.HtmlBody = builder.HtmlBody.Replace("{orderId}", purchase.OrderId.ToString());
+            builder.HtmlBody = builder.HtmlBody.Replace("{price}", purchase.Price.ToString());
+            builder.HtmlBody = builder.HtmlBody.Replace("{orderId}", purchase.OrderId);
             builder.HtmlBody = builder.HtmlBody.Replace("{date}", cetTime.ToShortDateString());
 
             message.To.Add(new MailboxAddress(user.Name, user.Email));
@@ -121,7 +120,7 @@ namespace CoffeeCard.Services
         public void SendVerificationEmailForRecover(User user, int newPassword)
         {
             Log.Information($"Sending email to {user.Email} ");
-            
+
             var message = new MimeMessage();
             var builder = RetrieveTemplate("email_newpassword.html").Item1;
 
@@ -140,15 +139,15 @@ namespace CoffeeCard.Services
         private (BodyBuilder, string) RetrieveTemplate(string templateName)
         {
             var fullPath = _httpContextAccessor.HttpContext?.Request?.GetDisplayUrl();
-            var baseUrl = fullPath.Substring(0, fullPath.IndexOf("api/"));
+            var baseUrl = "https://beta.analogio.dk/api/clippy/";
 
             var pathToTemplate = _env.WebRootPath
-                            + Path.DirectorySeparatorChar
-                            + "Templates"
-                            + Path.DirectorySeparatorChar
-                            + "EmailTemplate"
-                            + Path.DirectorySeparatorChar
-                            + templateName;
+                                 + Path.DirectorySeparatorChar
+                                 + "Templates"
+                                 + Path.DirectorySeparatorChar
+                                 + "EmailTemplate"
+                                 + Path.DirectorySeparatorChar
+                                 + templateName;
 
             var message = new MimeMessage();
             var builder = new BodyBuilder();

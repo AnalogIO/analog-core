@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using System;
 
 namespace coffeecard.Migrations
 {
@@ -9,66 +9,63 @@ namespace coffeecard.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
-                name: "test");
+                "test");
 
             migrationBuilder.CreateTable(
-                name: "Products",
+                "Products",
                 schema: "test",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Price = table.Column<int>(nullable: false),
-                    NumberOfTickets = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(nullable: false),
+                    Id = table.Column<int>()
+                        .Annotation("SqlServer:ValueGenerationStrategy",
+                            SqlServerValueGenerationStrategy.IdentityColumn),
+                    Price = table.Column<int>(),
+                    NumberOfTickets = table.Column<int>(),
+                    Name = table.Column<string>(),
                     Description = table.Column<string>(nullable: true),
-                    ExperienceWorth = table.Column<int>(nullable: false)
+                    ExperienceWorth = table.Column<int>()
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Products", x => x.Id);
-                });
+                constraints: table => { table.PrimaryKey("PK_Products", x => x.Id); });
 
             migrationBuilder.CreateTable(
-                name: "Programmes",
+                "Programmes",
                 schema: "test",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<int>()
+                        .Annotation("SqlServer:ValueGenerationStrategy",
+                            SqlServerValueGenerationStrategy.IdentityColumn),
                     ShortName = table.Column<string>(nullable: true),
                     FullName = table.Column<string>(nullable: true),
-                    SortPriority = table.Column<int>(nullable: false)
+                    SortPriority = table.Column<int>()
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Programmes", x => x.Id);
-                });
+                constraints: table => { table.PrimaryKey("PK_Programmes", x => x.Id); });
 
             migrationBuilder.CreateTable(
-                name: "Users",
+                "Users",
                 schema: "test",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<int>()
+                        .Annotation("SqlServer:ValueGenerationStrategy",
+                            SqlServerValueGenerationStrategy.IdentityColumn),
                     Email = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     Password = table.Column<string>(nullable: true),
                     Salt = table.Column<string>(nullable: true),
-                    Experience = table.Column<int>(nullable: false),
-                    DateCreated = table.Column<DateTime>(nullable: false),
-                    DateUpdated = table.Column<DateTime>(nullable: false),
-                    IsVerified = table.Column<bool>(nullable: false),
-                    PrivacyActivated = table.Column<bool>(nullable: false),
+                    Experience = table.Column<int>(),
+                    DateCreated = table.Column<DateTime>(),
+                    DateUpdated = table.Column<DateTime>(),
+                    IsVerified = table.Column<bool>(),
+                    PrivacyActivated = table.Column<bool>(),
                     Programme_Id = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Users_Programmes_Programme_Id",
-                        column: x => x.Programme_Id,
+                        "FK_Users_Programmes_Programme_Id",
+                        x => x.Programme_Id,
                         principalSchema: "test",
                         principalTable: "Programmes",
                         principalColumn: "Id",
@@ -76,21 +73,22 @@ namespace coffeecard.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "LoginAttempts",
+                "LoginAttempts",
                 schema: "test",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Time = table.Column<DateTime>(nullable: false),
+                    Id = table.Column<int>()
+                        .Annotation("SqlServer:ValueGenerationStrategy",
+                            SqlServerValueGenerationStrategy.IdentityColumn),
+                    Time = table.Column<DateTime>(),
                     User_Id = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_LoginAttempts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_LoginAttempts_Users_User_Id",
-                        column: x => x.User_Id,
+                        "FK_LoginAttempts_Users_User_Id",
+                        x => x.User_Id,
                         principalSchema: "test",
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -98,18 +96,19 @@ namespace coffeecard.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Purchases",
+                "Purchases",
                 schema: "test",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<int>()
+                        .Annotation("SqlServer:ValueGenerationStrategy",
+                            SqlServerValueGenerationStrategy.IdentityColumn),
                     ProductName = table.Column<string>(nullable: true),
-                    ProductId = table.Column<int>(nullable: false),
-                    Price = table.Column<int>(nullable: false),
-                    NumberOfTickets = table.Column<int>(nullable: false),
-                    DateCreated = table.Column<DateTime>(nullable: false),
-                    Completed = table.Column<bool>(nullable: false),
+                    ProductId = table.Column<int>(),
+                    Price = table.Column<int>(),
+                    NumberOfTickets = table.Column<int>(),
+                    DateCreated = table.Column<DateTime>(),
+                    Completed = table.Column<bool>(),
                     OrderId = table.Column<string>(nullable: true),
                     TransactionId = table.Column<string>(nullable: true),
                     PurchasedBy_Id = table.Column<int>(nullable: true)
@@ -118,8 +117,8 @@ namespace coffeecard.Migrations
                 {
                     table.PrimaryKey("PK_Purchases", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Purchases_Users_PurchasedBy_Id",
-                        column: x => x.PurchasedBy_Id,
+                        "FK_Purchases_Users_PurchasedBy_Id",
+                        x => x.PurchasedBy_Id,
                         principalSchema: "test",
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -127,24 +126,25 @@ namespace coffeecard.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Statistics",
+                "Statistics",
                 schema: "test",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Preset = table.Column<int>(nullable: false),
-                    SwipeCount = table.Column<int>(nullable: false),
-                    LastSwipe = table.Column<DateTime>(nullable: false),
-                    ExpiryDate = table.Column<DateTime>(nullable: false),
+                    Id = table.Column<int>()
+                        .Annotation("SqlServer:ValueGenerationStrategy",
+                            SqlServerValueGenerationStrategy.IdentityColumn),
+                    Preset = table.Column<int>(),
+                    SwipeCount = table.Column<int>(),
+                    LastSwipe = table.Column<DateTime>(),
+                    ExpiryDate = table.Column<DateTime>(),
                     User_Id = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Statistics", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Statistics_Users_User_Id",
-                        column: x => x.User_Id,
+                        "FK_Statistics_Users_User_Id",
+                        x => x.User_Id,
                         principalSchema: "test",
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -152,12 +152,13 @@ namespace coffeecard.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tokens",
+                "Tokens",
                 schema: "test",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<int>()
+                        .Annotation("SqlServer:ValueGenerationStrategy",
+                            SqlServerValueGenerationStrategy.IdentityColumn),
                     TokenHash = table.Column<string>(nullable: true),
                     User_Id = table.Column<int>(nullable: true)
                 },
@@ -165,8 +166,8 @@ namespace coffeecard.Migrations
                 {
                     table.PrimaryKey("PK_Tokens", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Tokens_Users_User_Id",
-                        column: x => x.User_Id,
+                        "FK_Tokens_Users_User_Id",
+                        x => x.User_Id,
                         principalSchema: "test",
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -174,14 +175,15 @@ namespace coffeecard.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Vouchers",
+                "Vouchers",
                 schema: "test",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<int>()
+                        .Annotation("SqlServer:ValueGenerationStrategy",
+                            SqlServerValueGenerationStrategy.IdentityColumn),
                     Code = table.Column<string>(nullable: true),
-                    DateCreated = table.Column<DateTime>(nullable: false),
+                    DateCreated = table.Column<DateTime>(),
                     DateUsed = table.Column<DateTime>(nullable: true),
                     Product_Id = table.Column<int>(nullable: true),
                     User_Id = table.Column<int>(nullable: true)
@@ -190,15 +192,15 @@ namespace coffeecard.Migrations
                 {
                     table.PrimaryKey("PK_Vouchers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Vouchers_Products_Product_Id",
-                        column: x => x.Product_Id,
+                        "FK_Vouchers_Products_Product_Id",
+                        x => x.Product_Id,
                         principalSchema: "test",
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Vouchers_Users_User_Id",
-                        column: x => x.User_Id,
+                        "FK_Vouchers_Users_User_Id",
+                        x => x.User_Id,
                         principalSchema: "test",
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -206,16 +208,17 @@ namespace coffeecard.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tickets",
+                "Tickets",
                 schema: "test",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    DateCreated = table.Column<DateTime>(nullable: false),
+                    Id = table.Column<int>()
+                        .Annotation("SqlServer:ValueGenerationStrategy",
+                            SqlServerValueGenerationStrategy.IdentityColumn),
+                    DateCreated = table.Column<DateTime>(),
                     DateUsed = table.Column<DateTime>(nullable: true),
-                    ProductId = table.Column<int>(nullable: false),
-                    IsUsed = table.Column<bool>(nullable: false),
+                    ProductId = table.Column<int>(),
+                    IsUsed = table.Column<bool>(),
                     Owner_Id = table.Column<int>(nullable: true),
                     Purchase_Id = table.Column<int>(nullable: true)
                 },
@@ -223,15 +226,15 @@ namespace coffeecard.Migrations
                 {
                     table.PrimaryKey("PK_Tickets", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Tickets_Users_Owner_Id",
-                        column: x => x.Owner_Id,
+                        "FK_Tickets_Users_Owner_Id",
+                        x => x.Owner_Id,
                         principalSchema: "test",
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Tickets_Purchases_Purchase_Id",
-                        column: x => x.Purchase_Id,
+                        "FK_Tickets_Purchases_Purchase_Id",
+                        x => x.Purchase_Id,
                         principalSchema: "test",
                         principalTable: "Purchases",
                         principalColumn: "Id",
@@ -239,55 +242,55 @@ namespace coffeecard.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_LoginAttempts_User_Id",
+                "IX_LoginAttempts_User_Id",
                 schema: "test",
                 table: "LoginAttempts",
                 column: "User_Id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Purchases_PurchasedBy_Id",
+                "IX_Purchases_PurchasedBy_Id",
                 schema: "test",
                 table: "Purchases",
                 column: "PurchasedBy_Id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Statistics_User_Id",
+                "IX_Statistics_User_Id",
                 schema: "test",
                 table: "Statistics",
                 column: "User_Id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tickets_Owner_Id",
+                "IX_Tickets_Owner_Id",
                 schema: "test",
                 table: "Tickets",
                 column: "Owner_Id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tickets_Purchase_Id",
+                "IX_Tickets_Purchase_Id",
                 schema: "test",
                 table: "Tickets",
                 column: "Purchase_Id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tokens_User_Id",
+                "IX_Tokens_User_Id",
                 schema: "test",
                 table: "Tokens",
                 column: "User_Id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_Programme_Id",
+                "IX_Users_Programme_Id",
                 schema: "test",
                 table: "Users",
                 column: "Programme_Id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Vouchers_Product_Id",
+                "IX_Vouchers_Product_Id",
                 schema: "test",
                 table: "Vouchers",
                 column: "Product_Id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Vouchers_User_Id",
+                "IX_Vouchers_User_Id",
                 schema: "test",
                 table: "Vouchers",
                 column: "User_Id");
@@ -296,40 +299,40 @@ namespace coffeecard.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "LoginAttempts",
-                schema: "test");
+                "LoginAttempts",
+                "test");
 
             migrationBuilder.DropTable(
-                name: "Statistics",
-                schema: "test");
+                "Statistics",
+                "test");
 
             migrationBuilder.DropTable(
-                name: "Tickets",
-                schema: "test");
+                "Tickets",
+                "test");
 
             migrationBuilder.DropTable(
-                name: "Tokens",
-                schema: "test");
+                "Tokens",
+                "test");
 
             migrationBuilder.DropTable(
-                name: "Vouchers",
-                schema: "test");
+                "Vouchers",
+                "test");
 
             migrationBuilder.DropTable(
-                name: "Purchases",
-                schema: "test");
+                "Purchases",
+                "test");
 
             migrationBuilder.DropTable(
-                name: "Products",
-                schema: "test");
+                "Products",
+                "test");
 
             migrationBuilder.DropTable(
-                name: "Users",
-                schema: "test");
+                "Users",
+                "test");
 
             migrationBuilder.DropTable(
-                name: "Programmes",
-                schema: "test");
+                "Programmes",
+                "test");
         }
     }
 }

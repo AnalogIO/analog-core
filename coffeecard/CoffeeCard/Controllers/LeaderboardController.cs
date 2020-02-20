@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using CoffeeCard.Helpers;
-using CoffeeCard.Models;
-using CoffeeCard.Services;
+﻿using CoffeeCard.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoffeeCard.Controllers

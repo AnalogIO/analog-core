@@ -1,7 +1,6 @@
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using CoffeeCard.Helpers;
 using CoffeeCard.Models.DataTransferObjects.User;
 using CoffeeCard.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -21,9 +20,9 @@ namespace CoffeeCard.Controllers
     {
         private readonly IAccountService _accountService;
         private readonly IHostingEnvironment _env;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILeaderboardService _leaderboardService;
         private readonly IMapperService _mapperService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public AccountController(IAccountService accountService, ILeaderboardService leaderboardService,
             IMapperService mapperService, IHostingEnvironment env, IHttpContextAccessor httpContextAccessor)
@@ -50,7 +49,7 @@ namespace CoffeeCard.Controllers
                         "Your user has been created! Please check your email to verify your account.\n(Check your spam folder!)"
                 });
         }
-        
+
         /// <summary>
         ///     Returns a token that is used to identify the user
         /// </summary>
@@ -61,9 +60,11 @@ namespace CoffeeCard.Controllers
             var token = _accountService.Login(loginDto.Email, loginDto.Password, loginDto.Version);
             if (token == null)
             {
-                Log.Information("Unsuccessful login for e-mail = {email} from IP = {ipadress} ", loginDto.Email, _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
+                Log.Information("Unsuccessful login for e-mail = {email} from IP = {ipadress} ", loginDto.Email,
+                    _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
                 return Unauthorized();
             }
+
             return Ok(new TokenDTO {Token = token});
         }
 
@@ -113,7 +114,8 @@ namespace CoffeeCard.Controllers
         {
             _accountService.ForgotPassword(emailDTO.Email);
 
-            Log.Information("Password reset requested for e-mail = {email} from IP = {ipaddress}", emailDTO.Email, _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
+            Log.Information("Password reset requested for e-mail = {email} from IP = {ipaddress}", emailDTO.Email,
+                _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
 
             return Ok("{ \"message\":\"We have send you a confirmation email\"}");
         }

@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using CoffeeCard.Helpers;
 using CoffeeCard.Models.DataTransferObjects.MobilePay;
 using CoffeeCard.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -9,7 +8,7 @@ namespace CoffeeCard.Controllers
 {
     [ApiVersion("1")]
     [Route("api/v{version:apiVersion}/[controller]")]
-    [Authorize] 
+    [Authorize]
     [ApiController]
     public class MobilePayController : ControllerBase
     {

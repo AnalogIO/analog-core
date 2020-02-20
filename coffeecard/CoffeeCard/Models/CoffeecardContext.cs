@@ -27,6 +27,5 @@ namespace CoffeeCard.Models
         {
             modelBuilder.HasDefaultSchema(_configuration["databaseSchema"]);
         }
-
     }
 }

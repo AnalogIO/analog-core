@@ -20,6 +20,7 @@ namespace CoffeeCard.Helpers.MobilePay.RequestMessage
         {
             return string.Format(EndpointUri, _merchantId, _orderId);
         }
+
         public string GetRequestBody()
         {
             return "";
@@ -34,10 +35,10 @@ namespace CoffeeCard.Helpers.MobilePay.RequestMessage
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((CancelReservationRequest) obj);
         }
-        
+
         private bool Equals(CancelReservationRequest other)
         {
             return _merchantId == other._merchantId && _orderId == other._orderId;

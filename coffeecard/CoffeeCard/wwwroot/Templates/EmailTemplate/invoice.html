@@ -3,464 +3,684 @@
 
 
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title></title>
     <meta name="viewport" content="width=device-width, maximum-scale=1, minimum-scale=1, user-scalable=no"/>
 
     <!--[if (gte mso 9)|(IE)]>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <![endif]-->
 
     <link href="https://fonts.googleapis.com/css?family=Nunito+Sans" rel="stylesheet" type="text/css"/>
 
-<style type="text/css">
+    <style type="text/css">
     /*////// RESET STYLES //////*/
-    * {-webkit-text-size-adjust: none}
-    html, body { width:100% !important; height:100% !important; margin:0 !important; padding:0 !important;font-size: 0;} /* ADD line-height:100% !important; */
-    body, table, td, th, font { -ms-text-size-adjust:100%; -webkit-text-size-adjust:100%; }
-    table, td, th, div { margin:0; border-collapse:collapse !important; mso-table-lspace:0 !important; mso-table-rspace:0 !important; }
-    a img { border: none; margin: 0; padding: 0; font-size: 0; line-height: 0; height: auto !important; color: #010101; text-decoration: none;}
-    img { display:block; border:0; outline:none; text-decoration:none; -ms-interpolation-mode:bicubic; height:auto; margin: 0;  padding: 0; font-size: 0; line-height: 0; }
-    a, span { color:inherit; -webkit-font-smoothing:antialiased; }
-    div[style*="margin:16px 0;"] { margin:0 !important; }
-    a[x-apple-data-detectors] { color:inherit !important; text-decoration:none !important; font-size:inherit !important; font-family:inherit !important; font-weight:inherit !important; line-height:inherit !important; }
-    #outlook a { -ms-interpolation-mode: bicubic; margin: 0; padding: 0; font-size: 0; line-height: 0; color: #010101; text-decoration: none;}
-    /* Force Hotmail to display normal line spacing.  */
-    #backgroundTable {margin: 0; padding: 0; width: 100% !important; line-height: 100% !important;}
-    .ReadMsgBody { width:100%;}
-    .ExternalClass { width:100%;}
-    .ExternalClass * { line-height:100%; }
-    .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div { line-height: 100%;}
-    .image_fix { display: block; margin: 0; padding: 0; font-size: 0; line-height: 0; height: auto !important; }
+        * { -webkit-text-size-adjust: none }
 
-    #interactive {
-        display: block !important;
-        max-height: inherit !important;
-        overflow: visible !important;
-    }
-
-    #staticfallback {
-        display: none !important;
-    }
-
-    #interactive .content {
-        Font-family: Arial, Helvetica, sans-serif;
-        font-size: 20px;
-        line-height: 30px;
-        display: block;
-        color:#ffffff;
-    }
-
-
-    /*////// MOBILE STYLES //////*/
-    @media only screen and (max-width:600px) {
-
-        .display_block { width:100% !important; }
-        .display_block { display:block !important; float:left !important; }
-        .display_block_center { width:100% !important; }
-        .display_block_center { display:block !important;}
-        .mobileHide {display: none !important; font-size: 0 !important; max-height: 0 !important; line-height: 0 !important; mso-hide: all !important;}
-        .w100 {width: 100px!important;}
-        .mWFull {width:100%!important;max-width:100%!important;min-width:100%!important;}
-        .mW300 {width:300px!important;max-width:100%!important;}
-        .mW90 {width:90%!important;}
-        .mW96 {width:96%!important;}
-        .gutter { width:2% !important; }
-        .gutterInner { width:5% !important; }
-        .gutter10 { width:10px !important; }
-        .wrapper_inner { width:100% !important; min-width:100% !important; }
-        .paddingZero { padding: 0 0 0 0 !important; }
-
-        .paddingW8 { padding: 0 8px 0 8px !important; }
-        .paddingW16 { padding: 0 16px 0 16px !important; }
-        .paddingW24 { padding: 0 24px 0 24px !important; }
-        .paddingW32 { padding: 0 32px 0 32px !important; }
-        .paddingW40 { padding: 0 40px 0 40px !important; }
-
-        .paddingtb16 { padding: 16px 0 16px 0 !important; }
-        .paddingtb24 { padding: 24px 0 24px 0 !important; }
-        .paddingtb32 { padding: 32px 0 32px 0 !important; }
-        .paddingtb40 { padding: 40px 0 40px 0 !important; }
-
-        .padding16 { padding: 16px 16px 16px 16px !important; }
-        .padding24 { padding: 24px 24px 24px 24px !important; }
-        .padding32 { padding: 32px 32px 32px 32px !important; }
-        .padding40 { padding: 40px 40px 40px 40px !important; }
-
-        /* WIDTH OVERRIDES */
-        .width_auto { width:auto !important; height:auto !important; }
-        .mWFull { width:100% !important; height:auto !important; }
-        .width_75 { width:75% !important; height:auto !important; }
-        .width_50 { width:50% !important; height:auto !important; }
-        .width_49 { width:49% !important; height:auto !important; }
-        .width_25 { width:25% !important; height:auto !important; }
-
-        .show_on_mobile {
-            display: block !important;
-            width: auto !important;
-            max-height: inherit !important;
-            vertical-align:middle !important;
-            overflow: visible !important;
-            float: none !important;
-            line-height: auto !important;
-            font-size: inherit !important;
+        html, body {
+            font-size: 0;
+            height: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
         }
-    }
+
+        /* ADD line-height:100% !important; */
+
+        body, table, td, th, font {
+            -ms-text-size-adjust: 100%;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        table, td, th, div {
+            border-collapse: collapse !important;
+            margin: 0;
+            mso-table-lspace: 0 !important;
+            mso-table-rspace: 0 !important;
+        }
+
+        a img {
+            border: none;
+            color: #010101;
+            font-size: 0;
+            height: auto !important;
+            line-height: 0;
+            margin: 0;
+            padding: 0;
+            text-decoration: none;
+        }
+
+        img {
+            -ms-interpolation-mode: bicubic;
+            border: 0;
+            display: block;
+            font-size: 0;
+            height: auto;
+            line-height: 0;
+            margin: 0;
+            outline: none;
+            padding: 0;
+            text-decoration: none;
+        }
+
+        a, span {
+            -webkit-font-smoothing: antialiased;
+            color: inherit;
+        }
+
+        div[style*="margin:16px 0;"] { margin: 0 !important; }
+
+        a[x-apple-data-detectors] {
+            color: inherit !important;
+            font-family: inherit !important;
+            font-size: inherit !important;
+            font-weight: inherit !important;
+            line-height: inherit !important;
+            text-decoration: none !important;
+        }
+
+        #outlook a {
+            -ms-interpolation-mode: bicubic;
+            color: #010101;
+            font-size: 0;
+            line-height: 0;
+            margin: 0;
+            padding: 0;
+            text-decoration: none;
+        }
+
+        /* Force Hotmail to display normal line spacing.  */
+
+        #backgroundTable {
+            line-height: 100% !important;
+            margin: 0;
+            padding: 0;
+            width: 100% !important;
+        }
+
+        .ReadMsgBody { width: 100%; }
+
+        .ExternalClass { width: 100%; }
+
+        .ExternalClass * { line-height: 100%; }
+
+        .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div { line-height: 100%; }
+
+        .image_fix {
+            display: block;
+            font-size: 0;
+            height: auto !important;
+            line-height: 0;
+            margin: 0;
+            padding: 0;
+        }
+
+        #interactive {
+            display: block !important;
+            max-height: inherit !important;
+            overflow: visible !important;
+        }
+
+        #staticfallback { display: none !important; }
+
+        #interactive .content {
+            color: #ffffff;
+            display: block;
+            Font-family: Arial, Helvetica, sans-serif;
+            font-size: 20px;
+            line-height: 30px;
+        }
+
+
+        /*////// MOBILE STYLES //////*/
+
+        @media only screen and (max-width: 600px) {
+            .display_block { width: 100% !important; }
+
+            .display_block {
+                display: block !important;
+                float: left !important;
+            }
+
+            .display_block_center { width: 100% !important; }
+
+            .display_block_center { display: block !important; }
+
+            .mobileHide {
+                display: none !important;
+                font-size: 0 !important;
+                line-height: 0 !important;
+                max-height: 0 !important;
+                mso-hide: all !important;
+            }
+
+            .w100 { width: 100px !important; }
+
+            .mWFull {
+                max-width: 100% !important;
+                min-width: 100% !important;
+                width: 100% !important;
+            }
+
+            .mW300 {
+                max-width: 100% !important;
+                width: 300px !important;
+            }
+
+            .mW90 { width: 90% !important; }
+
+            .mW96 { width: 96% !important; }
+
+            .gutter { width: 2% !important; }
+
+            .gutterInner { width: 5% !important; }
+
+            .gutter10 { width: 10px !important; }
+
+            .wrapper_inner {
+                min-width: 100% !important;
+                width: 100% !important;
+            }
+
+            .paddingZero { padding: 0 0 0 0 !important; }
+
+            .paddingW8 { padding: 0 8px 0 8px !important; }
+
+            .paddingW16 { padding: 0 16px 0 16px !important; }
+
+            .paddingW24 { padding: 0 24px 0 24px !important; }
+
+            .paddingW32 { padding: 0 32px 0 32px !important; }
+
+            .paddingW40 { padding: 0 40px 0 40px !important; }
+
+            .paddingtb16 { padding: 16px 0 16px 0 !important; }
+
+            .paddingtb24 { padding: 24px 0 24px 0 !important; }
+
+            .paddingtb32 { padding: 32px 0 32px 0 !important; }
+
+            .paddingtb40 { padding: 40px 0 40px 0 !important; }
+
+            .padding16 { padding: 16px 16px 16px 16px !important; }
+
+            .padding24 { padding: 24px 24px 24px 24px !important; }
+
+            .padding32 { padding: 32px 32px 32px 32px !important; }
+
+            .padding40 { padding: 40px 40px 40px 40px !important; }
+
+            /* WIDTH OVERRIDES */
+            .width_auto {
+                height: auto !important;
+                width: auto !important;
+            }
+
+            .mWFull {
+                height: auto !important;
+                width: 100% !important;
+            }
+
+            .width_75 {
+                height: auto !important;
+                width: 75% !important;
+            }
+
+            .width_50 {
+                height: auto !important;
+                width: 50% !important;
+            }
+
+            .width_49 {
+                height: auto !important;
+                width: 49% !important;
+            }
+
+            .width_25 {
+                height: auto !important;
+                width: 25% !important;
+            }
+
+            .show_on_mobile {
+                display: block !important;
+                float: none !important;
+                font-size: inherit !important;
+                line-height: auto !important;
+                max-height: inherit !important;
+                overflow: visible !important;
+                vertical-align: middle !important;
+                width: auto !important;
+            }
+        }
 
 
 
-    /*////// MOBILE STYLES - iPhone 5/SE (LF specific) //////*/
-    @media only screen and (max-width:320px) {
-        .column_hide_i5se{display: none !important;}
-    }
+        /*////// MOBILE STYLES - iPhone 5/SE (LF specific) //////*/
 
-    /*////// DESKTOP STYLES //////*/
-    @media only screen and (min-width:601px) {
+        @media only screen and (max-width: 320px) {
+            .column_hide_i5se { display: none !important; }
+        }
 
-        *[class].textAlignLeft {text-align:left !important;}
-        *[class].textAlignCenter {text-align:center !important;}
-        *[class].textAlignRight {text-align:right !important;}
-        *[class].w200 {width: 200px!important;}
-        *[class].wFull {width: 100%!important;}
-        *[class].block { display:block!important;}
-        *[class].height60 {height:60px!important;}
-        *[class].font11 {font-size:11px!important;}
-        *[class].font12 {font-size:12px!important;}
-        *[class].font14 {font-size:14px!important;}
-        *[class].font16 {font-size:16px!important;}
-        *[class].font18 {font-size:18px!important;}
-        *[class].font36 {font-size:36px!important;}
-        *[class].font40 {font-size:40px!important;}
-        *[class].margin-right {margin:0 10px 0 0!important;}
-        *[class].margin-left {margin:0 0 0 10px!important;}
-    }
+        /*////// DESKTOP STYLES //////*/
 
-    .tableText {Margin:0 15px 0 15px; font-size: 18px; font-family: 'Nunito Sans','Helvetica Neue',helvetica,arial,sans-serif; color:#38251a; font-weight:normal;}
-    .tableHeader {Margin:0;padding:10px !important; font-size: 28px; font-family:'Nunito Sans','Helvetica Neue',helvetica,arial,sans-serif; color:#38251a; font-weight:700; line-height:1.6em;}
-    .footerText {Margin: 0; font-size: 14px; font-family:'Nunito Sans','Helvetica Neue',helvetica, Arial,sans-serif; color:#ece9e9; font-weight:normal; line-height: 1.6em; text-align: center; vertical-align:top;}
-    .introTextBig {line-height: 1.2em; font-size: 22px; font-family:'Nunito Sans', Segoe, sans-serif;color:#38251a; font-weight: 700}
-    .introTextSmall {line-height: 1.2em; font-size: 16px; font-family:'Nunito Sans', Segoe, sans-serif;color:#38251a; font-weight: normal}
-</style>
+        @media only screen and (min-width: 601px) {
+            *[class].textAlignLeft { text-align: left !important; }
+
+            *[class].textAlignCenter { text-align: center !important; }
+
+            *[class].textAlignRight { text-align: right !important; }
+
+            *[class].w200 { width: 200px !important; }
+
+            *[class].wFull { width: 100% !important; }
+
+            *[class].block { display: block !important; }
+
+            *[class].height60 { height: 60px !important; }
+
+            *[class].font11 { font-size: 11px !important; }
+
+            *[class].font12 { font-size: 12px !important; }
+
+            *[class].font14 { font-size: 14px !important; }
+
+            *[class].font16 { font-size: 16px !important; }
+
+            *[class].font18 { font-size: 18px !important; }
+
+            *[class].font36 { font-size: 36px !important; }
+
+            *[class].font40 { font-size: 40px !important; }
+
+            *[class].margin-right { margin: 0 10px 0 0 !important; }
+
+            *[class].margin-left { margin: 0 0 0 10px !important; }
+        }
+
+        .tableText {
+            color: #38251a;
+            font-family: 'Nunito Sans', 'Helvetica Neue', helvetica, arial, sans-serif;
+            font-size: 18px;
+            font-weight: normal;
+            Margin: 0 15px 0 15px;
+        }
+
+        .tableHeader {
+            color: #38251a;
+            font-family: 'Nunito Sans', 'Helvetica Neue', helvetica, arial, sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1.6em;
+            Margin: 0;
+            padding: 10px !important;
+        }
+
+        .footerText {
+            color: #ece9e9;
+            font-family: 'Nunito Sans', 'Helvetica Neue', helvetica, Arial, sans-serif;
+            font-size: 14px;
+            font-weight: normal;
+            line-height: 1.6em;
+            Margin: 0;
+            text-align: center;
+            vertical-align: top;
+        }
+
+        .introTextBig {
+            color: #38251a;
+            font-family: 'Nunito Sans', Segoe, sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            line-height: 1.2em;
+        }
+
+        .introTextSmall {
+            color: #38251a;
+            font-family: 'Nunito Sans', Segoe, sans-serif;
+            font-size: 16px;
+            font-weight: normal;
+            line-height: 1.2em;
+        }
+    </style>
 
 
-<!--[if (gte mso 9)|(IE)]>
-<style type="text/css">
-.textAlignLeft {text-align:left !important;}
-.textAlignCenter {text-align:center !important;}
-.textAlignRight {text-align:right !important;}
-.show {display: block !important; font-size: 12px !important; line-height: 1.5 !important;}
-.wFull {width: 100%!important;}
-.w130 {width: 130px!important;}
-.w125 {width: 125px!important;}
-.w170 {width: 170px!important;}
-.w200 {width: 200px!important;}
-.w280 {width: 280px!important;}
-.w360 {width: 360px!important;}
-.block { display:block!important;align:left!important;}
-</style>
-<xml>
-<o:OfficeDocumentSettings>
-    <o:AllowPNG/>
-    <o:PixelsPerInch>96</o:PixelsPerInch>
-</o:OfficeDocumentSettings>
-</xml><![endif]-->
+    <!--[if (gte mso 9)|(IE)]>
+        <style type="text/css">
+            .textAlignLeft { text-align: left !important; }
+
+            .textAlignCenter { text-align: center !important; }
+
+            .textAlignRight { text-align: right !important; }
+
+            .show {
+                display: block !important;
+                font-size: 12px !important;
+                line-height: 1.5 !important;
+            }
+
+            .wFull { width: 100% !important; }
+
+            .w130 { width: 130px !important; }
+
+            .w125 { width: 125px !important; }
+
+            .w170 { width: 170px !important; }
+
+            .w200 { width: 200px !important; }
+
+            .w280 { width: 280px !important; }
+
+            .w360 { width: 360px !important; }
+
+            .block {
+                align: left !important;
+                display: block !important;
+            }
+        </style>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:AllowPNG/>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml><![endif]-->
 
 </head>
 
 <body style="background: #ece9e9; Margin: 0;">
 <!-- ======= start main container ======= -->
 <!--[if (gte mso 9)|(IE)]>
-<table border="0" cellspacing="0" cellpadding="0" width="100%" style="width:600px; min-width:600px; background:#ece9e9;" align="center" class="wrapper_inner">
+    <table border="0" cellspacing="0" cellpadding="0" width="100%" style="background: #ece9e9; min-width: 600px; width: 600px;" align="center" class="wrapper_inner">
     <tr>
-        <td style="background: #ece9e9;"><![endif]-->
-<div style="Margin:0 auto; width:100%; background:#ece9e9;">
-  <!-- ======= start body content ======= -->
-  <div style="text-align:center; font-size:0; vertical-align:top; width:100%;">
-      <!--[if (gte mso 9)|(IE)]>
-      <table border="0" cellspacing="0" cellpadding="0" width="600" style="width:600px; min-width:600px; background:#ece9e9;" align="center" class="wrapper_inner">
-          <tr>
-              <td valign="center"><![endif]-->
+    <td style="background: #ece9e9;"><![endif]-->
+<div style="background: #ece9e9; Margin: 0 auto; width: 100%;">
+<!-- ======= start body content ======= -->
+<div style="font-size: 0; text-align: center; vertical-align: top; width: 100%;">
+<!--[if (gte mso 9)|(IE)]>
+    <table border="0" cellspacing="0" cellpadding="0" width="600" style="background: #ece9e9; min-width: 600px; width: 600px;" align="center" class="wrapper_inner">
+    <tr>
+    <td valign="center"><![endif]-->
 
 <!-- ======= start spacer ======= -->
-<div style="Margin:0;height:40px;font-size:1px; line-height:40px; mso-line-height-rule: exactly;">&nbsp;</div>
+<div style="font-size: 1px; height: 40px; line-height: 40px; Margin: 0; mso-line-height-rule: exactly;">&nbsp;</div>
 <!-- ======= end spacer ======= -->
 
 
 <!-- ======= start logo ======= -->
-<div style="text-align:center;">
+<div style="text-align: center;">
 
     <!--[if (gte mso 9)|(IE)]>
-       <table width="100%">
-        <tr>
-          <td>
-            <img width="600" src="https://analogio.dk/resources/ANALOGO.png" alt="Analog logo" style="width: 600px; text-align:center;"/>
-          </td>
-        </tr>
-       </table>
-       <div style="display:none">
-     <![endif]-->
+        <table width="100%">
+            <tr>
+                <td>
+                    <img width="600" src="https://analogio.dk/resources/ANALOGO.png" alt="Analog logo" style="text-align: center; width: 600px;"/>
+                </td>
+            </tr>
+        </table>
+        <div style="display: none">
+    <![endif]-->
 
-    <img src="https://analogio.dk/resources/ANALOGO.png" alt="Analog logo" style="width: 100%; max-width: 600px; margin: 0 auto;" />
+    <img src="https://analogio.dk/resources/ANALOGO.png" alt="Analog logo" style="margin: 0 auto; max-width: 600px; width: 100%;"/>
     <!--[if (gte mso 9)|(IE)]>
-    </div>
-       <![endif]-->
+        </div>
+    <![endif]-->
 
 </div>
 <!-- ======= end logo ======= -->
 
 <!-- ======= start spacer ======= -->
-<div style="Margin:0;height:40px;font-size:1px; line-height:40px; mso-line-height-rule: exactly;">&nbsp;</div>
+<div style="font-size: 1px; height: 40px; line-height: 40px; Margin: 0; mso-line-height-rule: exactly;">&nbsp;</div>
 <!-- ======= end spacer ======= -->
 
 <!-- ======= start introduction ======= -->
-<div style="text-align:center; font-size:0;">
-  <!--[if (gte mso 9)|(IE)]>
-  <table border="0" cellpadding="0" cellspacing="0" width="570" align="center">
-    <tr>
-      <td valign="top">
-  <![endif]-->
-  <div style="display:inline-block; vertical-align:top; width:100%; min-width:120px; max-width:100%; width:-webkit-calc(230400px - 48000%); min-width:-webkit-calc(100%); width:calc(230400px - 48000%); min-width:calc(100%);">
-      <div style="text-align:center;">
-        <p>
-            <span class="introTextBig">
-              Hello {name}, <br/>
-              Thank you for your purchase.<br/>
-            </span>
-            <span class="introTextSmall">
-              Details of your order are listed below:
-            </span>
-        </p>
-      </div>
-      <!-- ======= start spacer ======= -->
-      <div style="Margin:0;height:40px;font-size:1px; line-height:40px; mso-line-height-rule: exactly;">&nbsp;</div>
-      <!-- ======= end spacer ======= -->
-  </div>
+<div style="font-size: 0; text-align: center;">
+    <!--[if (gte mso 9)|(IE)]>
+        <table border="0" cellpadding="0" cellspacing="0" width="570" align="center">
+        <tr>
+        <td valign="top">
+    <![endif]-->
+    <div style="display: inline-block; max-width: 100%; min-width: 120px; min-width: -webkit-calc(100%); min-width: calc(100%); vertical-align: top; width: 100%; width: -webkit-calc(230400px - 48000%); width: calc(230400px - 48000%);">
+        <div style="text-align: center;">
+            <p>
+                <span class="introTextBig">
+                    Hello {name}, <br/>
+                    Thank you for your purchase.<br/>
+                </span>
+                <span class="introTextSmall">
+                    Details of your order are listed below:
+                </span>
+            </p>
+        </div>
+        <!-- ======= start spacer ======= -->
+        <div style="font-size: 1px; height: 40px; line-height: 40px; Margin: 0; mso-line-height-rule: exactly;">&nbsp;</div>
+        <!-- ======= end spacer ======= -->
+    </div>
     <!--[if (gte mso 9)|(IE)]></td></tr></table><![endif]-->
 </div>
 <!-- ======= end introduction ======= -->
 
 <!-- ======= start order details ======= -->
-<div style="Margin:0 auto; text-align:center; font-size:0; vertical-align:top; width:98%; max-width:600px; padding:10px; border-radius: 10px;">
-    <div style="Margin:0 auto; text-align:center; font-size:0; vertical-align:top; width:100%; max-width:598px; box-shadow: 3px 3px 10px grey;background:#ffffff;border-radius: 10px;">
+<div style="border-radius: 10px; font-size: 0; Margin: 0 auto; max-width: 600px; padding: 10px; text-align: center; vertical-align: top; width: 98%;">
+    <div style="background: #ffffff; border-radius: 10px; box-shadow: 3px 3px 10px grey; font-size: 0; Margin: 0 auto; max-width: 598px; text-align: center; vertical-align: top; width: 100%;">
         <!--[if (gte mso 9)|(IE)]>
-        <table border="0" cellpadding="0" cellspacing="0" width="100%" align="center" bgcolor="#ffffff" style = "border-radius: 10px;">
-          <tr>
-            <td valign="top" style="background:none">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" align="center" bgcolor="#ffffff" style = "border-radius: 10px;">
+            <tr>
+            <td valign="top" style="background: none">
         <![endif]-->
 
-    <!-- ======= start header copy ======= -->
-    <div style="text-align:center;">
-        <!--[if (gte mso 9)|(IE)]>
-          <table border="0" cellpadding="0" cellspacing="0" width="100%" align="center" bgcolor="#ffffff">
-            <tr>
-              <td style="padding:10px 0 10px 0;">
-        <![endif]-->
-        <div style="display:inline-block; vertical-align:top; width:100%; min-width:120px; max-width:100%; width:-webkit-calc(230400px - 48000%); min-width:-webkit-calc(100%); width:calc(230400px - 48000%); min-width:calc(100%);">
-            <div style="Margin:0 auto; vertical-align:top; width:100%;max-width:598px; background:#ffffff; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <p class="tableHeader" style="text-align:center;">
-                  Order Details
-                </p>
+        <!-- ======= start header copy ======= -->
+        <div style="text-align: center;">
+            <!--[if (gte mso 9)|(IE)]>
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" align="center" bgcolor="#ffffff">
+                <tr>
+                <td style="padding: 10px 0 10px 0;">
+            <![endif]-->
+            <div style="display: inline-block; max-width: 100%; min-width: 120px; min-width: -webkit-calc(100%); min-width: calc(100%); vertical-align: top; width: 100%; width: -webkit-calc(230400px - 48000%); width: calc(230400px - 48000%);">
+                <div style="background: #ffffff; border-top-left-radius: 10px; border-top-right-radius: 10px; Margin: 0 auto; max-width: 598px; vertical-align: top; width: 100%;">
+                    <p class="tableHeader" style="text-align: center;">
+                        Order Details
+                    </p>
+                </div>
+            </div>
+            <!--[if (gte mso 9)|(IE)]></td></tr></table><![endif]-->
+        </div>
+
+        <!-- ======= start 2 column details ======= -->
+        <div style="font-size: 0; text-align: center;">
+            <div style="Margin: 0 auto; max-width: 540px; width: 97%;">
+                <!-- ======= start 50/50 ======= -->
+                <table border="0" cellpadding="0" cellspacing="0" align="center" width="90%" style="Margin: 0 auto;">
+                    <tr>
+                        <td width="50%" valign="top" style="padding: 0 0 10px 0;">
+                            <p class="tableText" style="text-align: left;">
+                                Product:
+                            </p>
+                        </td>
+                        <td width="50%" valign="top" style="padding: 0 0 10px 0;">
+                            <p class="tableText" style="text-align: right;">
+                                {product}
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="50%" valign="top" style="padding: 0 0 10px 0;">
+                            <p class="tableText" style="text-align: left;">
+                                Tickets:
+                            </p>
+                        </td>
+                        <td width="50%" valign="top" style="padding: 0 0 10px 0;">
+                            <p class="tableText" style="text-align: right;">
+                                {quantity}
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+                <!-- ======= end 50/50 ======= -->
+                <!-- ======= start spacer ======= -->
+                <div style="font-size: 1px; height: 10px; line-height: 40px; Margin: 0; mso-line-height-rule: exactly;">&nbsp;</div>
+                <!-- ======= end spacer ======= -->
             </div>
         </div>
+        <!-- ======= end 2 column details ======= -->
         <!--[if (gte mso 9)|(IE)]></td></tr></table><![endif]-->
     </div>
-
-    <!-- ======= start 2 column details ======= -->
-    <div style="text-align:center; font-size:0;">
-        <div style="Margin:0 auto; width:97%; max-width:540px;">
-            <!-- ======= start 50/50 ======= -->
-            <table border="0" cellpadding="0" cellspacing="0" align="center" width="90%" style="Margin:0 auto;">
-              <tr>
-                <td width="50%" valign="top" style="padding:0 0 10px 0;">
-                  <p class="tableText" style="text-align:left;">
-                      Product:
-                  </p>
-                </td>
-                <td width="50%" valign="top" style="padding:0 0 10px 0;">
-                  <p class="tableText" style="text-align:right;">
-                      {product}
-                  </p>
-                </td>
-              </tr>
-              <tr>
-                <td width="50%" valign="top" style="padding:0 0 10px 0;">
-                  <p class="tableText" style="text-align:left;">
-                      Tickets:
-                  </p>
-                </td>
-                <td width="50%" valign="top" style="padding:0 0 10px 0;">
-                  <p class="tableText" style="text-align:right;">
-                      {quantity}
-                  </p>
-                </td>
-              </tr>
-            </table>
-            <!-- ======= end 50/50 ======= -->
-            <!-- ======= start spacer ======= -->
-            <div style="Margin:0;height:10px;font-size:1px; line-height:40px; mso-line-height-rule: exactly;">&nbsp;</div>
-            <!-- ======= end spacer ======= -->
-        </div>
-    </div>
-    <!-- ======= end 2 column details ======= -->
-    <!--[if (gte mso 9)|(IE)]></td></tr></table><![endif]-->
-  </div>
 </div>
 <!-- ======= end order details ======= -->
 
 <!-- ======= start spacer ======= -->
-<div style="Margin:0;height:20px;font-size:1px; line-height:20px; mso-line-height-rule: exactly;">&nbsp;</div>
+<div style="font-size: 1px; height: 20px; line-height: 20px; Margin: 0; mso-line-height-rule: exactly;">&nbsp;</div>
 <!-- ======= end spacer ======= -->
 
 <!-- ======= start order summary ======= -->
-<div style="Margin:0 auto; text-align:center; font-size:0; vertical-align:top; width:98%; max-width:600px; padding:10px; border-radius: 10px;">
-    <div style="Margin:0 auto; text-align:center; font-size:0; vertical-align:top; width:100%; max-width:598px; box-shadow: 3px 3px 10px grey;background:#ffffff;border-radius: 10px;">
-      <!--[if (gte mso 9)|(IE)]>
-      <table border="0" cellpadding="0" cellspacing="0" width="100%" align="center" bgcolor="#ffffff">
-        <tr>
-          <td valign="top" style="">
-      <![endif]-->
+<div style="border-radius: 10px; font-size: 0; Margin: 0 auto; max-width: 600px; padding: 10px; text-align: center; vertical-align: top; width: 98%;">
+    <div style="background: #ffffff; border-radius: 10px; box-shadow: 3px 3px 10px grey; font-size: 0; Margin: 0 auto; max-width: 598px; text-align: center; vertical-align: top; width: 100%;">
+        <!--[if (gte mso 9)|(IE)]>
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" align="center" bgcolor="#ffffff">
+            <tr>
+            <td valign="top" style="">
+        <![endif]-->
 
-    <!-- ======= start header copy ======= -->
-    <div style="text-align:center; font-size:0;">
-      <!--[if (gte mso 9)|(IE)]>
-        <table border="0" cellpadding="0" cellspacing="0" width="100%" align="center" bgcolor="#ffffff" >
-          <tr>
-            <td style="padding:10px 0 10px 0; background:#ffffff">
-      <![endif]-->
-      <div style="display:inline-block; vertical-align:top; width:100%; min-width:120px; max-width:100%; width:-webkit-calc(230400px - 48000%); min-width:-webkit-calc(100%); width:calc(230400px - 48000%); min-width:calc(100%);">
-          <div style="Margin:0 auto; vertical-align:top; width:100%;max-width:598px; background:#ffffff; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-            <p class="tableHeader" style="text-align:center;">
-                    <b>Order Summary</b>
-              </p>
-          </div>
-      </div>
-      <!--[if (gte mso 9)|(IE)]></td></tr></table><![endif]-->
-    </div>
-
-    <!-- ======= start 2 column details ======= -->
-    <div style="text-align:center; font-size:0;">
-        <div style="Margin:0 auto; width:97%; max-width:540px;">
-            <!-- ======= start 50/50 ======= -->
-            <table border="0" cellpadding="0" cellspacing="0" align="center" width="90%" style="Margin:0 auto;" bgcolor="#ffffff">
-              <tr>
-                <td width="50%" valign="top" style="padding:0 0 10px 0;">
-                  <p class="tableText" style="text-align:left;">
-                      Order Number:
-                  </p>
-                </td>
-                <td width="50%" valign="top" style="padding:0 0 10px 0;">
-                  <p class="tableText" style="text-align:right;">
-                      {orderId}
-                  </p>
-                </td>
-              </tr>
-              <tr>
-                <td width="50%" valign="top" style="padding:0 0 10px 0;">
-                  <p class="tableText" style="text-align:left;">
-                      Order Date:
-                  </p>
-                </td>
-                <td width="50%" valign="top" style="padding:0 0 10px 0;">
-                  <p class="tableText" style="text-align:right;">
-                      {date}
-                  </p>
-                </td>
-              </tr>
-              <tr>
-                <td width="50%" valign="top" style="padding:0 0 10px 0;">
-                    <p class="tableText" style="text-align:left;">
-                        VAT:
+        <!-- ======= start header copy ======= -->
+        <div style="font-size: 0; text-align: center;">
+            <!--[if (gte mso 9)|(IE)]>
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" align="center" bgcolor="#ffffff" >
+                <tr>
+                <td style="background: #ffffff; padding: 10px 0 10px 0;">
+            <![endif]-->
+            <div style="display: inline-block; max-width: 100%; min-width: 120px; min-width: -webkit-calc(100%); min-width: calc(100%); vertical-align: top; width: 100%; width: -webkit-calc(230400px - 48000%); width: calc(230400px - 48000%);">
+                <div style="background: #ffffff; border-top-left-radius: 10px; border-top-right-radius: 10px; Margin: 0 auto; max-width: 598px; vertical-align: top; width: 100%;">
+                    <p class="tableHeader" style="text-align: center;">
+                        <b>Order Summary</b>
                     </p>
-                </td>
-                <td width="50%" valign="top" style="padding:0 0 10px 0;">
-                    <p class="tableText" style="text-align:right;">
-                        {vat} dkk
-                    </p>
-                </td>
-              </tr><tr>
-                <td width="50%" valign="top" style="padding:0 0 10px 0;">
-                    <p class="tableText" style="text-align:left;">
-                        Total Cost Including VAT:
-                    </p>
-                </td>
-                <td width="50%" valign="top" style="padding:0 0 10px 0;">
-                    <p class="tableText" style="text-align:right;">
-                        {price} dkk
-                    </p>
-                </td>
-              </tr>
-            </table>
-            <!-- ======= end 50/50 ======= -->
-            <!-- ======= start spacer ======= -->
-            <div style="Margin:0;height:10px;font-size:1px; line-height:40px; mso-line-height-rule: exactly;">&nbsp;</div>
-            <!-- ======= end spacer ======= -->
+                </div>
+            </div>
+            <!--[if (gte mso 9)|(IE)]></td></tr></table><![endif]-->
         </div>
+
+        <!-- ======= start 2 column details ======= -->
+        <div style="font-size: 0; text-align: center;">
+            <div style="Margin: 0 auto; max-width: 540px; width: 97%;">
+                <!-- ======= start 50/50 ======= -->
+                <table border="0" cellpadding="0" cellspacing="0" align="center" width="90%" style="Margin: 0 auto;" bgcolor="#ffffff">
+                    <tr>
+                        <td width="50%" valign="top" style="padding: 0 0 10px 0;">
+                            <p class="tableText" style="text-align: left;">
+                                Order Number:
+                            </p>
+                        </td>
+                        <td width="50%" valign="top" style="padding: 0 0 10px 0;">
+                            <p class="tableText" style="text-align: right;">
+                                {orderId}
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="50%" valign="top" style="padding: 0 0 10px 0;">
+                            <p class="tableText" style="text-align: left;">
+                                Order Date:
+                            </p>
+                        </td>
+                        <td width="50%" valign="top" style="padding: 0 0 10px 0;">
+                            <p class="tableText" style="text-align: right;">
+                                {date}
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="50%" valign="top" style="padding: 0 0 10px 0;">
+                            <p class="tableText" style="text-align: left;">
+                                VAT:
+                            </p>
+                        </td>
+                        <td width="50%" valign="top" style="padding: 0 0 10px 0;">
+                            <p class="tableText" style="text-align: right;">
+                                {vat} dkk
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="50%" valign="top" style="padding: 0 0 10px 0;">
+                            <p class="tableText" style="text-align: left;">
+                                Total Cost Including VAT:
+                            </p>
+                        </td>
+                        <td width="50%" valign="top" style="padding: 0 0 10px 0;">
+                            <p class="tableText" style="text-align: right;">
+                                {price} dkk
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+                <!-- ======= end 50/50 ======= -->
+                <!-- ======= start spacer ======= -->
+                <div style="font-size: 1px; height: 10px; line-height: 40px; Margin: 0; mso-line-height-rule: exactly;">&nbsp;</div>
+                <!-- ======= end spacer ======= -->
+            </div>
+        </div>
+        <!-- ======= end 2 column details ======= -->
+        <!--[if (gte mso 9)|(IE)]></td></tr></table><![endif]-->
     </div>
-    <!-- ======= end 2 column details ======= -->
-    <!--[if (gte mso 9)|(IE)]></td></tr></table><![endif]-->
-  </div>
 </div>
 <!-- ======= end order summary ======= -->
 
 <!-- ======= start spacer ======= -->
-<div style="Margin:0;height:20px;font-size:1px; line-height:20px; mso-line-height-rule: exactly;">&nbsp;</div>
+<div style="font-size: 1px; height: 20px; line-height: 20px; Margin: 0; mso-line-height-rule: exactly;">&nbsp;</div>
 <!-- ======= end spacer ======= -->
 
 
 <!-- ======= start Recipient details ======= -->
-<div style="Margin:0 auto; text-align:center; font-size:0; vertical-align:top; width:98%; max-width:600px; padding:10px; border-radius: 10px;">
-    <div style="Margin:0 auto; text-align:center; font-size:0; vertical-align:top; width:100%; max-width:598px; box-shadow: 3px 3px 10px grey;background:#ffffff;border-radius: 10px;">
-      <!--[if (gte mso 9)|(IE)]>
-      <table border="0" cellpadding="0" cellspacing="0" width="100%" align="center" bgcolor="#ffffff">
-        <tr>
-          <td valign="top" style="">
-      <![endif]-->
+<div style="border-radius: 10px; font-size: 0; Margin: 0 auto; max-width: 600px; padding: 10px; text-align: center; vertical-align: top; width: 98%;">
+    <div style="background: #ffffff; border-radius: 10px; box-shadow: 3px 3px 10px grey; font-size: 0; Margin: 0 auto; max-width: 598px; text-align: center; vertical-align: top; width: 100%;">
+        <!--[if (gte mso 9)|(IE)]>
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" align="center" bgcolor="#ffffff">
+            <tr>
+            <td valign="top" style="">
+        <![endif]-->
 
-    <!-- ======= start header copy ======= -->
-    <div style="text-align:center; font-size:0;">
-      <!--[if (gte mso 9)|(IE)]>
-        <table border="0" cellpadding="0" cellspacing="0" width="100%" align="center" bgcolor="#ffffff" >
-          <tr>
-            <td style="padding:10px 0 10px 0; background:#ffffff">
-      <![endif]-->
-        <div style="display:inline-block; vertical-align:top; width:100%; min-width:120px; max-width:100%; width:-webkit-calc(230400px - 48000%); min-width:-webkit-calc(100%); width:calc(230400px - 48000%); min-width:calc(100%);">
-            <div style="Margin:0 auto; vertical-align:top; width:100%;max-width:598px; background:#ffffff; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <p class = "tableHeader" style="text-align:center;">
-                    <b>Recipient Details</b>
+        <!-- ======= start header copy ======= -->
+        <div style="font-size: 0; text-align: center;">
+            <!--[if (gte mso 9)|(IE)]>
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" align="center" bgcolor="#ffffff" >
+                <tr>
+                <td style="background: #ffffff; padding: 10px 0 10px 0;">
+            <![endif]-->
+            <div style="display: inline-block; max-width: 100%; min-width: 120px; min-width: -webkit-calc(100%); min-width: calc(100%); vertical-align: top; width: 100%; width: -webkit-calc(230400px - 48000%); width: calc(230400px - 48000%);">
+                <div style="background: #ffffff; border-top-left-radius: 10px; border-top-right-radius: 10px; Margin: 0 auto; max-width: 598px; vertical-align: top; width: 100%;">
+                    <p class="tableHeader" style="text-align: center;">
+                        <b>Recipient Details</b>
+                    </p>
+                </div>
+            </div>
+            <!--[if (gte mso 9)|(IE)]>
+                </td>
+                </tr>
+            <![endif]-->
+            <!-- ======= end header copy ======= -->
+            <!--[if (gte mso 9)|(IE)]>
+                <tr>
+                <td>
+            <![endif]-->
+            <div style="Margin: 0 auto; max-width: 570px; width: 100%;">
+                <p class="tableText" style="text-align: center;">
+                    {name}<br/>
+                    {email}
                 </p>
             </div>
+            <!-- ======= start spacer ======= -->
+            <div style="font-size: 1px; height: 20px; line-height: 20px; Margin: 0; mso-line-height-rule: exactly;">&nbsp;</div>
+            <!-- ======= end spacer ======= -->
+            <!--[if (gte mso 9)|(IE)]></td></tr></table><![endif]-->
         </div>
-        <!--[if (gte mso 9)|(IE)]>
-            </td>
-          </tr>
-        <![endif]-->
-    <!-- ======= end header copy ======= -->
-    <!--[if (gte mso 9)|(IE)]>
-        <tr>
-          <td>
-    <![endif]-->
-    <div style="Margin:0 auto; width:100%; max-width:570px;">
-        <p class="tableText" style="text-align:center;">
-            {name}<br/>
-            {email}
-        </p>
+        <!--[if (gte mso 9)|(IE)]></td></tr></table><![endif]-->
     </div>
-    <!-- ======= start spacer ======= -->
-    <div style="Margin:0;height:20px;font-size:1px; line-height:20px; mso-line-height-rule: exactly;">&nbsp;</div>
-    <!-- ======= end spacer ======= -->
-    <!--[if (gte mso 9)|(IE)]></td></tr></table><![endif]-->
-    </div>
-    <!--[if (gte mso 9)|(IE)]></td></tr></table><![endif]-->
-  </div>
 </div>
 <!-- ======= end Recipient details ======= -->
 
 <!-- ======= start spacer ======= -->
-<div style="Margin:0;height:20px;font-size:1px; line-height:20px; mso-line-height-rule: exactly;">&nbsp;</div>
+<div style="font-size: 1px; height: 20px; line-height: 20px; Margin: 0; mso-line-height-rule: exactly;">&nbsp;</div>
 <!-- ======= end spacer ======= -->
 
 <!--[if (gte mso 9)|(IE)]>
-</td></tr></table>
+    </td></tr></table>
 <![endif]-->
 </div>
 <!-- ======= end body content ======= -->
@@ -468,41 +688,41 @@
 
 <!-- ======= start footer ======= -->
 <!--[if (gte mso 9)|(IE)]>
-</td></tr></table>
-<tr><td style="background: #433025;">
+    </td></tr></table>
+    <tr><td style="background: #433025;">
 <![endif]-->
-<div style="Margin:0 auto; text-align:center; font-size:0; vertical-align:top; width:100%; background:#433025; padding:1px;">
-  <div style="Margin:0 auto; text-align:center; font-size:0; vertical-align:top; width:100%; max-width:598px; background:#433025;">
+<div style="background: #433025; font-size: 0; Margin: 0 auto; padding: 1px; text-align: center; vertical-align: top; width: 100%;">
+    <div style="background: #433025; font-size: 0; Margin: 0 auto; max-width: 598px; text-align: center; vertical-align: top; width: 100%;">
         <!--[if (gte mso 9)|(IE)]><table border="0" cellpadding="0" cellspacing="0" width="100%" align="center"><tr><td valign="top" style=""><![endif]-->
 
-    <!-- ======= start header copy ======= -->
-    <div style="text-align:center; font-size:0; padding: 30px">
-        <!--[if (gte mso 9)|(IE)]><table border="0" cellpadding="0" cellspacing="0" width="100%" align="center" bgcolor="#433025" ><tr><td style="padding:30px 0 30px 0;"><![endif]-->
+        <!-- ======= start header copy ======= -->
+        <div style="font-size: 0; padding: 30px; text-align: center;">
+            <!--[if (gte mso 9)|(IE)]><table border="0" cellpadding="0" cellspacing="0" width="100%" align="center" bgcolor="#433025" ><tr><td style="padding: 30px 0 30px 0;"><![endif]-->
 
-        <div style="display:inline-block; vertical-align:top; width:100%; min-width:120px; max-width:100%; width:-webkit-calc(230400px - 48000%); min-width:-webkit-calc(100%); width:calc(230400px - 48000%); min-width:calc(100%);background: #433025;">
-            <p class="footerText">
-              Cafe Analog<br/>
-              Rued Langgaards Vej 7, 2300 København<br/>
-              CVR nr: 34657343<br/>
-              Web: <a href="https://www.cafeanalog.dk" style="color:#ece9e9">cafeanalog.dk</a> / Mail: <a href="mailto:finance@cafeanalog.dk" style="color:#ece9e9">finance@cafeanalog.dk</a>
-            </p>
+            <div style="background: #433025; display: inline-block; max-width: 100%; min-width: 120px; min-width: -webkit-calc(100%); min-width: calc(100%); vertical-align: top; width: 100%; width: -webkit-calc(230400px - 48000%); width: calc(230400px - 48000%);">
+                <p class="footerText">
+                    Cafe Analog<br/>
+                    Rued Langgaards Vej 7, 2300 København<br/>
+                    CVR nr: 34657343<br/>
+                    Web: <a href="https://www.cafeanalog.dk" style="color: #ece9e9">cafeanalog.dk</a> / Mail: <a href="mailto:finance@cafeanalog.dk" style="color: #ece9e9">finance@cafeanalog.dk</a>
+                </p>
+            </div>
+
+            <!--[if (gte mso 9)|(IE)]>
+                </td></tr></table>
+            <![endif]-->
         </div>
-
         <!--[if (gte mso 9)|(IE)]>
             </td></tr></table>
         <![endif]-->
-      </div>
-    <!--[if (gte mso 9)|(IE)]>
-      </td></tr></table>
-    <![endif]-->
 
-  </div>
+    </div>
 </div>
 <!-- ======= end footer ======= -->
 
 </div>
 <!--[if (gte mso 9)|(IE)]>
-</td></tr></table>
+    </td></tr></table>
 <![endif]-->
 <!-- ======= end main container ======= -->
 
