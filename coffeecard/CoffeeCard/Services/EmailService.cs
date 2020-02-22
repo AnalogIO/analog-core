@@ -17,11 +17,11 @@ namespace CoffeeCard.Services
     public class EmailService : IEmailService
     {
         private readonly MailgunSettings _mailgunSettings;
-        private readonly IHostingEnvironment _env;
+        private readonly IWebHostEnvironment _env;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly EnvironmentSettings _environmentSettings;
 
-        public EmailService(MailgunSettings mailgunSettings, EnvironmentSettings environmentSettings, IHostingEnvironment env,
+        public EmailService(MailgunSettings mailgunSettings, EnvironmentSettings environmentSettings, IWebHostEnvironment env,
             IHttpContextAccessor httpContextAccessor)
         {
             _mailgunSettings = mailgunSettings;

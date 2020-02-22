@@ -12,8 +12,6 @@ using CoffeeCard.Helpers.MobilePay.RequestMessage;
 using CoffeeCard.Helpers.MobilePay.ResponseMessage;
 using Jose;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Serilog;
 
 namespace CoffeeCard.Helpers.MobilePay
@@ -26,7 +24,7 @@ namespace CoffeeCard.Helpers.MobilePay
         private readonly HttpClient _client;
         private readonly MobilePaySettings _mobilePaySettings;
 
-        public MobilePayApiHttpClient(HttpClient client, IHostingEnvironment environment, MobilePaySettings mobilePaySettings)
+        public MobilePayApiHttpClient(HttpClient client, MobilePaySettings mobilePaySettings, IWebHostEnvironment environment)
         {
             _mobilePaySettings = mobilePaySettings;
             _certificate = LoadCertificate(environment);
@@ -92,7 +90,7 @@ namespace CoffeeCard.Helpers.MobilePay
             }
         }
 
-        private X509Certificate2 LoadCertificate(IHostingEnvironment environment)
+        private X509Certificate2 LoadCertificate(IWebHostEnvironment environment)
         {
             var certName = _mobilePaySettings.CertificateName;
 

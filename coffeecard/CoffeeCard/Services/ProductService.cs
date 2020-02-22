@@ -35,8 +35,9 @@ namespace CoffeeCard.Services
                         where pug.UserGroup == userGroup
                         select pug.Product)
                     where p.Visible
+                    orderby p.Id
                     select p
-                    ).ToListAsync();
+                ).ToListAsync();
         }
 
         public void Dispose()

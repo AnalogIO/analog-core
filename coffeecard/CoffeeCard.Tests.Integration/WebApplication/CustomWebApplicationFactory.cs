@@ -1,15 +1,15 @@
 using CoffeeCard.Configuration;
+using System.Linq;
 using CoffeeCard.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace CoffeeCard.Tests.Integration.WebApplication
 {
-	// Based on https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-2.2
+	// Based on https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-3.1
 
 	public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup: class
 	{
@@ -35,16 +35,20 @@ namespace CoffeeCard.Tests.Integration.WebApplication
                 services.ConfigureValidatableSetting<MailgunSettings>(Configuration.GetSection("MailgunSettings"));
                 services.ConfigureValidatableSetting<MobilePaySettings>(Configuration.GetSection("MobilePaySettings"));
 
-                // Create a new service provider.
-                var serviceProvider = new ServiceCollection()
-					.AddEntityFrameworkInMemoryDatabase()
-					.BuildServiceProvider();
+				// Remove the app's ApplicationDbContext registration.
+				var descriptor = services.SingleOrDefault(
+					d => d.ServiceType ==
+					     typeof(DbContextOptions<CoffeeCardContext>));
 
-				// Add a database context (ApplicationDbContext) using an in-memory database for testing.
+				if (descriptor != null)
+				{
+					services.Remove(descriptor);
+				}
+
+				// Add ApplicationDbContext using an in-memory database for testing.
 				services.AddDbContext<CoffeeCardContext>(options =>
 				{
 					options.UseInMemoryDatabase("InMemoryDbForTesting");
-					options.UseInternalServiceProvider(serviceProvider);
 				});
 
 				// Build the service provider

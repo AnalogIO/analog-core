@@ -1,18 +1,25 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
-		<TargetFramework>netcoreapp2.2</TargetFramework>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
 
 		<IsPackable>false</IsPackable>
+
+		<LangVersion>8</LangVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.8">
-			<!-- Deploying on UnoEuro demands a specific AspNetCore.App version even though it not recommended by MS
-      		AllowExplicitVersion = true disables compiler warning -->
-			<AllowExplicitVersion>true</AllowExplicitVersion>
-		</PackageReference>
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="2.2.0" />
+<!--		<PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.8">-->
+<!--			&lt;!&ndash; Deploying on UnoEuro demands a specific AspNetCore.App version even though it not recommended by MS-->
+<!--      		AllowExplicitVersion = true disables compiler warning &ndash;&gt;-->
+<!--			<AllowExplicitVersion>true</AllowExplicitVersion>-->
+<!--		</PackageReference>-->
+		<PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.1.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.1.2" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.2" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.2" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.2" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
 		<PackageReference Include="NetEscapades.Configuration.Validation" Version="2.0.0" />
 		<PackageReference Include="xunit" Version="2.4.1" />
