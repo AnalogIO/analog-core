@@ -20,7 +20,9 @@ jobs:
         dotnet-version: 2.2.108
     - name: Build CoffeeCard project
       run: dotnet build coffeecard/CoffeeCard --configuration Release
-    - name: Build CoffeeCardTests project
-      run: dotnet build coffeecard/CoffeeCardTests --configuration Release
+    - name: Build CoffeeCard.Tests.Unit project
+      run: dotnet build coffeecard/CoffeeCard.Tests.Unit --configuration Release
+    - name: Build CoffeeCard.Tests.Integration project
+      run: dotnet build coffeecard/CoffeeCard.Tests.Integration --configuration Release
     - name: Run tests
-      run: dotnet test coffeecard/CoffeeCardTests
+      run: dotnet test coffeecard/CoffeeCard.Tests.Unit
