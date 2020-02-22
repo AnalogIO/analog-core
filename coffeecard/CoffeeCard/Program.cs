@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -23,29 +23,26 @@ namespace CoffeeCard
                 .ReadFrom.Configuration(Configuration)
                 .CreateLogger();
 
-            try
-            {
-                Log.Information("Starting web host");
-                BuildWebHost(args).Run();
-                return 0;
-            }
-            catch (Exception ex)
-            {
-                Log.Fatal(ex, "Host terminated unexpectedly");
-                return 1;
-            }
-            finally
-            {
-                Log.CloseAndFlush();
-            }
-        }
+			try
+			{
+				Log.Information("Starting web host");
+				CreateWebHostBuilder(args).Build().Run();
+				return 0;
+			}
+			catch (Exception ex)
+			{
+				Log.Fatal(ex, "Host terminated unexpectedly");
+				return 1;
+			}
+			finally
+			{
+				Log.CloseAndFlush();
+			}
+		}
 
-        public static IWebHost BuildWebHost(string[] args)
-        {
-            return WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
-                .UseSerilog()
-                .Build();
-        }
-    }
+		public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+			WebHost.CreateDefaultBuilder(args)
+				.UseStartup<Startup>()
+				.UseSerilog();
+	}
 }
