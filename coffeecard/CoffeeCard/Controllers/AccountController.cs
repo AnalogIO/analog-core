@@ -19,13 +19,13 @@ namespace CoffeeCard.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
-        private readonly IHostingEnvironment _env;
+        private readonly IWebHostEnvironment _env;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILeaderboardService _leaderboardService;
         private readonly IMapperService _mapperService;
 
         public AccountController(IAccountService accountService, ILeaderboardService leaderboardService,
-            IMapperService mapperService, IHostingEnvironment env, IHttpContextAccessor httpContextAccessor)
+            IMapperService mapperService, IWebHostEnvironment env, IHttpContextAccessor httpContextAccessor)
         {
             _accountService = accountService;
             _leaderboardService = leaderboardService;

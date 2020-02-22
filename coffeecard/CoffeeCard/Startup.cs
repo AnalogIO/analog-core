@@ -10,10 +10,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using NSwag;
@@ -22,15 +22,14 @@ namespace CoffeeCard
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration, IHostingEnvironment env)
+	    public IConfiguration Configuration { get; }
+	    public IWebHostEnvironment Environment { get; }
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
             Environment = env;
         }
-
-        public IConfiguration Configuration { get; }
-
-        public IHostingEnvironment Environment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -59,8 +58,7 @@ namespace CoffeeCard
             services.AddHttpClient<IMobilePayApiHttpClient, MobilePayApiHttpClient>();
 
             // Setup filter to catch outgoing exceptions
-            services.AddMvc(options => { options.Filters.Add(new ApiExceptionFilter()); })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddControllers(options => { options.Filters.Add(new ApiExceptionFilter()); });
 
             services.AddApiVersioning();
 
@@ -88,10 +86,11 @@ namespace CoffeeCard
             });
 
             // Setup Json Serializing
-            services.AddMvc().AddJsonOptions(options =>
-            {
-                options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-            });
+            services.AddControllers()
+	            .AddNewtonsoftJson(options =>
+	            {
+					options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+				});
 
             // Setup Authentication
             IdentitySettings identitySettings = Configuration.GetSection("IdentitySettings").Get<IdentitySettings>();
@@ -133,19 +132,27 @@ namespace CoffeeCard
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
-                app.UseDeveloperExceptionPage();
+            {
+	            app.UseDeveloperExceptionPage();
+            }
             else
-                app.UseHsts();
+            {
+	            app.UseHsts();
+            }
 
             app.UseOpenApi();
             app.UseSwaggerUi3();
 
+            app.UseRouting();
+
             app.UseAuthentication();
             app.UseHttpsRedirection();
-            app.UseMvc();
+
+            app.UseEndpoints(endpoints =>
+	            endpoints.MapControllers());
         }
     }
 }

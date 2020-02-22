@@ -81,26 +81,8 @@ namespace CoffeeCard.Tests.Unit.Services
                 {
                     var expected = new List<Product>
                     {
-                        new Product()
-                        {
-                            Id = 1,
-                            Name = "Coffee",
-                            Description = "Coffee Clip card",
-                            NumberOfTickets = 10,
-                            Price = 10,
-                            ExperienceWorth = 10,
-                            Visible = true
-                        },
-                        new Product()
-                        {
-                            Id = 2,
-                            Name = "Espresso",
-                            Description = "Espresso Clip card",
-                            NumberOfTickets = 10,
-                            Price = 20,
-                            ExperienceWorth = 20,
-                            Visible = true
-                        }
+                        p1,
+                        p2
                     };
 
                     var result = await productService.GetPublicProducts();
