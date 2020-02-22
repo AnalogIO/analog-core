@@ -18,11 +18,7 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 2.2.108
-    - name: Build CoffeeCard project
-      run: dotnet build coffeecard/CoffeeCard --configuration Release
-    - name: Build CoffeeCard.Tests.Unit project
-      run: dotnet build coffeecard/CoffeeCard.Tests.Unit --configuration Release
-    - name: Build CoffeeCard.Tests.Integration project
-      run: dotnet build coffeecard/CoffeeCard.Tests.Integration --configuration Release
+    - name: Build CoffeeCard solution
+      run: dotnet build coffeecard/
     - name: Run tests
-      run: dotnet test coffeecard/CoffeeCard.Tests.Unit
+      run: dotnet test coffeecard/
