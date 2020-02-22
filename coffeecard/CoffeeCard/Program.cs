@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -7,21 +7,21 @@ using Serilog;
 
 namespace CoffeeCard
 {
-    public class Program
-    {
-        public static IConfiguration Configuration { get; } = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", false, true)
-            .AddJsonFile(
-                $"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json",
-                true)
-            .Build();
+	public class Program
+	{
+		public static IConfiguration Configuration { get; } = new ConfigurationBuilder()
+			.SetBasePath(Directory.GetCurrentDirectory())
+			.AddJsonFile("appsettings.json", false, true)
+			.AddJsonFile(
+				$"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json",
+				true)
+			.Build();
 
-        public static int Main(string[] args)
-        {
-            Log.Logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(Configuration)
-                .CreateLogger();
+		public static int Main(string[] args)
+		{
+			Log.Logger = new LoggerConfiguration()
+				.ReadFrom.Configuration(Configuration)
+				.CreateLogger();
 
 			try
 			{

@@ -14,13 +14,14 @@ namespace CoffeeCard.Tests.Integration.WebApplication
 	{
 		protected override void ConfigureWebHost(IWebHostBuilder builder)
 		{
+			// Use TestAppSettings
+			builder.ConfigureAppConfiguration(configuration =>
+			{
+				configuration.AddJsonFile("appsettings-for-tests.json");
+			});
+
 			builder.ConfigureServices(services =>
 			{
-				// Use TestAppSettings
-				var configuration = new ConfigurationBuilder()
-					.AddJsonFile("appsettings-for-tests.json")
-					.Build();
-
 				// Create a new service provider.
 				var serviceProvider = new ServiceCollection()
 					.AddEntityFrameworkInMemoryDatabase()
