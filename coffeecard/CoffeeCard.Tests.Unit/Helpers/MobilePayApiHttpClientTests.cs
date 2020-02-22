@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Moq;
 
-namespace CoffeeCardTests.Helpers
+namespace CoffeeCard.Tests.Unit.Helpers
 {
     public class MobilePayApiHttpClientTests
     {

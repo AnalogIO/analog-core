@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.28010.2041
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoffeeCard", "CoffeeCard\CoffeeCard.csproj", "{6D7D49A1-44ED-4013-9EDD-AB2A4A219E2B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeeCardTests", "CoffeeCardTests\CoffeeCardTests.csproj", "{54B20DD7-5137-4DA2-AFDF-508C01BAF5C7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeeCard.Tests.Unit", "CoffeeCard.Tests.Unit\CoffeeCard.Tests.Unit.csproj", "{54B20DD7-5137-4DA2-AFDF-508C01BAF5C7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

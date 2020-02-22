@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Moq;
 using Xunit;
 
-namespace CoffeeCardTests.Services
+namespace CoffeeCard.Tests.Unit.Services
 {
     public class MobilePayServiceTest
     {

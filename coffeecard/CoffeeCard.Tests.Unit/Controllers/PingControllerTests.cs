@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
-namespace CoffeeCardTests.Controllers
+namespace CoffeeCard.Tests.Unit.Controllers
 {
     public class PingControllerTests
     {

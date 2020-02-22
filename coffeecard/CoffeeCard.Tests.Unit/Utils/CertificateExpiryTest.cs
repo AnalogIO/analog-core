@@ -1,7 +1,7 @@
 using System;
 using Xunit;
 
-namespace CoffeeCardTests.Utils
+namespace CoffeeCard.Tests.Unit.Utils
 {
     public class CertificateExpiryTest
     {
