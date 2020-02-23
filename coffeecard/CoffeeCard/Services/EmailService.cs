@@ -67,7 +67,7 @@ namespace CoffeeCard.Services
             builder.HtmlBody = builder.HtmlBody.Replace("{baseUrl}", baseUrl);
 
             message.To.Add(new MailboxAddress(user.Name, user.Email));
-            message.Subject = "Verify your Café Analog account";
+            message.Subject = "Verify your Cafe Analog account";
 
             message.Body = builder.ToMessageBody();
 
@@ -89,7 +89,7 @@ namespace CoffeeCard.Services
             builder.HtmlBody = builder.HtmlBody.Replace("{baseUrl}", baseUrl);
 
             message.To.Add(new MailboxAddress(user.Name, user.Email));
-            message.Subject = "Verify your new email for your Café Analog account";
+            message.Subject = "Verify your new email for your Cafe Analog account";
 
             message.Body = builder.ToMessageBody();
 
@@ -110,7 +110,7 @@ namespace CoffeeCard.Services
             builder.HtmlBody = builder.HtmlBody.Replace("{baseUrl}", baseUrl);
 
             message.To.Add(new MailboxAddress(user.Name, user.Email));
-            message.Subject = "Café Analog account lost PIN request";
+            message.Subject = "Cafe Analog account lost PIN request";
 
             message.Body = builder.ToMessageBody();
 
@@ -129,7 +129,7 @@ namespace CoffeeCard.Services
             builder.HtmlBody = builder.HtmlBody.Replace("{name}", user.Name);
 
             message.To.Add(new MailboxAddress(user.Name, user.Email));
-            message.Subject = "Your new PIN for your Café Analog account";
+            message.Subject = "Your new PIN for your Cafe Analog account";
 
             message.Body = builder.ToMessageBody();
 
@@ -169,7 +169,7 @@ namespace CoffeeCard.Services
             var request = new RestRequest();
             request.AddParameter("domain", _configuration["MailgunDomain"], ParameterType.UrlSegment);
             request.Resource = "{domain}/messages";
-            request.AddParameter("from", "Café Analog <mailgun@cafeanalog.dk>");
+            request.AddParameter("from", "Cafe Analog <mailgun@cafeanalog.dk>");
             request.AddParameter("to", mail.To[0]);
             request.AddParameter("subject", mail.Subject);
             request.AddParameter("html", mail.HtmlBody);
