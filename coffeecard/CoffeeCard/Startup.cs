@@ -55,6 +55,7 @@ namespace CoffeeCard
             services.AddScoped<IMobilePayService, MobilePayService>();
             services.AddScoped<ILeaderboardService, LeaderboardService>();
             services.AddScoped<IAppConfigService, AppConfigService>();
+            services.AddScoped<ClaimsUtilities>();
             services.AddHttpClient<IMobilePayApiHttpClient, MobilePayApiHttpClient>();
 
             // Setup filter to catch outgoing exceptions
