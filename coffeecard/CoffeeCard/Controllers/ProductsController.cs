@@ -1,22 +1,27 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
+using CoffeeCard.Helpers;
 using CoffeeCard.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoffeeCard.Controllers
 {
+    [Authorize]
     [ApiVersion("1")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     public class ProductsController : ControllerBase
     {
         private readonly IMapperService _mapperService;
+        private readonly ClaimsUtilities _claimsUtilities;
         private readonly IProductService _productService;
 
-        public ProductsController(IProductService productService, IMapperService mapper)
+        public ProductsController(IProductService productService, IMapperService mapper, ClaimsUtilities claimsUtilities)
         {
             _productService = productService;
             _mapperService = mapper;
+            _claimsUtilities = claimsUtilities;
         }
 
         /// <summary>
@@ -24,10 +29,19 @@ namespace CoffeeCard.Controllers
         /// </summary>
         [AllowAnonymous]
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> GetProductsPublic()
         {
-            var products = _productService.GetProducts();
+            var products = await _productService.GetPublicProducts();
             return Ok(_mapperService.Map(products).ToList());
+        }
+
+        [HttpGet("app")]
+        public async Task<IActionResult> GetProductsForUser()
+        {
+            var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
+
+            var products = await _productService.GetProductsForUserAsync(user);
+            return Ok(_mapperService.Map(products));
         }
     }
 }
