@@ -91,8 +91,12 @@ namespace CoffeeCard.Services
 
             var user = new User
             {
-                Name = EscapeName(registerDto.Name), Email = registerDto.Email, Password = hashedPassword, Salt = salt,
-                Programme = programme
+                Name = EscapeName(registerDto.Name),
+                Email = registerDto.Email,
+                Password = hashedPassword,
+                Salt = salt,
+                Programme = programme,
+                UserGroup = UserGroup.Customer
             };
 
             _context.Users.Add(user);

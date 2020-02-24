@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace CoffeeCard.Models
@@ -18,15 +19,18 @@ namespace CoffeeCard.Models
         public string Name { get; set; }
 
         public string Description { get; set; }
+
         public int ExperienceWorth { get; set; }
+
         [Required]
+        [DefaultValue(true)]
         public bool Visible { get; set; }
-        [Required]
-        public bool BaristasOnly { get; set; }
+
+        public ICollection<ProductUserGroups> UserGroups { get; set; }
 
         protected bool Equals(Product other)
         {
-            return Id == other.Id && Price == other.Price && NumberOfTickets == other.NumberOfTickets && Name == other.Name && Description == other.Description && ExperienceWorth == other.ExperienceWorth && Visible == other.Visible && BaristasOnly == other.BaristasOnly;
+            return Id == other.Id && Price == other.Price && NumberOfTickets == other.NumberOfTickets && Name == other.Name && Description == other.Description && ExperienceWorth == other.ExperienceWorth && Visible == other.Visible;
         }
 
         public override bool Equals(object obj)

@@ -9,9 +9,9 @@ namespace CoffeeCard.Helpers
 {
     public class ClaimsUtilities
     {
-        private readonly CoffeecardContext _context;
+        private readonly CoffeeCardContext _context;
 
-        public ClaimsUtilities(CoffeecardContext context)
+        public ClaimsUtilities(CoffeeCardContext context)
         {
             _context = context;
         }

@@ -18,24 +18,25 @@ namespace CoffeeCard.Services
 
         public async Task<IEnumerable<Product>> GetPublicProducts()
         {
-            return await GetProducts(false);
+            return await GetProducts(UserGroup.Customer);
         }
 
         public async Task<IEnumerable<Product>> GetProductsForUserAsync(User user)
         {
-            return await GetProducts(user.IsBarista);
+            return await GetProducts(user.UserGroup);
         }
 
-        private async Task<IEnumerable<Product>> GetProducts(bool includeBaristaProducts)
+        private async Task<IEnumerable<Product>> GetProducts(UserGroup userGroup)
         {
-            var visibleProducts = _context.Products.Where(p => p.Visible);
-
-            if (!includeBaristaProducts)
-            {
-                return await visibleProducts.Where(p => p.BaristasOnly == false).ToListAsync();
-            }
-
-            return await visibleProducts.ToListAsync();
+            return await
+                (
+                    from p in (
+                        from pug in _context.ProductUserGroups
+                        where pug.UserGroup == userGroup
+                        select pug.Product)
+                    where p.Visible
+                    select p
+                    ).ToListAsync();
         }
 
         public void Dispose()
