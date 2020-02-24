@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -41,9 +42,11 @@ namespace CoffeeCard.Models
         [Required]
         public bool PrivacyActivated { get; set; }
         [Required]
-        public bool IsBarista { get; set; }
+        [DefaultValue(UserGroup.Customer)]
+        public UserGroup UserGroup { get; set; }
 
-        [ForeignKey("Programme_Id")] public virtual Programme Programme { get; set; }
+        [ForeignKey("Programme_Id")]
+        public virtual Programme Programme { get; set; }
 
         public int CalculateLevelFromXp()
         {

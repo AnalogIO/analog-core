@@ -24,10 +24,18 @@ namespace CoffeeCard.Models
         public DbSet<Programme> Programmes { get; set; }
         public DbSet<Voucher> Vouchers { get; set; }
         public DbSet<Statistic> Statistics { get; set; }
+        public DbSet<ProductUserGroups> ProductUserGroups { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //modelBuilder.HasDefaultSchema(_databaseSettings.SchemaName);
+
+            modelBuilder.Entity<ProductUserGroups>()
+                .HasKey(pug => new
+                {
+                    pug.ProductId,
+                    pug.UserGroup
+                });
         }
     }
 }
