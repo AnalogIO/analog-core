@@ -149,6 +149,7 @@ namespace CoffeeCard
             app.UseRouting();
 
             app.UseAuthentication();
+            app.UseAuthorization();
             app.UseHttpsRedirection();
 
             app.UseEndpoints(endpoints =>
