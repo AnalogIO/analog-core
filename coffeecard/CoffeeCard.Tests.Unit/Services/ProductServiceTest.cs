@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using CoffeeCard.Configuration;
 using CoffeeCard.Models;
 using CoffeeCard.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Moq;
 using Xunit;
 
 namespace CoffeeCard.Tests.Unit.Services
@@ -20,10 +16,12 @@ namespace CoffeeCard.Tests.Unit.Services
             var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
                 .UseInMemoryDatabase(nameof(GetPublicProducts_Return_All_NonBarista_Products));
 
-            var configuration = new Mock<DatabaseSettings>();
-            configuration.Setup(c => c.SchemaName).Returns("test");
+            var databaseSettings = new DatabaseSettings()
+            {
+                SchemaName = "test"
+            };
 
-            using (var context = new CoffeeCardContext(builder.Options, configuration.Object))
+            using (var context = new CoffeeCardContext(builder.Options, databaseSettings))
             {
                 var p1 = new Product()
                 {
@@ -62,17 +60,17 @@ namespace CoffeeCard.Tests.Unit.Services
                 await context.AddAsync(p3);
                 await context.SaveChangesAsync();
 
-                await context.AddAsync(new ProductUserGroups()
+                await context.AddAsync(new ProductUserGroup()
                 {
                     Product = p1,
                     UserGroup = UserGroup.Customer
                 });
-                await context.AddAsync(new ProductUserGroups()
+                await context.AddAsync(new ProductUserGroup()
                 {
                     Product = p2,
                     UserGroup = UserGroup.Customer
                 });
-                await context.AddAsync(new ProductUserGroups()
+                await context.AddAsync(new ProductUserGroup()
                 {
                     Product = p3,
                     UserGroup = UserGroup.Barista
@@ -118,10 +116,12 @@ namespace CoffeeCard.Tests.Unit.Services
             var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
                 .UseInMemoryDatabase(nameof(GetPublicProducts_DoesNot_Return_NonVisible_Products));
 
-            var configuration = new Mock<DatabaseSettings>();
-            configuration.Setup(c => c.SchemaName).Returns("test");
+            var databaseSettings = new DatabaseSettings()
+            {
+                SchemaName = "test"
+            };
 
-            using (var context = new CoffeeCardContext(builder.Options, configuration.Object))
+            using (var context = new CoffeeCardContext(builder.Options, databaseSettings))
             {
                 var p1 = new Product()
                 {
@@ -148,12 +148,12 @@ namespace CoffeeCard.Tests.Unit.Services
                 await context.AddAsync(p2);
                 await context.SaveChangesAsync();
 
-                await context.AddAsync(new ProductUserGroups()
+                await context.AddAsync(new ProductUserGroup()
                 {
                     Product = p1,
                     UserGroup = UserGroup.Customer
                 });
-                await context.AddAsync(new ProductUserGroups()
+                await context.AddAsync(new ProductUserGroup()
                 {
                     Product = p2,
                     UserGroup = UserGroup.Customer
@@ -189,10 +189,12 @@ namespace CoffeeCard.Tests.Unit.Services
             var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
                 .UseInMemoryDatabase(nameof(GetProductsForUserAsync_Return_Products_For_UserGroup));
 
-            var configuration = new Mock<DatabaseSettings>();
-            configuration.Setup(c => c.SchemaName).Returns("test");
+            var databaseSettings = new DatabaseSettings()
+            {
+                SchemaName = "test"
+            };
 
-            using (var context = new CoffeeCardContext(builder.Options, configuration.Object))
+            using (var context = new CoffeeCardContext(builder.Options, databaseSettings))
             {
                 var p1 = new Product()
                 {
@@ -231,17 +233,17 @@ namespace CoffeeCard.Tests.Unit.Services
                 await context.AddAsync(p3);
                 await context.SaveChangesAsync();
 
-                await context.AddAsync(new ProductUserGroups()
+                await context.AddAsync(new ProductUserGroup()
                 {
                     Product = p1,
                     UserGroup = UserGroup.Barista
                 });
-                await context.AddAsync(new ProductUserGroups()
+                await context.AddAsync(new ProductUserGroup()
                 {
                     Product = p2,
                     UserGroup = UserGroup.Barista
                 });
-                await context.AddAsync(new ProductUserGroups()
+                await context.AddAsync(new ProductUserGroup()
                 {
                     Product = p3,
                     UserGroup = UserGroup.Barista
@@ -302,10 +304,12 @@ namespace CoffeeCard.Tests.Unit.Services
             var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
                 .UseInMemoryDatabase(nameof(GetProductsForUserAsync_DoesNot_Return_NonVisible_Products));
 
-            var configuration = new Mock<DatabaseSettings>();
-            configuration.Setup(c => c.SchemaName).Returns("test");
+            var databaseSettings = new DatabaseSettings()
+            {
+                SchemaName = "test"
+            };
 
-            using (var context = new CoffeeCardContext(builder.Options, configuration.Object))
+            using (var context = new CoffeeCardContext(builder.Options, databaseSettings))
             {
                 var p1 = new Product()
                 {
@@ -332,12 +336,12 @@ namespace CoffeeCard.Tests.Unit.Services
                 await context.AddAsync(p2);
                 await context.SaveChangesAsync();
 
-                await context.AddAsync(new ProductUserGroups()
+                await context.AddAsync(new ProductUserGroup()
                 {
                     Product = p1,
                     UserGroup = UserGroup.Barista
                 });
-                await context.AddAsync(new ProductUserGroups()
+                await context.AddAsync(new ProductUserGroup()
                 {
                     Product = p2,
                     UserGroup = UserGroup.Barista
@@ -360,9 +364,14 @@ namespace CoffeeCard.Tests.Unit.Services
                         },
                     };
 
-                    //var result = await productService.GetProductsForUserAsync(user);
+                    var user = new User
+                    {
+                        UserGroup = UserGroup.Barista
+                    };
 
-                    //Assert.Equal(expected, result);
+                    var result = await productService.GetProductsForUserAsync(user);
+
+                    Assert.Equal(expected, result);
                 }
             }
         }

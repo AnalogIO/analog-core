@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CoffeeCard.Models
 {
-    public class ProductUserGroups
+    public class ProductUserGroup
     {
         [ForeignKey("Product")]
         public int ProductId { get; set; }
