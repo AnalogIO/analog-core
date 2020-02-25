@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace coffeecard.Migrations
+namespace CoffeeCard.Migrations
 {
     [DbContext(typeof(CoffeeCardContext))]
     [Migration("20191012125617_Initial - test")]

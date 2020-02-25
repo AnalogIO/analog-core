@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace coffeecard.Migrations
+namespace CoffeeCard.Migrations
 {
     public partial class Initialtest : Migration
     {
