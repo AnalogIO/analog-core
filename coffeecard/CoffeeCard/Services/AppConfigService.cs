@@ -1,24 +1,27 @@
 ﻿using System;
+using CoffeeCard.Configuration;
 using CoffeeCard.Models.DataTransferObjects.AppConfig;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace CoffeeCard.Services
 {
     public class AppConfigService : IAppConfigService
     {
-        private readonly IConfiguration _configuration;
+        private readonly MobilePaySettings _mobilePaySettings;
+        private readonly EnvironmentSettings _environmentSettings;
 
-        public AppConfigService(IConfiguration configuration)
+        public AppConfigService(IOptions<MobilePaySettings> mobilePaySettings, EnvironmentSettings environmentSettings)
         {
-            _configuration = configuration;
+            _mobilePaySettings = mobilePaySettings.Value;
+            _environmentSettings = environmentSettings;
         }
 
         public AppConfigDTO RetreiveConfiguration()
         {
-            var _environmentType = _configuration["EnvironmentType"];
-            var _merchantId = _configuration["MPMerchantID"];
-            if (string.IsNullOrEmpty(_environmentType) || string.IsNullOrEmpty(_merchantId))
-                throw new ArgumentNullException();
+            var _environmentType = _environmentSettings.EnvironmentType;
+            var _merchantId =_mobilePaySettings.MerchantId;
+
             return new AppConfigDTO
             {
                 EnvironmentType = _environmentType,

@@ -3,36 +3,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
+using CoffeeCard.Configuration;
 using CoffeeCard.Helpers;
 using CoffeeCard.Models;
 using CoffeeCard.Models.DataTransferObjects.User;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Serilog;
 
 namespace CoffeeCard.Services
 {
     public class AccountService : IAccountService
     {
-        private readonly IConfiguration _configuration;
-        private readonly CoffeecardContext _context;
+        private readonly EnvironmentSettings _environmentSettings;
+        private readonly CoffeeCardContext _context;
         private readonly IEmailService _emailService;
         private readonly IHashService _hashService;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IPurchaseService _purchaseService;
         private readonly ITokenService _tokenService;
 
-        public AccountService(CoffeecardContext context, IConfiguration configuration, ITokenService tokenService,
-            IEmailService emailService, IHashService hashService, IPurchaseService purchaseService,
-            IHttpContextAccessor httpContextAccessor)
+        public AccountService(CoffeeCardContext context, EnvironmentSettings environmentSettings, ITokenService tokenService,
+            IEmailService emailService, IHashService hashService, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
-            _configuration = configuration;
+            _environmentSettings = environmentSettings;
             _tokenService = tokenService;
             _emailService = emailService;
             _hashService = hashService;
-            _purchaseService = purchaseService;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -262,7 +261,7 @@ namespace CoffeeCard.Services
 
                 var versionSum = major + minor;
 
-                var requiredMatch = regex.Match(_configuration["MinAppVersion"]);
+                var requiredMatch = regex.Match(_environmentSettings.MinAppVersion);
                 var requiredMajor = int.Parse(requiredMatch.Groups[1].Value.TrimEnd('.'));
                 var requiredMinor = int.Parse(requiredMatch.Groups[2].Value.TrimEnd('.'));
 

@@ -1,8 +1,10 @@
-﻿namespace CoffeeCard.Models.DataTransferObjects.AppConfig
+﻿using CoffeeCard.Configuration;
+
+namespace CoffeeCard.Models.DataTransferObjects.AppConfig
 {
     public class AppConfigDTO
     {
-        public string EnvironmentType { get; set; }
+        public EnvironmentType EnvironmentType { get; set; }
         public string MerchantId { get; set; }
     }
 }

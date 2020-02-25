@@ -1,5 +1,6 @@
 using System.Net;
 using System.Threading.Tasks;
+using CoffeeCard.Configuration;
 using CoffeeCard.Helpers.MobilePay;
 using CoffeeCard.Helpers.MobilePay.ErrorMessage;
 using CoffeeCard.Helpers.MobilePay.RequestMessage;
@@ -17,9 +18,10 @@ namespace CoffeeCard.Tests.Unit.Services
         public async Task CancelPaymentReservationGivenOrderIdCallsMobilePayApiHttpClient()
         {
             // Arrange
-            var configuration = new Mock<IConfiguration>();
-
-            configuration.Setup(c => c["MPMerchantID"]).Returns("merchantID");
+            var mobilePaySettings = new MobilePaySettings
+            {
+                MerchantId = "merchantID"
+            };
 
             var mobilePayApiClient = new Mock<IMobilePayApiHttpClient>();
             var requestMessage = new CancelReservationRequest("merchantID", "1234");
@@ -32,7 +34,7 @@ namespace CoffeeCard.Tests.Unit.Services
                         TransactionId = "transId"
                     });
 
-            var mobilePayService = new MobilePayService(mobilePayApiClient.Object, configuration.Object);
+            var mobilePayService = new MobilePayService(mobilePayApiClient.Object, mobilePaySettings);
 
             // Act
             await mobilePayService.CancelPaymentReservation("1234");
@@ -50,9 +52,10 @@ namespace CoffeeCard.Tests.Unit.Services
             CancelPaymentReservationRethrowsExceptionWhenMobilePayApiHttpClientThrowsAMobilePayExceptionWithUnauthorizedStatusCode()
         {
             // Arrange
-            var configuration = new Mock<IConfiguration>();
-
-            configuration.Setup(c => c["MPMerchantID"]).Returns("merchantID");
+            var mobilePaySettings = new MobilePaySettings
+            {
+                MerchantId = "merchantID"
+            };
 
             var mobilePayApiClient = new Mock<IMobilePayApiHttpClient>();
             var requestMessage = new CancelReservationRequest("merchantID", "1234");
@@ -66,7 +69,7 @@ namespace CoffeeCard.Tests.Unit.Services
                     }, HttpStatusCode.Unauthorized));
 
             // Act
-            var mobilePayService = new MobilePayService(mobilePayApiClient.Object, configuration.Object);
+            var mobilePayService = new MobilePayService(mobilePayApiClient.Object, mobilePaySettings);
 
             // Assert
             await Assert.ThrowsAsync<MobilePayException>(() => mobilePayService.CancelPaymentReservation("1234"));
@@ -78,9 +81,10 @@ namespace CoffeeCard.Tests.Unit.Services
             CancelPaymentReservationRetriesWhenMobilePayApiHttpClientThrowsAMobilePayExceptionWithRequestTimeOutStatusCode()
         {
             // Arrange
-            var configuration = new Mock<IConfiguration>();
-
-            configuration.Setup(c => c["MPMerchantID"]).Returns("merchantID");
+            var mobilePaySettings = new MobilePaySettings
+            {
+                MerchantId = "merchantID"
+            };
 
             var mobilePayApiClient = new Mock<IMobilePayApiHttpClient>();
             var requestMessage = new CancelReservationRequest("merchantID", "1234");
@@ -108,7 +112,7 @@ namespace CoffeeCard.Tests.Unit.Services
                     });
 
 
-            var mobilePayService = new MobilePayService(mobilePayApiClient.Object, configuration.Object);
+            var mobilePayService = new MobilePayService(mobilePayApiClient.Object, mobilePaySettings);
 
             // Act
             await mobilePayService.CancelPaymentReservation("1234");
@@ -126,9 +130,10 @@ namespace CoffeeCard.Tests.Unit.Services
         public async Task CapturePaymentGivenOrderIdCallsMobilePayApiHttpClient()
         {
             // Arrange
-            var configuration = new Mock<IConfiguration>();
-
-            configuration.Setup(c => c["MPMerchantID"]).Returns("merchantID");
+            var mobilePaySettings = new MobilePaySettings
+            {
+                MerchantId = "merchantID"
+            };
 
             var mobilePayApiClient = new Mock<IMobilePayApiHttpClient>();
             var requestMessage = new CaptureAmountRequest("merchantID", "1234");
@@ -141,7 +146,7 @@ namespace CoffeeCard.Tests.Unit.Services
                         TransactionId = "transId"
                     });
 
-            var mobilePayService = new MobilePayService(mobilePayApiClient.Object, configuration.Object);
+            var mobilePayService = new MobilePayService(mobilePayApiClient.Object, mobilePaySettings);
 
             // Act
             await mobilePayService.CapturePayment("1234");
@@ -159,9 +164,10 @@ namespace CoffeeCard.Tests.Unit.Services
             CapturePaymentRethrowsExceptionWhenMobilePayApiHttpClientThrowsAMobilePayExceptionWithUnauthorizedStatusCode()
         {
             // Arrange
-            var configuration = new Mock<IConfiguration>();
-
-            configuration.Setup(c => c["MPMerchantID"]).Returns("merchantID");
+            var mobilePaySettings = new MobilePaySettings
+            {
+                MerchantId = "merchantID"
+            };
 
             var mobilePayApiClient = new Mock<IMobilePayApiHttpClient>();
             var requestMessage = new CaptureAmountRequest("merchantID", "1234");
@@ -175,7 +181,7 @@ namespace CoffeeCard.Tests.Unit.Services
                     }, HttpStatusCode.Unauthorized));
 
             // Act
-            var mobilePayService = new MobilePayService(mobilePayApiClient.Object, configuration.Object);
+            var mobilePayService = new MobilePayService(mobilePayApiClient.Object, mobilePaySettings);
 
             // Assert
             await Assert.ThrowsAsync<MobilePayException>(() => mobilePayService.CapturePayment("1234"));
@@ -187,9 +193,10 @@ namespace CoffeeCard.Tests.Unit.Services
             CapturePaymentRetriesWhenMobilePayApiHttpClientThrowsAMobilePayExceptionWithRequestTimeOutStatusCode()
         {
             // Arrange
-            var configuration = new Mock<IConfiguration>();
-
-            configuration.Setup(c => c["MPMerchantID"]).Returns("merchantID");
+            var mobilePaySettings = new MobilePaySettings
+            {
+                MerchantId = "merchantID"
+            };
 
             var mobilePayApiClient = new Mock<IMobilePayApiHttpClient>();
             var requestMessage = new CaptureAmountRequest("merchantID", "1234");
@@ -217,7 +224,7 @@ namespace CoffeeCard.Tests.Unit.Services
                     });
 
 
-            var mobilePayService = new MobilePayService(mobilePayApiClient.Object, configuration.Object);
+            var mobilePayService = new MobilePayService(mobilePayApiClient.Object, mobilePaySettings);
 
             // Act
             await mobilePayService.CapturePayment("1234");
@@ -235,9 +242,10 @@ namespace CoffeeCard.Tests.Unit.Services
         public async Task GetPaymentStatusGivenOrderIdCallsMobilePayApiHttpClient()
         {
             // Arrange
-            var configuration = new Mock<IConfiguration>();
-
-            configuration.Setup(c => c["MPMerchantID"]).Returns("merchantID");
+            var mobilePaySettings = new MobilePaySettings
+            {
+                MerchantId = "merchantID"
+            };
 
             var mobilePayApiClient = new Mock<IMobilePayApiHttpClient>();
             var mobilePayApiRequestMessage = new GetPaymentStatusRequest("merchantID", "1234");
@@ -252,7 +260,7 @@ namespace CoffeeCard.Tests.Unit.Services
                         TransactionId = "transId"
                     });
 
-            var mobilePayService = new MobilePayService(mobilePayApiClient.Object, configuration.Object);
+            var mobilePayService = new MobilePayService(mobilePayApiClient.Object, mobilePaySettings);
 
             // Act
             await mobilePayService.GetPaymentStatus("1234");
@@ -270,9 +278,10 @@ namespace CoffeeCard.Tests.Unit.Services
             GetPaymentStatusRethrowsExceptionWhenMobilePayApiHttpClientThrowsAMobilePayExceptionWithUnauthorizedStatusCode()
         {
             // Arrange
-            var configuration = new Mock<IConfiguration>();
-
-            configuration.Setup(c => c["MPMerchantID"]).Returns("merchantID");
+            var mobilePaySettings = new MobilePaySettings
+            {
+                MerchantId = "merchantID"
+            };
 
             var mobilePayApiClient = new Mock<IMobilePayApiHttpClient>();
             var mobilePayApiRequestMessage = new GetPaymentStatusRequest("merchantID", "1234");
@@ -286,7 +295,7 @@ namespace CoffeeCard.Tests.Unit.Services
                     }, HttpStatusCode.Unauthorized));
 
             // Act
-            var mobilePayService = new MobilePayService(mobilePayApiClient.Object, configuration.Object);
+            var mobilePayService = new MobilePayService(mobilePayApiClient.Object, mobilePaySettings);
 
             // Assert
             await Assert.ThrowsAsync<MobilePayException>(() => mobilePayService.GetPaymentStatus("1234"));
@@ -298,9 +307,10 @@ namespace CoffeeCard.Tests.Unit.Services
             GetPaymentStatusRetriesWhenMobilePayApiHttpClientThrowsAMobilePayExceptionWithRequestTimeOutStatusCode()
         {
             // Arrange
-            var configuration = new Mock<IConfiguration>();
-
-            configuration.Setup(c => c["MPMerchantID"]).Returns("merchantID");
+            var mobilePaySettings = new MobilePaySettings
+            {
+                MerchantId = "merchantID"
+            };
 
             var mobilePayApiClient = new Mock<IMobilePayApiHttpClient>();
             var mobilePayApiRequestMessage = new GetPaymentStatusRequest("merchantID", "1234");
@@ -322,7 +332,7 @@ namespace CoffeeCard.Tests.Unit.Services
                         TransactionId = "transId"
                     });
 
-            var mobilePayService = new MobilePayService(mobilePayApiClient.Object, configuration.Object);
+            var mobilePayService = new MobilePayService(mobilePayApiClient.Object, mobilePaySettings);
 
             // Act
             await mobilePayService.GetPaymentStatus("1234");

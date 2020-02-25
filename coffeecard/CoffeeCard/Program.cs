@@ -12,9 +12,6 @@ namespace CoffeeCard
 		public static IConfiguration Configuration { get; } = new ConfigurationBuilder()
 			.SetBasePath(Directory.GetCurrentDirectory())
 			.AddJsonFile("appsettings.json", false, true)
-			.AddJsonFile(
-				$"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json",
-				true)
 			.Build();
 
 		public static int Main(string[] args)

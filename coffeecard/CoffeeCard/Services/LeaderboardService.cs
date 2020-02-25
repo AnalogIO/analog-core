@@ -8,9 +8,9 @@ namespace CoffeeCard.Services
 {
     public class LeaderboardService : ILeaderboardService
     {
-        private readonly CoffeecardContext _context;
+        private readonly CoffeeCardContext _context;
 
-        public LeaderboardService(CoffeecardContext context)
+        public LeaderboardService(CoffeeCardContext context)
         {
             _context = context;
         }

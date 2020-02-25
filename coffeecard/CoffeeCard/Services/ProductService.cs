@@ -6,9 +6,9 @@ namespace CoffeeCard.Services
 {
     public class ProductService : IProductService
     {
-        private readonly CoffeecardContext _context;
+        private readonly CoffeeCardContext _context;
 
-        public ProductService(CoffeecardContext context)
+        public ProductService(CoffeeCardContext context)
         {
             _context = context;
         }

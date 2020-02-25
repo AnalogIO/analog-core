@@ -1,3 +1,4 @@
+using CoffeeCard.Configuration;
 using CoffeeCard.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -12,23 +13,35 @@ namespace CoffeeCard.Tests.Integration.WebApplication
 
 	public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup: class
 	{
-		protected override void ConfigureWebHost(IWebHostBuilder builder)
+        private IConfiguration Configuration { get; set; }
+
+        protected override void ConfigureWebHost(IWebHostBuilder builder)
 		{
 			// Use TestAppSettings
 			builder.ConfigureAppConfiguration(configuration =>
-			{
+            {
 				configuration.AddJsonFile("appsettings-for-tests.json");
-			});
+                Configuration = configuration.Build();
+            });
 
 			builder.ConfigureServices(services =>
 			{
-				// Create a new service provider.
-				var serviceProvider = new ServiceCollection()
+                services.UseConfigurationValidation();
+
+                // Parse and setup settings from configuration
+                services.ConfigureValidatableSetting<DatabaseSettings>(Configuration.GetSection("DatabaseSettings"));
+                services.ConfigureValidatableSetting<EnvironmentSettings>(Configuration.GetSection("EnvironmentSettings"));
+                services.ConfigureValidatableSetting<IdentitySettings>(Configuration.GetSection("IdentitySettings"));
+                services.ConfigureValidatableSetting<MailgunSettings>(Configuration.GetSection("MailgunSettings"));
+                services.ConfigureValidatableSetting<MobilePaySettings>(Configuration.GetSection("MobilePaySettings"));
+
+                // Create a new service provider.
+                var serviceProvider = new ServiceCollection()
 					.AddEntityFrameworkInMemoryDatabase()
 					.BuildServiceProvider();
 
 				// Add a database context (ApplicationDbContext) using an in-memory database for testing.
-				services.AddDbContext<CoffeecardContext>(options =>
+				services.AddDbContext<CoffeeCardContext>(options =>
 				{
 					options.UseInMemoryDatabase("InMemoryDbForTesting");
 					options.UseInternalServiceProvider(serviceProvider);
@@ -41,11 +54,9 @@ namespace CoffeeCard.Tests.Integration.WebApplication
 				using (var scope = sp.CreateScope())
 				{
 					var scopedServices = scope.ServiceProvider;
-					var db = scopedServices.GetRequiredService<CoffeecardContext>();
-					var logger = scopedServices
-						.GetRequiredService<ILogger<CustomWebApplicationFactory<TStartup>>>();
+					var db = scopedServices.GetRequiredService<CoffeeCardContext>();
 
-					// Ensure the database is created.
+                    // Ensure the database is created.
 					db.Database.EnsureCreated();
 				}
 			});

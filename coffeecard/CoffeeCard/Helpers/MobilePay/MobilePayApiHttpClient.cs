@@ -6,12 +6,14 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using CoffeeCard.Configuration;
 using CoffeeCard.Helpers.MobilePay.ErrorMessage;
 using CoffeeCard.Helpers.MobilePay.RequestMessage;
 using CoffeeCard.Helpers.MobilePay.ResponseMessage;
 using Jose;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Serilog;
 
 namespace CoffeeCard.Helpers.MobilePay
@@ -22,11 +24,11 @@ namespace CoffeeCard.Helpers.MobilePay
         private readonly X509Certificate2 _certificate;
 
         private readonly HttpClient _client;
-        private readonly IConfiguration _configuration;
+        private readonly MobilePaySettings _mobilePaySettings;
 
-        public MobilePayApiHttpClient(HttpClient client, IConfiguration configuration, IHostingEnvironment environment)
+        public MobilePayApiHttpClient(HttpClient client, IHostingEnvironment environment, MobilePaySettings mobilePaySettings)
         {
-            _configuration = configuration;
+            _mobilePaySettings = mobilePaySettings;
             _certificate = LoadCertificate(environment);
 
             _client = client;
@@ -44,7 +46,7 @@ namespace CoffeeCard.Helpers.MobilePay
                         "AuthenticationSignature",
                         GenerateAuthenticationSignature(requestUri.ToString(), requestMessage.GetRequestBody())
                     },
-                    {"Ocp-Apim-Subscription-Key", _configuration["MPSubscriptionKey"]}
+                    {"Ocp-Apim-Subscription-Key", _mobilePaySettings.SubscriptionKey}
                 },
                 Method = requestMessage.GetHttpMethod(),
                 RequestUri = requestUri,
@@ -92,13 +94,13 @@ namespace CoffeeCard.Helpers.MobilePay
 
         private X509Certificate2 LoadCertificate(IHostingEnvironment environment)
         {
-            var certName = _configuration["MobilePayAPI-CertificateName"];
+            var certName = _mobilePaySettings.CertificateName;
 
             var provider = environment.ContentRootFileProvider;
             var contents = provider.GetDirectoryContents(string.Empty);
             var certPath = contents.FirstOrDefault(file => file.Name.Equals(certName)).PhysicalPath;
 
-            return new X509Certificate2(certPath, _configuration["CertificatePassword"],
+            return new X509Certificate2(certPath, _mobilePaySettings.CertificatePassword,
                 X509KeyStorageFlags.MachineKeySet);
         }
 

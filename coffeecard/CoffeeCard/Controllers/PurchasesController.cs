@@ -1,10 +1,12 @@
 ﻿using System.Linq;
+using CoffeeCard.Configuration;
 using CoffeeCard.Helpers;
 using CoffeeCard.Models.DataTransferObjects.Purchase;
 using CoffeeCard.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Serilog;
 
 namespace CoffeeCard.Controllers
@@ -15,18 +17,18 @@ namespace CoffeeCard.Controllers
     [ApiController]
     public class PurchasesController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
+        private readonly IdentitySettings _identitySettings;
         private readonly IMapperService _mapperService;
         private readonly IPurchaseService _purchaseService;
         private IAccountService _accountService;
 
         public PurchasesController(IPurchaseService purchaseService, IMapperService mapper,
-            IAccountService accountService, IConfiguration configuration)
+            IAccountService accountService, IdentitySettings identitySettings)
         {
             _purchaseService = purchaseService;
             _mapperService = mapper;
             _accountService = accountService;
-            _configuration = configuration;
+            _identitySettings = identitySettings;
         }
 
         /// <summary>
@@ -60,7 +62,7 @@ namespace CoffeeCard.Controllers
         {
             var adminToken = Request.Headers.FirstOrDefault(x => x.Key == "admintoken").Value.FirstOrDefault();
             Log.Information(adminToken);
-            if (adminToken != _configuration["AdminToken"]) throw new ApiException("AdminToken was invalid", 401);
+            if (adminToken != _identitySettings.AdminToken) throw new ApiException("AdminToken was invalid", 401);
             var purchase = _purchaseService.IssueProduct(issueProduct);
             return Ok(_mapperService.Map(purchase));
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using CoffeeCard.Configuration;
 using CoffeeCard.Models;
 using CoffeeCard.Models.DataTransferObjects.Purchase;
 using CoffeeCard.Models.DataTransferObjects.User;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using MimeKit;
 using RestSharp;
 using RestSharp.Authenticators;
@@ -16,14 +18,14 @@ namespace CoffeeCard.Services
 {
     public class EmailService : IEmailService
     {
-        private readonly IConfiguration _configuration;
+        private readonly MailgunSettings _mailgunSettings;
         private readonly IHostingEnvironment _env;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public EmailService(IConfiguration configuration, IHostingEnvironment env,
+        public EmailService(MailgunSettings mailgunSettings, IHostingEnvironment env,
             IHttpContextAccessor httpContextAccessor)
         {
-            _configuration = configuration;
+            _mailgunSettings = mailgunSettings;
             _env = env;
             _httpContextAccessor = httpContextAccessor;
         }
@@ -165,9 +167,9 @@ namespace CoffeeCard.Services
             var client = new RestClient();
             client.BaseUrl = new Uri("https://api.mailgun.net/v3");
 
-            client.Authenticator = new HttpBasicAuthenticator("api", _configuration["MailgunAPIKey"]);
+            client.Authenticator = new HttpBasicAuthenticator("api", _mailgunSettings.ApiKey);
             var request = new RestRequest();
-            request.AddParameter("domain", _configuration["MailgunDomain"], ParameterType.UrlSegment);
+            request.AddParameter("domain", _mailgunSettings.Domain, ParameterType.UrlSegment);
             request.Resource = "{domain}/messages";
             request.AddParameter("from", "Cafe Analog <mailgun@cafeanalog.dk>");
             request.AddParameter("to", mail.To[0]);

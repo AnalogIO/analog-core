@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Threading.Tasks;
+using CoffeeCard.Configuration;
 using CoffeeCard.Helpers;
 using CoffeeCard.Helpers.MobilePay;
 using CoffeeCard.Models;
@@ -34,11 +35,12 @@ namespace CoffeeCard
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // TODO: find out the proper way to differ between enviroment based config files
-            services.AddDbContext<CoffeecardContext>(opt =>
-                opt.UseSqlServer(Configuration.GetConnectionString("CoffeecardDatabase")));
+            // Setup database connection
+            DatabaseSettings databaseSettings = Configuration.GetSection("DatabaseSettings").Get<DatabaseSettings>();
+            services.AddDbContext<CoffeeCardContext>(opt =>
+                opt.UseSqlServer(databaseSettings.ConnectionString));
 
-            services.AddSingleton(provider => Configuration);
+            // Setup Dependency Injection
             services.AddSingleton(Environment);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IHashService, HashService>();
@@ -55,11 +57,13 @@ namespace CoffeeCard
             services.AddScoped<IAppConfigService, AppConfigService>();
             services.AddHttpClient<IMobilePayApiHttpClient, MobilePayApiHttpClient>();
 
+            // Setup filter to catch outgoing exceptions
             services.AddMvc(options => { options.Filters.Add(new ApiExceptionFilter()); })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddApiVersioning();
 
+            // Setup Swagger
             services.AddSwaggerDocument(config =>
             {
                 config.PostProcess = document =>
@@ -82,11 +86,14 @@ namespace CoffeeCard
                 };
             });
 
+            // Setup Json Serializing
             services.AddMvc().AddJsonOptions(options =>
             {
                 options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
             });
 
+            // Setup Authentication
+            IdentitySettings identitySettings = Configuration.GetSection("IdentitySettings").Get<IdentitySettings>();
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = "bearer";
@@ -98,7 +105,7 @@ namespace CoffeeCard
                     ValidateAudience = false,
                     ValidateIssuer = false,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["TokenKey"])),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(identitySettings.TokenKey)),
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero //the default for this setting is 5 minutes
                 };
@@ -113,6 +120,15 @@ namespace CoffeeCard
                     }
                 };
             });
+
+            services.UseConfigurationValidation();
+
+            // Parse and setup settings from configuration
+            services.ConfigureValidatableSetting<DatabaseSettings>(Configuration.GetSection("DatabaseSettings"));
+            services.ConfigureValidatableSetting<EnvironmentSettings>(Configuration.GetSection("EnvironmentSettings"));
+            services.ConfigureValidatableSetting<IdentitySettings>(Configuration.GetSection("IdentitySettings"));
+            services.ConfigureValidatableSetting<MailgunSettings>(Configuration.GetSection("MailgunSettings"));
+            services.ConfigureValidatableSetting<MobilePaySettings>(Configuration.GetSection("MobilePaySettings"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

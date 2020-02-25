@@ -14,9 +14,9 @@ namespace CoffeeCard.Services
     {
         private readonly IAccountService _accountService;
 
-        private readonly CoffeecardContext _context;
+        private readonly CoffeeCardContext _context;
 
-        public TicketService(CoffeecardContext context, IAccountService accountService)
+        public TicketService(CoffeeCardContext context, IAccountService accountService)
         {
             _context = context;
             _accountService = accountService;

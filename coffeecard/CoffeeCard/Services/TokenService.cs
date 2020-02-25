@@ -3,24 +3,26 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using CoffeeCard.Configuration;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace CoffeeCard.Services
 {
     public class TokenService : ITokenService
     {
-        private readonly IConfiguration _configuration;
+        private readonly IdentitySettings _identitySettings;
 
-        public TokenService(IConfiguration configuration)
+        public TokenService(IdentitySettings identitySettings)
         {
-            _configuration = configuration;
+            _identitySettings = identitySettings;
         }
 
         public string GenerateToken(IEnumerable<Claim> claims)
         {
             var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_configuration["TokenKey"])); // get token from appsettings.json
+                Encoding.UTF8.GetBytes(_identitySettings.TokenKey)); // get token from appsettings.json
 
             var jwt = new JwtSecurityToken("AnalogIO",
                 "Everyone",

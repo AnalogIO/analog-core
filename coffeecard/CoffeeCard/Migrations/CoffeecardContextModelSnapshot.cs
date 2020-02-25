@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace CoffeeCard.Migrations
 {
-    [DbContext(typeof(CoffeecardContext))]
+    [DbContext(typeof(CoffeeCardContext))]
     internal class CoffeecardContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

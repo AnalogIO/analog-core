@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace coffeecard.Migrations
 {
-    [DbContext(typeof(CoffeecardContext))]
+    [DbContext(typeof(CoffeeCardContext))]
     [Migration("20191012125617_Initial - test")]
     partial class Initialtest
     {

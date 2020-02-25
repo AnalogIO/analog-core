@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Net.Http;
+using CoffeeCard.Configuration;
 using CoffeeCard.Helpers.MobilePay;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -15,10 +16,10 @@ namespace CoffeeCard.Tests.Unit.Helpers
         {
             var testCertificateName = "testCertificate.pfx";
 
-            var configuration = new Mock<IConfiguration>();
-            configuration.Setup(c => c["CertificatePassword"]).Returns("password");
-            configuration.Setup(c => c["MPSubscriptionKey"]).Returns("subscrpKey");
-            configuration.Setup(c => c["MobilePayAPI-CertificateName"]).Returns(testCertificateName);
+            var mobilePaySettings = new Mock<MobilePaySettings>();
+            mobilePaySettings.Setup(c => c.CertificatePassword).Returns("password");
+            mobilePaySettings.Setup(c => c.SubscriptionKey).Returns("subscrpKey");
+            mobilePaySettings.Setup(c => c.CertificateName).Returns(testCertificateName);
 
             var directoryContents = new Mock<IDirectoryContents>();
             directoryContents.Setup(dc => dc.FirstOrDefault(f => f.Name.Equals(testCertificateName)).PhysicalPath)
@@ -33,7 +34,7 @@ namespace CoffeeCard.Tests.Unit.Helpers
             var httpClient = new Mock<HttpClient>();
 
             var mobileApiHttpClient =
-                new MobilePayApiHttpClient(httpClient.Object, configuration.Object, environment.Object);
+                new MobilePayApiHttpClient(httpClient.Object, environment.Object, mobilePaySettings.Object);
         }
     }
 }

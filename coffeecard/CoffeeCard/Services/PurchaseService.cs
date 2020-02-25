@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using CoffeeCard.Configuration;
 using CoffeeCard.Helpers;
 using CoffeeCard.Helpers.MobilePay;
 using CoffeeCard.Helpers.MobilePay.ResponseMessage;
@@ -17,18 +18,18 @@ namespace CoffeeCard.Services
 {
     public class PurchaseService : IPurchaseService
     {
-        private readonly IConfiguration _configuration;
-        private readonly CoffeecardContext _context;
+        private readonly MobilePaySettings _mobilePaySettings;
+        private readonly CoffeeCardContext _context;
         private readonly IEmailService _emailService;
         private readonly IMapperService _mapper;
         private readonly IMobilePayService _mobilePayService;
 
-        public PurchaseService(CoffeecardContext context, IMobilePayService mobilePayService,
-            IConfiguration configuration, IEmailService emailService, IMapperService mapper)
+        public PurchaseService(CoffeeCardContext context, IMobilePayService mobilePayService,
+            MobilePaySettings mobilePaySettings, IEmailService emailService, IMapperService mapper)
         {
             _context = context;
             _mobilePayService = mobilePayService;
-            _configuration = configuration;
+            _mobilePaySettings = mobilePaySettings;
             _emailService = emailService;
             _mapper = mapper;
         }
@@ -223,7 +224,7 @@ namespace CoffeeCard.Services
             try
             {
                 //TODO Figure out the purpose of this check, and probably fix it in regard to test environment
-                if (!_configuration["MPMerchantID"].Equals("APPDK0000000000"))
+                if (!_mobilePaySettings.MerchantId.Equals("APPDK0000000000"))
                 {
                     paymentStatus = await ValidateTransaction(dto);
 

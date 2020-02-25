@@ -1,5 +1,6 @@
 using System.Net;
 using System.Threading.Tasks;
+using CoffeeCard.Configuration;
 using CoffeeCard.Helpers.MobilePay;
 using CoffeeCard.Helpers.MobilePay.RequestMessage;
 using CoffeeCard.Helpers.MobilePay.ResponseMessage;
@@ -13,10 +14,10 @@ namespace CoffeeCard.Services
         private readonly string _merchantId;
         private readonly IMobilePayApiHttpClient _mobilePayAPIClient;
 
-        public MobilePayService(IMobilePayApiHttpClient mobilePayAPIClient, IConfiguration configuration)
+        public MobilePayService(IMobilePayApiHttpClient mobilePayAPIClient, MobilePaySettings mobilePaySettings)
         {
             _mobilePayAPIClient = mobilePayAPIClient;
-            _merchantId = configuration["MPMerchantID"];
+            _merchantId = mobilePaySettings.MerchantId;
         }
 
         public async Task<GetPaymentStatusResponse> GetPaymentStatus(string orderId)
