@@ -26,7 +26,7 @@ namespace CoffeeCard.Models
         [DefaultValue(true)]
         public bool Visible { get; set; }
 
-        public ICollection<ProductUserGroups> UserGroups { get; set; }
+        public ICollection<ProductUserGroup> ProductUserGroup { get; set; }
 
         protected bool Equals(Product other)
         {
@@ -38,7 +38,12 @@ namespace CoffeeCard.Models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((Product)obj);
+            return Equals((Product) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Id, Price, NumberOfTickets, Name, Description, ExperienceWorth, Visible);
         }
     }
 }
