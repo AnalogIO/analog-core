@@ -4,7 +4,6 @@ using CoffeeCard.Configuration;
 using CoffeeCard.Helpers.MobilePay;
 using CoffeeCard.Helpers.MobilePay.RequestMessage;
 using CoffeeCard.Helpers.MobilePay.ResponseMessage;
-using Microsoft.Extensions.Configuration;
 using Serilog;
 
 namespace CoffeeCard.Services
@@ -113,6 +112,35 @@ namespace CoffeeCard.Services
 
                 Log.Error(
                     $"Error cancelling payment reservation. TransactionId = {paymentStatus.TransactionId} has status {paymentStatus.LatestPaymentStatus} at MobilePay");
+                throw;
+            }
+        }
+
+        public async Task<RefundPaymentResponse> RefundPayment(string orderId)
+        {
+            try
+            {
+                var response =
+                    await _mobilePayAPIClient.SendRequest<RefundPaymentResponse>(
+                        new RefundPaymentRequest(_merchantId, orderId));
+                Log.Information(
+                    $"MobilePay transactionId = {response.TransactionId}, orderId = {orderId} has been refunded from the MobilePay API");
+                return response;
+            }
+            catch (MobilePayException e)
+            {
+                if (!e.GetHttpStatusCode().Equals(HttpStatusCode.InternalServerError) &&
+                    !e.GetHttpStatusCode().Equals(HttpStatusCode.RequestTimeout)) throw;
+
+                var paymentStatus = await GetPaymentStatus(orderId);
+                if (paymentStatus.LatestPaymentStatus.Equals(PaymentStatus.TotalRefund))
+                    return new RefundPaymentResponse
+                    {
+                        OriginalTransactionId = paymentStatus.TransactionId
+                    };
+
+                Log.Error(
+                    $"Error refunding payment. TransactionId = {paymentStatus.TransactionId} has status {paymentStatus.LatestPaymentStatus} at MobilePay");
                 throw;
             }
         }
