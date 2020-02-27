@@ -1,12 +1,10 @@
 ﻿using System.Linq;
-using CoffeeCard.Configuration;
+using CoffeeCard.Common.Configuration;
 using CoffeeCard.Helpers;
 using CoffeeCard.Models.DataTransferObjects.Purchase;
 using CoffeeCard.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Serilog;
 
 namespace CoffeeCard.Controllers

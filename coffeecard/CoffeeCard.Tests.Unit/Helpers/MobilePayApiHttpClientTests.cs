@@ -1,9 +1,10 @@
+using System;
 using System.Linq;
 using System.Net.Http;
-using CoffeeCard.Configuration;
-using CoffeeCard.Helpers.MobilePay;
-using Microsoft.AspNetCore.Hosting;
+using CoffeeCard.Common.Configuration;
+using CoffeeCard.MobilePay.Client;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace CoffeeCard.Tests.Unit.Helpers
@@ -25,15 +26,13 @@ namespace CoffeeCard.Tests.Unit.Helpers
                 .Returns("");
 
             var fileProvider = new Mock<IFileProvider>();
-            fileProvider.Setup(fp => fp.GetDirectoryContents(string.Empty)).Returns(directoryContents.Object);
-
-            var environment = new Mock<IWebHostEnvironment>();
-            environment.Setup(e => e.ContentRootFileProvider).Returns(fileProvider.Object);
+            fileProvider.Setup(e => e.GetDirectoryContents(String.Empty)).Returns(directoryContents.Object);
 
             var httpClient = new Mock<HttpClient>();
+            var logger = new Mock<ILogger<MobilePayApiHttpClient>>();
 
             var mobileApiHttpClient =
-                new MobilePayApiHttpClient(httpClient.Object, mobilePaySettings.Object, environment.Object);
+                new MobilePayApiHttpClient(httpClient.Object, mobilePaySettings.Object, fileProvider.Object, logger.Object);
         }
     }
 }

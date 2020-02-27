@@ -1,12 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
-using CoffeeCard.Configuration;
+using Autofac;
+using CoffeeCard.Common.Configuration;
 using CoffeeCard.Console.Refund.Handler;
 using CoffeeCard.Console.Refund.IO;
 using CoffeeCard.Console.Refund.Model;
-using CoffeeCard.Helpers.MobilePay;
-using CoffeeCard.Services;
+using CoffeeCard.MobilePay.Client;
+using CoffeeCard.MobilePay.Service;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -16,54 +19,67 @@ namespace CoffeeCard.Console.Refund
 {
     class Program
     {
-        private static ServiceProvider _serviceProvider;
         private static ILogger _log;
-        
-        static async Task Main(string[] args)
-        {
-            Startup(new ServiceCollection());
-            await RefundPayments("input.txt");
 
-            _log.LogInformation("Finished processing refunds");
+        private static IContainer _container;
+        
+        static async Task Main()
+        {
+            try
+            {
+                Startup(new ServiceCollection());
+                await RefundPayments("input.txt");
+
+                _log.LogInformation("Finished processing refunds");
+                Environment.Exit(0);
+            }
+            catch (Exception ex)
+            {
+                _log.LogError("Error while processing refunds. Error={ex}", ex);
+                Environment.Exit(1);
+            }
         }
 
-        static void Startup(IServiceCollection services)
+        private static void Startup(IServiceCollection services)
         {
-            // Load Configuration
+            // Load Configuration File
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json")
                 .Build();
 
-            // setup DI for MobilePay services
-            services
-                .AddLogging(conf => conf.AddConsole())
-                .AddScoped<IInputReader<CompletedOrder>, CompletedOrderInputReader>()
-                .AddScoped<IOutputWriter<IList<RefundResponse>>, MobilePayRefundOutputWriter>()
-                .AddScoped<IMobilePayService, MobilePayService>()
-                .AddScoped<RefundHandler>()
-                .AddHttpClient<IMobilePayApiHttpClient, MobilePayApiHttpClient>();
-
-            IFileProvider physicalProvider = new PhysicalFileProvider(Directory.GetCurrentDirectory());
-            services.AddSingleton<IFileProvider>(physicalProvider);
+            var builder = new ContainerBuilder();
 
             // Load MobilePaySettings from Configuration
-            services.UseConfigurationValidation();
-            services.ConfigureValidatableSetting<MobilePaySettings>(configuration.GetSection("MobilePaySettings"));
-            
-            _serviceProvider = services.BuildServiceProvider();
+            builder.Register(c => configuration.GetSection("MobilePaySettings").Get<MobilePaySettings>())
+                .SingleInstance();
 
-            _log = _serviceProvider.GetService<ILogger<Program>>();
+            // setup DI for MobilePay services
+            builder.RegisterType<CompletedOrderInputReader>().As<IInputReader<CompletedOrder>>();
+            builder.RegisterType<MobilePayRefundOutputWriter>().As<IOutputWriter<IList<RefundResponse>>>();
+            builder.RegisterType<MobilePayService>().As<IMobilePayService>();
+            builder.RegisterType<RefundHandler>();
+            builder.RegisterType<HttpClient>().SingleInstance();
+            builder.RegisterType<MobilePayApiHttpClient>().As<IMobilePayApiHttpClient>().SingleInstance();
+            builder.Register(c => new PhysicalFileProvider(Directory.GetCurrentDirectory())).As<IFileProvider>();
+
+            builder.Register(l => LoggerFactory.Create(c => c.AddConsole())).As<ILoggerFactory>().SingleInstance();
+            builder.RegisterGeneric(typeof(Logger<>)).As(typeof(ILogger<>)).SingleInstance();
+
+            _container = builder.Build();
+
+            _log = _container.Resolve <ILogger<Program>>();
 
             _log.LogInformation("Dependency Injection and configuration setup");
         }
 
         private static async Task RefundPayments(string path)
         {
-            var mpInputReader = _serviceProvider.GetService<IInputReader<CompletedOrder>>();
+            var mpInputReader = _container.Resolve<IInputReader<CompletedOrder>>();
             var completedOrders = await mpInputReader.ReadFromCommaSeparatedFile(path);
 
-            await _serviceProvider.GetService<RefundHandler>().RefundPayments(completedOrders);
+            var refundHandler = _container.Resolve<RefundHandler>();
+            await refundHandler.RefundPayments(completedOrders);
         }
     }
 }

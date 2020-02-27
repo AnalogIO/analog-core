@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using CoffeeCard.Configuration;
+using CoffeeCard.Common.Configuration;
 using CoffeeCard.Models;
 using CoffeeCard.Services;
 using Microsoft.EntityFrameworkCore;

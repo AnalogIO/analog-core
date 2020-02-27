@@ -1,7 +1,5 @@
-using CoffeeCard.Configuration;
+using CoffeeCard.Common.Configuration;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 
 namespace CoffeeCard.Models
 {

@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using CoffeeCard.Configuration;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
+using CoffeeCard.Common.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 namespace CoffeeCard.Services
