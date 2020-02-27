@@ -12,6 +12,7 @@ using CoffeeCard.Helpers.MobilePay.RequestMessage;
 using CoffeeCard.Helpers.MobilePay.ResponseMessage;
 using Jose;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.FileProviders;
 using Serilog;
 
 namespace CoffeeCard.Helpers.MobilePay
@@ -24,10 +25,10 @@ namespace CoffeeCard.Helpers.MobilePay
         private readonly HttpClient _client;
         private readonly MobilePaySettings _mobilePaySettings;
 
-        public MobilePayApiHttpClient(HttpClient client, MobilePaySettings mobilePaySettings, IWebHostEnvironment environment)
+        public MobilePayApiHttpClient(HttpClient client, MobilePaySettings mobilePaySettings, IFileProvider fileProvider)
         {
             _mobilePaySettings = mobilePaySettings;
-            _certificate = LoadCertificate(environment);
+            _certificate = LoadCertificate(fileProvider);
 
             _client = client;
         }
@@ -90,12 +91,11 @@ namespace CoffeeCard.Helpers.MobilePay
             }
         }
 
-        private X509Certificate2 LoadCertificate(IWebHostEnvironment environment)
+        private X509Certificate2 LoadCertificate(IFileProvider fileProvider)
         {
             var certName = _mobilePaySettings.CertificateName;
 
-            var provider = environment.ContentRootFileProvider;
-            var contents = provider.GetDirectoryContents(string.Empty);
+            var contents = fileProvider.GetDirectoryContents(string.Empty);
             var certPath = contents.FirstOrDefault(file => file.Name.Equals(certName)).PhysicalPath;
 
             return new X509Certificate2(certPath, _mobilePaySettings.CertificatePassword,
