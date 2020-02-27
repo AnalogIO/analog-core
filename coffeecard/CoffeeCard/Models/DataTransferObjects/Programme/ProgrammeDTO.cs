@@ -1,4 +1,4 @@
-﻿namespace CoffeeCard.Models.DataTransferObjects.Programme
+﻿namespace CoffeeCard.WebApi.Models.DataTransferObjects.Programme
 {
     public class ProgrammeDTO
     {

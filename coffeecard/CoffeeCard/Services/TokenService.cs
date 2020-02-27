@@ -6,7 +6,7 @@ using System.Text;
 using CoffeeCard.Common.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
-namespace CoffeeCard.Services
+namespace CoffeeCard.WebApi.Services
 {
     public class TokenService : ITokenService
     {

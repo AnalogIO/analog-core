@@ -2,11 +2,11 @@
 using System.Text;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
-using CoffeeCard.Helpers;
 using CoffeeCard.MobilePay.Client;
 using CoffeeCard.MobilePay.Service;
-using CoffeeCard.Models;
-using CoffeeCard.Services;
+using CoffeeCard.WebApi.Helpers;
+using CoffeeCard.WebApi.Models;
+using CoffeeCard.WebApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -19,7 +19,7 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using NSwag;
 
-namespace CoffeeCard
+namespace CoffeeCard.WebApi
 {
     public class Startup
     {

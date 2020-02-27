@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
-using CoffeeCard.Models;
-using CoffeeCard.Services;
+using CoffeeCard.WebApi.Models;
+using CoffeeCard.WebApi.Services;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 

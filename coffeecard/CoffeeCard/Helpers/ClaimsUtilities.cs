@@ -2,10 +2,10 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using CoffeeCard.Models;
+using CoffeeCard.WebApi.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace CoffeeCard.Helpers
+namespace CoffeeCard.WebApi.Helpers
 {
     public class ClaimsUtilities
     {

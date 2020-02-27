@@ -1,7 +1,7 @@
 using CoffeeCard.Common.Configuration;
 using Microsoft.EntityFrameworkCore;
 
-namespace CoffeeCard.Models
+namespace CoffeeCard.WebApi.Models
 {
     public class CoffeeCardContext : DbContext
     {

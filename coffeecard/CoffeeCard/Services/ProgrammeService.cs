@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using CoffeeCard.Models;
+using CoffeeCard.WebApi.Models;
 
-namespace CoffeeCard.Services
+namespace CoffeeCard.WebApi.Services
 {
     public class ProgrammeService : IProgrammeService
     {

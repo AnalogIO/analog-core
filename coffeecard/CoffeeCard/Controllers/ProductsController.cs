@@ -1,11 +1,11 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using CoffeeCard.Helpers;
-using CoffeeCard.Services;
+using CoffeeCard.WebApi.Helpers;
+using CoffeeCard.WebApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CoffeeCard.Controllers
+namespace CoffeeCard.WebApi.Controllers
 {
     [Authorize]
     [ApiVersion("1")]

@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
-namespace CoffeeCard.Models
+namespace CoffeeCard.WebApi.Models
 {
     public class User
     {

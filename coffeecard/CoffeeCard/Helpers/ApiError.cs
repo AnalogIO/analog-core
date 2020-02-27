@@ -1,4 +1,4 @@
-﻿namespace CoffeeCard.Helpers
+﻿namespace CoffeeCard.WebApi.Helpers
 {
     public class ApiError
     {

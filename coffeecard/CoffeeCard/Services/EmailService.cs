@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using CoffeeCard.Common.Configuration;
-using CoffeeCard.Models;
-using CoffeeCard.Models.DataTransferObjects.Purchase;
-using CoffeeCard.Models.DataTransferObjects.User;
+using CoffeeCard.WebApi.Models;
+using CoffeeCard.WebApi.Models.DataTransferObjects.Purchase;
+using CoffeeCard.WebApi.Models.DataTransferObjects.User;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
@@ -12,7 +12,7 @@ using RestSharp;
 using RestSharp.Authenticators;
 using Serilog;
 
-namespace CoffeeCard.Services
+namespace CoffeeCard.WebApi.Services
 {
     public class EmailService : IEmailService
     {

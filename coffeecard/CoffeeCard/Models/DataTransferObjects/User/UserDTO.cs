@@ -1,4 +1,4 @@
-﻿namespace CoffeeCard.Models.DataTransferObjects.User
+﻿namespace CoffeeCard.WebApi.Models.DataTransferObjects.User
 {
     public class UserDTO
     {

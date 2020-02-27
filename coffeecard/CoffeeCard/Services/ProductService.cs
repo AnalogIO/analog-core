@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CoffeeCard.Models;
+using CoffeeCard.WebApi.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace CoffeeCard.Services
+namespace CoffeeCard.WebApi.Services
 {
     public class ProductService : IProductService
     {

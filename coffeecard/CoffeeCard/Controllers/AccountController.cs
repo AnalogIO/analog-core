@@ -1,8 +1,8 @@
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using CoffeeCard.Models.DataTransferObjects.User;
-using CoffeeCard.Services;
+using CoffeeCard.WebApi.Models.DataTransferObjects.User;
+using CoffeeCard.WebApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using MimeKit;
 using Serilog;
 
-namespace CoffeeCard.Controllers
+namespace CoffeeCard.WebApi.Controllers
 {
     [ApiVersion("1")]
     [Route("api/v{version:apiVersion}/[controller]")]

@@ -1,8 +1,8 @@
 ﻿using CoffeeCard.Common.Configuration;
-using CoffeeCard.Models.DataTransferObjects.AppConfig;
+using CoffeeCard.WebApi.Models.DataTransferObjects.AppConfig;
 using Microsoft.Extensions.Options;
 
-namespace CoffeeCard.Services
+namespace CoffeeCard.WebApi.Services
 {
     public class AppConfigService : IAppConfigService
     {

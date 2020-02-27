@@ -1,6 +1,6 @@
 using System.Linq;
 using CoffeeCard.Common.Configuration;
-using CoffeeCard.Models;
+using CoffeeCard.WebApi.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;

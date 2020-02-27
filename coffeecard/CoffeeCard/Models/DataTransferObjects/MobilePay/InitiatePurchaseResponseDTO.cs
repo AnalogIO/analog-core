@@ -1,4 +1,4 @@
-namespace CoffeeCard.Models.DataTransferObjects.MobilePay
+namespace CoffeeCard.WebApi.Models.DataTransferObjects.MobilePay
 {
     public class InitiatePurchaseResponseDTO
     {

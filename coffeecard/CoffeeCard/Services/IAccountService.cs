@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Security.Claims;
-using CoffeeCard.Models;
-using CoffeeCard.Models.DataTransferObjects.User;
+using CoffeeCard.WebApi.Models;
+using CoffeeCard.WebApi.Models.DataTransferObjects.User;
 
-namespace CoffeeCard.Services
+namespace CoffeeCard.WebApi.Services
 {
     public interface IAccountService
     {

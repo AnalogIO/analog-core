@@ -7,7 +7,6 @@ using CoffeeCard.MobilePay.Exception;
 using CoffeeCard.MobilePay.RequestMessage;
 using CoffeeCard.MobilePay.ResponseMessage;
 using CoffeeCard.MobilePay.Service;
-using CoffeeCard.Services;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;

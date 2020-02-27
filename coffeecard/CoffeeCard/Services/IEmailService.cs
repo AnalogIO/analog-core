@@ -1,8 +1,8 @@
-using CoffeeCard.Models;
-using CoffeeCard.Models.DataTransferObjects.Purchase;
-using CoffeeCard.Models.DataTransferObjects.User;
+using CoffeeCard.WebApi.Models;
+using CoffeeCard.WebApi.Models.DataTransferObjects.Purchase;
+using CoffeeCard.WebApi.Models.DataTransferObjects.User;
 
-namespace CoffeeCard.Services
+namespace CoffeeCard.WebApi.Services
 {
     public interface IEmailService
     {

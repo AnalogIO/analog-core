@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace CoffeeCard.Migrations
+namespace CoffeeCard.WebApi.Migrations
 {
     public partial class ProdMigration : Migration
     {
