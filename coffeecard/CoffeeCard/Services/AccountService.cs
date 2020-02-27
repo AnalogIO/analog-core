@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
-using CoffeeCard.Configuration;
+using CoffeeCard.Common.Configuration;
 using CoffeeCard.Helpers;
 using CoffeeCard.Models;
 using CoffeeCard.Models.DataTransferObjects.User;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Serilog;
 
 namespace CoffeeCard.Services

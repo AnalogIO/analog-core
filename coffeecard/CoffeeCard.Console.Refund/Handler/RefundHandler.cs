@@ -1,25 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using CoffeeCard.Console.Refund.IO;
 using CoffeeCard.Console.Refund.Model;
-using CoffeeCard.Helpers.MobilePay;
-using CoffeeCard.Helpers.MobilePay.ResponseMessage;
-using CoffeeCard.Services;
+using CoffeeCard.MobilePay.Exception;
+using CoffeeCard.MobilePay.Service;
 using Microsoft.Extensions.Logging;
-using Serilog;
 
 namespace CoffeeCard.Console.Refund.Handler
 {
     public class RefundHandler
     {
-        private ILogger<RefundHandler> _log;
-        private IMobilePayService _mobilePayService;
-        private IOutputWriter<IList<RefundResponse>> _outputWriter;
+        private readonly ILogger<RefundHandler> _log;
+        private readonly IMobilePayService _mobilePayService;
+        private readonly IOutputWriter<IList<RefundResponse>> _outputWriter;
 
-        public RefundHandler(ILogger<RefundHandler> log, IMobilePayService mobilePayService, IOutputWriter<IList<RefundResponse>> outputWriter)
+        public RefundHandler(ILogger<RefundHandler> log, IOutputWriter<IList<RefundResponse>> outputWriter,
+            IMobilePayService mobilePayService)
         {
             _log = log;
             _mobilePayService = mobilePayService;

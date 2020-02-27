@@ -1,4 +1,4 @@
-﻿using CoffeeCard.Configuration;
+﻿using CoffeeCard.Common.Configuration;
 
 namespace CoffeeCard.Models.DataTransferObjects.AppConfig
 {

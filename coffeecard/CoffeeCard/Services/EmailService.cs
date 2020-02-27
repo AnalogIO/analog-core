@@ -1,14 +1,12 @@
 ﻿using System;
 using System.IO;
-using CoffeeCard.Configuration;
+using CoffeeCard.Common.Configuration;
 using CoffeeCard.Models;
 using CoffeeCard.Models.DataTransferObjects.Purchase;
 using CoffeeCard.Models.DataTransferObjects.User;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using MimeKit;
 using RestSharp;
 using RestSharp.Authenticators;

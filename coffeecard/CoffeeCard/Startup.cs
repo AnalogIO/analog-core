@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Text;
 using System.Threading.Tasks;
-using CoffeeCard.Configuration;
+using CoffeeCard.Common.Configuration;
 using CoffeeCard.Helpers;
-using CoffeeCard.Helpers.MobilePay;
+using CoffeeCard.MobilePay.Client;
+using CoffeeCard.MobilePay.Service;
 using CoffeeCard.Models;
 using CoffeeCard.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

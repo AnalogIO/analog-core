@@ -1,7 +1,5 @@
-﻿using System;
-using CoffeeCard.Configuration;
+﻿using CoffeeCard.Common.Configuration;
 using CoffeeCard.Models.DataTransferObjects.AppConfig;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
 namespace CoffeeCard.Services

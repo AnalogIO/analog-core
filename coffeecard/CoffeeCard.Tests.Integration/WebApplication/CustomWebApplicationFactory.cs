@@ -1,5 +1,5 @@
-using CoffeeCard.Configuration;
 using System.Linq;
+using CoffeeCard.Common.Configuration;
 using CoffeeCard.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
