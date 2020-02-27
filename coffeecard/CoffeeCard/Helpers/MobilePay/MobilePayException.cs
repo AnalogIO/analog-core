@@ -26,5 +26,10 @@ namespace CoffeeCard.Helpers.MobilePay
         {
             return _errorMessage.GetErrorMessage();
         }
+
+        public override string ToString()
+        {
+            return $"{base.ToString()}, {nameof(_errorMessage)}: {_errorMessage}, {nameof(_httpStatusCode)}: {_httpStatusCode}";
+        }
     }
 }

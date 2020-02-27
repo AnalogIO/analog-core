@@ -11,7 +11,6 @@ using CoffeeCard.Models;
 using CoffeeCard.Models.DataTransferObjects.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.Purchase;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Serilog;
 
 namespace CoffeeCard.Services
@@ -345,6 +344,7 @@ namespace CoffeeCard.Services
         public void Dispose()
         {
             _context.Dispose();
+            _mobilePayService.Dispose();
         }
 
         private void SendInvoiceEmail(Purchase purchase)
