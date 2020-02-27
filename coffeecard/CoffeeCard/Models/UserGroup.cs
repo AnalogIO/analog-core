@@ -1,4 +1,4 @@
-﻿namespace CoffeeCard.Models
+﻿namespace CoffeeCard.WebApi.Models
 {
     public enum UserGroup
     {

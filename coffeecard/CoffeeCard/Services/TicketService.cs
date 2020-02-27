@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using CoffeeCard.Helpers;
-using CoffeeCard.Models;
-using CoffeeCard.Models.DataTransferObjects.Ticket;
+using CoffeeCard.WebApi.Helpers;
+using CoffeeCard.WebApi.Models;
+using CoffeeCard.WebApi.Models.DataTransferObjects.Ticket;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
-namespace CoffeeCard.Services
+namespace CoffeeCard.WebApi.Services
 {
     public class TicketService : ITicketService
     {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using CoffeeCard.Models;
+using CoffeeCard.WebApi.Models;
 
-namespace CoffeeCard.Services
+namespace CoffeeCard.WebApi.Services
 {
     public interface IProgrammeService
     {

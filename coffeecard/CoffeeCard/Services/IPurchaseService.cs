@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using CoffeeCard.Models;
-using CoffeeCard.Models.DataTransferObjects.MobilePay;
-using CoffeeCard.Models.DataTransferObjects.Purchase;
+using CoffeeCard.WebApi.Models;
+using CoffeeCard.WebApi.Models.DataTransferObjects.MobilePay;
+using CoffeeCard.WebApi.Models.DataTransferObjects.Purchase;
 
-namespace CoffeeCard.Services
+namespace CoffeeCard.WebApi.Services
 {
     public interface IPurchaseService
     {

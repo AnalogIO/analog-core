@@ -1,10 +1,10 @@
 ﻿using System.Linq;
-using CoffeeCard.Models.DataTransferObjects.Ticket;
-using CoffeeCard.Services;
+using CoffeeCard.WebApi.Models.DataTransferObjects.Ticket;
+using CoffeeCard.WebApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CoffeeCard.Controllers
+namespace CoffeeCard.WebApi.Controllers
 {
     [ApiVersion("1")]
     [Route("api/v{version:apiVersion}/[controller]")]

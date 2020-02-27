@@ -1,7 +1,7 @@
-﻿using CoffeeCard.Services;
+﻿using CoffeeCard.WebApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CoffeeCard.Controllers
+namespace CoffeeCard.WebApi.Controllers
 {
     [ApiVersion("1")]
     [Route("api/v{version:apiVersion}/[controller]")]

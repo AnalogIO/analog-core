@@ -1,6 +1,6 @@
 ﻿using CoffeeCard.Common.Configuration;
 
-namespace CoffeeCard.Models.DataTransferObjects.AppConfig
+namespace CoffeeCard.WebApi.Models.DataTransferObjects.AppConfig
 {
     public class AppConfigDTO
     {

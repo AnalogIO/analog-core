@@ -4,17 +4,17 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
-using CoffeeCard.Helpers;
 using CoffeeCard.MobilePay.Exception;
 using CoffeeCard.MobilePay.ResponseMessage;
 using CoffeeCard.MobilePay.Service;
-using CoffeeCard.Models;
-using CoffeeCard.Models.DataTransferObjects.MobilePay;
-using CoffeeCard.Models.DataTransferObjects.Purchase;
+using CoffeeCard.WebApi.Helpers;
+using CoffeeCard.WebApi.Models;
+using CoffeeCard.WebApi.Models.DataTransferObjects.MobilePay;
+using CoffeeCard.WebApi.Models.DataTransferObjects.Purchase;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
-namespace CoffeeCard.Services
+namespace CoffeeCard.WebApi.Services
 {
     public class PurchaseService : IPurchaseService
     {

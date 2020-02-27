@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace CoffeeCard.Models
+namespace CoffeeCard.WebApi.Models
 {
     public class Product
     {

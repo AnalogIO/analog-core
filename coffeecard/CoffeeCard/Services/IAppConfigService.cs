@@ -1,6 +1,6 @@
-﻿using CoffeeCard.Models.DataTransferObjects.AppConfig;
+﻿using CoffeeCard.WebApi.Models.DataTransferObjects.AppConfig;
 
-namespace CoffeeCard.Services
+namespace CoffeeCard.WebApi.Services
 {
     public interface IAppConfigService
     {

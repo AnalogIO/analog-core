@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CoffeeCard.Models
+namespace CoffeeCard.WebApi.Models
 {
     public class CoffeCard
     {

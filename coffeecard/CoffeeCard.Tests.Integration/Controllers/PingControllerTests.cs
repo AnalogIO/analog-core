@@ -1,11 +1,12 @@
 using System.Net;
 using System.Threading.Tasks;
 using CoffeeCard.Tests.Integration.WebApplication;
+using CoffeeCard.WebApi;
 using Xunit;
 
 namespace CoffeeCard.Tests.Integration.Controllers
 {
-	public class PingControllerTests : IClassFixture<CustomWebApplicationFactory<CoffeeCard.Startup>>
+	public class PingControllerTests : IClassFixture<CustomWebApplicationFactory<Startup>>
 	{
 		private readonly CustomWebApplicationFactory<Startup> _webApplicationFactory;
 

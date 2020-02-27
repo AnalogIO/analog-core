@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace CoffeeCard.Services
+namespace CoffeeCard.WebApi.Services
 {
     public class HashService : IHashService
     {

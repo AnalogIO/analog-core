@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace CoffeeCard.Models
+namespace CoffeeCard.WebApi.Models
 {
     public class LoginAttempt
     {

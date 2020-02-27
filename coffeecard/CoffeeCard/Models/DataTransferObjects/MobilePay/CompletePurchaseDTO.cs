@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace CoffeeCard.Models.DataTransferObjects.MobilePay
+namespace CoffeeCard.WebApi.Models.DataTransferObjects.MobilePay
 {
     public class CompletePurchaseDTO
     {

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Serilog;
 
-namespace CoffeeCard.Helpers
+namespace CoffeeCard.WebApi.Helpers
 {
     public class ApiExceptionFilter : ExceptionFilterAttribute
     {

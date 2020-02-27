@@ -4,14 +4,14 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 using CoffeeCard.Common.Configuration;
-using CoffeeCard.Helpers;
-using CoffeeCard.Models;
-using CoffeeCard.Models.DataTransferObjects.User;
+using CoffeeCard.WebApi.Helpers;
+using CoffeeCard.WebApi.Models;
+using CoffeeCard.WebApi.Models.DataTransferObjects.User;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
-namespace CoffeeCard.Services
+namespace CoffeeCard.WebApi.Services
 {
     public class AccountService : IAccountService
     {

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
-namespace CoffeeCard.Services
+namespace CoffeeCard.WebApi.Services
 {
     public interface ITokenService
     {
