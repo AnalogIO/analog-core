@@ -12,6 +12,7 @@
         TransactionAlreadyCaptured,
         TransactionAlreadyCancelled,
         ReservationNotFound,
+        Failed,
         Other
     }
 }

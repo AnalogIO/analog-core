@@ -5,7 +5,7 @@ namespace CoffeeCard.MobilePay.RequestMessage
 {
     public class RefundPaymentRequest : IMobilePayAPIRequestMessage
     {
-        private const string EndpointUri = "reservations/merchants/{0}/orders/{1}";
+        private const string EndpointUri = "merchants/{0}/orders/{1}";
 
         private readonly string _merchantId;
         private readonly string _orderId;
@@ -23,7 +23,7 @@ namespace CoffeeCard.MobilePay.RequestMessage
 
         public string GetRequestBody()
         {
-            return "";
+            return "{}";
         }
 
         public HttpMethod GetHttpMethod()

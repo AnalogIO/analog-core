@@ -9,11 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoffeeCard.Tests.Unit", "Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoffeeCard.Tests.Integration", "CoffeeCard.Tests.Integration\CoffeeCard.Tests.Integration.csproj", "{53E0DA17-D139-4D59-9143-68DD808D0E8A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeeCard.Console.Refund", "CoffeeCard.Console.Refund\CoffeeCard.Console.Refund.csproj", "{DE5D087C-30A3-4872-8870-83C1B981841E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoffeeCard.Console.Refund", "CoffeeCard.Console.Refund\CoffeeCard.Console.Refund.csproj", "{DE5D087C-30A3-4872-8870-83C1B981841E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeeCard.MobilePay", "CoffeeCard.MobilePayClient\CoffeeCard.MobilePay.csproj", "{32D53101-7672-41BF-AC38-9BAC9971B48E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoffeeCard.MobilePay", "CoffeeCard.MobilePayClient\CoffeeCard.MobilePay.csproj", "{32D53101-7672-41BF-AC38-9BAC9971B48E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeeCard.Common", "CoffeeCard.Common\CoffeeCard.Common.csproj", "{2CCAF827-E341-48FC-ABCE-7EDFA3E84E65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoffeeCard.Common", "CoffeeCard.Common\CoffeeCard.Common.csproj", "{2CCAF827-E341-48FC-ABCE-7EDFA3E84E65}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

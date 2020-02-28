@@ -35,7 +35,10 @@ namespace CoffeeCard.Console.Refund.Handler
                     results.Add(new RefundResponse
                     {
                         Status = Status.Success,
-                        OrderId = result.OriginalTransactionId
+                        OrderId = completedOrder.OrderId,
+                        OriginalTransactionId = result.OriginalTransactionId,
+                        RefundTransactionId = result.TransactionId,
+                        Remainder = result.Remainder
                     });
                 }
                 catch (MobilePayException ex)
