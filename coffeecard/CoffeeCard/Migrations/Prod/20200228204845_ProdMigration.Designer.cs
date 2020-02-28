@@ -7,22 +7,21 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace coffeecard.Migrations
+namespace CoffeeCard.Migrations
 {
     [DbContext(typeof(CoffeeCardContext))]
-    [Migration("20191012125617_Initial - test")]
-    partial class Initialtest
+    [Migration("20200228204845_ProdMigration")]
+    partial class ProdMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("test")
-                .HasAnnotation("ProductVersion", "2.1.11-servicing-32099")
+                .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Coffeecard.Models.LoginAttempt", b =>
+            modelBuilder.Entity("CoffeeCard.Models.LoginAttempt", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -39,7 +38,7 @@ namespace coffeecard.Migrations
                     b.ToTable("LoginAttempts");
                 });
 
-            modelBuilder.Entity("Coffeecard.Models.Product", b =>
+            modelBuilder.Entity("CoffeeCard.Models.Product", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -61,7 +60,7 @@ namespace coffeecard.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("Coffeecard.Models.Programme", b =>
+            modelBuilder.Entity("CoffeeCard.Models.Programme", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -78,7 +77,7 @@ namespace coffeecard.Migrations
                     b.ToTable("Programmes");
                 });
 
-            modelBuilder.Entity("Coffeecard.Models.Purchase", b =>
+            modelBuilder.Entity("CoffeeCard.Models.Purchase", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -109,7 +108,7 @@ namespace coffeecard.Migrations
                     b.ToTable("Purchases");
                 });
 
-            modelBuilder.Entity("Coffeecard.Models.Statistic", b =>
+            modelBuilder.Entity("CoffeeCard.Models.Statistic", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -132,7 +131,7 @@ namespace coffeecard.Migrations
                     b.ToTable("Statistics");
                 });
 
-            modelBuilder.Entity("Coffeecard.Models.Ticket", b =>
+            modelBuilder.Entity("CoffeeCard.Models.Ticket", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -159,7 +158,7 @@ namespace coffeecard.Migrations
                     b.ToTable("Tickets");
                 });
 
-            modelBuilder.Entity("Coffeecard.Models.Token", b =>
+            modelBuilder.Entity("CoffeeCard.Models.Token", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -176,7 +175,7 @@ namespace coffeecard.Migrations
                     b.ToTable("Tokens");
                 });
 
-            modelBuilder.Entity("Coffeecard.Models.User", b =>
+            modelBuilder.Entity("CoffeeCard.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -209,7 +208,7 @@ namespace coffeecard.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Coffeecard.Models.Voucher", b =>
+            modelBuilder.Entity("CoffeeCard.Models.Voucher", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -234,59 +233,59 @@ namespace coffeecard.Migrations
                     b.ToTable("Vouchers");
                 });
 
-            modelBuilder.Entity("Coffeecard.Models.LoginAttempt", b =>
+            modelBuilder.Entity("CoffeeCard.Models.LoginAttempt", b =>
                 {
-                    b.HasOne("Coffeecard.Models.User", "User")
+                    b.HasOne("CoffeeCard.Models.User", "User")
                         .WithMany("LoginAttempts")
                         .HasForeignKey("User_Id");
                 });
 
-            modelBuilder.Entity("Coffeecard.Models.Purchase", b =>
+            modelBuilder.Entity("CoffeeCard.Models.Purchase", b =>
                 {
-                    b.HasOne("Coffeecard.Models.User", "PurchasedBy")
+                    b.HasOne("CoffeeCard.Models.User", "PurchasedBy")
                         .WithMany("Purchases")
                         .HasForeignKey("PurchasedBy_Id");
                 });
 
-            modelBuilder.Entity("Coffeecard.Models.Statistic", b =>
+            modelBuilder.Entity("CoffeeCard.Models.Statistic", b =>
                 {
-                    b.HasOne("Coffeecard.Models.User", "User")
+                    b.HasOne("CoffeeCard.Models.User", "User")
                         .WithMany("Statistics")
                         .HasForeignKey("User_Id");
                 });
 
-            modelBuilder.Entity("Coffeecard.Models.Ticket", b =>
+            modelBuilder.Entity("CoffeeCard.Models.Ticket", b =>
                 {
-                    b.HasOne("Coffeecard.Models.User", "Owner")
+                    b.HasOne("CoffeeCard.Models.User", "Owner")
                         .WithMany("Tickets")
                         .HasForeignKey("Owner_Id");
 
-                    b.HasOne("Coffeecard.Models.Purchase", "Purchase")
+                    b.HasOne("CoffeeCard.Models.Purchase", "Purchase")
                         .WithMany("Tickets")
                         .HasForeignKey("Purchase_Id");
                 });
 
-            modelBuilder.Entity("Coffeecard.Models.Token", b =>
+            modelBuilder.Entity("CoffeeCard.Models.Token", b =>
                 {
-                    b.HasOne("Coffeecard.Models.User", "User")
+                    b.HasOne("CoffeeCard.Models.User", "User")
                         .WithMany("Tokens")
                         .HasForeignKey("User_Id");
                 });
 
-            modelBuilder.Entity("Coffeecard.Models.User", b =>
+            modelBuilder.Entity("CoffeeCard.Models.User", b =>
                 {
-                    b.HasOne("Coffeecard.Models.Programme", "Programme")
+                    b.HasOne("CoffeeCard.Models.Programme", "Programme")
                         .WithMany("Users")
                         .HasForeignKey("Programme_Id");
                 });
 
-            modelBuilder.Entity("Coffeecard.Models.Voucher", b =>
+            modelBuilder.Entity("CoffeeCard.Models.Voucher", b =>
                 {
-                    b.HasOne("Coffeecard.Models.Product", "Product")
+                    b.HasOne("CoffeeCard.Models.Product", "Product")
                         .WithMany()
                         .HasForeignKey("Product_Id");
 
-                    b.HasOne("Coffeecard.Models.User", "User")
+                    b.HasOne("CoffeeCard.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("User_Id");
                 });

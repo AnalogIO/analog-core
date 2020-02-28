@@ -27,7 +27,7 @@ namespace CoffeeCard.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasDefaultSchema(_databaseSettings.SchemaName);
+            //modelBuilder.HasDefaultSchema(_databaseSettings.SchemaName);
         }
     }
 }
