@@ -68,7 +68,7 @@ namespace CoffeeCard.MobilePay.Client
         private async Task HandleHttpErrorAsync(HttpResponseMessage response)
         {
             _log.LogError(
-                "HTTP Response failed with statusCode = {response.StatusCode} and message = {response.Content.ReadAsStringAsync().Result}");
+                $"HTTP Response failed with statusCode = {response.StatusCode} and message = {response.Content.ReadAsStringAsync().Result}");
 
             switch (response.StatusCode)
             {
