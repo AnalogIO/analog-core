@@ -80,8 +80,13 @@ namespace CoffeeCard.Services
         public User RegisterAccount(RegisterDTO registerDto)
         {
             Log.Information($"Trying to register new user. Name: {registerDto.Name} Email: {registerDto.Email}");
+
             if (_context.Users.Any(x => x.Email == registerDto.Email))
+            {
+                Log.Information($"Could not register user Name: {registerDto.Name}. Email:{registerDto.Email} already exists");
                 throw new ApiException($"The email {registerDto.Email} is already being used by another user", 400);
+            }
+
             var salt = _hashService.GenerateSalt();
             var hashedPassword = _hashService.Hash(registerDto.Password + salt);
 

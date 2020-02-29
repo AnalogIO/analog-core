@@ -10,6 +10,8 @@ namespace CoffeeCard.Configuration
         public EnvironmentType EnvironmentType { get; set; }
         [Required]
         public string MinAppVersion { get; set; }
+        [Required]
+        public string DeploymentUrl { get; set; }
 
         public void Validate()
         {

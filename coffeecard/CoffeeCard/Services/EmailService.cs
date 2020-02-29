@@ -7,8 +7,6 @@ using CoffeeCard.Models.DataTransferObjects.User;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using MimeKit;
 using RestSharp;
 using RestSharp.Authenticators;
@@ -21,11 +19,13 @@ namespace CoffeeCard.Services
         private readonly MailgunSettings _mailgunSettings;
         private readonly IHostingEnvironment _env;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly EnvironmentSettings _environmentSettings;
 
-        public EmailService(MailgunSettings mailgunSettings, IHostingEnvironment env,
+        public EmailService(MailgunSettings mailgunSettings, EnvironmentSettings environmentSettings, IHostingEnvironment env,
             IHttpContextAccessor httpContextAccessor)
         {
             _mailgunSettings = mailgunSettings;
+            _environmentSettings = environmentSettings;
             _env = env;
             _httpContextAccessor = httpContextAccessor;
         }
@@ -141,7 +141,7 @@ namespace CoffeeCard.Services
         private (BodyBuilder, string) RetrieveTemplate(string templateName)
         {
             var fullPath = _httpContextAccessor.HttpContext?.Request?.GetDisplayUrl();
-            var baseUrl = "https://beta.analogio.dk/api/clippy/";
+            var baseUrl = _environmentSettings.DeploymentUrl;
 
             var pathToTemplate = _env.WebRootPath
                                  + Path.DirectorySeparatorChar
