@@ -24,7 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\CoffeeCard\CoffeeCard.WebApi.csproj" />
+      <ProjectReference Include="..\CoffeeCard.WebApi\CoffeeCard.WebApi.csproj" />
     </ItemGroup>
 
 </Project>

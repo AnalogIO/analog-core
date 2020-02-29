@@ -9,12 +9,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-<!--		<PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.8">-->
-<!--			&lt;!&ndash; Deploying on UnoEuro demands a specific AspNetCore.App version even though it not recommended by MS-->
-<!--      		AllowExplicitVersion = true disables compiler warning &ndash;&gt;-->
-<!--			<AllowExplicitVersion>true</AllowExplicitVersion>-->
-<!--		</PackageReference>-->
-		<PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.1.2" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.2" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.1.2" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.2" />
@@ -28,7 +23,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\CoffeeCard\CoffeeCard.WebApi.csproj" />
+	  <ProjectReference Include="..\CoffeeCard.WebApi\CoffeeCard.WebApi.csproj" />
 	</ItemGroup>
 	
 </Project>
