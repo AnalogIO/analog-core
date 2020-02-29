@@ -12,7 +12,7 @@ jobs:
     # Create an empty certificate file since it it a build dependency
     - uses: "finnp/create-file-action@master"
       env:
-        FILE_NAME: "coffeecard/CoffeeCard/www.analogio.dk.pfx"
+        FILE_NAME: "coffeecard/CoffeeCard.WebApi/www.analogio.dk.pfx"
         FILE_DATA: "empty file"
     # Create an empty appsettings.json file since it it a build dependency
     - uses: "finnp/create-file-action@master"
