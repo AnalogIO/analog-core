@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace CoffeeCard.Migrations
+namespace CoffeeCard.WebApi.Migrations.Prod
 {
     public partial class CheckForMissingUpdates : Migration
     {
