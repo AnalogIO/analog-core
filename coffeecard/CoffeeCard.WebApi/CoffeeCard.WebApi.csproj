@@ -11,6 +11,15 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Migrations\20200229143233_ProductUserGroups.cs" />
+	  <Compile Remove="Migrations\20200229143233_ProductUserGroups.Designer.cs" />
+	  <Compile Remove="Migrations\20200229143359_ProductUserGroups.cs" />
+	  <Compile Remove="Migrations\20200229143359_ProductUserGroups.Designer.cs" />
+	  <Compile Remove="Migrations\20200229143937_ProductUserGroups.cs" />
+	  <Compile Remove="Migrations\20200229143937_ProductUserGroups.Designer.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<None Remove="www.analogio.dk.pfx" />
 	</ItemGroup>
 

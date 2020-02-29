@@ -30,13 +30,9 @@ namespace CoffeeCard.WebApi.Models
         [Required]
         public string Salt { get; set; }
         public int Experience { get; set; }
+        [Required]
         public DateTime DateCreated { get; set; }
         public DateTime DateUpdated { get; set; }
-        public virtual ICollection<LoginAttempt> LoginAttempts { get; set; }
-        public virtual ICollection<Token> Tokens { get; set; }
-        public virtual ICollection<Ticket> Tickets { get; set; }
-        public virtual ICollection<Purchase> Purchases { get; set; }
-        public virtual ICollection<Statistic> Statistics { get; set; }
         [Required]
         public bool IsVerified { get; set; }
         [Required]
@@ -47,6 +43,12 @@ namespace CoffeeCard.WebApi.Models
 
         [ForeignKey("Programme_Id")]
         public virtual Programme Programme { get; set; }
+
+        public virtual ICollection<LoginAttempt> LoginAttempts { get; set; }
+        public virtual ICollection<Token> Tokens { get; set; }
+        public virtual ICollection<Ticket> Tickets { get; set; }
+        public virtual ICollection<Purchase> Purchases { get; set; }
+        public virtual ICollection<Statistic> Statistics { get; set; }
 
         public int CalculateLevelFromXp()
         {

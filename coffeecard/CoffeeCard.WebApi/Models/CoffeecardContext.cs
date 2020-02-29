@@ -1,5 +1,6 @@
 using CoffeeCard.Common.Configuration;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace CoffeeCard.WebApi.Models
 {
@@ -24,9 +25,14 @@ namespace CoffeeCard.WebApi.Models
         public DbSet<Statistic> Statistics { get; set; }
         public DbSet<ProductUserGroup> ProductUserGroups { get; set; }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer(_databaseSettings.ConnectionString, c => c.MigrationsHistoryTable("__EFMigrationsHistory", _databaseSettings.SchemaName));
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //modelBuilder.HasDefaultSchema(_databaseSettings.SchemaName);
+            modelBuilder.HasDefaultSchema(_databaseSettings.SchemaName);
 
             modelBuilder.Entity<ProductUserGroup>()
                 .HasKey(pug => new
