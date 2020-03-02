@@ -361,13 +361,24 @@ namespace CoffeeCard.WebApi.Services
         private async Task<PaymentStatus> ValidateTransaction(CompletePurchaseDTO payment)
         {
             var purchase = _context.Purchases.FirstOrDefault(x => x.OrderId == payment.OrderId);
+
             if (purchase == null)
                 throw new ApiException($"The purchase with orderId {payment.OrderId} does not exist", 400);
+
             if (purchase.Completed) throw new ApiException("The given purchase has already been completed", 400);
 
-            var response = await _mobilePayService.GetPaymentStatus(payment.OrderId);
+            var mobilePayPaymentStatus = await _mobilePayService.GetPaymentStatus(payment.OrderId);
 
-            return response.LatestPaymentStatus;
+            if (!Equals(Convert.ToDouble(purchase.Price), mobilePayPaymentStatus.OriginalAmount))
+            {
+                Log.Warning("Purchase price did not match the withdrawn amount from MobilePay. Possible tampering. Cancel transaction.");
+
+                await _mobilePayService.CancelPaymentReservation(payment.OrderId);
+
+                throw new ApiException("The purchase could not be completed. The purchase has been cancelled.");
+            }
+
+            return mobilePayPaymentStatus.LatestPaymentStatus;
         }
     }
 }
