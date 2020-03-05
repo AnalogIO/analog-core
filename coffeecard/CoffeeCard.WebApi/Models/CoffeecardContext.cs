@@ -25,11 +25,6 @@ namespace CoffeeCard.WebApi.Models
         public DbSet<Statistic> Statistics { get; set; }
         public DbSet<ProductUserGroup> ProductUserGroups { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(_databaseSettings.ConnectionString, c => c.MigrationsHistoryTable("__EFMigrationsHistory", _databaseSettings.SchemaName));
-        }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema(_databaseSettings.SchemaName);

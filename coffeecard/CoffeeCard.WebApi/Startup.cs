@@ -36,9 +36,10 @@ namespace CoffeeCard.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             // Setup database connection
-            DatabaseSettings databaseSettings = Configuration.GetSection("DatabaseSettings").Get<DatabaseSettings>();
+            var databaseSettings = Configuration.GetSection("DatabaseSettings").Get<DatabaseSettings>();
             services.AddDbContext<CoffeeCardContext>(opt =>
-                opt.UseSqlServer(databaseSettings.ConnectionString));
+                opt.UseSqlServer(databaseSettings.ConnectionString,
+                    c => c.MigrationsHistoryTable("__EFMigrationsHistory", databaseSettings.SchemaName)));
 
             // Setup Dependency Injection
             services.AddSingleton(Environment);
