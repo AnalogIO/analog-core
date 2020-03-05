@@ -27,11 +27,12 @@ steps:
     filepath: 'coffeecard/CoffeeCard.Console.Refund/www.analogio.dk.pfx'
     filecontent: 'empty file'
 
-- task: NuGetToolInstaller@1
-
-- task: NuGetCommand@2
+- task: DotNetCoreCLI@2
+  displayName: 'Restore solution'
   inputs:
-    restoreSolution: '$(solution)'
+    command: 'restore'
+    projects: '**/*.sln'
+    feedsToUse: 'select'
 
 - task: SonarCloudPrepare@1
   inputs:
@@ -40,12 +41,18 @@ steps:
     scannerMode: 'MSBuild'
     projectKey: 'AnalogIO_analog-core'
 
-- task: VSBuild@1
+- task: DotNetCoreCLI@2
+  displayName: 'Build solution'
   inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    command: 'build'
+    projects: '**/*.sln'
+    
+- task: DotNetCoreCLI@2
+  displayName: 'Execute Unit tests'
+  inputs:
+    command: 'test'
+    projects: '**/*.csproj'
+    arguments: '--collect "Code Coverage"'
 
 - task: SonarCloudAnalyze@1
 
