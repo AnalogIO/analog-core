@@ -63,6 +63,9 @@ namespace CoffeeCard.WebApi
             services.AddControllers(options => { options.Filters.Add(new ApiExceptionFilter()); });
 
             services.AddApiVersioning();
+            
+            // Setup razor pages
+            services.AddRazorPages();
 
             // Setup Swagger
             services.AddSwaggerDocument(config =>
@@ -154,8 +157,14 @@ namespace CoffeeCard.WebApi
             app.UseAuthorization();
             app.UseHttpsRedirection();
 
+            app.UseStaticFiles();
+
             app.UseEndpoints(endpoints =>
-	            endpoints.MapControllers());
+            {
+                endpoints.MapControllers();
+                endpoints.MapRazorPages();
+                endpoints.MapFallbackToPage("/result");
+            });
         }
     }
 }

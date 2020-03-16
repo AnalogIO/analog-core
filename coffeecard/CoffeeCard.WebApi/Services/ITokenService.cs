@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.WebApi.Services
 {
@@ -8,6 +9,6 @@ namespace CoffeeCard.WebApi.Services
     {
         string GenerateToken(IEnumerable<Claim> claims);
         JwtSecurityToken ReadToken(string token);
-        bool ValidateToken(JwtSecurityToken token);
+        Task<bool> ValidateToken(string tokenString);
     }
 }

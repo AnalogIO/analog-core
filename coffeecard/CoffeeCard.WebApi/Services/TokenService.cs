@@ -3,18 +3,24 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
+using CoffeeCard.WebApi.Helpers;
+using CoffeeCard.WebApi.Models;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 
 namespace CoffeeCard.WebApi.Services
 {
     public class TokenService : ITokenService
     {
         private readonly IdentitySettings _identitySettings;
+        private readonly ClaimsUtilities _claimsUtilities;
 
-        public TokenService(IdentitySettings identitySettings)
+        public TokenService(IdentitySettings identitySettings, ClaimsUtilities claimsUtilities)
         {
             _identitySettings = identitySettings;
+            _claimsUtilities = claimsUtilities;
         }
 
         public string GenerateToken(IEnumerable<Claim> claims)
@@ -36,23 +42,31 @@ namespace CoffeeCard.WebApi.Services
         public JwtSecurityToken ReadToken(string token)
         {
             return new JwtSecurityTokenHandler().ReadToken(token) as JwtSecurityToken;
+
         }
 
         /// <summary>
-        ///     Checks if the JWT token is valid (Based on its lifetime)
+        ///     Receives the serialized version of a JWT token as a string. Checks if the JWT token is valid (Based on its lifetime and if it has been used before)
         /// </summary>
-        /// <param name="token"></param>
+        /// <param name="tokenString"></param>
         /// <returns></returns>
-        public bool ValidateToken(JwtSecurityToken token)
+        public async Task<bool> ValidateToken(string tokenString)
         {
             try
             {
-                if (token.ValidTo > DateTime.UtcNow) return true;
-                return false;
+                var tokenNotUsed = false;
+                var token = ReadToken(tokenString);
+
+                var user = await _claimsUtilities.ValidateAndReturnUserFromEmailClaimAsync(token.Claims);
+                
+                if (user.Tokens.Contains(new Token(tokenString))) tokenNotUsed = true;
+
+                return token.ValidTo > DateTime.UtcNow && tokenNotUsed;
             }
-            catch (Exception)
+            catch (ArgumentException e)
             {
-                return false;
+                Log.Error($"Unable to read token. Exception thrown = {e}");
+                return false; 
             }
         }
     }
