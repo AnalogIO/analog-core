@@ -119,59 +119,5 @@ namespace CoffeeCard.WebApi.Controllers
 
             return Ok("{ \"message\":\"We have send you a confirmation email\"}");
         }
-
-        /// <summary>
-        ///     Verifies the user from a token delivered via email
-        /// </summary>
-        [AllowAnonymous]
-        [HttpGet("verify")]
-        public IActionResult Verify(string token)
-        {
-            var verified = _accountService.VerifyRegistration(token);
-            var content = string.Empty;
-            if (verified)
-                content = "The account has been verified! You can now login into the app :D";
-            else
-                content = "The account could not be verified :-(";
-
-            return new ContentResult
-            {
-                Content = content,
-                ContentType = "text/html"
-            };
-        }
-
-        [AllowAnonymous]
-        [HttpGet("recover")]
-        public HttpResponseMessage Recover(string token)
-        {
-            var response = new HttpResponseMessage();
-
-            if (_accountService.RecoverUser(token))
-            {
-                var pathToTemplate = _env.WebRootPath
-                                     + Path.DirectorySeparatorChar
-                                     + "Templates"
-                                     + Path.DirectorySeparatorChar
-                                     + "EmailTemplate"
-                                     + Path.DirectorySeparatorChar
-                                     + "account_recover_success.html";
-
-                var builder = new BodyBuilder();
-
-                using (var SourceReader = System.IO.File.OpenText(pathToTemplate))
-                {
-                    builder.HtmlBody = SourceReader.ReadToEnd();
-                }
-
-                response.Content = new StringContent(builder.ToString());
-                response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/html");
-                return response;
-            }
-
-            response.Content = new StringContent("<html><body><h1>Token not found!</h1></body></html>");
-            response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/html");
-            return response;
-        }
     }
 }

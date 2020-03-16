@@ -26,5 +26,17 @@ namespace CoffeeCard.WebApi.Helpers
 
             return user;
         }
+        
+        public async Task<User> ValidateAndReturnUserFromEmailClaimAsync(IEnumerable<Claim> claims)
+        {
+            var emailClaim = claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
+            if (emailClaim == null) throw new ApiException("The token is invalid!", 401);
+            var email = emailClaim.Value;
+            
+            var user = await _context.Users.Include(x => x.Tokens).FirstOrDefaultAsync(x => x.Email == email);
+            if (user == null) throw new ApiException("The user could not be found");
+
+            return user;
+        }
     }
 }

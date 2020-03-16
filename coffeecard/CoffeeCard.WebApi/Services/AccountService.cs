@@ -1,8 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.WebApi.Helpers;
 using CoffeeCard.WebApi.Models;
@@ -33,12 +33,21 @@ namespace CoffeeCard.WebApi.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public User GetAccountByEmail(string email)
+        private User GetAccountByEmail(string email)
         {
             var user = _context.Users
                 .Include(x => x.Programme)
                 //.Include(x => x.Statistics)
                 .FirstOrDefault(x => x.Email == email);
+            if (user == null) throw new ApiException("No user found with the given email", 401);
+            return user;
+        }
+        private User GetAccountWithTokensByEmail(string email)
+        {
+            var user = _context.Users.
+                Include(x => x.Tokens).
+                FirstOrDefault(x => x.Email == email);
+
             if (user == null) throw new ApiException("No user found with the given email", 401);
             return user;
         }
@@ -186,10 +195,8 @@ namespace CoffeeCard.WebApi.Services
             var user = GetAccountByEmail(emailClaim.Value);
             if (user == null) throw new ApiException("The user could not be found", 400);
 
-
             return user;
         }
-
 
         public void UpdateExperience(int userId, int exp)
         {
@@ -208,7 +215,7 @@ namespace CoffeeCard.WebApi.Services
 
         public void ForgotPassword(string email)
         {
-            var user = GetAccountByEmail(email);
+            var user = GetAccountWithTokensByEmail(email);
             if (user == null) throw new ApiException($"The user could not be found {email}", 400);
 
             var claims = new[]
@@ -217,38 +224,32 @@ namespace CoffeeCard.WebApi.Services
                 new Claim(ClaimTypes.Role, "verification_token")
             };
             var verificationToken = _tokenService.GenerateToken(claims);
+            user.Tokens.Add(new Token(verificationToken));
+            _context.SaveChanges();
             _emailService.SendVerificationEmailForLostPw(user, verificationToken);
         }
 
-        public bool RecoverUser(string token)
+        public async Task<bool> RecoverUser(string token, string newPassword)
         {
             var tokenObj = _tokenService.ReadToken(token);
-            if (tokenObj != null)
-            {
-                Log.Information("User tried to recover");
-                if (_tokenService.ValidateToken(tokenObj))
-                {
-                    var user = GetAccountByClaims(tokenObj.Claims);
-                    if (user != null)
-                    {
-                        Log.Information($"{user.Email} tried to recover user");
-                        var rdm = new Random();
-                        var newPassword = rdm.Next(1000, 9999);
-                        var sha256Pw = _hashService.Hash(newPassword.ToString());
-                        var salt = _hashService.GenerateSalt();
-                        var hashedPassword = _hashService.Hash(sha256Pw + salt);
-                        user.Salt = salt;
-                        user.Password = hashedPassword;
-                        user.IsVerified = true;
-                        user.Tokens.Clear();
-                        _context.SaveChanges();
-                        _emailService.SendVerificationEmailForRecover(user, newPassword);
-                        return true;
-                    }
-                }
-            }
-
-            return false;
+            if (tokenObj == null) return false;
+            
+            Log.Information($"User tried to recover with token {token}");
+            if (!await _tokenService.ValidateToken(token)) return false;
+            
+            var user = GetAccountByClaims(tokenObj.Claims);
+            if (user == null) return false;
+            
+            Log.Information($"{user.Email} tried to recover user");
+            var sha256Pw = _hashService.Hash(newPassword);
+            var salt = _hashService.GenerateSalt();
+            var hashedPassword = _hashService.Hash(sha256Pw + salt);
+            user.Salt = salt;
+            user.Password = hashedPassword;
+            user.IsVerified = true;
+            user.Tokens.Clear();
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         private string EscapeName(string name)

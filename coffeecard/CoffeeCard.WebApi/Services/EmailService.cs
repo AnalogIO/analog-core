@@ -119,25 +119,6 @@ namespace CoffeeCard.WebApi.Services
             SendEmail(message);
         }
 
-        public void SendVerificationEmailForRecover(User user, int newPassword)
-        {
-            Log.Information($"Sending email to {user.Email} ");
-
-            var message = new MimeMessage();
-            var builder = RetrieveTemplate("email_newpassword.html").Item1;
-
-            builder.HtmlBody = builder.HtmlBody.Replace("{password}", newPassword.ToString());
-            builder.HtmlBody = builder.HtmlBody.Replace("{email}", user.Email);
-            builder.HtmlBody = builder.HtmlBody.Replace("{name}", user.Name);
-
-            message.To.Add(new MailboxAddress(user.Name, user.Email));
-            message.Subject = "Your new PIN for your Cafe Analog account";
-
-            message.Body = builder.ToMessageBody();
-
-            SendEmail(message);
-        }
-
         private (BodyBuilder, string) RetrieveTemplate(string templateName)
         {
             var fullPath = _httpContextAccessor.HttpContext?.Request?.GetDisplayUrl();
