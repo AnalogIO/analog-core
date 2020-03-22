@@ -13,11 +13,12 @@ namespace CoffeeCard.WebApi.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private readonly IMapperService _mapperService;
         private readonly ClaimsUtilities _claimsUtilities;
+        private readonly IMapperService _mapperService;
         private readonly IProductService _productService;
 
-        public ProductsController(IProductService productService, IMapperService mapper, ClaimsUtilities claimsUtilities)
+        public ProductsController(IProductService productService, IMapperService mapper,
+            ClaimsUtilities claimsUtilities)
         {
             _productService = productService;
             _mapperService = mapper;

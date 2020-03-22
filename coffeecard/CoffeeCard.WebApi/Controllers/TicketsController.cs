@@ -45,7 +45,7 @@ namespace CoffeeCard.WebApi.Controllers
         /// <summary>
         /// </summary>
         /// <param name="dto"></param>
-        /// <returns></returns
+        /// <returns></returns>
         [HttpPost("use")]
         public IActionResult Use(UseTicketDTO dto)
         {

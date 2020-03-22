@@ -14,8 +14,8 @@ namespace CoffeeCard.WebApi.Services
 {
     public class TokenService : ITokenService
     {
-        private readonly IdentitySettings _identitySettings;
         private readonly ClaimsUtilities _claimsUtilities;
+        private readonly IdentitySettings _identitySettings;
 
         public TokenService(IdentitySettings identitySettings, ClaimsUtilities claimsUtilities)
         {
@@ -42,11 +42,11 @@ namespace CoffeeCard.WebApi.Services
         public JwtSecurityToken ReadToken(string token)
         {
             return new JwtSecurityTokenHandler().ReadToken(token) as JwtSecurityToken;
-
         }
 
         /// <summary>
-        ///     Receives the serialized version of a JWT token as a string. Checks if the JWT token is valid (Based on its lifetime and if it has been used before)
+        ///     Receives the serialized version of a JWT token as a string. Checks if the JWT token is valid (Based on its lifetime
+        ///     and if it has been used before)
         /// </summary>
         /// <param name="tokenString"></param>
         /// <returns></returns>
@@ -58,7 +58,7 @@ namespace CoffeeCard.WebApi.Services
                 var token = ReadToken(tokenString);
 
                 var user = await _claimsUtilities.ValidateAndReturnUserFromEmailClaimAsync(token.Claims);
-                
+
                 if (user.Tokens.Contains(new Token(tokenString))) tokenNotUsed = true;
 
                 return token.ValidTo > DateTime.UtcNow && tokenNotUsed;
@@ -66,7 +66,7 @@ namespace CoffeeCard.WebApi.Services
             catch (ArgumentException e)
             {
                 Log.Error($"Unable to read token. Exception thrown = {e}");
-                return false; 
+                return false;
             }
         }
     }

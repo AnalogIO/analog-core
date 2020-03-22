@@ -42,7 +42,7 @@ namespace CoffeeCard.WebApi.Services
             Log.Information($"Using ticket with id: {ticketId}");
             var usedTicket = ValidateTicket(ticketId, userId);
 
-            UpdateTicket(usedTicket, userId);
+            UpdateTicket(usedTicket);
             UpdateUserRank(userId, 1);
 
             _context.SaveChanges();
@@ -53,7 +53,7 @@ namespace CoffeeCard.WebApi.Services
         public IEnumerable<Ticket> UseMultipleTickets(IEnumerable<Claim> claims, UseMultipleTicketDTO dto)
         {
             //Throws exception if the list is empty
-            if (dto.ProductIds.Count() == 0) throw new ApiException("The list is empty", 400);
+            if (!dto.ProductIds.Any()) throw new ApiException("The list is empty", 400);
 
             Log.Information($"Using multiple tickets {string.Join(",", dto.ProductIds)}");
             var userIdClaim = claims.FirstOrDefault(x => x.Type == Constants.UserId);
@@ -70,8 +70,8 @@ namespace CoffeeCard.WebApi.Services
 
             //First get the tickets from the products used
             var tickets = new List<Ticket>();
-            foreach (var keyValye in groupedProductIds)
-                tickets.AddRange(GetMultipleTicketsFromProduct(keyValye.Key, userId, keyValye.Value));
+            foreach (var keyValue in groupedProductIds)
+                tickets.AddRange(GetMultipleTicketsFromProduct(keyValue.Key, userId, keyValue.Value));
 
             //Use the tickets
             var usedTickets = new List<Ticket>();
@@ -84,7 +84,7 @@ namespace CoffeeCard.WebApi.Services
             var countTicketForRank = 0;
             foreach (var ticket in usedTickets)
             {
-                UpdateTicket(ticket, userId);
+                UpdateTicket(ticket);
                 if (ticket.ProductId != 4)
                     countTicketForRank++;
             }
@@ -92,7 +92,7 @@ namespace CoffeeCard.WebApi.Services
             UpdateUserRank(userId, countTicketForRank);
 
             // only save changes if all tickets was successfully used!
-            if (usedTickets.Count == tickets.Count())
+            if (usedTickets.Count == tickets.Count)
             {
                 // update user experience
                 usedTickets.ForEach(x => _accountService.UpdateExperience(userId, GetExperienceByTicket(x.ProductId)));
@@ -108,24 +108,24 @@ namespace CoffeeCard.WebApi.Services
             return usedTickets;
         }
 
-        public IEnumerable<CoffeCard> GetCoffeCards(IEnumerable<Claim> claims)
+        public IEnumerable<Models.CoffeeCard> GetCoffeeCards(IEnumerable<Claim> claims)
         {
             var userIdClaim = claims.FirstOrDefault(x => x.Type == Constants.UserId);
             if (userIdClaim == null) throw new ApiException("The token is invalid!", 401);
             var userId = int.Parse(userIdClaim.Value);
 
-            var coffeCards = _context.Tickets
+            var coffeeCards = _context.Tickets
                 .Include(p => p.Purchase)
                 .Join(_context.Products,
                     ticket => ticket.ProductId,
                     product => product.Id,
                     (ticket, product) => new {Ticket = ticket, Product = product})
-                .Where(tp => tp.Ticket.Owner.Id == userId && tp.Ticket.IsUsed == false)
+                .Where(tp => tp.Ticket.Owner.Id == userId && !tp.Ticket.IsUsed)
                 .GroupBy(
                     tp => tp.Product,
                     tp => tp.Ticket,
                     (product, tp) =>
-                        new CoffeCard
+                        new Models.CoffeeCard
                         {
                             ProductId = product.Id,
                             Name = product.Name,
@@ -134,23 +134,23 @@ namespace CoffeeCard.WebApi.Services
                             TicketsLeft = tp.Count()
                         }).ToList();
 
-            var products = _context.Products.Select(p => new CoffeCard
+            var products = _context.Products.Select(p => new Models.CoffeeCard
                 {ProductId = p.Id, Name = p.Name, Price = p.Price, Quantity = p.NumberOfTickets, TicketsLeft = 0});
 
-            return coffeCards.Union(products, new CoffeeCardComparer());
+            return coffeeCards.Union(products, new CoffeeCardComparer());
         }
 
         private int GetFirstTicketIdFromProduct(int productId, int userId)
         {
-            return _context.Tickets.Include(p => p.Purchase)
-                .Where(x => x.Owner.Id == userId && x.ProductId == productId && x.IsUsed == false)
-                .FirstOrDefault().Id;
+            return _context.Tickets
+                .Include(p => p.Purchase)
+                .FirstOrDefault(x => x.Owner.Id == userId && x.ProductId == productId && !x.IsUsed).Id;
         }
 
         private IEnumerable<Ticket> GetMultipleTicketsFromProduct(int productId, int userId, int count)
         {
             return _context.Tickets.Include(p => p.Purchase)
-                .Where(x => x.Owner.Id == userId && x.ProductId == productId && x.IsUsed == false)
+                .Where(x => x.Owner.Id == userId && x.ProductId == productId && !x.IsUsed)
                 .Take(count);
         }
 
@@ -163,7 +163,7 @@ namespace CoffeeCard.WebApi.Services
             return ticket;
         }
 
-        private void UpdateTicket(Ticket ticket, int userId)
+        private void UpdateTicket(Ticket ticket)
         {
             ticket.IsUsed = true;
             ticket.DateUsed = DateTime.UtcNow;
@@ -172,13 +172,13 @@ namespace CoffeeCard.WebApi.Services
         private int GetExperienceByTicket(int productId)
         {
             var product = _context.Products.FirstOrDefault(x => x.Id == productId);
-            return product != null ? product.ExperienceWorth : 0;
+            return product?.ExperienceWorth ?? 0;
         }
 
         private void UpdateUserRank(int userId, int tickets)
         {
             var user = _context.Users.Include(x => x.Statistics).FirstOrDefault(x => x.Id == userId);
-            user.IncreaseStatisticsBy(tickets);
+            user?.IncreaseStatisticsBy(tickets);
         }
     }
 }

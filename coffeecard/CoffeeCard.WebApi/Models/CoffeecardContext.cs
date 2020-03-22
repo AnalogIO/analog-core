@@ -1,6 +1,5 @@
 using CoffeeCard.Common.Configuration;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace CoffeeCard.WebApi.Models
 {

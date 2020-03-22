@@ -2,7 +2,7 @@
 
 namespace CoffeeCard.WebApi.Models
 {
-    public class CoffeCard
+    public class CoffeeCard
     {
         public int ProductId { get; set; }
         public string Name { get; set; }
@@ -11,10 +11,10 @@ namespace CoffeeCard.WebApi.Models
         public int Quantity { get; set; }
     }
 
-    internal class CoffeeCardComparer : IEqualityComparer<CoffeCard>
+    internal class CoffeeCardComparer : IEqualityComparer<CoffeeCard>
     {
         // CoffeeCards are equal if their id is equal.
-        public bool Equals(CoffeCard x, CoffeCard y)
+        public bool Equals(CoffeeCard x, CoffeeCard y)
         {
             //Check whether the compared objects reference the same data.
             if (ReferenceEquals(x, y)) return true;
@@ -29,13 +29,13 @@ namespace CoffeeCard.WebApi.Models
         // If Equals() returns true for a pair of objects 
         // then GetHashCode() must return the same value for these objects.
 
-        public int GetHashCode(CoffeCard coffeCard)
+        public int GetHashCode(CoffeeCard coffeeCard)
         {
             //Check whether the object is null
-            if (ReferenceEquals(coffeCard, null)) return 0;
+            if (ReferenceEquals(coffeeCard, null)) return 0;
 
             //Get hash code for the ProductId field.
-            var hashProductCode = coffeCard.ProductId.GetHashCode();
+            var hashProductCode = coffeeCard.ProductId.GetHashCode();
 
             return hashProductCode;
         }

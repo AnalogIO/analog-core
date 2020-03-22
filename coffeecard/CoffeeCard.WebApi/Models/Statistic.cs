@@ -44,17 +44,17 @@ namespace CoffeeCard.WebApi.Models
             return new DateTime(currentTime.Year, 12, 23);
         }
 
-        public static bool ValidateMonthlyExpired(DateTime lastswipe)
+        public static bool ValidateMonthlyExpired(DateTime lastSwipe)
         {
             var now = DateTime.Now;
-            if (lastswipe.Month != now.Month) return false;
+            if (lastSwipe.Month != now.Month) return false;
             return true;
         }
 
-        public static bool ValidateSemesterExpired(DateTime lastswipe)
+        public static bool ValidateSemesterExpired(DateTime lastSwipe)
         {
             var now = DateTime.Now;
-            if (lastswipe < GetSemesterStart(now)) return false;
+            if (lastSwipe < GetSemesterStart(now)) return false;
             return true;
         }
 
@@ -74,7 +74,7 @@ namespace CoffeeCard.WebApi.Models
                 return new[] { monthStart, monthEnd };
             }
 
-            return null;
+            return new DateTime[0];
         }
     }
 }

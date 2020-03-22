@@ -15,14 +15,15 @@ namespace CoffeeCard.WebApi.Services
 {
     public class AccountService : IAccountService
     {
-        private readonly EnvironmentSettings _environmentSettings;
         private readonly CoffeeCardContext _context;
         private readonly IEmailService _emailService;
+        private readonly EnvironmentSettings _environmentSettings;
         private readonly IHashService _hashService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ITokenService _tokenService;
 
-        public AccountService(CoffeeCardContext context, EnvironmentSettings environmentSettings, ITokenService tokenService,
+        public AccountService(CoffeeCardContext context, EnvironmentSettings environmentSettings,
+            ITokenService tokenService,
             IEmailService emailService, IHashService hashService, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
@@ -31,25 +32,6 @@ namespace CoffeeCard.WebApi.Services
             _emailService = emailService;
             _hashService = hashService;
             _httpContextAccessor = httpContextAccessor;
-        }
-
-        private User GetAccountByEmail(string email)
-        {
-            var user = _context.Users
-                .Include(x => x.Programme)
-                //.Include(x => x.Statistics)
-                .FirstOrDefault(x => x.Email == email);
-            if (user == null) throw new ApiException("No user found with the given email", 401);
-            return user;
-        }
-        private User GetAccountWithTokensByEmail(string email)
-        {
-            var user = _context.Users.
-                Include(x => x.Tokens).
-                FirstOrDefault(x => x.Email == email);
-
-            if (user == null) throw new ApiException("No user found with the given email", 401);
-            return user;
         }
 
         public string Login(string username, string password, string version)
@@ -78,8 +60,9 @@ namespace CoffeeCard.WebApi.Services
                 }
             }
 
-            Log.Information("Unsuccessful login for e-mail = {username} from IP = {ipadress} ", username,
+            Log.Information("Unsuccessful login for e-mail = {username} from IP = {ipAddress} ", username,
                 _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
+
             throw new ApiException("The username or password does not match. Please check that your email is verified",
                 401);
         }
@@ -90,7 +73,8 @@ namespace CoffeeCard.WebApi.Services
 
             if (_context.Users.Any(x => x.Email == registerDto.Email))
             {
-                Log.Information($"Could not register user Name: {registerDto.Name}. Email:{registerDto.Email} already exists");
+                Log.Information(
+                    $"Could not register user Name: {registerDto.Name}. Email:{registerDto.Email} already exists");
                 throw new ApiException($"The email {registerDto.Email} is already being used by another user", 400);
             }
 
@@ -130,13 +114,17 @@ namespace CoffeeCard.WebApi.Services
         public bool VerifyRegistration(string token)
         {
             Log.Information($"Trying to verify registration with token: {token}");
+
             var jwtToken = _tokenService.ReadToken(token);
             if (!jwtToken.Claims.Any(x => x.Type == ClaimTypes.Role && x.Value == "verification_token"))
                 throw new ApiException("The token is invalid!", 400);
+
             var emailClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
             if (emailClaim == null) throw new ApiException("The token is invalid!", 400);
+
             var user = _context.Users.FirstOrDefault(x => x.Email == emailClaim.Value);
             if (user == null) throw new ApiException("The token is invalid!", 400);
+
             user.IsVerified = true;
             return _context.SaveChanges() > 0;
         }
@@ -192,6 +180,7 @@ namespace CoffeeCard.WebApi.Services
         {
             var emailClaim = claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
             if (emailClaim == null) throw new ApiException("The token is invalid!", 401);
+
             var user = GetAccountByEmail(emailClaim.Value);
             if (user == null) throw new ApiException("The user could not be found", 400);
 
@@ -201,15 +190,20 @@ namespace CoffeeCard.WebApi.Services
         public void UpdateExperience(int userId, int exp)
         {
             var user = _context.Users.FirstOrDefault(x => x.Id == userId);
+
             if (user == null) throw new ApiException("Could not update user");
+
             user.Experience += exp;
+
             _context.SaveChanges();
         }
 
         public User GetUserById(int userId)
         {
             var user = _context.Users.FirstOrDefault(x => x.Id == userId);
+
             if (user == null) throw new ApiException($"Could not find user with id {userId}", 400);
+
             return user;
         }
 
@@ -233,13 +227,13 @@ namespace CoffeeCard.WebApi.Services
         {
             var tokenObj = _tokenService.ReadToken(token);
             if (tokenObj == null) return false;
-            
+
             Log.Information($"User tried to recover with token {token}");
             if (!await _tokenService.ValidateToken(token)) return false;
-            
+
             var user = GetAccountByClaims(tokenObj.Claims);
             if (user == null) return false;
-            
+
             Log.Information($"{user.Email} tried to recover user");
             var sha256Pw = _hashService.Hash(newPassword);
             var salt = _hashService.GenerateSalt();
@@ -252,35 +246,46 @@ namespace CoffeeCard.WebApi.Services
             return true;
         }
 
-        private string EscapeName(string name)
+        private User GetAccountByEmail(string email)
+        {
+            var user = _context.Users
+                .Include(x => x.Programme)
+                //.Include(x => x.Statistics)
+                .FirstOrDefault(x => x.Email == email);
+            if (user == null) throw new ApiException("No user found with the given email", 401);
+            return user;
+        }
+
+        private User GetAccountWithTokensByEmail(string email)
+        {
+            var user = _context.Users.Include(x => x.Tokens).FirstOrDefault(x => x.Email == email);
+
+            if (user == null) throw new ApiException("No user found with the given email", 401);
+            return user;
+        }
+
+        private static string EscapeName(string name)
         {
             return name.Trim('<', '>', '{', '}');
         }
 
-        private bool ValidateVersion(string version)
+        private void ValidateVersion(string version)
         {
             var regex = new Regex(@"(\d+.)(\d+.)(\d+)");
             var match = regex.Match(version);
-            if (match.Success && match.Groups.Count == 4)
-            {
-                var major = int.Parse(match.Groups[1].Value.TrimEnd('.'));
-                var minor = int.Parse(match.Groups[2].Value.TrimEnd('.'));
-                var patch = int.Parse(match.Groups[3].Value);
 
-                var versionSum = major + minor;
-
-                var requiredMatch = regex.Match(_environmentSettings.MinAppVersion);
-                var requiredMajor = int.Parse(requiredMatch.Groups[1].Value.TrimEnd('.'));
-                var requiredMinor = int.Parse(requiredMatch.Groups[2].Value.TrimEnd('.'));
-
-                if (requiredMajor <= major && requiredMinor <= minor) return true;
-            }
-            else
-            {
+            if (!match.Success || match.Groups.Count != 4)
                 throw new ApiException("Malformed version number", 400);
-            }
 
-            throw new ApiException("Your App is out of date - please update!", 409);
+            var major = int.Parse(match.Groups[1].Value.TrimEnd('.'));
+            var minor = int.Parse(match.Groups[2].Value.TrimEnd('.'));
+
+            var requiredMatch = regex.Match(_environmentSettings.MinAppVersion);
+            var requiredMajor = int.Parse(requiredMatch.Groups[1].Value.TrimEnd('.'));
+            var requiredMinor = int.Parse(requiredMatch.Groups[2].Value.TrimEnd('.'));
+
+            if (requiredMajor > major || requiredMinor > minor)
+                throw new ApiException("Your App is out of date - please update!", 409);
         }
     }
 }

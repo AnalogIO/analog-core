@@ -11,23 +11,22 @@ using CoffeeCard.Console.Refund.Model;
 using CoffeeCard.MobilePay.Client;
 using CoffeeCard.MobilePay.Service;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 
 namespace CoffeeCard.Console.Refund
 {
-    class Program
+    internal class Program
     {
         private static ILogger _log;
 
         private static IContainer _container;
-        
-        static async Task Main()
+
+        private static async Task Main()
         {
             try
             {
-                Startup(new ServiceCollection());
+                Startup();
                 await RefundPayments("input.txt");
 
                 _log.LogInformation("Finished processing refunds");
@@ -40,7 +39,7 @@ namespace CoffeeCard.Console.Refund
             }
         }
 
-        private static void Startup(IServiceCollection services)
+        private static void Startup()
         {
             // Load Configuration File
             var configuration = new ConfigurationBuilder()
@@ -68,7 +67,7 @@ namespace CoffeeCard.Console.Refund
 
             _container = builder.Build();
 
-            _log = _container.Resolve <ILogger<Program>>();
+            _log = _container.Resolve<ILogger<Program>>();
 
             _log.LogInformation("Dependency Injection and configuration setup");
         }
@@ -80,6 +79,10 @@ namespace CoffeeCard.Console.Refund
 
             var refundHandler = _container.Resolve<RefundHandler>();
             await refundHandler.RefundPayments(completedOrders);
+        }
+
+        protected Program()
+        {
         }
     }
 }

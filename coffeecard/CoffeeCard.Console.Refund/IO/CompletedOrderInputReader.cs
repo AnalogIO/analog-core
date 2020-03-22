@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,7 +27,7 @@ namespace CoffeeCard.Console.Refund.IO
                 }
 
                 var completedOrders = ParseInputToTransactions(lines);
-                _log.LogInformation("{size} MobilePay transactions read from {path}", completedOrders.Count(), path);
+                _log.LogInformation("{size} MobilePay transactions read from {path}", completedOrders.Count, path);
 
                 return completedOrders;
             }
@@ -43,16 +42,7 @@ namespace CoffeeCard.Console.Refund.IO
         {
             var splitLine = lines.Split(",");
 
-            var completedOrders = new List<CompletedOrder>();
-            foreach (var line in splitLine)
-            {
-                completedOrders.Add(new CompletedOrder
-                {
-                    OrderId = line.Trim()
-                });
-            }
-
-            return completedOrders;
+            return splitLine.Select(line => new CompletedOrder {OrderId = line.Trim()}).ToList();
         }
     }
 }

@@ -9,14 +9,13 @@
 <div id="updatePinCode">
     <h1>Select a new pin code. It must be 4 digits.</h1>
     <div class="updatePinContainer">
-    <form method="post">
-        <input asp-for="PinCode.NewPinCode" placeholder="New pin code"/>
-        <p>&nbsp;<span asp-validation-for="PinCode.NewPinCode" class="text-danger"></span>&nbsp;</p> @* &nbsp; is a non empty space character. This is to ensure the paragraph is rendered, even when there is no error message to display. Otherwise the UI would move on error messages *@
+        <form method="post">
+            <input asp-for="PinCode.NewPinCode" placeholder="New pin code"/>
+            <p>&nbsp;<span asp-validation-for="PinCode.NewPinCode" class="text-danger"></span>&nbsp;</p> @* &nbsp; is a non empty space character. This is to ensure the paragraph is rendered, even when there is no error message to display. Otherwise the UI would move on error messages *@
 
-        <input asp-for="PinCode.RepeatedPinCode" placeholder="Confirm pin code"/>
-        <p>&nbsp;<span asp-validation-for="PinCode.RepeatedPinCode" class="text-danger"></span>&nbsp;</p>
-        <input type="submit" value="Update pin code"/>
-    </form>
+            <input asp-for="PinCode.RepeatedPinCode" placeholder="Confirm pin code"/>
+            <p>&nbsp;<span asp-validation-for="PinCode.RepeatedPinCode" class="text-danger"></span>&nbsp;</p>
+            <input type="submit" value="Update pin code"/>
+        </form>
     </div>
 </div>
-

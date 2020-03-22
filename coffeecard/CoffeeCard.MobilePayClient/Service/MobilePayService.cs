@@ -13,9 +13,10 @@ namespace CoffeeCard.MobilePay.Service
     {
         private readonly string _merchantId;
         private readonly IMobilePayApiHttpClient _mobilePayAPIClient;
-        private ILogger<MobilePayService> _log;
+        private readonly ILogger<MobilePayService> _log;
 
-        public MobilePayService(IMobilePayApiHttpClient mobilePayAPIClient, MobilePaySettings mobilePaySettings, ILogger<MobilePayService> log)
+        public MobilePayService(IMobilePayApiHttpClient mobilePayAPIClient, MobilePaySettings mobilePaySettings,
+            ILogger<MobilePayService> log)
         {
             _mobilePayAPIClient = mobilePayAPIClient;
             _merchantId = mobilePaySettings.MerchantId;

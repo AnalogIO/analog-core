@@ -6,8 +6,8 @@ namespace CoffeeCard.WebApi.Services
 {
     public class AppConfigService : IAppConfigService
     {
-        private readonly MobilePaySettings _mobilePaySettings;
         private readonly EnvironmentSettings _environmentSettings;
+        private readonly MobilePaySettings _mobilePaySettings;
 
         public AppConfigService(IOptions<MobilePaySettings> mobilePaySettings, EnvironmentSettings environmentSettings)
         {
@@ -18,7 +18,7 @@ namespace CoffeeCard.WebApi.Services
         public AppConfigDTO RetreiveConfiguration()
         {
             var _environmentType = _environmentSettings.EnvironmentType;
-            var _merchantId =_mobilePaySettings.MerchantId;
+            var _merchantId = _mobilePaySettings.MerchantId;
 
             return new AppConfigDTO
             {

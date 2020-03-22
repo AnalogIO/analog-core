@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace CoffeeCard.Console.Refund.IO
 {
-    public interface IOutputWriter<T>
+    public interface IOutputWriter<in T>
     {
-        Task WriteToFileAsync(T t);
+        Task WriteToFileAsync(T refunds);
     }
 }

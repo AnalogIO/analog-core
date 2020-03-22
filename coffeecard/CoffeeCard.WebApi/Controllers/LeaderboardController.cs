@@ -9,12 +9,10 @@ namespace CoffeeCard.WebApi.Controllers
     public class LeaderboardController : ControllerBase
     {
         private readonly ILeaderboardService _leaderboardService;
-        private IMapperService _mapperService;
 
-        public LeaderboardController(ILeaderboardService leaderboardService, IMapperService mapperService)
+        public LeaderboardController(ILeaderboardService leaderboardService)
         {
             _leaderboardService = leaderboardService;
-            _mapperService = mapperService;
         }
 
 

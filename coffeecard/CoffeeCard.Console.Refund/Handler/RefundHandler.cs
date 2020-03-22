@@ -26,7 +26,6 @@ namespace CoffeeCard.Console.Refund.Handler
         {
             var results = new List<RefundResponse>();
             foreach (var completedOrder in completedOrders)
-            {
                 try
                 {
                     var result = await _mobilePayService.RefundPayment(completedOrder.OrderId);
@@ -50,7 +49,6 @@ namespace CoffeeCard.Console.Refund.Handler
                         OrderId = completedOrder.OrderId
                     });
                 }
-            }
 
             await _outputWriter.WriteToFileAsync(results);
         }

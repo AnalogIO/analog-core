@@ -3,7 +3,7 @@ using System.Net.Http;
 
 namespace CoffeeCard.MobilePay.RequestMessage
 {
-    public class RefundPaymentRequest : IMobilePayAPIRequestMessage
+    public sealed class RefundPaymentRequest : IMobilePayAPIRequestMessage
     {
         private const string EndpointUri = "merchants/{0}/orders/{1}";
 
@@ -23,6 +23,7 @@ namespace CoffeeCard.MobilePay.RequestMessage
 
         public string GetRequestBody()
         {
+            // Empty JSON
             return "{}";
         }
 
@@ -31,17 +32,14 @@ namespace CoffeeCard.MobilePay.RequestMessage
             return HttpMethod.Put;
         }
 
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((CancelReservationRequest)obj);
-        }
-
         private bool Equals(RefundPaymentRequest other)
         {
             return _merchantId == other._merchantId && _orderId == other._orderId;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return ReferenceEquals(this, obj) || obj is RefundPaymentRequest other && Equals(other);
         }
 
         public override int GetHashCode()
