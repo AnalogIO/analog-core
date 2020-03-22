@@ -35,7 +35,7 @@ namespace CoffeeCard.MobilePay.Client
             _fileProvider = fileProvider;
         }
 
-        public async Task<T> SendRequest<T>(IMobilePayAPIRequestMessage requestMessage) where T : IMobilePayAPIResponse
+        public async Task<T> SendRequest<T>(IMobilePayApiRequestMessage requestMessage) where T : IMobilePayApiResponse
         {
             var requestUri = new Uri(MobilePayBaseEndpoint + requestMessage.GetEndPointUri());
 

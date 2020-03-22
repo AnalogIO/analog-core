@@ -11,9 +11,9 @@ namespace CoffeeCard.WebApi.Services
 {
     public class MapperService : IMapperService
     {
-        public PurchaseDTO Map(Purchase purchase)
+        public PurchaseDto Map(Purchase purchase)
         {
-            return new PurchaseDTO
+            return new PurchaseDto
             {
                 Id = purchase.Id,
                 ProductName = purchase.ProductName,
@@ -27,14 +27,14 @@ namespace CoffeeCard.WebApi.Services
             };
         }
 
-        public IEnumerable<PurchaseDTO> Map(IEnumerable<Purchase> purchases)
+        public IEnumerable<PurchaseDto> Map(IEnumerable<Purchase> purchases)
         {
             return purchases.Select(Map);
         }
 
-        public ProgrammeDTO Map(Programme progamme)
+        public ProgrammeDto Map(Programme progamme)
         {
-            return new ProgrammeDTO
+            return new ProgrammeDto
             {
                 Id = progamme.Id,
                 ShortName = progamme.ShortName,
@@ -42,14 +42,14 @@ namespace CoffeeCard.WebApi.Services
             };
         }
 
-        public IEnumerable<ProgrammeDTO> Map(IEnumerable<Programme> programmes)
+        public IEnumerable<ProgrammeDto> Map(IEnumerable<Programme> programmes)
         {
             return programmes.Select(Map);
         }
 
-        public UserDTO Map(User user)
+        public UserDto Map(User user)
         {
-            return new UserDTO
+            return new UserDto
             {
                 Email = user.Email, Id = user.Id, Name = user.Name, PrivacyActivated = user.PrivacyActivated,
                 ProgrammeId = user.Programme?.Id, Level = user.CalculateLevelFromXp(),
@@ -57,30 +57,30 @@ namespace CoffeeCard.WebApi.Services
             };
         }
 
-        public ProductDTO Map(Product product)
+        public ProductDto Map(Product product)
         {
-            return new ProductDTO
+            return new ProductDto
             {
                 Description = product.Description, Id = product.Id, Name = product.Name,
                 NumberOfTickets = product.NumberOfTickets, Price = product.Price
             };
         }
 
-        public IEnumerable<ProductDTO> Map(IEnumerable<Product> products)
+        public IEnumerable<ProductDto> Map(IEnumerable<Product> products)
         {
             return products.Select(Map);
         }
 
-        public TicketDTO Map(Ticket ticket)
+        public TicketDto Map(Ticket ticket)
         {
-            return new TicketDTO
+            return new TicketDto
             {
                 Id = ticket.Id, DateCreated = ticket.DateCreated, DateUsed = ticket.DateUsed,
                 ProductName = ticket.Purchase?.ProductName
             };
         }
 
-        public IEnumerable<TicketDTO> Map(IEnumerable<Ticket> tickets)
+        public IEnumerable<TicketDto> Map(IEnumerable<Ticket> tickets)
         {
             return tickets.Select(Map);
         }

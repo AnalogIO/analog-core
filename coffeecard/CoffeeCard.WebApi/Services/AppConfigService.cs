@@ -15,12 +15,12 @@ namespace CoffeeCard.WebApi.Services
             _environmentSettings = environmentSettings;
         }
 
-        public AppConfigDTO RetreiveConfiguration()
+        public AppConfigDto RetreiveConfiguration()
         {
             var _environmentType = _environmentSettings.EnvironmentType;
             var _merchantId = _mobilePaySettings.MerchantId;
 
-            return new AppConfigDTO
+            return new AppConfigDto
             {
                 EnvironmentType = _environmentType,
                 MerchantId = _merchantId

@@ -1,6 +1,6 @@
 ﻿namespace CoffeeCard.WebApi.Models.DataTransferObjects.Purchase
 {
-    public class IssuePurchaseDTO
+    public class IssuePurchaseDto
     {
     }
 }

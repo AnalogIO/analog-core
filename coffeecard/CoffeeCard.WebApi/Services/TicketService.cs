@@ -50,7 +50,7 @@ namespace CoffeeCard.WebApi.Services
             return usedTicket;
         }
 
-        public IEnumerable<Ticket> UseMultipleTickets(IEnumerable<Claim> claims, UseMultipleTicketDTO dto)
+        public IEnumerable<Ticket> UseMultipleTickets(IEnumerable<Claim> claims, UseMultipleTicketDto dto)
         {
             //Throws exception if the list is empty
             if (!dto.ProductIds.Any()) throw new ApiException("The list is empty", 400);

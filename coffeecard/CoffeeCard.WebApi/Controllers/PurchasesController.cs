@@ -53,7 +53,7 @@ namespace CoffeeCard.WebApi.Controllers
         /// <returns></returns>
         [AllowAnonymous]
         [HttpPost("issueproduct")]
-        public IActionResult IssueProduct(IssueProductDTO issueProduct)
+        public IActionResult IssueProduct(IssueProductDto issueProduct)
         {
             var adminToken = Request.Headers.FirstOrDefault(x => x.Key == "admintoken").Value.FirstOrDefault();
             Log.Information(adminToken);

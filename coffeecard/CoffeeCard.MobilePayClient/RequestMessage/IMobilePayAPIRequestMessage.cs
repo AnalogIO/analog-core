@@ -2,7 +2,7 @@
 
 namespace CoffeeCard.MobilePay.RequestMessage
 {
-    public interface IMobilePayAPIRequestMessage
+    public interface IMobilePayApiRequestMessage
     {
         string GetEndPointUri();
         string GetRequestBody();

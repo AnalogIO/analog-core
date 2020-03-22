@@ -28,7 +28,7 @@ namespace CoffeeCard.WebApi.Services
             _env = env;
         }
 
-        public void SendInvoice(UserDTO user, PurchaseDTO purchase)
+        public void SendInvoice(UserDto user, PurchaseDto purchase)
         {
             var message = new MimeMessage();
             var builder = RetrieveTemplate("invoice.html").Item1;

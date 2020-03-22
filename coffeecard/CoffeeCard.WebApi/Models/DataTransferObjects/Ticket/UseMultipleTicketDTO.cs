@@ -2,7 +2,7 @@
 
 namespace CoffeeCard.WebApi.Models.DataTransferObjects.Ticket
 {
-    public class UseMultipleTicketDTO
+    public class UseMultipleTicketDto
     {
         public IEnumerable<int> ProductIds { get; set; }
     }

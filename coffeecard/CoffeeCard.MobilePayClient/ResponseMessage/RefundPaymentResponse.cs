@@ -1,6 +1,6 @@
 ﻿namespace CoffeeCard.MobilePay.ResponseMessage
 {
-    public sealed class RefundPaymentResponse : IMobilePayAPIResponse
+    public sealed class RefundPaymentResponse : IMobilePayApiResponse
     {
         public string TransactionId { get; set; }
         public string OriginalTransactionId { get; set; }

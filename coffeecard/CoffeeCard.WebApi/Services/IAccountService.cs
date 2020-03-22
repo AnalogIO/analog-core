@@ -10,10 +10,10 @@ namespace CoffeeCard.WebApi.Services
     {
         User GetAccountByClaims(IEnumerable<Claim> claims);
         User GetUserById(int userId);
-        User RegisterAccount(RegisterDTO registerDto);
+        User RegisterAccount(RegisterDto registerDto);
         string Login(string username, string password, string version);
         bool VerifyRegistration(string token);
-        User UpdateAccount(IEnumerable<Claim> claims, UpdateUserDTO userDto);
+        User UpdateAccount(IEnumerable<Claim> claims, UpdateUserDto userDto);
         void UpdateExperience(int userId, int exp);
         void ForgotPassword(string email);
         Task<bool> RecoverUser(string token, string newPassword);

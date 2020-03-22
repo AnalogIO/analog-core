@@ -67,7 +67,7 @@ namespace CoffeeCard.WebApi.Services
                 401);
         }
 
-        public User RegisterAccount(RegisterDTO registerDto)
+        public User RegisterAccount(RegisterDto registerDto)
         {
             Log.Information($"Trying to register new user. Name: {registerDto.Name} Email: {registerDto.Email}");
 
@@ -129,7 +129,7 @@ namespace CoffeeCard.WebApi.Services
             return _context.SaveChanges() > 0;
         }
 
-        public User UpdateAccount(IEnumerable<Claim> claims, UpdateUserDTO userDto)
+        public User UpdateAccount(IEnumerable<Claim> claims, UpdateUserDto userDto)
         {
             var user = GetAccountByClaims(claims);
 

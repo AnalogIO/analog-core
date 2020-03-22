@@ -1,6 +1,6 @@
 ﻿namespace CoffeeCard.WebApi.Models.DataTransferObjects.CoffeeCard
 {
-    public class CoffeeCardDTO
+    public class CoffeeCardDto
     {
         public int ProductId { get; set; }
         public string Name { get; set; }

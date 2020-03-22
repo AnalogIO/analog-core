@@ -23,17 +23,17 @@ namespace CoffeeCard.WebApi.Controllers
         ///     Initiates a purchase from the given productId and returns an orderId
         /// </summary>
         [HttpPost("initiate")]
-        public IActionResult InitiatePurchase(InitiatePurchaseDTO initiatePurchaseDto)
+        public IActionResult InitiatePurchase(InitiatePurchaseDto initiatePurchaseDto)
         {
             var orderId = _purchaseService.InitiatePurchase(initiatePurchaseDto.ProductId, User.Claims);
-            return Ok(new InitiatePurchaseResponseDTO {OrderId = orderId});
+            return Ok(new InitiatePurchaseResponseDto {OrderId = orderId});
         }
 
         /// <summary>
         ///     Validates the purchase against mobilepay backend and delivers the tickets if succeeded
         /// </summary>
         [HttpPost("complete")]
-        public async Task<IActionResult> CompletePurchase(CompletePurchaseDTO dto)
+        public async Task<IActionResult> CompletePurchase(CompletePurchaseDto dto)
         {
             await _purchaseService.CompletePurchase(dto, User.Claims);
             return Ok(new {Message = "The purchase was completed with success!"});

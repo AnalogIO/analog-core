@@ -2,7 +2,7 @@
 
 namespace CoffeeCard.WebApi.Models.DataTransferObjects.Ticket
 {
-    public class TicketDTO
+    public class TicketDto
     {
         public int Id { get; set; }
         public DateTime DateCreated { get; set; }

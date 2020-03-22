@@ -2,7 +2,7 @@
 
 namespace CoffeeCard.MobilePay.ResponseMessage
 {
-    public sealed class GetPaymentStatusResponse : IMobilePayAPIResponse, IEquatable<GetPaymentStatusResponse>
+    public sealed class GetPaymentStatusResponse : IMobilePayApiResponse, IEquatable<GetPaymentStatusResponse>
     {
         public PaymentStatus LatestPaymentStatus { get; set; }
         public string TransactionId { get; set; }

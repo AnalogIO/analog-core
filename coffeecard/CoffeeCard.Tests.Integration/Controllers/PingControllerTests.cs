@@ -16,7 +16,7 @@ namespace CoffeeCard.Tests.Integration.Controllers
         private readonly CustomWebApplicationFactory<Startup> _webApplicationFactory;
 
         [Fact(DisplayName = "Ping returns HTTP 200 OK")]
-        public async Task PingReturnsHTTP200Ok()
+        public async Task PingReturnsHttp200Ok()
         {
             // Arrange
             var client = _webApplicationFactory.CreateClient();
