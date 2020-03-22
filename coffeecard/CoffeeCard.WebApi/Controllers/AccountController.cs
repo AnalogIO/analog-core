@@ -1,13 +1,8 @@
-using System.IO;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using CoffeeCard.WebApi.Models.DataTransferObjects.User;
 using CoffeeCard.WebApi.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MimeKit;
 using Serilog;
 
 namespace CoffeeCard.WebApi.Controllers
@@ -19,18 +14,16 @@ namespace CoffeeCard.WebApi.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
-        private readonly IWebHostEnvironment _env;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILeaderboardService _leaderboardService;
         private readonly IMapperService _mapperService;
 
         public AccountController(IAccountService accountService, ILeaderboardService leaderboardService,
-            IMapperService mapperService, IWebHostEnvironment env, IHttpContextAccessor httpContextAccessor)
+            IMapperService mapperService, IHttpContextAccessor httpContextAccessor)
         {
             _accountService = accountService;
             _leaderboardService = leaderboardService;
             _mapperService = mapperService;
-            _env = env;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -41,7 +34,7 @@ namespace CoffeeCard.WebApi.Controllers
         [HttpPost("register")]
         public IActionResult Register(RegisterDTO registerDto)
         {
-            var user = _accountService.RegisterAccount(registerDto);
+            _accountService.RegisterAccount(registerDto);
             return Created("register",
                 new
                 {
@@ -75,12 +68,12 @@ namespace CoffeeCard.WebApi.Controllers
         public IActionResult Get()
         {
             var user = _accountService.GetAccountByClaims(User.Claims);
-            var userDTO = _mapperService.Map(user);
+            var userDto = _mapperService.Map(user);
             var leaderBoardPlacement = _leaderboardService.GetLeaderboardPlacement(user);
-            userDTO.RankAllTime = leaderBoardPlacement.Total;
-            userDTO.RankSemester = leaderBoardPlacement.Semester;
-            userDTO.RankMonth = leaderBoardPlacement.Month;
-            return Ok(userDTO);
+            userDto.RankAllTime = leaderBoardPlacement.Total;
+            userDto.RankSemester = leaderBoardPlacement.Semester;
+            userDto.RankMonth = leaderBoardPlacement.Month;
+            return Ok(userDto);
         }
 
         /// <summary>

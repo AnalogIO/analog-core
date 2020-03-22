@@ -18,11 +18,11 @@ namespace CoffeeCard.WebApi.Services
 {
     public class PurchaseService : IPurchaseService
     {
-        private readonly MobilePaySettings _mobilePaySettings;
         private readonly CoffeeCardContext _context;
         private readonly IEmailService _emailService;
         private readonly IMapperService _mapper;
         private readonly IMobilePayService _mobilePayService;
+        private readonly MobilePaySettings _mobilePaySettings;
 
         public PurchaseService(CoffeeCardContext context, IMobilePayService mobilePayService,
             MobilePaySettings mobilePaySettings, IEmailService emailService, IMapperService mapper)
@@ -53,12 +53,12 @@ namespace CoffeeCard.WebApi.Services
 
         public IEnumerable<Purchase> Read(DateTime from, DateTime to)
         {
-            return _context.Purchases.Where(x => x.DateCreated >= from && x.DateCreated <= to).ToList();
+            return _context.Purchases.Where(x => x.DateCreated >= from && x.DateCreated <= to).AsEnumerable();
         }
 
         public IEnumerable<Purchase> Read(DateTime from)
         {
-            return _context.Purchases.Where(x => x.DateCreated >= from).ToList();
+            return _context.Purchases.Where(x => x.DateCreated >= from).AsEnumerable();
         }
 
         public int Update(Purchase purchase)
@@ -220,13 +220,12 @@ namespace CoffeeCard.WebApi.Services
         {
             Log.Information(
                 $"Trying to complete purchase with orderid: {dto.OrderId} and transactionId: {dto.TransactionId}");
-            PaymentStatus paymentStatus;
             try
             {
                 //TODO Figure out the purpose of this check, and probably fix it in regard to test environment
                 if (!_mobilePaySettings.MerchantId.Equals("APPDK0000000000"))
                 {
-                    paymentStatus = await ValidateTransaction(dto);
+                    var paymentStatus = await ValidateTransaction(dto);
 
                     switch (paymentStatus)
                     {
@@ -371,7 +370,8 @@ namespace CoffeeCard.WebApi.Services
 
             if (!Equals(Convert.ToDouble(purchase.Price), mobilePayPaymentStatus.OriginalAmount))
             {
-                Log.Warning("Purchase price did not match the withdrawn amount from MobilePay. Possible tampering. Cancel transaction.");
+                Log.Warning(
+                    "Purchase price did not match the withdrawn amount from MobilePay. Possible tampering. Cancel transaction.");
 
                 await _mobilePayService.CancelPaymentReservation(payment.OrderId);
 

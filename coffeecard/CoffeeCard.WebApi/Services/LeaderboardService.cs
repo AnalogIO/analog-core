@@ -20,7 +20,7 @@ namespace CoffeeCard.WebApi.Services
             if (preset == (int) StatisticPreset.Total)
             {
                 var users = _context.Statistics.Include(x => x.User).Where(s => s.Preset == StatisticPreset.Total)
-                    .OrderByDescending(x => x.SwipeCount).ThenBy(x => x.LastSwipe).ToList().Take(top);
+                    .OrderByDescending(x => x.SwipeCount).ThenBy(x => x.LastSwipe).AsEnumerable().Take(top);
                 return users.Select(s => new LeaderboardUser {Name = s.User.Name, Score = s.SwipeCount}).ToList();
             }
 
@@ -28,7 +28,7 @@ namespace CoffeeCard.WebApi.Services
             {
                 var users = _context.Statistics.Include(x => x.User)
                     .Where(s => s.Preset == StatisticPreset.Semester && Statistic.ValidateSemesterExpired(s.LastSwipe))
-                    .OrderByDescending(x => x.SwipeCount).ThenBy(x => x.LastSwipe).ToList().Take(top);
+                    .OrderByDescending(x => x.SwipeCount).ThenBy(x => x.LastSwipe).AsEnumerable().Take(top);
                 return users.Select(s => new LeaderboardUser {Name = s.User.Name, Score = s.SwipeCount}).ToList();
             }
 
@@ -36,7 +36,7 @@ namespace CoffeeCard.WebApi.Services
             {
                 var users = _context.Statistics.Include(x => x.User)
                     .Where(s => s.Preset == StatisticPreset.Monthly && Statistic.ValidateMonthlyExpired(s.LastSwipe))
-                    .OrderByDescending(x => x.SwipeCount).ThenBy(x => x.LastSwipe).ToList().Take(top);
+                    .OrderByDescending(x => x.SwipeCount).ThenBy(x => x.LastSwipe).AsEnumerable().Take(top);
                 return users.Select(s => new LeaderboardUser
                     {Name = s.User.PrivacyActivated ? "Anonymous" : s.User.Name, Score = s.SwipeCount}).ToList();
             }

@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Net.Http;
 using CoffeeCard.Common.Configuration;
@@ -26,13 +25,14 @@ namespace CoffeeCard.Tests.Unit.Helpers
                 .Returns("");
 
             var fileProvider = new Mock<IFileProvider>();
-            fileProvider.Setup(e => e.GetDirectoryContents(String.Empty)).Returns(directoryContents.Object);
+            fileProvider.Setup(e => e.GetDirectoryContents(string.Empty)).Returns(directoryContents.Object);
 
             var httpClient = new Mock<HttpClient>();
             var logger = new Mock<ILogger<MobilePayApiHttpClient>>();
 
             var mobileApiHttpClient =
-                new MobilePayApiHttpClient(httpClient.Object, mobilePaySettings.Object, fileProvider.Object, logger.Object);
+                new MobilePayApiHttpClient(httpClient.Object, mobilePaySettings.Object, fileProvider.Object,
+                    logger.Object);
         }
     }
 }

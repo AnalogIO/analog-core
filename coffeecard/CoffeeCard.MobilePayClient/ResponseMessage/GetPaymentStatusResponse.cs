@@ -2,13 +2,13 @@
 
 namespace CoffeeCard.MobilePay.ResponseMessage
 {
-    public class GetPaymentStatusResponse : IMobilePayAPIResponse
+    public sealed class GetPaymentStatusResponse : IMobilePayAPIResponse, IEquatable<GetPaymentStatusResponse>
     {
         public PaymentStatus LatestPaymentStatus { get; set; }
         public string TransactionId { get; set; }
         public double OriginalAmount { get; set; }
 
-        protected bool Equals(GetPaymentStatusResponse other)
+        public bool Equals(GetPaymentStatusResponse other)
         {
             return LatestPaymentStatus == other.LatestPaymentStatus && TransactionId == other.TransactionId &&
                    OriginalAmount.Equals(other.OriginalAmount);
@@ -18,8 +18,7 @@ namespace CoffeeCard.MobilePay.ResponseMessage
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((GetPaymentStatusResponse) obj);
+            return obj.GetType() == GetType() && Equals((GetPaymentStatusResponse) obj);
         }
 
         public override int GetHashCode()

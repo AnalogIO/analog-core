@@ -9,13 +9,13 @@ namespace CoffeeCard.WebApi.Services
     public interface IAccountService
     {
         User GetAccountByClaims(IEnumerable<Claim> claims);
-        User GetUserById(int id);
+        User GetUserById(int userId);
         User RegisterAccount(RegisterDTO registerDto);
         string Login(string username, string password, string version);
         bool VerifyRegistration(string token);
         User UpdateAccount(IEnumerable<Claim> claims, UpdateUserDTO userDto);
         void UpdateExperience(int userId, int exp);
         void ForgotPassword(string email);
-        Task<bool> RecoverUser (string token, string newPassword);
+        Task<bool> RecoverUser(string token, string newPassword);
     }
 }

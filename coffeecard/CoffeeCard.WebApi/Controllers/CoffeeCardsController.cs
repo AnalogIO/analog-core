@@ -20,7 +20,7 @@ namespace CoffeeCard.WebApi.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok(_ticketService.GetCoffeCards(User.Claims));
+            return Ok(_ticketService.GetCoffeeCards(User.Claims));
         }
     }
 }

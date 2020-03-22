@@ -25,23 +25,22 @@ namespace CoffeeCard.WebApi.Services
             return await GetProducts(user.UserGroup);
         }
 
-        private async Task<IEnumerable<Product>> GetProducts(UserGroup userGroup)
-        {
-            return await
-                (
-                    from p in (
-                        from pug in _context.ProductUserGroups
-                        where pug.UserGroup == userGroup
-                        select pug.Product)
-                    where p.Visible
-                    orderby p.Id
-                    select p
-                ).ToListAsync();
-        }
-
         public void Dispose()
         {
             _context.Dispose();
+        }
+
+        private async Task<IEnumerable<Product>> GetProducts(UserGroup userGroup)
+        {
+            return await
+            (
+                from p in from pug in _context.ProductUserGroups
+                    where pug.UserGroup == userGroup
+                    select pug.Product
+                where p.Visible
+                orderby p.Id
+                select p
+            ).ToListAsync();
         }
     }
 }

@@ -5,8 +5,6 @@ using CoffeeCard.WebApi.Models;
 using CoffeeCard.WebApi.Models.DataTransferObjects.Purchase;
 using CoffeeCard.WebApi.Models.DataTransferObjects.User;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Extensions;
 using MimeKit;
 using RestSharp;
 using RestSharp.Authenticators;
@@ -16,18 +14,18 @@ namespace CoffeeCard.WebApi.Services
 {
     public class EmailService : IEmailService
     {
-        private readonly MailgunSettings _mailgunSettings;
+        private const string MailgunApiUrl = "https://api.mailgun.net/v3";
         private readonly IWebHostEnvironment _env;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly EnvironmentSettings _environmentSettings;
 
-        public EmailService(MailgunSettings mailgunSettings, EnvironmentSettings environmentSettings, IWebHostEnvironment env,
-            IHttpContextAccessor httpContextAccessor)
+        private readonly MailgunSettings _mailgunSettings;
+
+        public EmailService(MailgunSettings mailgunSettings, EnvironmentSettings environmentSettings,
+            IWebHostEnvironment env)
         {
             _mailgunSettings = mailgunSettings;
             _environmentSettings = environmentSettings;
             _env = env;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         public void SendInvoice(UserDTO user, PurchaseDTO purchase)
@@ -121,7 +119,6 @@ namespace CoffeeCard.WebApi.Services
 
         private (BodyBuilder, string) RetrieveTemplate(string templateName)
         {
-            var fullPath = _httpContextAccessor.HttpContext?.Request?.GetDisplayUrl();
             var baseUrl = _environmentSettings.DeploymentUrl;
 
             var pathToTemplate = _env.WebRootPath
@@ -132,12 +129,11 @@ namespace CoffeeCard.WebApi.Services
                                  + Path.DirectorySeparatorChar
                                  + templateName;
 
-            var message = new MimeMessage();
             var builder = new BodyBuilder();
 
-            using (var SourceReader = File.OpenText(pathToTemplate))
+            using (var sourceReader = File.OpenText(pathToTemplate))
             {
-                builder.HtmlBody = SourceReader.ReadToEnd();
+                builder.HtmlBody = sourceReader.ReadToEnd();
             }
 
             return (builder, baseUrl);
@@ -145,10 +141,12 @@ namespace CoffeeCard.WebApi.Services
 
         private void SendEmail(MimeMessage mail)
         {
-            var client = new RestClient();
-            client.BaseUrl = new Uri("https://api.mailgun.net/v3");
+            var client = new RestClient
+            {
+                BaseUrl = new Uri(MailgunApiUrl),
+                Authenticator = new HttpBasicAuthenticator("api", _mailgunSettings.ApiKey)
+            };
 
-            client.Authenticator = new HttpBasicAuthenticator("api", _mailgunSettings.ApiKey);
             var request = new RestRequest();
             request.AddParameter("domain", _mailgunSettings.Domain, ParameterType.UrlSegment);
             request.Resource = "{domain}/messages";
@@ -158,8 +156,7 @@ namespace CoffeeCard.WebApi.Services
             request.AddParameter("html", mail.HtmlBody);
             request.AddParameter("text", mail.TextBody);
             request.Method = Method.POST;
-            var response = client.Execute(request);
-            Console.WriteLine(response.IsSuccessful);
+            client.Execute(request);
         }
     }
 }

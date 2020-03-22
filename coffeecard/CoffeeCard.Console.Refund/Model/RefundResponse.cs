@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CoffeeCard.Console.Refund.Model
+﻿namespace CoffeeCard.Console.Refund.Model
 {
     public class RefundResponse
     {
@@ -14,9 +10,14 @@ namespace CoffeeCard.Console.Refund.Model
 
         public override string ToString()
         {
-            return $"{nameof(Status)}: {Status}, {nameof(OrderId)}: {OrderId}, {nameof(OriginalTransactionId)}: {OriginalTransactionId}, {nameof(RefundTransactionId)}: {RefundTransactionId}, {nameof(Remainder)}: {Remainder}";
+            return
+                $"{nameof(Status)}: {Status}, {nameof(OrderId)}: {OrderId}, {nameof(OriginalTransactionId)}: {OriginalTransactionId}, {nameof(RefundTransactionId)}: {RefundTransactionId}, {nameof(Remainder)}: {Remainder}";
         }
     }
 
-    public enum Status { Success, Failed }
+    public enum Status
+    {
+        Success,
+        Failed
+    }
 }

@@ -18,14 +18,11 @@ namespace CoffeeCard.WebApi.Controllers
         private readonly IdentitySettings _identitySettings;
         private readonly IMapperService _mapperService;
         private readonly IPurchaseService _purchaseService;
-        private IAccountService _accountService;
 
-        public PurchasesController(IPurchaseService purchaseService, IMapperService mapper,
-            IAccountService accountService, IdentitySettings identitySettings)
+        public PurchasesController(IPurchaseService purchaseService, IMapperService mapper, IdentitySettings identitySettings)
         {
             _purchaseService = purchaseService;
             _mapperService = mapper;
-            _accountService = accountService;
             _identitySettings = identitySettings;
         }
 

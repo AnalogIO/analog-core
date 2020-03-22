@@ -15,7 +15,7 @@ namespace CoffeeCard.WebApi.Services
         UserDTO Map(User user);
         ProductDTO Map(Product product);
         TicketDTO Map(Ticket ticket);
-        IEnumerable<PurchaseDTO> Map(IEnumerable<Purchase> purchase);
+        IEnumerable<PurchaseDTO> Map(IEnumerable<Purchase> purchases);
         IEnumerable<ProgrammeDTO> Map(IEnumerable<Programme> programmes);
         IEnumerable<ProductDTO> Map(IEnumerable<Product> products);
         IEnumerable<TicketDTO> Map(IEnumerable<Ticket> tickets);

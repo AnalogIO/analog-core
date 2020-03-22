@@ -9,7 +9,7 @@ namespace CoffeeCard.WebApi.Helpers
     {
         public override void OnException(ExceptionContext context)
         {
-            ApiError apiError = null;
+            ApiError apiError;
             if (context.Exception is ApiException)
             {
                 // handle explicit 'known' API errors

@@ -3,7 +3,7 @@ using System.Net.Http;
 
 namespace CoffeeCard.MobilePay.RequestMessage
 {
-    public class CancelReservationRequest : IMobilePayAPIRequestMessage
+    public sealed class CancelReservationRequest : IMobilePayAPIRequestMessage
     {
         private const string EndpointUri = "reservations/merchants/{0}/orders/{1}";
 
@@ -23,7 +23,7 @@ namespace CoffeeCard.MobilePay.RequestMessage
 
         public string GetRequestBody()
         {
-            return "";
+            return string.Empty;
         }
 
         public HttpMethod GetHttpMethod()

@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using CoffeeCard.WebApi.Models.PagesModels;
 using CoffeeCard.WebApi.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace CoffeeCard.WebApi.Pages
 {
@@ -10,35 +10,35 @@ namespace CoffeeCard.WebApi.Pages
     {
         private readonly IAccountService _accountService;
         private readonly ITokenService _tokenService;
-        
+
         public Recover(IAccountService accountService, ITokenService tokenService)
         {
             _accountService = accountService;
             _tokenService = tokenService;
         }
-            
-        [BindProperty]
-        public NewPinCodeModel PinCode { get; set; }
-        
-        [BindProperty(SupportsGet = true)]
-        public string Token { get; set; }
+
+        [BindProperty] public NewPinCodeModel PinCode { get; set; }
+
+        [BindProperty(SupportsGet = true)] public string Token { get; set; }
+
         private bool IsTokenValid { get; set; }
-        
+
         public async Task<IActionResult> OnGet()
         {
             IsTokenValid = await _tokenService.ValidateToken(Token);
-            
+
             if (IsTokenValid) return Page();
 
             TempData["resultHeader"] = "Error";
-            TempData["result"] = @"Looks like the link you used has expired or already been used. Request a new one from the app.";
+            TempData["result"] =
+                @"Looks like the link you used has expired or already been used. Request a new one from the app.";
             return RedirectToPage("result");
         }
-        
+
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid) return Page();
-            
+
             if (await _accountService.RecoverUser(Token, PinCode.NewPinCode))
             {
                 TempData["resultHeader"] = "Success";
@@ -47,9 +47,10 @@ namespace CoffeeCard.WebApi.Pages
             else
             {
                 TempData["resultHeader"] = "Something went wrong";
-                TempData["result"] = "An error occured while updating your pin code. Please try again later or contact us at support@analogio.dk for further support";
+                TempData["result"] =
+                    "An error occured while updating your pin code. Please try again later or contact us at support@analogio.dk for further support";
             }
-                
+
             return RedirectToPage("result");
         }
     }

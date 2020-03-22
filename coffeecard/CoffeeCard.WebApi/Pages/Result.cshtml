@@ -6,13 +6,14 @@
 }
 
 <div id="results">
-@if (TempData["result"] != null) {
-    <h1>@TempData["resultHeader"]</h1>
-    <p>@TempData["result"]</p>
-}
-else
-{
-    <h1>Something went wrong</h1>
-    <p>This is not the web page you are looking for</p>
-}
+    @if (TempData["result"] != null)
+    {
+        <h1>@TempData["resultHeader"]</h1>
+        <p>@TempData["result"]</p>
+    }
+    else
+    {
+        <h1>Something went wrong</h1>
+        <p>This is not the web page you are looking for</p>
+    }
 </div>

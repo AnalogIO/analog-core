@@ -23,14 +23,14 @@ namespace CoffeeCard.WebApi
 {
     public class Startup
     {
-	    public IConfiguration Configuration { get; }
-	    public IWebHostEnvironment Environment { get; }
-
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
             Environment = env;
         }
+
+        public IConfiguration Configuration { get; }
+        public IWebHostEnvironment Environment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -63,7 +63,7 @@ namespace CoffeeCard.WebApi
             services.AddControllers(options => { options.Filters.Add(new ApiExceptionFilter()); });
 
             services.AddApiVersioning();
-            
+
             // Setup razor pages
             services.AddRazorPages();
 
@@ -92,13 +92,13 @@ namespace CoffeeCard.WebApi
 
             // Setup Json Serializing
             services.AddControllers()
-	            .AddNewtonsoftJson(options =>
-	            {
-					options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-				});
+                .AddNewtonsoftJson(options =>
+                {
+                    options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+                });
 
             // Setup Authentication
-            IdentitySettings identitySettings = Configuration.GetSection("IdentitySettings").Get<IdentitySettings>();
+            var identitySettings = Configuration.GetSection("IdentitySettings").Get<IdentitySettings>();
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = "bearer";
@@ -140,13 +140,9 @@ namespace CoffeeCard.WebApi
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
-            {
-	            app.UseDeveloperExceptionPage();
-            }
+                app.UseDeveloperExceptionPage();
             else
-            {
-	            app.UseHsts();
-            }
+                app.UseHsts();
 
             app.UseOpenApi();
             app.UseSwaggerUi3();

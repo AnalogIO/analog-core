@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Runtime.Serialization;
 using CoffeeCard.MobilePay.ErrorMessage;
 
 namespace CoffeeCard.MobilePay.Exception
@@ -17,6 +18,12 @@ namespace CoffeeCard.MobilePay.Exception
             _httpStatusCode = statusCode;
         }
 
+        protected MobilePayException(SerializationInfo info, StreamingContext context)
+        {
+            _errorMessage = info.GetValue("ErrorMessage", typeof(IMobilePayErrorMessage)) as IMobilePayErrorMessage;
+            _httpStatusCode = (HttpStatusCode) info.GetValue("HttpStatusCode", typeof(HttpStatusCode));
+        }
+
         public HttpStatusCode GetHttpStatusCode()
         {
             return _httpStatusCode;
@@ -27,9 +34,18 @@ namespace CoffeeCard.MobilePay.Exception
             return _errorMessage.GetErrorMessage();
         }
 
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
+
+            info.AddValue("ErrorMessage", _errorMessage);
+            info.AddValue("HttpStatusCode", _httpStatusCode);
+        }
+
         public override string ToString()
         {
-            return $"{base.ToString()}, {nameof(_errorMessage)}: {_errorMessage}, {nameof(_httpStatusCode)}: {_httpStatusCode}";
+            return
+                $"{base.ToString()}, {nameof(_errorMessage)}: {_errorMessage}, {nameof(_httpStatusCode)}: {_httpStatusCode}";
         }
     }
 }

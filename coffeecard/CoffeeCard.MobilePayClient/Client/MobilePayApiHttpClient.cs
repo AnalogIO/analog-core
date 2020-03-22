@@ -22,11 +22,12 @@ namespace CoffeeCard.MobilePay.Client
         private const string MobilePayBaseEndpoint = "https://api.mobeco.dk/appswitch/api/v1/";
 
         private readonly HttpClient _client;
-        private readonly MobilePaySettings _mobilePaySettings;
-        private readonly ILogger<MobilePayApiHttpClient> _log;
         private readonly IFileProvider _fileProvider;
+        private readonly ILogger<MobilePayApiHttpClient> _log;
+        private readonly MobilePaySettings _mobilePaySettings;
 
-        public MobilePayApiHttpClient(HttpClient client, MobilePaySettings mobilePaySettings, IFileProvider fileProvider, ILogger<MobilePayApiHttpClient> log)
+        public MobilePayApiHttpClient(HttpClient client, MobilePaySettings mobilePaySettings,
+            IFileProvider fileProvider, ILogger<MobilePayApiHttpClient> log)
         {
             _mobilePaySettings = mobilePaySettings;
             _client = client;
@@ -112,11 +113,10 @@ namespace CoffeeCard.MobilePay.Client
 #pragma warning restore CA5350
             var hash = Convert.ToBase64String(sha1.ComputeHash(Encoding.UTF8.GetBytes(combinedRequest)));
 
-            using (var rsa = LoadCertificate(_fileProvider).GetRSAPrivateKey())
-            {
-                var signature = JWT.Encode(hash, rsa, JwsAlgorithm.RS256);
-                return signature;
-            }
+            using var rsa = LoadCertificate(_fileProvider).GetRSAPrivateKey();
+            
+            var signature = JWT.Encode(hash, rsa, JwsAlgorithm.RS256);
+            return signature;
         }
     }
 }

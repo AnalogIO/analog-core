@@ -10,11 +10,6 @@ namespace CoffeeCard.WebApi.Models
             TokenHash = tokenHash;
         }
 
-        public Token()
-        {
-            //TokenHash = TokenManager.GenerateToken();
-        }
-
         public int Id { get; set; }
         public string TokenHash { get; set; }
 
@@ -22,10 +17,7 @@ namespace CoffeeCard.WebApi.Models
 
         public override bool Equals(object obj)
         {
-            if (obj is Token newToken)
-            {
-                return TokenHash.Equals(newToken.TokenHash);
-            }
+            if (obj is Token newToken) return TokenHash.Equals(newToken.TokenHash);
             return false;
         }
 

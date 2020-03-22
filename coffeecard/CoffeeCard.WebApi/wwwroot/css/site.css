@@ -1,109 +1,97 @@
 html,
 body {
+    background: #ece9e9;
     height: 100%;
     margin: 0;
-    background: #ece9e9;
 }
 
 .box {
     display: flex;
     flex-flow: column;
-    height: 100%;
     font-family: 'Nunito Sans', 'Helvetica Neue', helvetica, arial, sans-serif;
     font-size: 2vh;
+    height: 100%;
 }
 
-.box .row {
-    /* border: 1px dotted grey; */
-}
+.box .row { /* border: 1px dotted grey; */ }
 
 .box .row.header {
+    align-content: center;
     flex: 0 1 auto;
     padding-top: 50px;
-    align-content: center;
     text-align: center;
 }
 
-.row.header img {
-    height: 30vh;
-}
+.row.header img { height: 30vh; }
 
 .box .row.content {
-    flex: 1 1 auto;
     align-content: center;
-    text-align: center;
+    flex: 1 1 auto;
     padding-bottom: 20px;
+    text-align: center;
 }
 
 .box .row.footer {
-    flex: 0 1 40px;
+    align-content: center;
     background: #433025;
     color: #ece9e9;
-    align-content: center;
-    text-align: center;
-    padding: 10px;
+    flex: 0 1 40px;
     font-size: 0.8em;
+    padding: 10px;
+    text-align: center;
 }
 
-.row.footer a{
-    color: #ece9e9;
-}
+.row.footer a { color: #ece9e9; }
 
 div .wrapper {
-    max-width: 600px;
-    margin: 0 auto;
     background: #ffffff;
-    color: #38251a;
     border-radius: 10px;
     box-shadow: 3px 3px 10px grey;
+    color: #38251a;
+    margin: 0 auto;
+    max-width: 600px;
 }
 
 .wrapper h1 {
-    text-align: center;
+    font-size: 1.4em;
     font-weight: 700;
     line-height: 1.5em;
     Margin: 0;
-    font-size: 1.4em;
     padding: 10px !important;
+    text-align: center;
 }
 
 .wrapper p {
     color: #38251a;
     font-size: 1em;
     font-weight: normal;
-    Margin: 0 15px 0 15px;
     line-height: 1;
+    Margin: 0 15px 0 15px;
     padding-bottom: 20px;
     padding-top: 8px;
 }
 
-div#updatePinCode .updatePinContainer{
-    padding: 2% 4% 2%;
-}
+div#updatePinCode .updatePinContainer { padding: 2% 4% 2%; }
 
 div#updatePinCode input[type="password"] {
-    width: 92%;
     background: #fff;
     border: 1px solid #ccc;
     padding: 2%;
+    width: 92%;
 }
 
-div#updatePinCode select {
-    width: 100%;
-}
+div#updatePinCode select { width: 100%; }
 
 div#updatePinCode input[type="submit"] {
-    width: 100%;
+    -webkit-transition: background .3s;
     background: #433025;
     border: 0;
-    padding: 2%;
-    cursor: pointer;
-    transition: background .3s;
-    -webkit-transition: background .3s;
-    color: #ece9e9;
     border-radius: 10px;
+    color: #ece9e9;
+    cursor: pointer;
+    padding: 2%;
+    transition: background .3s;
+    width: 100%;
 }
 
-div#updatePinCode input[type="submit"]:hover {
-    background: #342218;
-}
+div#updatePinCode input[type="submit"]:hover { background: #342218; }

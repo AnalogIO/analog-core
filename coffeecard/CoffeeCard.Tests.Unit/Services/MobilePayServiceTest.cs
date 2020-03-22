@@ -187,7 +187,7 @@ namespace CoffeeCard.Tests.Unit.Services
                     {
                         Reason = MobilePayErrorReason.Other
                     }, HttpStatusCode.Unauthorized));
-            
+
             var log = new Mock<ILogger<MobilePayService>>();
 
             // Act
