@@ -40,6 +40,7 @@ steps:
     organization: 'analogio'
     scannerMode: 'MSBuild'
     projectKey: 'AnalogIO_analog-core'
+    projectVersion: '$(Build.BuildNumber)'
 
 - task: DotNetCoreCLI@2
   displayName: 'Build solution'
