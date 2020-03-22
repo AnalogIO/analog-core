@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CoffeeCard.WebApi.Models.DataTransferObjects.User
 {
-    public class RegisterDTO
+    public class RegisterDto
     {
         [Required] public string Name { get; set; }
 

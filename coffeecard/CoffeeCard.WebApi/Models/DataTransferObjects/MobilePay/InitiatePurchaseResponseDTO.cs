@@ -1,6 +1,6 @@
 namespace CoffeeCard.WebApi.Models.DataTransferObjects.MobilePay
 {
-    public class InitiatePurchaseResponseDTO
+    public class InitiatePurchaseResponseDto
     {
         public string OrderId { get; set; }
     }

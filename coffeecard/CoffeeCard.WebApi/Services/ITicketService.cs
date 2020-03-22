@@ -9,7 +9,7 @@ namespace CoffeeCard.WebApi.Services
     {
         IEnumerable<Ticket> getTickets(IEnumerable<Claim> claims, bool used);
         Ticket UseTicket(IEnumerable<Claim> claims, int productId);
-        IEnumerable<Ticket> UseMultipleTickets(IEnumerable<Claim> claims, UseMultipleTicketDTO dto);
+        IEnumerable<Ticket> UseMultipleTickets(IEnumerable<Claim> claims, UseMultipleTicketDto dto);
         IEnumerable<Models.CoffeeCard> GetCoffeeCards(IEnumerable<Claim> claims);
     }
 }

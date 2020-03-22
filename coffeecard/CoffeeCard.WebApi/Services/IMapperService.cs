@@ -10,14 +10,14 @@ namespace CoffeeCard.WebApi.Services
 {
     public interface IMapperService
     {
-        PurchaseDTO Map(Purchase purchase);
-        ProgrammeDTO Map(Programme progamme);
-        UserDTO Map(User user);
-        ProductDTO Map(Product product);
-        TicketDTO Map(Ticket ticket);
-        IEnumerable<PurchaseDTO> Map(IEnumerable<Purchase> purchases);
-        IEnumerable<ProgrammeDTO> Map(IEnumerable<Programme> programmes);
-        IEnumerable<ProductDTO> Map(IEnumerable<Product> products);
-        IEnumerable<TicketDTO> Map(IEnumerable<Ticket> tickets);
+        PurchaseDto Map(Purchase purchase);
+        ProgrammeDto Map(Programme progamme);
+        UserDto Map(User user);
+        ProductDto Map(Product product);
+        TicketDto Map(Ticket ticket);
+        IEnumerable<PurchaseDto> Map(IEnumerable<Purchase> purchases);
+        IEnumerable<ProgrammeDto> Map(IEnumerable<Programme> programmes);
+        IEnumerable<ProductDto> Map(IEnumerable<Product> products);
+        IEnumerable<TicketDto> Map(IEnumerable<Ticket> tickets);
     }
 }

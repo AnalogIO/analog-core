@@ -12,13 +12,13 @@ namespace CoffeeCard.MobilePay.Service
     public class MobilePayService : IMobilePayService
     {
         private readonly string _merchantId;
-        private readonly IMobilePayApiHttpClient _mobilePayAPIClient;
+        private readonly IMobilePayApiHttpClient _mobilePayApiClient;
         private readonly ILogger<MobilePayService> _log;
 
-        public MobilePayService(IMobilePayApiHttpClient mobilePayAPIClient, MobilePaySettings mobilePaySettings,
+        public MobilePayService(IMobilePayApiHttpClient mobilePayApiClient, MobilePaySettings mobilePaySettings,
             ILogger<MobilePayService> log)
         {
-            _mobilePayAPIClient = mobilePayAPIClient;
+            _mobilePayApiClient = mobilePayApiClient;
             _merchantId = mobilePaySettings.MerchantId;
             _log = log;
         }
@@ -30,7 +30,7 @@ namespace CoffeeCard.MobilePay.Service
             try
             {
                 var response =
-                    await _mobilePayAPIClient.SendRequest<GetPaymentStatusResponse>(
+                    await _mobilePayApiClient.SendRequest<GetPaymentStatusResponse>(
                         new GetPaymentStatusRequest(_merchantId, orderId));
 
                 _log.LogInformation(
@@ -50,7 +50,7 @@ namespace CoffeeCard.MobilePay.Service
                     _log.LogWarning($"Retrying to retrieve Payment Status. Last call failed with {exception}");
 
                     var response =
-                        await _mobilePayAPIClient.SendRequest<GetPaymentStatusResponse>(
+                        await _mobilePayApiClient.SendRequest<GetPaymentStatusResponse>(
                             new GetPaymentStatusRequest(_merchantId, orderId));
                     return response;
                 }
@@ -67,7 +67,7 @@ namespace CoffeeCard.MobilePay.Service
             try
             {
                 var response =
-                    await _mobilePayAPIClient.SendRequest<CaptureAmountResponse>(
+                    await _mobilePayApiClient.SendRequest<CaptureAmountResponse>(
                         new CaptureAmountRequest(_merchantId, orderId));
                 _log.LogInformation(
                     $"MobilePay transactionId = {response.TransactionId}, orderId = {orderId} has been captured from the MobilePay API");
@@ -96,7 +96,7 @@ namespace CoffeeCard.MobilePay.Service
             try
             {
                 var response =
-                    await _mobilePayAPIClient.SendRequest<CancelReservationResponse>(
+                    await _mobilePayApiClient.SendRequest<CancelReservationResponse>(
                         new CancelReservationRequest(_merchantId, orderId));
                 _log.LogInformation(
                     $"MobilePay transactionId = {response.TransactionId}, orderId = {orderId} has been cancelled from the MobilePay API");
@@ -125,7 +125,7 @@ namespace CoffeeCard.MobilePay.Service
             try
             {
                 var response =
-                    await _mobilePayAPIClient.SendRequest<RefundPaymentResponse>(
+                    await _mobilePayApiClient.SendRequest<RefundPaymentResponse>(
                         new RefundPaymentRequest(_merchantId, orderId));
                 _log.LogInformation(
                     $"MobilePay transactionId = {response.TransactionId}, orderId = {orderId} has been refunded from the MobilePay API");
@@ -151,7 +151,7 @@ namespace CoffeeCard.MobilePay.Service
 
         public void Dispose()
         {
-            _mobilePayAPIClient.Dispose();
+            _mobilePayApiClient.Dispose();
         }
     }
 }

@@ -32,7 +32,7 @@ namespace CoffeeCard.WebApi.Controllers
         /// </summary>
         [AllowAnonymous]
         [HttpPost("register")]
-        public IActionResult Register(RegisterDTO registerDto)
+        public IActionResult Register(RegisterDto registerDto)
         {
             _accountService.RegisterAccount(registerDto);
             return Created("register",
@@ -48,7 +48,7 @@ namespace CoffeeCard.WebApi.Controllers
         /// </summary>
         [AllowAnonymous]
         [HttpPost("login")]
-        public IActionResult Login(LoginDTO loginDto)
+        public IActionResult Login(LoginDto loginDto)
         {
             var token = _accountService.Login(loginDto.Email, loginDto.Password, loginDto.Version);
             if (token == null)
@@ -58,7 +58,7 @@ namespace CoffeeCard.WebApi.Controllers
                 return Unauthorized();
             }
 
-            return Ok(new TokenDTO {Token = token});
+            return Ok(new TokenDto {Token = token});
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace CoffeeCard.WebApi.Controllers
         ///     Updates the user and returns the updated values
         /// </summary>
         [HttpPut]
-        public IActionResult Update(UpdateUserDTO userDto)
+        public IActionResult Update(UpdateUserDto userDto)
         {
             var user = _accountService.UpdateAccount(User.Claims, userDto);
             return Ok(_mapperService.Map(user));
@@ -103,7 +103,7 @@ namespace CoffeeCard.WebApi.Controllers
         /// <returns></returns>
         [AllowAnonymous]
         [HttpPost("forgotpassword")]
-        public IActionResult ForgotPassword(EmailDTO emailDTO)
+        public IActionResult ForgotPassword(EmailDto emailDTO)
         {
             _accountService.ForgotPassword(emailDTO.Email);
 

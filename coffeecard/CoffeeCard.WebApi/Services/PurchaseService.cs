@@ -131,7 +131,7 @@ namespace CoffeeCard.WebApi.Services
             return purchase;
         }
 
-        public Purchase DeliverProduct(CompletePurchaseDTO completeDto, IEnumerable<Claim> claims)
+        public Purchase DeliverProduct(CompletePurchaseDto completeDto, IEnumerable<Claim> claims)
         {
             var userId = claims.FirstOrDefault(x => x.Type == Constants.UserId);
             if (userId == null) throw new ApiException("The token is invalid!", 401);
@@ -216,7 +216,7 @@ namespace CoffeeCard.WebApi.Services
             return orderId;
         }
 
-        public async Task<Purchase> CompletePurchase(CompletePurchaseDTO dto, IEnumerable<Claim> claims)
+        public async Task<Purchase> CompletePurchase(CompletePurchaseDto dto, IEnumerable<Claim> claims)
         {
             Log.Information(
                 $"Trying to complete purchase with orderid: {dto.OrderId} and transactionId: {dto.TransactionId}");
@@ -305,7 +305,7 @@ namespace CoffeeCard.WebApi.Services
             return response;
         }*/
 
-        public Purchase IssueProduct(IssueProductDTO issueProduct)
+        public Purchase IssueProduct(IssueProductDto issueProduct)
         {
             Log.Information(
                 $"Issuing product {issueProduct.ProductId} for user {issueProduct.UserId} with {issueProduct.IssuedBy} issuer id");
@@ -357,7 +357,7 @@ namespace CoffeeCard.WebApi.Services
             _emailService.SendInvoice(userDTO, purchaseDTO);
         }
 
-        private async Task<PaymentStatus> ValidateTransaction(CompletePurchaseDTO payment)
+        private async Task<PaymentStatus> ValidateTransaction(CompletePurchaseDto payment)
         {
             var purchase = _context.Purchases.FirstOrDefault(x => x.OrderId == payment.OrderId);
 

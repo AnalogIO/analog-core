@@ -35,7 +35,7 @@ namespace CoffeeCard.WebApi.Controllers
         ///     Uses the tickets supplied via ticketIds in the body
         /// </summary>
         [HttpPost("useMultiple")]
-        public IActionResult UseMultipleTickets([FromBody] UseMultipleTicketDTO dto)
+        public IActionResult UseMultipleTickets([FromBody] UseMultipleTicketDto dto)
         {
             var usedTickets = _ticketService.UseMultipleTickets(User.Claims, dto);
             return Ok(_mapperService.Map(usedTickets));

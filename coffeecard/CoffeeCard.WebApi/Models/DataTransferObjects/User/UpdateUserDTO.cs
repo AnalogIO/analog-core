@@ -1,6 +1,6 @@
 namespace CoffeeCard.WebApi.Models.DataTransferObjects.User
 {
-    public class UpdateUserDTO
+    public class UpdateUserDto
     {
         public string Name { get; set; }
         public string Email { get; set; }

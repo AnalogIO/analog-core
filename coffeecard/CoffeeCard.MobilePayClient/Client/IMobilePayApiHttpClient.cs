@@ -7,6 +7,6 @@ namespace CoffeeCard.MobilePay.Client
 {
     public interface IMobilePayApiHttpClient : IDisposable
     {
-        Task<T> SendRequest<T>(IMobilePayAPIRequestMessage requestMessage) where T : IMobilePayAPIResponse;
+        Task<T> SendRequest<T>(IMobilePayApiRequestMessage requestMessage) where T : IMobilePayApiResponse;
     }
 }

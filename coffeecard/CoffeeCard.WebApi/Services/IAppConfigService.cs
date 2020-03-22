@@ -4,6 +4,6 @@ namespace CoffeeCard.WebApi.Services
 {
     public interface IAppConfigService
     {
-        AppConfigDTO RetreiveConfiguration();
+        AppConfigDto RetreiveConfiguration();
     }
 }

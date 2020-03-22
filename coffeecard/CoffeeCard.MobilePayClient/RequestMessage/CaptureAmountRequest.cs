@@ -3,7 +3,7 @@ using System.Net.Http;
 
 namespace CoffeeCard.MobilePay.RequestMessage
 {
-    public sealed class CaptureAmountRequest : IMobilePayAPIRequestMessage
+    public sealed class CaptureAmountRequest : IMobilePayApiRequestMessage
     {
         private const string EndpointUri = "reservations/merchants/{0}/orders/{1}";
 

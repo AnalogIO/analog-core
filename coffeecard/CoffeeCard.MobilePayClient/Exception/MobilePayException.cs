@@ -18,7 +18,7 @@ namespace CoffeeCard.MobilePay.Exception
             _httpStatusCode = statusCode;
         }
 
-        protected MobilePayException(SerializationInfo info, StreamingContext context)
+        protected MobilePayException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
             _errorMessage = info.GetValue("ErrorMessage", typeof(IMobilePayErrorMessage)) as IMobilePayErrorMessage;
             _httpStatusCode = (HttpStatusCode) info.GetValue("HttpStatusCode", typeof(HttpStatusCode));
