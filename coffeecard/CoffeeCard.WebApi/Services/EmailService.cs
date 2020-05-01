@@ -17,6 +17,7 @@ namespace CoffeeCard.WebApi.Services
         private const string MailgunApiUrl = "https://api.mailgun.net/v3";
         private readonly IWebHostEnvironment _env;
         private readonly EnvironmentSettings _environmentSettings;
+        private readonly string _baseUrl;
 
         private readonly MailgunSettings _mailgunSettings;
 
@@ -26,12 +27,13 @@ namespace CoffeeCard.WebApi.Services
             _mailgunSettings = mailgunSettings;
             _environmentSettings = environmentSettings;
             _env = env;
+            _baseUrl = _environmentSettings.DeploymentUrl;
         }
 
         public void SendInvoice(UserDto user, PurchaseDto purchase)
         {
             var message = new MimeMessage();
-            var builder = RetrieveTemplate("invoice.html").Item1;
+            var builder = RetrieveTemplate("invoice.html");
             var utcTime = DateTime.UtcNow;
             var cetTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utcTime, "Central Europe Standard Time");
 
@@ -56,15 +58,10 @@ namespace CoffeeCard.WebApi.Services
         {
             Log.Information($"Sending registration verification email to {user.Email} ({user.Id})");
             var message = new MimeMessage();
-            var builderAndBaseUrl = RetrieveTemplate("email_verify_registration.html");
-            var builder = builderAndBaseUrl.Item1;
-            var baseUrl = builderAndBaseUrl.Item2;
-
-            builder.HtmlBody = builder.HtmlBody.Replace("{token}", token);
-            builder.HtmlBody = builder.HtmlBody.Replace("{email}", user.Email);
-            builder.HtmlBody = builder.HtmlBody.Replace("{name}", user.Name);
-            builder.HtmlBody = builder.HtmlBody.Replace("{expiry}", "24 hours");
-            builder.HtmlBody = builder.HtmlBody.Replace("{baseUrl}", baseUrl);
+            var builder = RetrieveTemplate("email_verify_registration.html");
+            const string endpoint = "verifyemail?token=";
+            
+            builder = BuildVerifyEmail(builder, token, user.Email, user.Name, endpoint);
 
             message.To.Add(new MailboxAddress(user.Name, user.Email));
             message.Subject = "Verify your Cafe Analog account";
@@ -77,16 +74,11 @@ namespace CoffeeCard.WebApi.Services
         public void SendVerificationEmailForChangedEmail(User user, string token, string newEmail)
         {
             var message = new MimeMessage();
-            var builderAndBaseUrl = RetrieveTemplate("email_verify_updatedemail.html");
-            var builder = builderAndBaseUrl.Item1;
-            var baseUrl = builderAndBaseUrl.Item2;
-
-            builder.HtmlBody = builder.HtmlBody.Replace("{token}", token);
-            builder.HtmlBody = builder.HtmlBody.Replace("{email}", user.Email);
+            var builder = RetrieveTemplate("email_verify_updatedemail.html");
+            const string endpoint = ""; //TODO Endpoint does not currently exist, consider removing method
+            
+            builder = BuildVerifyEmail(builder, token, user.Email, user.Name, endpoint);
             builder.HtmlBody = builder.HtmlBody.Replace("{newEmail}", newEmail);
-            builder.HtmlBody = builder.HtmlBody.Replace("{name}", user.Name);
-            builder.HtmlBody = builder.HtmlBody.Replace("{expiry}", "24 hours");
-            builder.HtmlBody = builder.HtmlBody.Replace("{baseUrl}", baseUrl);
 
             message.To.Add(new MailboxAddress(user.Name, user.Email));
             message.Subject = "Verify your new email for your Cafe Analog account";
@@ -99,15 +91,10 @@ namespace CoffeeCard.WebApi.Services
         public void SendVerificationEmailForLostPw(User user, string token)
         {
             var message = new MimeMessage();
-            var builderAndBaseUrl = RetrieveTemplate("email_verify_lostpassword.html");
-            var builder = builderAndBaseUrl.Item1;
-            var baseUrl = builderAndBaseUrl.Item2;
-
-            builder.HtmlBody = builder.HtmlBody.Replace("{token}", token);
-            builder.HtmlBody = builder.HtmlBody.Replace("{email}", user.Email);
-            builder.HtmlBody = builder.HtmlBody.Replace("{name}", user.Name);
-            builder.HtmlBody = builder.HtmlBody.Replace("{expiry}", "24 hours");
-            builder.HtmlBody = builder.HtmlBody.Replace("{baseUrl}", baseUrl);
+            var builder = RetrieveTemplate("email_verify_lostpassword.html");
+            const string endpoint = "recover?token=";
+            
+            builder = BuildVerifyEmail(builder, token, user.Email, user.Name, endpoint);
 
             message.To.Add(new MailboxAddress(user.Name, user.Email));
             message.Subject = "Cafe Analog account lost PIN request";
@@ -117,10 +104,20 @@ namespace CoffeeCard.WebApi.Services
             SendEmail(message);
         }
 
-        private (BodyBuilder, string) RetrieveTemplate(string templateName)
+        private BodyBuilder BuildVerifyEmail(BodyBuilder builder, string token, string email, string name, string endpoint)
         {
-            var baseUrl = _environmentSettings.DeploymentUrl;
+            builder.HtmlBody = builder.HtmlBody.Replace("{email}", email);
+            builder.HtmlBody = builder.HtmlBody.Replace("{name}", name);
+            builder.HtmlBody = builder.HtmlBody.Replace("{expiry}", "24 hours");
+            builder.HtmlBody = builder.HtmlBody.Replace("{baseUrl}", _baseUrl);
+            builder.HtmlBody = builder.HtmlBody.Replace("{endpoint}", endpoint);
+            builder.HtmlBody = builder.HtmlBody.Replace("{token}", token);
 
+            return builder;
+        }
+
+        private BodyBuilder RetrieveTemplate(string templateName)
+        {
             var pathToTemplate = _env.WebRootPath
                                  + Path.DirectorySeparatorChar
                                  + "Templates"
@@ -136,7 +133,7 @@ namespace CoffeeCard.WebApi.Services
                 builder.HtmlBody = sourceReader.ReadToEnd();
             }
 
-            return (builder, baseUrl);
+            return builder;
         }
 
         private void SendEmail(MimeMessage mail)
