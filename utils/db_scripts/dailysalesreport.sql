@@ -1,3 +1,5 @@
+-- Select daily sales, grouped by product, within from and to date
+-- Exclude vouchers and purchases sold by baristas in the POS app
 SELECT
 	CONVERT(DATE, ph.DateCreated) as 'Date',
 	p.Name as 'Product name',
