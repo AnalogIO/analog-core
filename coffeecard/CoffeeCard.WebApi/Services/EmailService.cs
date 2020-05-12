@@ -14,10 +14,8 @@ namespace CoffeeCard.WebApi.Services
 {
     public class EmailService : IEmailService
     {
-        private const string MailgunApiUrl = "https://api.mailgun.net/v3";
         private readonly IWebHostEnvironment _env;
         private readonly EnvironmentSettings _environmentSettings;
-        private readonly string _baseUrl;
 
         private readonly MailgunSettings _mailgunSettings;
 
@@ -27,7 +25,6 @@ namespace CoffeeCard.WebApi.Services
             _mailgunSettings = mailgunSettings;
             _environmentSettings = environmentSettings;
             _env = env;
-            _baseUrl = _environmentSettings.DeploymentUrl;
         }
 
         public void SendInvoice(UserDto user, PurchaseDto purchase)
@@ -73,6 +70,8 @@ namespace CoffeeCard.WebApi.Services
 
         public void SendVerificationEmailForChangedEmail(User user, string token, string newEmail)
         {
+            throw new NotImplementedException();
+            //TODO rethink current flow of updating emails. Currently the email is being updated in the database before an
             var message = new MimeMessage();
             var builder = RetrieveTemplate("email_verify_updatedemail.html");
             const string endpoint = ""; //TODO Endpoint does not currently exist, consider removing method
@@ -106,10 +105,12 @@ namespace CoffeeCard.WebApi.Services
 
         private BodyBuilder BuildVerifyEmail(BodyBuilder builder, string token, string email, string name, string endpoint)
         {
+            var baseUrl = _environmentSettings.DeploymentUrl;
+            
             builder.HtmlBody = builder.HtmlBody.Replace("{email}", email);
             builder.HtmlBody = builder.HtmlBody.Replace("{name}", name);
             builder.HtmlBody = builder.HtmlBody.Replace("{expiry}", "24 hours");
-            builder.HtmlBody = builder.HtmlBody.Replace("{baseUrl}", _baseUrl);
+            builder.HtmlBody = builder.HtmlBody.Replace("{baseUrl}", baseUrl);
             builder.HtmlBody = builder.HtmlBody.Replace("{endpoint}", endpoint);
             builder.HtmlBody = builder.HtmlBody.Replace("{token}", token);
 
@@ -140,7 +141,7 @@ namespace CoffeeCard.WebApi.Services
         {
             var client = new RestClient
             {
-                BaseUrl = new Uri(MailgunApiUrl),
+                BaseUrl = new Uri(_mailgunSettings.MailgunApiUrl),
                 Authenticator = new HttpBasicAuthenticator("api", _mailgunSettings.ApiKey)
             };
 
