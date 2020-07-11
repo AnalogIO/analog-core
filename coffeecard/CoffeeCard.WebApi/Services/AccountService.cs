@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -15,16 +17,17 @@ namespace CoffeeCard.WebApi.Services
 {
     public class AccountService : IAccountService
     {
+        private readonly EnvironmentSettings _environmentSettings;
         private readonly CoffeeCardContext _context;
         private readonly IEmailService _emailService;
-        private readonly EnvironmentSettings _environmentSettings;
         private readonly IHashService _hashService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ITokenService _tokenService;
+        private readonly ILoginLimiter _loginLimiter;
+        private readonly IdentitySettings _identitySettings;
 
-        public AccountService(CoffeeCardContext context, EnvironmentSettings environmentSettings,
-            ITokenService tokenService,
-            IEmailService emailService, IHashService hashService, IHttpContextAccessor httpContextAccessor)
+        public AccountService(CoffeeCardContext context, EnvironmentSettings environmentSettings, ITokenService tokenService,
+            IEmailService emailService, IHashService hashService, IHttpContextAccessor httpContextAccessor, ILoginLimiter loginLimiter, IdentitySettings identitySettings)
         {
             _context = context;
             _environmentSettings = environmentSettings;
@@ -32,6 +35,8 @@ namespace CoffeeCard.WebApi.Services
             _emailService = emailService;
             _hashService = hashService;
             _httpContextAccessor = httpContextAccessor;
+            _loginLimiter = loginLimiter;
+            _identitySettings = identitySettings;
         }
 
         public string Login(string username, string password, string version)
@@ -40,9 +45,24 @@ namespace CoffeeCard.WebApi.Services
 
             ValidateVersion(version);
 
+            var timeout = _identitySettings.TimeOut;
+            var maxAttempts = _identitySettings.MaximumLoginAttempts;
+
             var user = _context.Users.FirstOrDefault(x => x.Email == username && x.IsVerified);
             if (user != null)
             {
+                var mapEntry = _loginLimiter.UpdateAndGetLoginAttemptCount(user.Email);
+
+                var loginAttemptsMade = mapEntry.Item2;
+                var timeSinceFirstFailedLogin = DateTime.UtcNow.Subtract(mapEntry.Item1);
+                if (loginAttemptsMade == maxAttempts && timeSinceFirstFailedLogin < timeout)
+                {
+                    Log.Warning("Login attempts exceeding maximum allowed for e-mail = {username} from IP = {ipadress} ", username,
+                        _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
+                    throw new ApiException($"Amount of failed login attempts exceeds the allowed amount, please wait for {timeout.TotalMinutes} minutes",
+                        429);
+                }
+                
                 var hashedPw = _hashService.Hash(password + user.Salt);
                 if (user.Password.Equals(hashedPw))
                 {
@@ -55,6 +75,8 @@ namespace CoffeeCard.WebApi.Services
 
                     // check for incomplete purchases //TODO Fix this and reimplement
                     //_purchaseService.CheckIncompletePurchases(user);
+
+                    _loginLimiter.RemoveEntry(user.Email);
 
                     return token;
                 }

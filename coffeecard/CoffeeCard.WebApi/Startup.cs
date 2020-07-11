@@ -46,6 +46,7 @@ namespace CoffeeCard.WebApi
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IHashService, HashService>();
             services.AddTransient<ITokenService, TokenService>();
+            services.AddSingleton<ILoginLimiter, LoginLimiter>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IPurchaseService, PurchaseService>();
             services.AddScoped<IMapperService, MapperService>();
