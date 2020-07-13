@@ -27,7 +27,7 @@ namespace CoffeeCard.WebApi.Services
         private readonly IdentitySettings _identitySettings;
 
         public AccountService(CoffeeCardContext context, EnvironmentSettings environmentSettings, ITokenService tokenService,
-            IEmailService emailService, IHashService hashService, IHttpContextAccessor httpContextAccessor, ILoginLimiter loginLimiter, IdentitySettings identitySettings)
+            IEmailService emailService, IHashService hashService, IHttpContextAccessor httpContextAccessor, ILoginLimiter loginLimiter)
         {
             _context = context;
             _environmentSettings = environmentSettings;
@@ -36,7 +36,6 @@ namespace CoffeeCard.WebApi.Services
             _hashService = hashService;
             _httpContextAccessor = httpContextAccessor;
             _loginLimiter = loginLimiter;
-            _identitySettings = identitySettings;
         }
 
         public string Login(string username, string password, string version)
@@ -45,22 +44,15 @@ namespace CoffeeCard.WebApi.Services
 
             ValidateVersion(version);
 
-            var timeout = _identitySettings.TimeOut;
-            var maxAttempts = _identitySettings.MaximumLoginAttempts;
-
             var user = _context.Users.FirstOrDefault(x => x.Email == username && x.IsVerified);
             if (user != null)
             {
-                var mapEntry = _loginLimiter.UpdateAndGetLoginAttemptCount(user.Email);
 
-                var loginAttemptsMade = mapEntry.Item2;
-                var timeSinceFirstFailedLogin = DateTime.UtcNow.Subtract(mapEntry.Item1);
-                if (loginAttemptsMade == maxAttempts && timeSinceFirstFailedLogin < timeout)
+                if (!_loginLimiter.LoginAllowed(user))
                 {
-                    Log.Warning("Login attempts exceeding maximum allowed for e-mail = {username} from IP = {ipadress} ", username,
+                    Log.Warning("Login attempts exceeding maximum allowed for e-mail = {username} from IP = {ipaddress} ", username,
                         _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
-                    throw new ApiException($"Amount of failed login attempts exceeds the allowed amount, please wait for {timeout.TotalMinutes} minutes",
-                        429);
+                    throw new ApiException($"Amount of failed login attempts exceeds the allowed amount, please wait a while before trying again", 429);
                 }
                 
                 var hashedPw = _hashService.Hash(password + user.Salt);
@@ -76,7 +68,7 @@ namespace CoffeeCard.WebApi.Services
                     // check for incomplete purchases //TODO Fix this and reimplement
                     //_purchaseService.CheckIncompletePurchases(user);
 
-                    _loginLimiter.RemoveEntry(user.Email);
+                    _loginLimiter.ResetLoginAttemptsForUser(user);
 
                     return token;
                 }

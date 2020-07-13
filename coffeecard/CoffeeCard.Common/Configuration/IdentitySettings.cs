@@ -11,10 +11,10 @@ namespace CoffeeCard.Common.Configuration
         [Required]
         public string AdminToken { get; set; }
         [Required]
-        public int MaximumLoginAttempts { get; set; }
+        public int MaximumLoginAttemptsWithinTimeOut { get; set; }
         [Required]
-        public TimeSpan TimeOut { get; set; }
-        
+        public int TimeOutPeriodInMinutes { get; set; }
+
         public void Validate()
         {
             Validator.ValidateObject(this, new ValidationContext(this), validateAllProperties: true);

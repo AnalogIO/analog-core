@@ -1,10 +1,11 @@
 using System;
+using CoffeeCard.WebApi.Models;
 
 namespace CoffeeCard.WebApi.Services
 {
     public interface ILoginLimiter
     {
-        (DateTime, int) UpdateAndGetLoginAttemptCount(string email);
-        void RemoveEntry(string email);
+        bool LoginAllowed(User user);
+        void ResetLoginAttemptsForUser(User user);
     }
 }
