@@ -1,18 +1,14 @@
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using CoffeeCard.Common.Configuration;
-using CoffeeCard.WebApi.Helpers;
 using CoffeeCard.WebApi.Models;
-using Microsoft.AspNetCore.Http;
-using Org.BouncyCastle.Asn1.Cms;
 using Serilog;
 
 namespace CoffeeCard.WebApi.Services
 {
     public class LoginLimiter : ILoginLimiter
     {
-        private ConcurrentDictionary<string, (DateTime, int)> _loginAttempts;
+        private readonly ConcurrentDictionary<string, (DateTime, int)> _loginAttempts;
         private readonly IdentitySettings _identitySettings;
 
         public LoginLimiter(IdentitySettings identitySettings)

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -60,7 +59,6 @@ namespace CoffeeCard.Tests.Unit.Services
                 SchemaName = "test"
             };
             var environmentSettings = new EnvironmentSettings();
-            var identitySettings = new IdentitySettings(){AdminToken = "test",MaximumLoginAttemptsWithinTimeOut = 5, TimeOutPeriodInMinutes = 1, TokenKey = "token"};
 
             var expectedResult = true;
             bool result;

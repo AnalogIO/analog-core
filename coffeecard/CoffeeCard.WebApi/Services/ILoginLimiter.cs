@@ -1,4 +1,3 @@
-using System;
 using CoffeeCard.WebApi.Models;
 
 namespace CoffeeCard.WebApi.Services

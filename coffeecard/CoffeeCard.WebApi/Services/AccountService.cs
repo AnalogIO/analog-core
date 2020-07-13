@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -24,7 +22,6 @@ namespace CoffeeCard.WebApi.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ITokenService _tokenService;
         private readonly ILoginLimiter _loginLimiter;
-        private readonly IdentitySettings _identitySettings;
 
         public AccountService(CoffeeCardContext context, EnvironmentSettings environmentSettings, ITokenService tokenService,
             IEmailService emailService, IHashService hashService, IHttpContextAccessor httpContextAccessor, ILoginLimiter loginLimiter)
