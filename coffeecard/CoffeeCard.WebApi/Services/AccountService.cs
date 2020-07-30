@@ -49,7 +49,7 @@ namespace CoffeeCard.WebApi.Services
                 {
                     Log.Warning("Login attempts exceeding maximum allowed for e-mail = {username} from IP = {ipaddress} ", username,
                         _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
-                    throw new ApiException($"Amount of failed login attempts exceeds the allowed amount, please wait a while before trying again", 429);
+                    throw new ApiException("Amount of failed login attempts exceeds the allowed amount, please wait a while before trying again", 429);
                 }
                 
                 var hashedPw = _hashService.Hash(password + user.Salt);

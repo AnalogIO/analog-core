@@ -28,7 +28,8 @@ namespace CoffeeCard.WebApi.Services
         /// </returns>
         private (DateTime, int) UpdateAndGetLoginAttemptCount(string email)
         {
-            return _loginAttempts.AddOrUpdate(email, (DateTime.UtcNow, 0), (key, value) => (value.Item1, value.Item2 +1));
+            return _loginAttempts.AddOrUpdate(email, (DateTime.UtcNow, 0),
+                (key, value) => (value.Item1, value.Item2 + 1));
         }
 
         /// <summary>
@@ -53,10 +54,13 @@ namespace CoffeeCard.WebApi.Services
             var timeOutPeriod = new TimeSpan(0, _identitySettings.TimeOutPeriodInMinutes, 0);
             var timeSinceFirstFailedLogin = DateTime.UtcNow.Subtract(firstFailedLogin);
 
-            
-            if(loginAttemptsMade % 5 == 0 && timeSinceFirstFailedLogin > timeOutPeriod) ResetUsersTimeoutPeriod(user.Email);
+            var maximumLoginAttemptsWithinTimeOut = _identitySettings.MaximumLoginAttemptsWithinTimeOut;
 
-            return loginAttemptsMade < _identitySettings.MaximumLoginAttemptsWithinTimeOut || timeSinceFirstFailedLogin > timeOutPeriod;
+            if (loginAttemptsMade % maximumLoginAttemptsWithinTimeOut == 0 && timeSinceFirstFailedLogin > timeOutPeriod) //If the timeout period is exceeded it will reset it whenever loginAttemptsMade % x = 0, where x is the maximum login attempts made. I.e. x number of logins will be allowed before the timer is reset again
+                ResetUsersTimeoutPeriod(user.Email);
+
+            return loginAttemptsMade < maximumLoginAttemptsWithinTimeOut || //If the amount of login attempts made exceeds the allowed amount, it returns false
+                   timeSinceFirstFailedLogin > timeOutPeriod; //If the time since first failed login exceeds the timeout period, returns true. This also means if the timeSinceFirstFailedLogin is never reset, all login attempts made after the initial timeout period will be allowed
         }
 
         /// <summary>
