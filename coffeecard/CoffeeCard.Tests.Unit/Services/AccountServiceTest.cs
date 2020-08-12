@@ -28,6 +28,10 @@ namespace CoffeeCard.Tests.Unit.Services
                 SchemaName = "test"
             };
             var environmentSettings = new EnvironmentSettings();
+            var loginLimiterSettings = new LoginLimiterSettings()
+            {
+                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 5, TimeOutPeriodInMinutes = 5
+            };
 
             var expectedResult = false;
             bool result;
@@ -37,7 +41,7 @@ namespace CoffeeCard.Tests.Unit.Services
             {
                 var accountService = new AccountService(context, environmentSettings, new Mock<ITokenService>().Object,
                     new Mock<IEmailService>().Object, new Mock<IHashService>().Object,
-                    new Mock<IHttpContextAccessor>().Object, new Mock<ILoginLimiter>().Object);
+                    new Mock<IHttpContextAccessor>().Object, new Mock<ILoginLimiter>().Object, loginLimiterSettings);
                 result = await accountService.RecoverUser("bogus", "3433");
             }
 
@@ -57,6 +61,10 @@ namespace CoffeeCard.Tests.Unit.Services
                 SchemaName = "test"
             };
             var environmentSettings = new EnvironmentSettings();
+            var loginLimiterSettings = new LoginLimiterSettings()
+            {
+                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 5, TimeOutPeriodInMinutes = 5
+            };
 
             var expectedResult = true;
             bool result;
@@ -81,7 +89,7 @@ namespace CoffeeCard.Tests.Unit.Services
 
                 var accountService = new AccountService(context, environmentSettings, tokenService.Object,
                     new Mock<IEmailService>().Object, new Mock<IHashService>().Object,
-                    new Mock<IHttpContextAccessor>().Object, new Mock<ILoginLimiter>().Object);
+                    new Mock<IHttpContextAccessor>().Object, new Mock<ILoginLimiter>().Object, loginLimiterSettings);
 
                 result = await accountService.RecoverUser("valid", "3433");
             }
@@ -102,6 +110,10 @@ namespace CoffeeCard.Tests.Unit.Services
                 SchemaName = "test"
             };
             var environmentSettings = new EnvironmentSettings();
+            var loginLimiterSettings = new LoginLimiterSettings()
+            {
+                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 5, TimeOutPeriodInMinutes = 5
+            };
 
             var claim = new Claim(ClaimTypes.Email, "test@email.dk");
             var claims = new List<Claim> {claim};
@@ -128,7 +140,7 @@ namespace CoffeeCard.Tests.Unit.Services
 
                 var accountService = new AccountService(context, environmentSettings, tokenService.Object,
                     new Mock<IEmailService>().Object, new Mock<IHashService>().Object,
-                    new Mock<IHttpContextAccessor>().Object, new Mock<ILoginLimiter>().Object);
+                    new Mock<IHttpContextAccessor>().Object, new Mock<ILoginLimiter>().Object, loginLimiterSettings);
 
                 await accountService.RecoverUser("valid", "3433");
 
@@ -157,10 +169,9 @@ namespace CoffeeCard.Tests.Unit.Services
             };
             var environmentSettings = new EnvironmentSettings()
                 {DeploymentUrl = "test", EnvironmentType = EnvironmentType.Test, MinAppVersion = "2.1.0"};
-            var identitySettings = new IdentitySettings()
+            var loginLimiterSettings = new LoginLimiterSettings()
             {
-                AdminToken = "test", MaximumLoginAttemptsWithinTimeOut = 5, TimeOutPeriodInMinutes = 5,
-                TokenKey = "token"
+                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 5, TimeOutPeriodInMinutes = 5
             };
 
             var userTokens = new List<Token>();
@@ -187,7 +198,7 @@ namespace CoffeeCard.Tests.Unit.Services
 
                 var accountService = new AccountService(context, environmentSettings, tokenService.Object,
                     new Mock<IEmailService>().Object, hasher.Object,
-                    new Mock<IHttpContextAccessor>().Object, new LoginLimiter(identitySettings));
+                    new Mock<IHttpContextAccessor>().Object, new LoginLimiter(loginLimiterSettings), loginLimiterSettings);
 
                 actualToken = accountService.Login(user.Email, user.Password, "2.1.0");
             }
@@ -196,7 +207,7 @@ namespace CoffeeCard.Tests.Unit.Services
             Assert.Equal(expectedToken, actualToken);
         }
 
-        [Fact(DisplayName = "Login rejects after five failed logins")]
+        [Fact(DisplayName = "LoginLimiter is called if limiter is enabled")]
         public async Task LoginRejectsAfterFiveFailedLogins()
         {
             // Arrange
@@ -209,10 +220,9 @@ namespace CoffeeCard.Tests.Unit.Services
             };
             var environmentSettings = new EnvironmentSettings()
                 {DeploymentUrl = "test", EnvironmentType = EnvironmentType.Test, MinAppVersion = "2.1.0"};
-            var identitySettings = new IdentitySettings()
+            var loginLimiterSettings = new LoginLimiterSettings()
             {
-                AdminToken = "test", MaximumLoginAttemptsWithinTimeOut = 5, TimeOutPeriodInMinutes = 5,
-                TokenKey = "token"
+                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 5, TimeOutPeriodInMinutes = 5
             };
 
             var userTokens = new List<Token>();
@@ -223,7 +233,109 @@ namespace CoffeeCard.Tests.Unit.Services
             };
 
             var wrongPass = "wrongPassword";
-            var hasher = new Mock<IHashService>();
+
+            var httpContextAccessor = new Mock<IHttpContextAccessor>();
+            httpContextAccessor.Setup(h => h.HttpContext).Returns(new DefaultHttpContext().HttpContext);
+            
+            var loginLimiter = new Mock<ILoginLimiter>();
+            loginLimiter.Setup(l => l.LoginAllowed(user)).Returns(true);
+
+            // Act
+            await using (var context = new CoffeeCardContext(builder.Options, databaseSettings))
+            {
+                context.Add(user);
+                context.SaveChanges();
+
+                var accountService = new AccountService(context, environmentSettings, new Mock<ITokenService>().Object,
+                    new Mock<IEmailService>().Object, new HashService(), httpContextAccessor.Object,
+                    loginLimiter.Object, loginLimiterSettings);
+
+                //Attempts to login
+                Assert.Throws<ApiException>(() => accountService.Login(user.Email, wrongPass, "2.1.0"));
+                
+                // Assert
+                loginLimiter.Verify(l => l.LoginAllowed(user), Times.Once);
+
+            }
+        }
+        
+        [Fact(DisplayName = "LoginLimiter not called if limiter is disabled")]
+        public async Task LoginLimiterNotCalledWhenDisabled()
+        {
+            // Arrange
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
+                .UseInMemoryDatabase(nameof(LoginLimiterNotCalledWhenDisabled));
+
+            var databaseSettings = new DatabaseSettings()
+            {
+                SchemaName = "test"
+            };
+            var environmentSettings = new EnvironmentSettings()
+                {DeploymentUrl = "test", EnvironmentType = EnvironmentType.Test, MinAppVersion = "2.1.0"};
+            var loginLimiterSettings = new LoginLimiterSettings()
+            {
+                IsEnabled = false, MaximumLoginAttemptsWithinTimeOut = 5, TimeOutPeriodInMinutes = 5
+            };
+
+            var userTokens = new List<Token>();
+            var user = new User
+            {
+                Id = 1, Name = "test", Tokens = userTokens, Email = "test@email.dk", Programme = new Programme(),
+                Password = "test", IsVerified = true
+            };
+
+            var wrongPass = "wrongPassword";
+
+            var httpContextAccessor = new Mock<IHttpContextAccessor>();
+            httpContextAccessor.Setup(h => h.HttpContext).Returns(new DefaultHttpContext().HttpContext);
+            
+            var loginLimiter = new Mock<ILoginLimiter>();
+            loginLimiter.Setup(l => l.LoginAllowed(user)).Returns(true);
+
+            // Act
+            await using (var context = new CoffeeCardContext(builder.Options, databaseSettings))
+            {
+                context.Add(user);
+                context.SaveChanges();
+
+                var accountService = new AccountService(context, environmentSettings, new Mock<ITokenService>().Object,
+                    new Mock<IEmailService>().Object, new HashService(), httpContextAccessor.Object,
+                    loginLimiter.Object, loginLimiterSettings);
+
+                //Attempts to login
+                Assert.Throws<ApiException>(() => accountService.Login(user.Email, wrongPass, "2.1.0"));
+                
+                // Assert
+                loginLimiter.Verify(l => l.LoginAllowed(user), Times.Never);
+            }
+        }
+        
+        [Fact(DisplayName = "Login throws exception when limit is reached and limiter is enabled")]
+        public async Task LoginThrowsExceptionWhenLimitIsReached()
+        {
+            // Arrange
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
+                .UseInMemoryDatabase(nameof(LoginThrowsExceptionWhenLimitIsReached));
+
+            var databaseSettings = new DatabaseSettings()
+            {
+                SchemaName = "test"
+            };
+            var environmentSettings = new EnvironmentSettings()
+                {DeploymentUrl = "test", EnvironmentType = EnvironmentType.Test, MinAppVersion = "2.1.0"};
+            var loginLimiterSettings = new LoginLimiterSettings()
+            {
+                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 1, TimeOutPeriodInMinutes = 1
+            };
+
+            var userTokens = new List<Token>();
+            var user = new User
+            {
+                Id = 1, Name = "test", Tokens = userTokens, Email = "test@email.dk", Programme = new Programme(),
+                Password = "test", IsVerified = true
+            };
+
+            var wrongPass = "wrongPassword";
 
             var httpContextAccessor = new Mock<IHttpContextAccessor>();
             httpContextAccessor.Setup(h => h.HttpContext).Returns(new DefaultHttpContext().HttpContext);
@@ -235,14 +347,10 @@ namespace CoffeeCard.Tests.Unit.Services
                 context.SaveChanges();
 
                 var accountService = new AccountService(context, environmentSettings, new Mock<ITokenService>().Object,
-                    new Mock<IEmailService>().Object, hasher.Object, httpContextAccessor.Object,
-                    new LoginLimiter(identitySettings));
+                    new Mock<IEmailService>().Object, new HashService(), httpContextAccessor.Object,
+                    new LoginLimiter(loginLimiterSettings), loginLimiterSettings);
 
-                //Attempts to login 5 time with the wrong credentials 
-                Assert.Throws<ApiException>(() => accountService.Login(user.Email, wrongPass, "2.1.0"));
-                Assert.Throws<ApiException>(() => accountService.Login(user.Email, wrongPass, "2.1.0"));
-                Assert.Throws<ApiException>(() => accountService.Login(user.Email, wrongPass, "2.1.0"));
-                Assert.Throws<ApiException>(() => accountService.Login(user.Email, wrongPass, "2.1.0"));
+                //Attempts to login with the wrong credentials 
                 Assert.Throws<ApiException>(() => accountService.Login(user.Email, wrongPass, "2.1.0"));
 
                 //Attempts to login a sixth time with the same credentials and captures the exception 
@@ -251,7 +359,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 // Assert
                 var expectedException =
                     new ApiException(
-                        $"Amount of failed login attempts exceeds the allowed amount, please wait a while before trying again",
+                        $"Amount of failed login attempts exceeds the allowed amount, please wait for {loginLimiterSettings.TimeOutPeriodInMinutes} minutes before trying again",
                         429);
                 Assert.Equal(tooManyLoginsException.StatusCode, expectedException.StatusCode);
                 Assert.Equal(tooManyLoginsException.Message, expectedException.Message);

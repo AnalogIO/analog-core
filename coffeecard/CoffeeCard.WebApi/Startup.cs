@@ -132,6 +132,7 @@ namespace CoffeeCard.WebApi
             // Parse and setup settings from configuration
             services.ConfigureValidatableSetting<DatabaseSettings>(Configuration.GetSection("DatabaseSettings"));
             services.ConfigureValidatableSetting<EnvironmentSettings>(Configuration.GetSection("EnvironmentSettings"));
+            services.ConfigureValidatableSetting<LoginLimiterSettings>(Configuration.GetSection("LoginLimiterSettings"));
             services.ConfigureValidatableSetting<IdentitySettings>(Configuration.GetSection("IdentitySettings"));
             services.ConfigureValidatableSetting<MailgunSettings>(Configuration.GetSection("MailgunSettings"));
             services.ConfigureValidatableSetting<MobilePaySettings>(Configuration.GetSection("MobilePaySettings"));

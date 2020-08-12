@@ -13,10 +13,9 @@ namespace CoffeeCard.Tests.Unit.Services
         public void LoginAllowsLoginsAfterTimeout()
         {
             // Arrange
-            var identitySettings = new IdentitySettings()
+            var loginLimiterSettings = new LoginLimiterSettings()
             {
-                AdminToken = "test", MaximumLoginAttemptsWithinTimeOut = 5, TimeOutPeriodInMinutes = 1,
-                TokenKey = "token"
+                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 5, TimeOutPeriodInMinutes = 1
             };
             var user = new User
             {
@@ -24,7 +23,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 Password = "test", IsVerified = true
             };
             
-            var loginLimiter = new LoginLimiter(identitySettings);
+            var loginLimiter = new LoginLimiter(loginLimiterSettings);
 
             const bool lockedOutExpected = false;
             const bool loginAllowedAgainExpected = true;
@@ -49,10 +48,9 @@ namespace CoffeeCard.Tests.Unit.Services
         public void LoginLockoutsTwice()
         {
             // Arrange
-            var identitySettings = new IdentitySettings()
+            var loginLimiterSettings = new LoginLimiterSettings()
             {
-                AdminToken = "test", MaximumLoginAttemptsWithinTimeOut = 5, TimeOutPeriodInMinutes = 1,
-                TokenKey = "token"
+                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 5, TimeOutPeriodInMinutes = 1
             };
             var user = new User
             {
@@ -60,9 +58,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 Password = "test", IsVerified = true
             };
             
-            var loginLimiter = new LoginLimiter(identitySettings);
-
-            const bool expectedLockoutResult = false;
+            var loginLimiter = new LoginLimiter(loginLimiterSettings);
             
             // Act
             //Triggers the lockout by attempting login 5 times in a row
@@ -71,6 +67,7 @@ namespace CoffeeCard.Tests.Unit.Services
             loginLimiter.LoginAllowed(user);
             loginLimiter.LoginAllowed(user);
             loginLimiter.LoginAllowed(user);
+            var actualFirstLockoutResult = loginLimiter.LoginAllowed(user); //Checks that you are actually locked after the first series of attempts
             Thread.Sleep(60001); //Passes the lockout time 
 
             //Triggers the lockout again by another 5 attempted logins in a row
@@ -82,7 +79,8 @@ namespace CoffeeCard.Tests.Unit.Services
             
             var actualLogoutResult = loginLimiter.LoginAllowed(user); //Checks that you are actually locked after the second series of attempts
             
-            Assert.Equal(expectedLockoutResult, actualLogoutResult);
+            Assert.False(actualFirstLockoutResult);
+            Assert.False(actualLogoutResult);
         }
     }
 }

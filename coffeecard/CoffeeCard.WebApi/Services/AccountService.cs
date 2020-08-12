@@ -16,6 +16,7 @@ namespace CoffeeCard.WebApi.Services
     public class AccountService : IAccountService
     {
         private readonly EnvironmentSettings _environmentSettings;
+        private readonly LoginLimiterSettings _loginLimiterSettings;
         private readonly CoffeeCardContext _context;
         private readonly IEmailService _emailService;
         private readonly IHashService _hashService;
@@ -24,7 +25,7 @@ namespace CoffeeCard.WebApi.Services
         private readonly ILoginLimiter _loginLimiter;
 
         public AccountService(CoffeeCardContext context, EnvironmentSettings environmentSettings, ITokenService tokenService,
-            IEmailService emailService, IHashService hashService, IHttpContextAccessor httpContextAccessor, ILoginLimiter loginLimiter)
+            IEmailService emailService, IHashService hashService, IHttpContextAccessor httpContextAccessor, ILoginLimiter loginLimiter, LoginLimiterSettings loginLimiterSettings)
         {
             _context = context;
             _environmentSettings = environmentSettings;
@@ -33,6 +34,7 @@ namespace CoffeeCard.WebApi.Services
             _hashService = hashService;
             _httpContextAccessor = httpContextAccessor;
             _loginLimiter = loginLimiter;
+            _loginLimiterSettings = loginLimiterSettings;
         }
 
         public string Login(string username, string password, string version)
@@ -45,11 +47,11 @@ namespace CoffeeCard.WebApi.Services
             if (user != null)
             {
 
-                if (!_loginLimiter.LoginAllowed(user))
+                if (_loginLimiterSettings.IsEnabled && !_loginLimiter.LoginAllowed(user)) //Login limiter is only called if it is enabled in the settings
                 {
                     Log.Warning("Login attempts exceeding maximum allowed for e-mail = {username} from IP = {ipaddress} ", username,
                         _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
-                    throw new ApiException("Amount of failed login attempts exceeds the allowed amount, please wait a while before trying again", 429);
+                    throw new ApiException($"Amount of failed login attempts exceeds the allowed amount, please wait for {_loginLimiterSettings.TimeOutPeriodInMinutes} minutes before trying again", 429);
                 }
                 
                 var hashedPw = _hashService.Hash(password + user.Salt);

@@ -1,14 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using NetEscapades.Configuration.Validation;
 
 namespace CoffeeCard.Common.Configuration
 {
-    public class IdentitySettings : IValidatable
+    public class LoginLimiterSettings : IValidatable
     {
         [Required]
-        public string TokenKey { get; set; }
+        public bool IsEnabled { get; set; }
         [Required]
-        public string AdminToken { get; set; }
+        public int MaximumLoginAttemptsWithinTimeOut { get; set; }
+        [Required]
+        public int TimeOutPeriodInMinutes { get; set; }
 
         public void Validate()
         {

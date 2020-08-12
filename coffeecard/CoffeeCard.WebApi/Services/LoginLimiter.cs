@@ -9,12 +9,12 @@ namespace CoffeeCard.WebApi.Services
     public class LoginLimiter : ILoginLimiter
     {
         private readonly ConcurrentDictionary<string, (DateTime, int)> _loginAttempts;
-        private readonly IdentitySettings _identitySettings;
+        private readonly LoginLimiterSettings _loginLimiterSettings;
 
-        public LoginLimiter(IdentitySettings identitySettings)
+        public LoginLimiter(LoginLimiterSettings loginLimiterSettings)
         {
             _loginAttempts = new ConcurrentDictionary<string, (DateTime, int)>();
-            _identitySettings = identitySettings;
+            _loginLimiterSettings = loginLimiterSettings;
         }
 
         /// <summary>
@@ -51,10 +51,10 @@ namespace CoffeeCard.WebApi.Services
         public bool LoginAllowed(User user)
         {
             var (firstFailedLogin, loginAttemptsMade) = UpdateAndGetLoginAttemptCount(user.Email);
-            var timeOutPeriod = new TimeSpan(0, _identitySettings.TimeOutPeriodInMinutes, 0);
+            var timeOutPeriod = new TimeSpan(0, _loginLimiterSettings.TimeOutPeriodInMinutes, 0);
             var timeSinceFirstFailedLogin = DateTime.UtcNow.Subtract(firstFailedLogin);
 
-            var maximumLoginAttemptsWithinTimeOut = _identitySettings.MaximumLoginAttemptsWithinTimeOut;
+            var maximumLoginAttemptsWithinTimeOut = _loginLimiterSettings.MaximumLoginAttemptsWithinTimeOut;
 
             if (loginAttemptsMade % maximumLoginAttemptsWithinTimeOut == 0 && timeSinceFirstFailedLogin > timeOutPeriod) //If the timeout period is exceeded it will reset it whenever loginAttemptsMade % x = 0, where x is the maximum login attempts made. I.e. x number of logins will be allowed before the timer is reset again
                 ResetUsersTimeoutPeriod(user.Email);
