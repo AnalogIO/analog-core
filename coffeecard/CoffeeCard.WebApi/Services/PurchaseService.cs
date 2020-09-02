@@ -338,6 +338,8 @@ namespace CoffeeCard.WebApi.Services
 
             _context.Update(user);
 
+            _context.SaveChanges();
+
             return purchase;
         }
 
