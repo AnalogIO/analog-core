@@ -14,12 +14,15 @@ namespace CoffeeCard.WebApi.Services
     {
         private readonly IAccountService _accountService;
 
+        private readonly IProductService _productService;
+
         private readonly CoffeeCardContext _context;
 
-        public TicketService(CoffeeCardContext context, IAccountService accountService)
+        public TicketService(CoffeeCardContext context, IAccountService accountService, IProductService productService)
         {
             _context = context;
             _accountService = accountService;
+            _productService = productService;
         }
 
         public IEnumerable<Ticket> getTickets(IEnumerable<Claim> claims, bool used)
@@ -113,6 +116,7 @@ namespace CoffeeCard.WebApi.Services
             var userIdClaim = claims.FirstOrDefault(x => x.Type == Constants.UserId);
             if (userIdClaim == null) throw new ApiException("The token is invalid!", 401);
             var userId = int.Parse(userIdClaim.Value);
+            var user = _context.Users.Find(userId);
 
             var coffeeCards = _context.Tickets
                 .Include(p => p.Purchase)
@@ -135,7 +139,7 @@ namespace CoffeeCard.WebApi.Services
                             TicketsLeft = tp.Count()
                         }).ToList();
 
-            var products = _context.Products.Select(p => new Models.CoffeeCard
+            var products = _productService.GetProductsForUserAsync(user).Result.Select(p => new Models.CoffeeCard
                 {ProductId = p.Id, Name = p.Name, Price = p.Price, Quantity = p.NumberOfTickets, TicketsLeft = 0}).ToList();
 
             return coffeeCards.Union(products, new CoffeeCardComparer());
