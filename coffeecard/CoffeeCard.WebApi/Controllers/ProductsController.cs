@@ -1,6 +1,9 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CoffeeCard.WebApi.Helpers;
+using CoffeeCard.WebApi.Models;
 using CoffeeCard.WebApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +35,19 @@ namespace CoffeeCard.WebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetProductsPublic()
         {
-            var products = await _productService.GetPublicProducts();
+            IEnumerable<Product> products;
+            try
+            {
+                // Try find user from potential login token
+                var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
+                products = await _productService.GetProductsForUserAsync(user);
+            }
+            catch (ApiException)
+            {
+                // No token found, retrieve customer products
+                products = await _productService.GetPublicProducts();
+            }
+
             return Ok(_mapperService.Map(products).ToList());
         }
 

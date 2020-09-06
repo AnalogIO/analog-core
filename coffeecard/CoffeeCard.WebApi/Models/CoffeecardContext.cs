@@ -1,5 +1,6 @@
 using CoffeeCard.Common.Configuration;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CoffeeCard.WebApi.Models
 {
@@ -34,6 +35,16 @@ namespace CoffeeCard.WebApi.Models
                     pug.ProductId,
                     pug.UserGroup
                 });
+
+            var userGroupIntConverter = new EnumToNumberConverter<UserGroup, int>();
+
+            modelBuilder.Entity<User>()
+                .Property(u => u.UserGroup)
+                .HasConversion(userGroupIntConverter);
+
+            modelBuilder.Entity<ProductUserGroup>()
+                .Property(pug => pug.UserGroup)
+                .HasConversion(userGroupIntConverter);
         }
     }
 }
