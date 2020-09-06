@@ -27,6 +27,7 @@ namespace CoffeeCard.WebApi.Services
             if (preset == (int) StatisticPreset.Semester)
             {
                 var users = _context.Statistics.Include(x => x.User)
+                    .AsEnumerable()
                     .Where(s => s.Preset == StatisticPreset.Semester && Statistic.ValidateSemesterExpired(s.LastSwipe))
                     .OrderByDescending(x => x.SwipeCount).ThenBy(x => x.LastSwipe).AsEnumerable().Take(top);
                 return users.Select(s => new LeaderboardUser {Name = s.User.Name, Score = s.SwipeCount}).ToList();
@@ -35,6 +36,7 @@ namespace CoffeeCard.WebApi.Services
             if (preset == (int) StatisticPreset.Monthly)
             {
                 var users = _context.Statistics.Include(x => x.User)
+                    .AsEnumerable()
                     .Where(s => s.Preset == StatisticPreset.Monthly && Statistic.ValidateMonthlyExpired(s.LastSwipe))
                     .OrderByDescending(x => x.SwipeCount).ThenBy(x => x.LastSwipe).AsEnumerable().Take(top);
                 return users.Select(s => new LeaderboardUser
@@ -53,11 +55,13 @@ namespace CoffeeCard.WebApi.Services
             var totalSwipeRank = totalUsers.FindIndex(x => x.User.Id == user.Id) + 1;
 
             var semesterUsers = _context.Statistics.Include(x => x.User)
+                .AsEnumerable()
                 .Where(s => s.Preset == StatisticPreset.Semester && Statistic.ValidateSemesterExpired(s.LastSwipe))
                 .OrderByDescending(x => x.SwipeCount).ThenBy(x => x.LastSwipe).ToList();
             var semesterSwipeRank = semesterUsers.FindIndex(x => x.User.Id == user.Id) + 1;
 
             var monthUsers = _context.Statistics.Include(x => x.User)
+                .AsEnumerable()
                 .Where(s => s.Preset == StatisticPreset.Monthly && Statistic.ValidateMonthlyExpired(s.LastSwipe))
                 .OrderByDescending(x => x.SwipeCount).ThenBy(x => x.LastSwipe).ToList();
             var monthSwipeRank = monthUsers.FindIndex(x => x.User.Id == user.Id) + 1;

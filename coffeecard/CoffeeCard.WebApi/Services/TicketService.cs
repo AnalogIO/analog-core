@@ -121,6 +121,7 @@ namespace CoffeeCard.WebApi.Services
                     product => product.Id,
                     (ticket, product) => new {Ticket = ticket, Product = product})
                 .Where(tp => tp.Ticket.Owner.Id == userId && !tp.Ticket.IsUsed)
+                .AsEnumerable()
                 .GroupBy(
                     tp => tp.Product,
                     tp => tp.Ticket,
@@ -135,7 +136,7 @@ namespace CoffeeCard.WebApi.Services
                         }).ToList();
 
             var products = _context.Products.Select(p => new Models.CoffeeCard
-                {ProductId = p.Id, Name = p.Name, Price = p.Price, Quantity = p.NumberOfTickets, TicketsLeft = 0});
+                {ProductId = p.Id, Name = p.Name, Price = p.Price, Quantity = p.NumberOfTickets, TicketsLeft = 0}).ToList();
 
             return coffeeCards.Union(products, new CoffeeCardComparer());
         }
