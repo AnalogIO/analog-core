@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
@@ -59,6 +60,7 @@ namespace CoffeeCard.WebApi
             services.AddScoped<IAppConfigService, AppConfigService>();
             services.AddScoped<ClaimsUtilities>();
             services.AddHttpClient<IMobilePayApiHttpClient, MobilePayApiHttpClient>();
+            services.AddSingleton(Environment.ContentRootFileProvider);
 
             // Setup filter to catch outgoing exceptions
             services.AddControllers(options => { options.Filters.Add(new ApiExceptionFilter()); });

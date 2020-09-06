@@ -4,6 +4,7 @@
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <LangVersion>8</LangVersion>
     <ProjectGuid>5562C898-513F-493A-A335-417C39476714</ProjectGuid>
+    <UserSecretsId>d3bbf778-c5fe-4240-b2ca-dfa64082cc0e</UserSecretsId>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <NoWarn>1701;1702</NoWarn>
@@ -22,7 +23,7 @@
   <ItemGroup>
     <Content Include="www.analogio.dk.pfx">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="appsettings-for-tests.json">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
