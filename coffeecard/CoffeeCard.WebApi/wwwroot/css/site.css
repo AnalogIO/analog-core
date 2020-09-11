@@ -2,7 +2,6 @@ html,
 body {
     background: #ece9e9;
     height: 100%;
-    margin: 0;
 }
 
 .box {
@@ -13,6 +12,9 @@ body {
     height: 100%;
 }
 
+* { margin: 0;
+    padding: 0}  
+
 .box .row { /* border: 1px dotted grey; */ }
 
 .box .row.header {
@@ -22,7 +24,7 @@ body {
     text-align: center;
 }
 
-.row.header img { height: 30vh; }
+#logo {width: 100%; max-width: 600px;}
 
 .box .row.content {
     align-content: center;
@@ -37,11 +39,13 @@ body {
     color: #ece9e9;
     flex: 0 1 40px;
     font-size: 0.8em;
-    padding: 10px;
+    padding-top: 22px;
+    padding-bottom: 22px;
     text-align: center;
 }
 
-.row.footer a { color: #ece9e9; }
+.row.footer a { color: #ece9e9; text-decoration: none; }
+.row.footer a:hover { text-decoration: underline}
 
 div .wrapper {
     background: #ffffff;
