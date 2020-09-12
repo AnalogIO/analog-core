@@ -1,0 +1,103 @@
+<mjml>
+    <mj-head>
+    <mj-include path="./style.mjml" />
+    </mj-head>
+    <!-- Start content -->
+    <mj-body background-color="#ece9e9">
+    <!-- Logo and intro text -->
+    <mj-section>
+      <mj-column>
+        <mj-image src="https://analogio.dk/resources/ANALOGO.png" alt="Analog logo"></mj-image>
+        <mj-text mj-class="header">Hello {name},</mj-text>
+        <mj-text mj-class="header">Thank you for your purchase.</mj-text>
+        <mj-text mj-class="description">Details of your order are listed below:</mj-text>
+      </mj-column>
+    </mj-section>
+    
+    <!-- Start order details -->
+    <mj-section>
+        <mj-column mj-class="detailsCard" css-class="detailsCard" >
+            <mj-text mj-class="header">
+                    Order Details
+            </mj-text>
+            <mj-table mj-class="description">
+                <tr>
+                    <td align="left">
+                        Product:
+                    </td>
+                    <td align="right">
+                        {product}
+                    </td>
+                </tr>
+                <tr>
+                    <td align="left">
+                        Tickets:
+                    </td>
+                    <td align="right">
+                        {quantity}
+                    </td>
+                </tr>
+            </mj-table>
+        </mj-column>
+    </mj-section>
+    <!-- End order details -->
+
+    <!-- Start order summary -->
+    <mj-section>
+        <mj-column mj-class="detailsCard" css-class="detailsCard" >
+            <mj-text mj-class="header">
+                    Order Summary
+            </mj-text>
+            <mj-table mj-class="description">
+                <tr>
+                    <td align="left">
+                        Order Number:
+                    </td>
+                    <td align="right">
+                        {orderId}
+                    </td>
+                </tr>
+                <tr>
+                    <td align="left">
+                        Order Date:
+                    </td>
+                    <td align="right">
+                        {date}
+                    </td>
+                </tr>
+                <tr>
+                    <td align="left">
+                        Total Cost:
+                    </td>
+                    <td align="right">
+                        {price} dkk
+                    </td>
+                </tr>
+            </mj-table>
+        </mj-column>
+    </mj-section>
+    <!-- End order summary -->
+
+    <!-- Start recipient details -->
+    <mj-section>
+        <mj-column mj-class="detailsCard" css-class="detailsCard" >
+            <mj-text mj-class="header">
+                Recipient Details
+            </mj-text>
+            <mj-text mj-class="description">
+                {name}
+            </mj-text>
+            <mj-text mj-class="description">
+                {email}
+            </mj-text>
+            <mj-spacer height="15px" />
+        </mj-column>
+    </mj-section>
+    <!-- End recipient details -->
+    
+    <!-- Include footer -->
+    <mj-include path="./footer.mjml" />
+    
+    </mj-body>
+    <!-- End content -->
+</mjml>

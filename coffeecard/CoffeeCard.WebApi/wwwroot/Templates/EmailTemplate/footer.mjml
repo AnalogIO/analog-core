@@ -1,0 +1,40 @@
+<mjml>
+<mj-head>
+    <mj-attributes>
+            <mj-class name="footer" background-color="#38251a" full-width="full-width" padding="0" />
+            <mj-class name="footerText" color="#ece9e9"; font-size="14px"; line-height=18px align="center" padding="0" margin="0"/>
+    </mj-attributes>
+</mj-head>
+    <mj-body>
+        <mj-spacer height="40px" />
+
+    <mj-wrapper mj-class="footer">
+        <mj-section padding-bottom=0>
+            <mj-column padding-bottom=0>
+                <mj-text mj-class="footerText" font-weight="700">
+                    Cafe Analog
+                </mj-text>
+                <mj-text mj-class="footerText">
+                    Rued Langgaards Vej 7, 2300 Copenhagen S / CVR: 34657343
+                </mj-text>
+            </mj-column>
+        </mj-section>
+        <!-- Start links -->
+        <mj-section padding-top=0>
+            <mj-group>
+                <mj-column padding=0>
+                    <mj-button inner-padding=0 align="right" href="mailto:support@analogio.dk" mj-class="footerText" background-color="#38251a">
+                        support@analogio.dk
+                    </mj-button>
+                </mj-column>
+                <mj-column padding=0>
+                    <mj-button inner-padding=0 align="left" href="https://www.cafeanalog.dk"  background-color="#38251a" mj-class="footerText">
+                    / www.cafeanalog.dk
+                    </mj-button>
+                </mj-column>
+            </mj-group>
+        </mj-section>
+        <!-- End links -->
+    </mj-wrapper>
+    </mj-body>
+</mjml>
