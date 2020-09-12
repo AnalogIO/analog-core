@@ -6,7 +6,11 @@
     </mj-attributes>
 </mj-head>
     <mj-body>
-        <mj-spacer height="40px" />
+    <mj-section padding=0>
+        <mj-column>
+            <mj-spacer height="40px" />
+        </mj-column>
+    </mj-section>
 
     <mj-wrapper mj-class="footer">
         <mj-section padding-bottom=0>
