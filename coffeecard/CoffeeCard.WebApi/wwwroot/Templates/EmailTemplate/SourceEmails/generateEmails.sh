@@ -8,7 +8,7 @@ do
  else 
   echo 'Generating html for '$FILE
   base=${FILE%.mjml}
-  mjml $FILE --config.beautify false --config.minify true -o $base.html
+  mjml $FILE --config.beautify false --config.minify true -o ../GeneratedEmails/$base.html
  fi
 
 done

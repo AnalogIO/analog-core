@@ -125,6 +125,8 @@ namespace CoffeeCard.WebApi.Services
                                  + Path.DirectorySeparatorChar
                                  + "EmailTemplate"
                                  + Path.DirectorySeparatorChar
+                                 + "GeneratedEmails"
+                                 + Path.DirectorySeparatorChar
                                  + templateName;
 
             var builder = new BodyBuilder();
