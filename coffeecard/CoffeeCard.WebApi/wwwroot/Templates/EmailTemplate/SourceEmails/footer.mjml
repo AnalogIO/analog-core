@@ -27,12 +27,12 @@
         <mj-section padding-top=0>
             <mj-group>
                 <mj-column padding=0>
-                    <mj-button inner-padding=0 align="right" href="mailto:support@analogio.dk" mj-class="footerText" background-color="#38251a">
+                    <mj-button inner-padding=0 align="right" href="mailto:support@analogio.dk" rel="noopener noreferrer" background-color="#38251a" mj-class="footerText">
                         support@analogio.dk
                     </mj-button>
                 </mj-column>
                 <mj-column padding=0>
-                    <mj-button inner-padding=0 align="left" href="https://www.cafeanalog.dk"  background-color="#38251a" mj-class="footerText">
+                    <mj-button inner-padding=0 align="left" href="https://www.cafeanalog.dk" rel="noopener noreferrer" background-color="#38251a" mj-class="footerText">
                     / www.cafeanalog.dk
                     </mj-button>
                 </mj-column>
