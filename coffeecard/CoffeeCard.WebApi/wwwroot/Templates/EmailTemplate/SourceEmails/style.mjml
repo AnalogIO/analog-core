@@ -1,0 +1,19 @@
+<mjml>
+    <mj-head>
+            <mj-attributes>
+            <mj-class name="header" font-weight="700" align="center" font-size="20px"/>
+            <mj-class name="description" align="center" font-size="14px" />
+
+            <mj-class name="detailsCard" background-color="#ffffff" width="540px" padding="20px 20px 0 20px" border-radius="10px"/>
+
+            <mj-text padding="0" />
+            <mj-all font-family="Arial" color="#38251a" align="center" />
+        </mj-attributes>
+        <mj-style inline="inline">
+        .detailsCard {
+            border-radius: 10px;
+            box-shadow: 3px 3px 10px;
+        }
+        </mj-style>
+    </mj-head>
+</mjml>
