@@ -19,6 +19,7 @@ INNER JOIN Products p ON
 WHERE
 	ph.Completed = 1 -- Only look at completed Purchases
 	AND t.IsUsed = 0 -- and unused tickets
+	AND ph.DateCreated > '2017-12-01 00:00' -- fromDate exclusive (only look at unused tickets after this date)
 GROUP BY
 	p.Id,
 	p.Name,
