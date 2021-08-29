@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -39,14 +40,20 @@ namespace CoffeeCard.WebApi.Services
 
         public string Login(string username, string password, string version)
         {
-            Log.Information($"Logging in user with username: {username} version: {version}");
+            Log.Information("Logging in user with username: {username} version: {version}");
 
             ValidateVersion(version);
 
-            var user = _context.Users.FirstOrDefault(x => x.Email == username && x.IsVerified);
+            var user = _context.Users.FirstOrDefault(x => x.Email == username);
             if (user != null)
             {
-
+                if (!user.IsVerified)
+                {
+                    Log.Information("E-mail not verified. E-mail = {username} from IP = {ipAddress} ", username,
+                        _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
+                    throw new ApiException("E-mail has not been verified", 403);
+                }
+                
                 if (_loginLimiterSettings.IsEnabled && !_loginLimiter.LoginAllowed(user)) //Login limiter is only called if it is enabled in the settings
                 {
                     Log.Warning("Login attempts exceeding maximum allowed for e-mail = {username} from IP = {ipaddress} ", username,
@@ -76,7 +83,7 @@ namespace CoffeeCard.WebApi.Services
             Log.Information("Unsuccessful login for e-mail = {username} from IP = {ipAddress} ", username,
                 _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
 
-            throw new ApiException("The username or password does not match. Please check that your email is verified",
+            throw new ApiException("The username or password does not match",
                 401);
         }
 

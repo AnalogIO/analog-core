@@ -365,5 +365,135 @@ namespace CoffeeCard.Tests.Unit.Services
                 Assert.Equal(tooManyLoginsException.Message, expectedException.Message);
             }
         }
+        
+        [Fact(DisplayName = "Login throws exception when email is not verified")]
+        public async Task LoginFailsIfEmailIsNotVerified()
+        {
+            // Arrange
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
+                .UseInMemoryDatabase(nameof(LoginFailsIfEmailIsNotVerified));
+
+            var databaseSettings = new DatabaseSettings()
+            {
+                SchemaName = "test"
+            };
+            var environmentSettings = new EnvironmentSettings()
+                {DeploymentUrl = "test", EnvironmentType = EnvironmentType.Test, MinAppVersion = "2.1.0"};
+            var loginLimiterSettings = new LoginLimiterSettings()
+            {
+                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 1, TimeOutPeriodInMinutes = 1
+            };
+
+            var userTokens = new List<Token>();
+            var user = new User
+            {
+                Id = 1, Name = "test", Tokens = userTokens, Email = "test@email.dk", Programme = new Programme(),
+                Password = "test", IsVerified = false
+            };
+            var somePass = "somePassword";
+
+            var httpContextAccessor = new Mock<IHttpContextAccessor>();
+            httpContextAccessor.Setup(h => h.HttpContext).Returns(new DefaultHttpContext().HttpContext);
+
+            await using var context = new CoffeeCardContext(builder.Options, databaseSettings);
+            context.Add(user);
+            await context.SaveChangesAsync();
+            
+            // Act
+            var accountService = new AccountService(context, environmentSettings, new Mock<ITokenService>().Object,
+                new Mock<IEmailService>().Object, new HashService(), httpContextAccessor.Object,
+                new LoginLimiter(loginLimiterSettings), loginLimiterSettings);
+
+            // Login 
+            var exception = (ApiException) Record.Exception(() => accountService.Login(user.Email, somePass, "2.1.0"));
+                
+            // Assert
+            var expectedException = new ApiException("E-mail has not been verified", 403);
+            Assert.Equal(exception.StatusCode, expectedException.StatusCode);
+            Assert.Equal(exception.Message, expectedException.Message);
+        }
+        
+        [Fact(DisplayName = "Login succeeds when email is verified")]
+        public async Task LoginSucceedsIfEmailIsVerified()
+        {
+            // Arrange
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
+                .UseInMemoryDatabase(nameof(LoginSucceedsIfEmailIsVerified));
+
+            var databaseSettings = new DatabaseSettings()
+            {
+                SchemaName = "test"
+            };
+            var environmentSettings = new EnvironmentSettings()
+                {DeploymentUrl = "test", EnvironmentType = EnvironmentType.Test, MinAppVersion = "2.1.0"};
+            var loginLimiterSettings = new LoginLimiterSettings()
+            {
+                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 1, TimeOutPeriodInMinutes = 1
+            };
+
+            var userTokens = new List<Token>();
+            var somePass = "somePassword";
+            var user = new User
+            {
+                Id = 1, Name = "test", Tokens = userTokens, Email = "test@email.dk", Programme = new Programme(),
+                Password = somePass, IsVerified = true
+            };
+            var httpContextAccessor = new Mock<IHttpContextAccessor>();
+            httpContextAccessor.Setup(h => h.HttpContext).Returns(new DefaultHttpContext().HttpContext);
+
+            var hashService = new Mock<IHashService>();
+            hashService.Setup(m => m.Hash(It.IsAny<string>())).Returns(somePass);
+
+            await using var context = new CoffeeCardContext(builder.Options, databaseSettings);
+            context.Add(user);
+            await context.SaveChangesAsync();
+            
+            // Act
+            var accountService = new AccountService(context, environmentSettings, new Mock<ITokenService>().Object,
+                new Mock<IEmailService>().Object, hashService.Object, httpContextAccessor.Object,
+                new LoginLimiter(loginLimiterSettings), loginLimiterSettings);
+            
+            // Login 
+            accountService.Login(user.Email, somePass, "2.1.0");
+        }
+        
+        [Fact(DisplayName = "Login with unknown user throws API Exception")]
+        public async Task LoginWithUnknownUserThrowsApiException()
+        {
+            // Arrange
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
+                .UseInMemoryDatabase(nameof(LoginWithUnknownUserThrowsApiException));
+
+            var databaseSettings = new DatabaseSettings()
+            {
+                SchemaName = "test"
+            };
+            var environmentSettings = new EnvironmentSettings()
+                {DeploymentUrl = "test", EnvironmentType = EnvironmentType.Test, MinAppVersion = "2.1.0"};
+            var loginLimiterSettings = new LoginLimiterSettings()
+            {
+                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 1, TimeOutPeriodInMinutes = 1
+            };
+
+            
+            var httpContextAccessor = new Mock<IHttpContextAccessor>();
+            httpContextAccessor.Setup(h => h.HttpContext).Returns(new DefaultHttpContext().HttpContext);
+            
+            await using var context = new CoffeeCardContext(builder.Options, databaseSettings);
+            await context.SaveChangesAsync();
+            
+            // Act
+            var accountService = new AccountService(context, environmentSettings, new Mock<ITokenService>().Object,
+                new Mock<IEmailService>().Object, new Mock<IHashService>().Object, httpContextAccessor.Object,
+                new LoginLimiter(loginLimiterSettings), loginLimiterSettings);
+            
+            // Login 
+            var exception = (ApiException) Record.Exception(() => accountService.Login("unknown email", "somePass", "2.1.0"));
+                
+            // Assert
+            var expectedException = new ApiException("The username or password does not match", 401);
+            Assert.Equal(exception.StatusCode, expectedException.StatusCode);
+            Assert.Equal(exception.Message, expectedException.Message);
+        }
     }
 }
