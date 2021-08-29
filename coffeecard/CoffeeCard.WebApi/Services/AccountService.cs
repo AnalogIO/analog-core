@@ -40,7 +40,7 @@ namespace CoffeeCard.WebApi.Services
 
         public string Login(string username, string password, string version)
         {
-            Log.Information("Logging in user with username: {username} version: {version}");
+            Log.Information("Logging in user with username: {username} version: {version}", username, version);
 
             ValidateVersion(version);
 

@@ -454,7 +454,10 @@ namespace CoffeeCard.Tests.Unit.Services
                 new LoginLimiter(loginLimiterSettings), loginLimiterSettings);
             
             // Login 
-            accountService.Login(user.Email, somePass, "2.1.0");
+            var result = accountService.Login(user.Email, somePass, "2.1.0");
+            
+            // Assert we did not fail in the above call. This test does not test the result
+            Assert.Null(result);
         }
         
         [Fact(DisplayName = "Login with unknown user throws API Exception")]
