@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoffeeCard.Tests.Integratio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoffeeCard.Console.Refund", "CoffeeCard.Console.Refund\CoffeeCard.Console.Refund.csproj", "{DE5D087C-30A3-4872-8870-83C1B981841E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoffeeCard.MobilePay", "CoffeeCard.MobilePayClient\CoffeeCard.MobilePay.csproj", "{32D53101-7672-41BF-AC38-9BAC9971B48E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoffeeCard.MobilePay", "CoffeeCard.MobilePay\CoffeeCard.MobilePay.csproj", "{32D53101-7672-41BF-AC38-9BAC9971B48E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoffeeCard.Common", "CoffeeCard.Common\CoffeeCard.Common.csproj", "{2CCAF827-E341-48FC-ABCE-7EDFA3E84E65}"
 EndProject

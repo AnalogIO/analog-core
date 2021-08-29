@@ -59,7 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CoffeeCard.Common\CoffeeCard.Common.csproj" />
-    <ProjectReference Include="..\CoffeeCard.MobilePayClient\CoffeeCard.MobilePay.csproj" />
+    <ProjectReference Include="..\CoffeeCard.MobilePay\CoffeeCard.MobilePay.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="wwwroot\Templates\EmailTemplate\GeneratedEmails" />
