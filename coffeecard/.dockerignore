@@ -1,0 +1,10 @@
+# IntelliJ
+.idea
+
+# git related files
+*.git
+.gitignore
+
+# build folders
+bin/
+obj/
