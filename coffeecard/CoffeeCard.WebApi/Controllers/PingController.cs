@@ -13,14 +13,7 @@ namespace CoffeeCard.WebApi.Controllers
         [HttpGet]
         public IActionResult Ping()
         {
-            using (LogContext.PushProperty("CorrelationId", Guid.NewGuid()))
-            {
-                Log.Information("1");
-                Log.Information("2");
-                Log.Information("3");
-                
-                return Ok("pong");
-            }
+            return Ok("pong");
         }
     }
 }
