@@ -9,7 +9,7 @@ namespace CoffeeCard.WebApi
 {
     public class Program
     {
-        public static IConfiguration Configuration { get; } = new ConfigurationBuilder()
+        private static IConfiguration Configuration { get; } = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", false, true)
             .Build();
@@ -18,6 +18,7 @@ namespace CoffeeCard.WebApi
         {
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(Configuration)
+                .Enrich.WithCorrelationId()
                 .CreateLogger();
 
             try
@@ -37,7 +38,7 @@ namespace CoffeeCard.WebApi
             }
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args)
+        private static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
