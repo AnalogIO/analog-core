@@ -19,9 +19,6 @@ RUN dotnet restore .
 
 # Remainder of build process
 COPY . .
-RUN dotnet build -c Release -o /app/build
-
-FROM build AS publish
 RUN dotnet publish -c Release -o /app/publish
 
 # Move to runtime image
