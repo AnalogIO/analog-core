@@ -8,7 +8,6 @@ namespace CoffeeCard.WebApi.Logging.Enrichers
     public class UserIdEnricher : ILogEventEnricher
     {
         private const string UserIdPropertyName = "UserId";
-        private static readonly string UserIdItemName = $"{typeof(UserIdEnricher).Name}+UserId";
         private readonly IHttpContextAccessor _contextAccessor;
 
         public UserIdEnricher() : this(new HttpContextAccessor())
@@ -32,8 +31,9 @@ namespace CoffeeCard.WebApi.Logging.Enrichers
 
         private string GetUserId()
         {
-            var id = _contextAccessor.HttpContext.User.Claims.ToList()[2].Value;
-
+            var claims = _contextAccessor.HttpContext.User.Claims.ToList();
+            var id = claims.Count > 2 ? claims[2].Value : "NONE";
+            
             return $"userid:{id}";
         }
     }
