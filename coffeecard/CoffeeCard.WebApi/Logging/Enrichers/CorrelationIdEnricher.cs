@@ -32,7 +32,7 @@ namespace CoffeeCard.WebApi.Logging.Enrichers
 
         private string GetCorrelationId()
         {
-            var id = Guid.NewGuid().ToString().Substring(0, 8);
+            var id = $"correlationid:{Guid.NewGuid().ToString().Substring(0, 8)}";
             
             return (string) (_contextAccessor.HttpContext.Items[CorrelationIdItemName] ??
                              (_contextAccessor.HttpContext.Items[CorrelationIdItemName] = id));

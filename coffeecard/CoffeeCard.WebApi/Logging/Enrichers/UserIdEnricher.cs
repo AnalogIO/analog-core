@@ -1,3 +1,4 @@
+using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Serilog.Core;
 using Serilog.Events;
@@ -31,11 +32,9 @@ namespace CoffeeCard.WebApi.Logging.Enrichers
 
         private string GetUserId()
         {
-            //todo
-            var id = "USERID";
+            var id = _contextAccessor.HttpContext.User.Claims.ToList()[2].Value;
 
-            return (string) (_contextAccessor.HttpContext.Items[UserIdItemName] ??
-                             (_contextAccessor.HttpContext.Items[UserIdItemName] = id));
+            return $"userid:{id}";
         }
     }
 }
