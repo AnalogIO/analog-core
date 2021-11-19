@@ -28,14 +28,19 @@ namespace CoffeeCard.WebApi.Controllers
         }
 
         /// <summary>
-        ///     Registers the user supplied in the body and returns 201 on success
+        /// Registers the user supplied in the body and returns 201 on success
         /// </summary>
-        [AllowAnonymous]
+        /// <param name="registerDto">Register data object</param>
+        /// <response code="201">Successful user creation</response>
+        /// <response code="400">Invalid User creation object</response>
         [HttpPost("register")]
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult Register(RegisterDto registerDto)
         {
             _accountService.RegisterAccount(registerDto);
-            return Created("register",
+            return Created("register", 
                 new
                 {
                     message =
@@ -44,11 +49,19 @@ namespace CoffeeCard.WebApi.Controllers
         }
 
         /// <summary>
-        ///     Returns a token that is used to identify the user
+        /// Returns a token that is used to identify the user
         /// </summary>
+        /// <returns>Login token</returns>
+        /// <param name="loginDto">Login data object</param>
+        /// <response code="200">Successful user login</response>
+        /// <response code="400">Invalid Login creation object</response>
+        /// <response code="401">Invalid Login credentials</response>
         [AllowAnonymous]
         [HttpPost("login")]
-        public IActionResult Login(LoginDto loginDto)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public ActionResult<TokenDto> Login(LoginDto loginDto)
         {
             var token = _accountService.Login(loginDto.Email, loginDto.Password, loginDto.Version);
             if (token == null)
@@ -62,10 +75,15 @@ namespace CoffeeCard.WebApi.Controllers
         }
 
         /// <summary>
-        ///     Returns basic data about the user
+        /// Returns basic data about the user
         /// </summary>
+        /// <returns>User information</returns>
+        /// <response code="200">Successful request</response>
+        /// <response code="401">Invalid credentials</response>
         [HttpGet]
-        public IActionResult Get()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public ActionResult<UserDto> Get()
         {
             var user = _accountService.GetAccountByClaims(User.Claims);
             var userDto = _mapperService.Map(user);
@@ -77,20 +95,28 @@ namespace CoffeeCard.WebApi.Controllers
         }
 
         /// <summary>
-        ///     Updates the user and returns the updated values
+        /// Updates the user and returns the updated values
         /// </summary>
+        /// <param name="userDto">Update user information request</param>
+        /// <returns>User information</returns>
+        /// <response code="200">Successful request</response>
+        /// <response code="401">Invalid credentials</response>
         [HttpPut]
-        public IActionResult Update(UpdateUserDto userDto)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public ActionResult<UserDto> Update(UpdateUserDto userDto)
         {
             var user = _accountService.UpdateAccount(User.Claims, userDto);
             return Ok(_mapperService.Map(user));
         }
 
         /// <summary>
-        ///     Sends email to user if they forgot password
+        /// Sends email to user if they forgot password
         /// </summary>
-        /// <param name="emailDTO"></param>
-        /// <returns></returns>
+        /// <param name="emailDTO">User email</param>
+        /// <returns>User information</returns>
+        /// <response code="200">Successful request</response>
+        /// <response code="400">Invalid request data model</response>
         [AllowAnonymous]
         [HttpPost("forgotpassword")]
         public IActionResult ForgotPassword(EmailDto emailDTO)
