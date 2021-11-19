@@ -82,7 +82,7 @@ namespace CoffeeCard.WebApi
                     document.Info.Contact = new OpenApiContact
                     {
                         Name = "AnalogIO",
-                        Email = "admin@analogio.dk",
+                        Email = "support@analogio.dk",
                         Url = "https://github.com/analogio"
                     };
                     document.Info.License = new OpenApiLicense
