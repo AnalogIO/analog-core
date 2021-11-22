@@ -31,8 +31,7 @@ namespace CoffeeCard.WebApi.Logging.Enrichers
 
         private string GetUserId()
         {
-            var claims = _contextAccessor.HttpContext.User.Claims.ToList();
-            var id = claims.Count > 2 ? claims[2].Value : "NONE";
+            var id =  _contextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             
             return $"userid:{id}";
         }
