@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Serilog.Core;
 using Serilog.Events;
@@ -29,18 +30,16 @@ namespace CoffeeCard.WebApi.Logging.Enrichers
     // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     // SOFTWARE.
-    public class CorrelationIdEnricher : ILogEventEnricher
+    public class Enricher : ILogEventEnricher
     {
         private const string CorrelationIdPropertyName = "CorrelationId";
-        private static readonly string CorrelationIdItemName = $"{typeof(CorrelationIdEnricher).Name}+CorrelationId";
+        private const string UserIdPropertyName = "UserId";
+        private static readonly string CorrelationIdItemName = $"{typeof(Enricher).Name}+CorrelationId";
         private readonly IHttpContextAccessor _contextAccessor;
-        public CorrelationIdEnricher() : this(new HttpContextAccessor())
-        {
-        }
 
-        private CorrelationIdEnricher(IHttpContextAccessor contextAccessor)
+        public Enricher()
         {
-            _contextAccessor = contextAccessor;
+            _contextAccessor = new HttpContextAccessor();
         }
 
         public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
@@ -50,8 +49,18 @@ namespace CoffeeCard.WebApi.Logging.Enrichers
 
             var correlationIdProperty =
                 new LogEventProperty(CorrelationIdPropertyName, new ScalarValue(GetCorrelationId()));
+            var userIdProperty = new LogEventProperty(UserIdPropertyName, new ScalarValue(GetUserId()));
 
             logEvent.AddOrUpdateProperty(correlationIdProperty);
+            logEvent.AddOrUpdateProperty(userIdProperty);
+        }
+
+        private string GetUserId()
+        {
+            var id = _contextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == "UserId")
+                ?.Value;
+
+            return id != null ? $" userid:{id}" : string.Empty;
         }
 
         private string GetCorrelationId()

@@ -19,8 +19,7 @@ namespace CoffeeCard.WebApi
         {
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(Configuration)
-                .Enrich.WithCorrelationId()
-                .Enrich.WithUserId()
+                .Enrich.WithEnrichers()
                 .CreateLogger();
             try
             {
