@@ -10,11 +10,7 @@ namespace CoffeeCard.WebApi.Logging.Enrichers
         private const string UserIdPropertyName = "UserId";
         private readonly IHttpContextAccessor _contextAccessor;
 
-        public UserIdEnricher() : this(new HttpContextAccessor())
-        {
-        }
-
-        private UserIdEnricher(IHttpContextAccessor contextAccessor)
+        public UserIdEnricher(IHttpContextAccessor contextAccessor)
         {
             _contextAccessor = contextAccessor;
         }
