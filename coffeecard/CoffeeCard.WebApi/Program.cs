@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using CoffeeCard.WebApi.Logging;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -18,9 +19,8 @@ namespace CoffeeCard.WebApi
         {
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(Configuration)
-                .Enrich.WithCorrelationId()
+                .Enrich.WithEnrichers()
                 .CreateLogger();
-
             try
             {
                 Log.Information("Starting web host");

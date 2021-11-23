@@ -1,7 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
-using Serilog;
-using Serilog.Context;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace CoffeeCard.WebApi.Controllers
 {
