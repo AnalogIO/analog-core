@@ -1,5 +1,4 @@
 using System;
-using CoffeeCard.WebApi.Logging.Enrichers;
 using Serilog;
 using Serilog.Configuration;
 

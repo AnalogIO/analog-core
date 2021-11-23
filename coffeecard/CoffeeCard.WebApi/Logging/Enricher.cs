@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Serilog.Core;
 using Serilog.Events;
 
-namespace CoffeeCard.WebApi.Logging.Enrichers
+namespace CoffeeCard.WebApi.Logging
 {
     // This code is a based on the Serilog.Enrichers.CorrelationId project
     // https://github.com/ekmsystems/serilog-enrichers-correlation-id
@@ -37,9 +37,12 @@ namespace CoffeeCard.WebApi.Logging.Enrichers
         private static readonly string CorrelationIdItemName = $"{typeof(Enricher).Name}+CorrelationId";
         private readonly IHttpContextAccessor _contextAccessor;
 
-        public Enricher()
+        public Enricher() : this(new HttpContextAccessor())
         {
-            _contextAccessor = new HttpContextAccessor();
+        }
+        public Enricher(IHttpContextAccessor httpContextAccessor)
+        {
+            _contextAccessor = httpContextAccessor;
         }
 
         public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
@@ -57,7 +60,7 @@ namespace CoffeeCard.WebApi.Logging.Enrichers
 
         private string GetUserId()
         {
-            var id = _contextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == "UserId")
+            var id = _contextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == Helpers.Constants.UserId)
                 ?.Value;
 
             return id != null ? $" userid:{id}" : string.Empty;
