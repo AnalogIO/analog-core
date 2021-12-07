@@ -1,12 +1,14 @@
 name: Build and test solution
 
-on: [push]
+on:
+  pull_request:
+    branches: [ develop, production ]
 
+  workflow_dispatch:
+  
 jobs:
-  build:
-
+  build-and-test:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     # Create an empty certificate file since it it a build dependency
