@@ -1,7 +1,11 @@
 name: Build and test solution
 
-on: [ pull_request, workflow_dispatch ]
+on:
+  pull_request:
+    branches: [ develop, production ]
 
+  workflow_dispatch:
+  
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
