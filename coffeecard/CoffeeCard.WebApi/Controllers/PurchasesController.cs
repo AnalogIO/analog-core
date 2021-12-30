@@ -1,8 +1,9 @@
 ﻿using System.Linq;
 using CoffeeCard.Common.Configuration;
+using CoffeeCard.Common.Errors;
+using CoffeeCard.Common.Models.DataTransferObjects.Purchase;
+using CoffeeCard.Library.Services;
 using CoffeeCard.WebApi.Helpers;
-using CoffeeCard.WebApi.Models.DataTransferObjects.Purchase;
-using CoffeeCard.WebApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;

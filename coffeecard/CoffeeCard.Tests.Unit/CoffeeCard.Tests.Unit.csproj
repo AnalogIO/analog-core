@@ -20,6 +20,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CoffeeCard.Library\CoffeeCard.Library.csproj" />
     <ProjectReference Include="..\CoffeeCard.WebApi\CoffeeCard.WebApi.csproj" />
   </ItemGroup>
 </Project>

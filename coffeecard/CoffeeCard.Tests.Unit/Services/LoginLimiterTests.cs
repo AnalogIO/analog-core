@@ -1,7 +1,7 @@
 using System.Threading;
 using CoffeeCard.Common.Configuration;
-using CoffeeCard.WebApi.Models;
-using CoffeeCard.WebApi.Services;
+using CoffeeCard.Common.Models;
+using CoffeeCard.Library.Services;
 using Xunit;
 
 namespace CoffeeCard.Tests.Unit.Services

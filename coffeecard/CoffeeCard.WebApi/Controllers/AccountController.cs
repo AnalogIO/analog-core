@@ -1,5 +1,5 @@
-using CoffeeCard.WebApi.Models.DataTransferObjects.User;
-using CoffeeCard.WebApi.Services;
+using CoffeeCard.Common.Models.DataTransferObjects.User;
+using CoffeeCard.Library.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

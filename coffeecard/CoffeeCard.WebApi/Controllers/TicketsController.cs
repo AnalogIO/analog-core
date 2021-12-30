@@ -1,6 +1,6 @@
 ﻿using System.Linq;
-using CoffeeCard.WebApi.Models.DataTransferObjects.Ticket;
-using CoffeeCard.WebApi.Services;
+using CoffeeCard.Common.Models.DataTransferObjects.Ticket;
+using CoffeeCard.Library.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
