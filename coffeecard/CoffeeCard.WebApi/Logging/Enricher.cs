@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Serilog.Core;
 using Serilog.Events;
+using Constants = CoffeeCard.Common.Constants;
 
 namespace CoffeeCard.WebApi.Logging
 {
@@ -60,7 +61,7 @@ namespace CoffeeCard.WebApi.Logging
 
         private string GetUserId()
         {
-            var id = _contextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == Helpers.Constants.UserId)
+            var id = _contextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == Constants.UserId)
                 ?.Value;
 
             return id != null ? $" userid:{id}" : string.Empty;

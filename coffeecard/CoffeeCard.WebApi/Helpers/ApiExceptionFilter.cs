@@ -1,4 +1,5 @@
 ﻿using System;
+using CoffeeCard.Common.Errors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Serilog;

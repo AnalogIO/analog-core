@@ -1,5 +1,5 @@
-﻿using CoffeeCard.WebApi.Models;
-using System;
+﻿using System;
+using CoffeeCard.Common.Models;
 using Xunit;
 
 namespace CoffeeCard.Tests.Unit.Models
