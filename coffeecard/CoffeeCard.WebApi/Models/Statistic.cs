@@ -25,16 +25,13 @@ namespace CoffeeCard.WebApi.Models
 
         public static DateTime GetSemesterStart(DateTime currentTime)
         {
-            if (currentTime.Month < 7)
-            {
-                var jan1 = new DateTime(currentTime.Year, 1, 1);
-                var dayOffset = DayOfWeek.Monday - jan1.DayOfWeek;
-                var startDate = 29 - dayOffset;
+            // Autumn semester: Get first day of July.
+            if (currentTime.Month >= 7) return new DateTime(currentTime.Year, 7, 1);
 
-                return new DateTime(currentTime.Year, 1, startDate);
-            }
-
-            return new DateTime(currentTime.Year, 7, 1);
+            // Spring semester: Get last Monday of January.
+            var lastDayOfJan = new DateTime(currentTime.Year, 1, 31);
+            int correctedLastDayOfWeek = (int)(lastDayOfJan.DayOfWeek + 6) % 7;
+            return lastDayOfJan.AddDays(-correctedLastDayOfWeek);
         }
 
         public static DateTime GetSemesterEnd(DateTime currentTime)
