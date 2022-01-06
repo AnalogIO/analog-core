@@ -30,7 +30,7 @@ namespace CoffeeCard.WebApi.Models
 
             // Spring semester: Get last Monday of January.
             var lastDayOfJan = new DateTime(currentTime.Year, 1, 31);
-            int correctedLastDayOfWeek = (int)(lastDayOfJan.DayOfWeek + 6) % 7;
+            int correctedLastDayOfWeek = (int)(lastDayOfJan.DayOfWeek + 6) % 7; // Mon=0, Tue=1, ..., Sun=6
             return lastDayOfJan.AddDays(-correctedLastDayOfWeek);
         }
 
