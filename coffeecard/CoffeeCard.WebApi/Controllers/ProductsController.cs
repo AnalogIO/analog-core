@@ -4,14 +4,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Common.Models;
+using CoffeeCard.Common.Models.DataTransferObjects.Product;
 using CoffeeCard.Library.Services;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.WebApi.Helpers;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoffeeCard.WebApi.Controllers
 {
+    /// <summary>
+    /// Controller for retrieving products
+    /// </summary>
     [Authorize]
     [ApiVersion("1")]
     [Route("api/v{version:apiVersion}/[controller]")]
@@ -22,6 +27,9 @@ namespace CoffeeCard.WebApi.Controllers
         private readonly IMapperService _mapperService;
         private readonly IProductService _productService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProductsController"/> class.
+        /// </summary>
         public ProductsController(IProductService productService, IMapperService mapper,
             ClaimsUtilities claimsUtilities)
         {
@@ -31,10 +39,13 @@ namespace CoffeeCard.WebApi.Controllers
         }
 
         /// <summary>
-        ///     Returns a list of products
+        /// Returns a list of available products based on a account's user group 
         /// </summary>
-        [AllowAnonymous]
+        /// <returns>List of available products</returns>
+        /// <response code="200">Successful request</response>
         [HttpGet]
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetProductsPublic()
         {
             IEnumerable<Product> products;
@@ -53,8 +64,16 @@ namespace CoffeeCard.WebApi.Controllers
             return Ok(_mapperService.Map(products).ToList());
         }
 
+        /// <summary>
+        /// Returns a list of available products based on a account's user group 
+        /// </summary>
+        /// <returns>List of available product</returns>
+        /// <response code="200">Successful request</response>
+        /// <response code="401">Invalid credentials</response>
         [HttpGet("app")]
-        public async Task<IActionResult> GetProductsForUser()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<List<ProductDto>>> GetProductsForUser()
         {
             var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
 

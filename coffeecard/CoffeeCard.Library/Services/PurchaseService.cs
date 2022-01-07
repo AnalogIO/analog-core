@@ -13,6 +13,7 @@ using CoffeeCard.Library.Persistence;
 using CoffeeCard.MobilePay.Exception;
 using CoffeeCard.MobilePay.ResponseMessage;
 using CoffeeCard.MobilePay.Service;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -98,15 +99,15 @@ namespace CoffeeCard.Library.Services
         public Purchase RedeemVoucher(string voucherCode, IEnumerable<Claim> claims)
         {
             var userId = claims.FirstOrDefault(x => x.Type == Constants.UserId);
-            if (userId == null) throw new ApiException("The token is invalid!", 401);
+            if (userId == null) throw new ApiException("The token is invalid!", StatusCodes.Status401Unauthorized);
             var id = int.Parse(userId.Value);
 
             var user = _context.Users.FirstOrDefault(x => x.Id == id);
             if (user == null) throw new ApiException("The user could not be found");
 
             var voucher = _context.Vouchers.Include(x => x.Product).FirstOrDefault(x => x.Code.Equals(voucherCode));
-            if (voucher == null) throw new ApiException($"Voucher '{voucherCode}' does not exist!");
-            if (voucher.User != null) throw new ApiException("Voucher has already been redeemed!");
+            if (voucher == null) throw new ApiException($"Voucher '{voucherCode}' does not exist!", StatusCodes.Status400BadRequest);
+            if (voucher.User != null) throw new ApiException("Voucher has already been redeemed!", StatusCodes.Status400BadRequest);
 
             var purchase = new Purchase
             {

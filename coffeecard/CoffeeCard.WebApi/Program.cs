@@ -8,6 +8,7 @@ using Serilog;
 
 namespace CoffeeCard.WebApi
 {
+#pragma warning disable CS1591
     public class Program
     {
         private static IConfiguration Configuration { get; } = new ConfigurationBuilder()
@@ -52,4 +53,5 @@ namespace CoffeeCard.WebApi
         {
         }
     }
+#pragma warning restore CS1591
 }

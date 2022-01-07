@@ -51,14 +51,14 @@ namespace CoffeeCard.Library.Services
                 {
                     Log.Information("E-mail not verified. E-mail = {username} from IP = {ipAddress} ", username,
                         _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
-                    throw new ApiException("E-mail has not been verified", 403);
+                    throw new ApiException("E-mail has not been verified", StatusCodes.Status403Forbidden);
                 }
                 
                 if (_loginLimiterSettings.IsEnabled && !_loginLimiter.LoginAllowed(user)) //Login limiter is only called if it is enabled in the settings
                 {
                     Log.Warning("Login attempts exceeding maximum allowed for e-mail = {username} from IP = {ipaddress} ", username,
                         _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
-                    throw new ApiException($"Amount of failed login attempts exceeds the allowed amount, please wait for {_loginLimiterSettings.TimeOutPeriodInMinutes} minutes before trying again", 429);
+                    throw new ApiException($"Amount of failed login attempts exceeds the allowed amount, please wait for {_loginLimiterSettings.TimeOutPeriodInMinutes} minutes before trying again", StatusCodes.Status429TooManyRequests);
                 }
                 
                 var hashedPw = _hashService.Hash(password + user.Salt);
@@ -84,7 +84,7 @@ namespace CoffeeCard.Library.Services
                 _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
 
             throw new ApiException("The username or password does not match",
-                401);
+                StatusCodes.Status401Unauthorized);
         }
 
         public User RegisterAccount(RegisterDto registerDto)
@@ -95,7 +95,7 @@ namespace CoffeeCard.Library.Services
             {
                 Log.Information(
                     $"Could not register user Name: {registerDto.Name}. Email:{registerDto.Email} already exists");
-                throw new ApiException($"The email {registerDto.Email} is already being used by another user", 400);
+                throw new ApiException($"The email {registerDto.Email} is already being used by another user", StatusCodes.Status409Conflict);
             }
 
             var salt = _hashService.GenerateSalt();
@@ -103,7 +103,7 @@ namespace CoffeeCard.Library.Services
 
             //This can potentially be implemented again, but is just sat to 1 for now
             var programme = _context.Programmes.FirstOrDefault(x => x.Id == 1);
-            if (programme == null) throw new ApiException("No programme found with the id: 0", 400);
+            if (programme == null) throw new ApiException("No programme found with the id: 0", StatusCodes.Status400BadRequest);
 
             var user = new User
             {

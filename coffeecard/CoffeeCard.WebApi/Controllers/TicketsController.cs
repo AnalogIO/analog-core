@@ -1,20 +1,28 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using CoffeeCard.Common.Models.DataTransferObjects.Ticket;
 using CoffeeCard.Library.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoffeeCard.WebApi.Controllers
 {
+    /// <summary>
+    /// Controller for retrieving and using tickets
+    /// </summary>
+    [ApiController]
     [ApiVersion("1")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [Authorize]
-    [ApiController]
     public class TicketsController : ControllerBase
     {
         private readonly IMapperService _mapperService;
         private readonly ITicketService _ticketService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TicketsController"/> class.
+        /// </summary>
         public TicketsController(ITicketService ticketService, IMapperService mapperService)
         {
             _ticketService = ticketService;
@@ -22,20 +30,34 @@ namespace CoffeeCard.WebApi.Controllers
         }
 
         /// <summary>
-        ///     Returns a list of tickets. Use 'used' parameter to define what kind of tickets are returned
+        /// Returns a list of tickets
         /// </summary>
+        /// <param name="used">Include already used tickets</param>
+        /// <returns>List of tickets</returns>
+        /// <response code="200">Successful request</response>
+        /// <response code="401">Invalid credentials</response>
         [HttpGet]
-        public IActionResult Get(bool used)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public ActionResult<List<TicketDto>> Get([FromQuery] bool used)
         {
             var tickets = _ticketService.getTickets(User.Claims, used);
             return Ok(_mapperService.Map(tickets).OrderBy(t => t.DateUsed).ToList());
         }
 
         /// <summary>
-        ///     Uses the tickets supplied via ticketIds in the body
+        /// Uses the tickets supplied via product ids in the body
         /// </summary>
+        /// <param name="dto">Use multiple tickets request</param>
+        /// <returns>List of used tickets</returns>
+        /// <response code="200">Successful request</response>
+        /// <response code="400">Bad Request, not enough tickets. See explanation</response>
+        /// <response code="401">Invalid credentials</response>
         [HttpPost("useMultiple")]
-        public IActionResult UseMultipleTickets([FromBody] UseMultipleTicketDto dto)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public ActionResult<List<TicketDto>> UseMultipleTickets([FromBody] UseMultipleTicketDto dto)
         {
             var usedTickets = _ticketService.UseMultipleTickets(User.Claims, dto);
             return Ok(_mapperService.Map(usedTickets));
@@ -43,11 +65,18 @@ namespace CoffeeCard.WebApi.Controllers
 
 
         /// <summary>
+        /// Use ticket request
         /// </summary>
-        /// <param name="dto"></param>
-        /// <returns></returns>
+        /// <param name="dto">Use ticket request</param>
+        /// <returns>Used ticket </returns>
+        /// <response code="200">Successful request</response>
+        /// <response code="400">Bad Request, not enough tickets. See explanation</response>
+        /// <response code="401">Invalid credentials</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpPost("use")]
-        public IActionResult Use(UseTicketDTO dto)
+        public ActionResult<TicketDto> Use([FromBody] UseTicketDTO dto)
         {
             var usedTicket = _ticketService.UseTicket(User.Claims, dto.ProductId);
             return Ok(_mapperService.Map(usedTicket));

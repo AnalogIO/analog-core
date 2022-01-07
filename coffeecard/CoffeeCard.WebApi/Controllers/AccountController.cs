@@ -1,3 +1,4 @@
+using CoffeeCard.Common.Errors;
 using CoffeeCard.Common.Models.DataTransferObjects.User;
 using CoffeeCard.Library.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -7,10 +8,13 @@ using Serilog;
 
 namespace CoffeeCard.WebApi.Controllers
 {
+    /// <summary>
+    /// Controller for creating and managing user accounts
+    /// </summary>
+    [ApiController]
     [ApiVersion("1")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [Authorize]
-    [ApiController]
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
@@ -18,6 +22,9 @@ namespace CoffeeCard.WebApi.Controllers
         private readonly ILeaderboardService _leaderboardService;
         private readonly IMapperService _mapperService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AccountController"/> class.
+        /// </summary>
         public AccountController(IAccountService accountService, ILeaderboardService leaderboardService,
             IMapperService mapperService, IHttpContextAccessor httpContextAccessor)
         {
@@ -28,16 +35,18 @@ namespace CoffeeCard.WebApi.Controllers
         }
 
         /// <summary>
-        /// Registers the user supplied in the body and returns 201 on success
+        /// Register a new account. A account is required to verify its email before logging in
         /// </summary>
         /// <param name="registerDto">Register data object</param>
-        /// <response code="201">Successful user creation</response>
-        /// <response code="400">Invalid User creation object</response>
+        /// <response code="201">Successful account creation</response>
+        /// <response code="400">Invalid Account creation object</response>
+        /// <response code="409">Email already registered</response>
         [HttpPost("register")]
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult Register(RegisterDto registerDto)
+        [ProducesResponseType(typeof(ApiException), StatusCodes.Status409Conflict)]
+        public IActionResult Register([FromBody] RegisterDto registerDto)
         {
             _accountService.RegisterAccount(registerDto);
             return Created("register", 
@@ -49,24 +58,27 @@ namespace CoffeeCard.WebApi.Controllers
         }
 
         /// <summary>
-        /// Returns a token that is used to identify the user
+        /// Returns a token that is used to identify the account
         /// </summary>
         /// <returns>Login token</returns>
         /// <param name="loginDto">Login data object</param>
-        /// <response code="200">Successful user login</response>
+        /// <response code="200">Successful account login</response>
         /// <response code="400">Invalid Login creation object</response>
-        /// <response code="401">Invalid Login credentials</response>
-        [AllowAnonymous]
+        /// <response code="401">Invalid credentials</response>
+        /// <response code="403">Account email not verified</response>
         [HttpPost("login")]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public ActionResult<TokenDto> Login(LoginDto loginDto)
+        [ProducesResponseType(typeof(ApiException), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ApiException), StatusCodes.Status429TooManyRequests)]
+        public ActionResult<TokenDto> Login([FromBody] LoginDto loginDto)
         {
             var token = _accountService.Login(loginDto.Email, loginDto.Password, loginDto.Version);
             if (token == null)
             {
-                Log.Information("Unsuccessful login for e-mail = {email} from IP = {ipadress} ", loginDto.Email,
+                Log.Information("Unsuccessful login for e-mail = {Email} from IP = {Ipaddress} ", loginDto.Email,
                     _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
                 return Unauthorized();
             }
@@ -75,9 +87,9 @@ namespace CoffeeCard.WebApi.Controllers
         }
 
         /// <summary>
-        /// Returns basic data about the user
+        /// Returns basic data about the account
         /// </summary>
-        /// <returns>User information</returns>
+        /// <returns>Account information</returns>
         /// <response code="200">Successful request</response>
         /// <response code="401">Invalid credentials</response>
         [HttpGet]
@@ -95,35 +107,34 @@ namespace CoffeeCard.WebApi.Controllers
         }
 
         /// <summary>
-        /// Updates the user and returns the updated values
+        /// Updates the account and returns the updated values
         /// </summary>
-        /// <param name="userDto">Update user information request</param>
-        /// <returns>User information</returns>
+        /// <param name="userDto">Update account information request</param>
+        /// <returns>Account information</returns>
         /// <response code="200">Successful request</response>
         /// <response code="401">Invalid credentials</response>
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public ActionResult<UserDto> Update(UpdateUserDto userDto)
+        public ActionResult<UserDto> Update([FromBody] UpdateUserDto userDto)
         {
             var user = _accountService.UpdateAccount(User.Claims, userDto);
             return Ok(_mapperService.Map(user));
         }
 
         /// <summary>
-        /// Sends email to user if they forgot password
         /// </summary>
-        /// <param name="emailDTO">User email</param>
-        /// <returns>User information</returns>
+        /// <param name="emailDTO">Account email</param>
+        /// <returns>Account information</returns>
         /// <response code="200">Successful request</response>
         /// <response code="400">Invalid request data model</response>
-        [AllowAnonymous]
         [HttpPost("forgotpassword")]
-        public IActionResult ForgotPassword(EmailDto emailDTO)
+        [AllowAnonymous]
+        public IActionResult ForgotPassword([FromBody] EmailDto emailDTO)
         {
             _accountService.ForgotPassword(emailDTO.Email);
 
-            Log.Information("Password reset requested for e-mail = {email} from IP = {ipaddress}", emailDTO.Email,
+            Log.Information("Password reset requested for e-mail = {Email} from IP = {Ipaddress}", emailDTO.Email,
                 _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
 
             return Ok("{ \"message\":\"We have send you a confirmation email\"}");
