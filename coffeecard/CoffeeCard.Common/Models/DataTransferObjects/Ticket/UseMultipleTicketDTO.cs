@@ -1,9 +1,27 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace CoffeeCard.Common.Models.DataTransferObjects.Ticket
 {
+    /// <summary>
+    /// Use multiple tickets request
+    /// </summary>
+    /// <example>
+    /// {
+    ///     "productIds": [
+    ///         1,
+    ///         2
+///         ]
+    /// }
+    /// </example>
     public class UseMultipleTicketDto
     {
-        public IEnumerable<int> ProductIds { get; set; }
+        /// <summary>
+        /// List of products ids to use a ticket for
+        /// </summary>
+        /// <value>Product Ids</value>
+        /// <example>1, 2</example>
+        [Required]
+        public List<int> ProductIds { get; }
     }
 }

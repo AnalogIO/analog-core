@@ -18,10 +18,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using NSwag;
 
 namespace CoffeeCard.WebApi
 {
+#pragma warning disable CS1591
     public class Startup
     {
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
@@ -63,7 +65,13 @@ namespace CoffeeCard.WebApi
             services.AddSingleton(Environment.ContentRootFileProvider);
 
             // Setup filter to catch outgoing exceptions
-            services.AddControllers(options => { options.Filters.Add(new ApiExceptionFilter()); });
+            services.AddControllers(options => { options.Filters.Add(new ApiExceptionFilter()); })
+                // Setup Json Serializing
+                .AddNewtonsoftJson(options =>
+                {
+                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
+                    options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+                });
 
             services.AddApiVersioning();
 
@@ -71,7 +79,7 @@ namespace CoffeeCard.WebApi
             services.AddRazorPages();
 
             // Setup Swagger
-            services.AddSwaggerDocument(config =>
+            services.AddOpenApiDocument(config =>
             {
                 config.PostProcess = document =>
                 {
@@ -92,14 +100,7 @@ namespace CoffeeCard.WebApi
                     };
                 };
             });
-
-            // Setup Json Serializing
-            services.AddControllers()
-                .AddNewtonsoftJson(options =>
-                {
-                    options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-                });
-
+            
             // Setup Authentication
             var identitySettings = Configuration.GetSection("IdentitySettings").Get<IdentitySettings>();
             services.AddAuthentication(options =>
@@ -167,4 +168,5 @@ namespace CoffeeCard.WebApi
             });
         }
     }
+#pragma warning restore CS1591
 }

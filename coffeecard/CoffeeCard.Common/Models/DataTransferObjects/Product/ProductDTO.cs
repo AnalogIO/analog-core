@@ -1,11 +1,59 @@
-﻿namespace CoffeeCard.Common.Models.DataTransferObjects.Product
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace CoffeeCard.Common.Models.DataTransferObjects.Product
 {
+    /// <summary>
+    /// Represents a purchasable product
+    /// </summary>
+    /// <example>
+    /// {
+    ///     "id": 1,
+    ///     "price": 300,
+    ///     "numberOfTickets": 10,
+    ///     "name": "Coffee clip card",
+    ///     "description": "Coffee clip card of 10 clips"
+    /// }
+    /// </example>
     public class ProductDto
     {
+        /// <summary>
+        /// Id of product
+        /// </summary>
+        /// <value>Product Id</value>
+        /// <example>1</example>
+        [Required]
         public int Id { get; set; }
+        
+        /// <summary>
+        /// Product price
+        /// </summary>
+        /// <value>Product price</value>
+        /// <example>300</example>
+        [Required]
         public int Price { get; set; }
+        
+        /// <summary>
+        /// Number of tickets in product
+        /// </summary>
+        /// <value>Number of tickets</value>
+        /// <example>10</example>
+        [Required]
         public int NumberOfTickets { get; set; }
+        
+        /// <summary>
+        /// Name of product
+        /// </summary>
+        /// <value>Product name</value>
+        /// <example>Coffee clip card</example>
+        [Required]
         public string Name { get; set; }
+        
+        /// <summary>
+        /// Description of products
+        /// </summary>
+        /// <value>Product Description</value>
+        /// <example>Coffee clip card of 10 clips</example>
+        [Required]
         public string Description { get; set; }
     }
 }
