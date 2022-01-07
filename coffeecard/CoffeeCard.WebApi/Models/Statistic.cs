@@ -23,6 +23,10 @@ namespace CoffeeCard.WebApi.Models
         [ForeignKey("User_Id")]
         public virtual User User { get; set; }
 
+        /// <summary>
+        /// Get the start of date of the semester.
+        /// When <paramref name="currentTime"/> is in July (Month 7) or greater, the semester start is July 1st or when earlier than July, the semester start is the date of the last Monday of January.
+        /// </summary>
         public static DateTime GetSemesterStart(DateTime currentTime)
         {
             // Autumn semester: Get first day of July.
@@ -34,6 +38,10 @@ namespace CoffeeCard.WebApi.Models
             return lastDayOfJan.AddDays(-correctedLastDayOfWeek);
         }
 
+        /// <summary>
+        /// Get the end of date of the semester.
+        /// When <paramref name="currentTime"/> is in July (Month 7) or greater, the semester start is December 23rd or when earlier than July, the semester start is June 30rd.
+        /// </summary>
         public static DateTime GetSemesterEnd(DateTime currentTime)
         {
             if (currentTime.Month < 7) return new DateTime(currentTime.Year, 6, 30);

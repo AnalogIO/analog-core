@@ -16,11 +16,8 @@ namespace CoffeeCard.Tests.Unit.Models
         [InlineData("2030/06/30", "2030/01/28")]
         public void TestSemesterStartGetsLastMondayOfJanuaryInSpring(string currentDateStr, string expectedDateStr)
         {
-            var cd = currentDateStr.Split('/');
-            var ed = expectedDateStr.Split('/');
-
-            var currentDate = new DateTime(int.Parse(cd[0]), int.Parse(cd[1]), int.Parse(cd[2]));
-            var expectedDate = new DateTime(int.Parse(ed[0]), int.Parse(ed[1]), int.Parse(ed[2]));
+            var currentDate = DateTime.Parse(currentDateStr);
+            var expectedDate = DateTime.Parse(expectedDateStr);
 
             var actualDate = Statistic.GetSemesterStart(currentDate);
             Assert.Equal(expectedDate, actualDate);
