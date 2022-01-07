@@ -6,7 +6,7 @@ namespace CoffeeCard.Tests.Unit.Models
 {
     public class SemesterStartTests
     {
-        [Theory(DisplayName = "When called in months Jan-Jun (inclusive), GetSemesterStart returns the last Monday of January")]
+        [Theory(DisplayName = "GetSemesterStart returns the correct semester start date based on currentDate")]
         [InlineData("2022/01/31", "2022/01/31")]
         [InlineData("2023/01/31", "2023/01/30")]
         [InlineData("2024/05/12", "2024/01/29")]
@@ -14,6 +14,8 @@ namespace CoffeeCard.Tests.Unit.Models
         [InlineData("2026/01/01", "2026/01/26")]
         [InlineData("2027/01/01", "2027/01/25")]
         [InlineData("2030/06/30", "2030/01/28")]
+        [InlineData("2000/07/01", "2000/07/01")]
+        [InlineData("2020/12/31", "2020/07/01")]
         public void TestSemesterStartGetsLastMondayOfJanuaryInSpring(string currentDateStr, string expectedDateStr)
         {
             var currentDate = DateTime.Parse(currentDateStr);
