@@ -1,3 +1,4 @@
+using CoffeeCard.WebApi.Helpers;
 using CoffeeCard.WebApi.Models.DataTransferObjects.User;
 using CoffeeCard.WebApi.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -92,6 +93,11 @@ namespace CoffeeCard.WebApi.Controllers
         [HttpGet("lookupuserid")]
         public IActionResult LookUpUserId(int userId)
         {
+            var authorizedUser = _accountService.GetAccountByClaims(User.Claims);
+            if (authorizedUser.Id != userId)
+            {
+                throw new ApiException("Users may only request information for their own account", 403);
+            }
             var user = _accountService.GetUserById(userId);
             return Ok(_mapperService.Map(user));
         }
