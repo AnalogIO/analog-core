@@ -218,15 +218,6 @@ namespace CoffeeCard.WebApi.Services
             _context.SaveChanges();
         }
 
-        public User GetUserById(int userId)
-        {
-            var user = _context.Users.FirstOrDefault(x => x.Id == userId);
-
-            if (user == null) throw new ApiException($"Could not find user with id {userId}", 400);
-
-            return user;
-        }
-
         public void ForgotPassword(string email)
         {
             var user = GetAccountWithTokensByEmail(email);

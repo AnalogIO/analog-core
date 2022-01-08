@@ -9,7 +9,6 @@ namespace CoffeeCard.WebApi.Services
     public interface IAccountService
     {
         User GetAccountByClaims(IEnumerable<Claim> claims);
-        User GetUserById(int userId);
         User RegisterAccount(RegisterDto registerDto);
         string Login(string username, string password, string version);
         bool VerifyRegistration(string token);

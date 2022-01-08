@@ -87,16 +87,6 @@ namespace CoffeeCard.WebApi.Controllers
         }
 
         /// <summary>
-        ///     Returns the requested user id
-        /// </summary>
-        [HttpGet("lookupuserid")]
-        public IActionResult LookUpUserId(int userId)
-        {
-            var user = _accountService.GetUserById(userId);
-            return Ok(_mapperService.Map(user));
-        }
-
-        /// <summary>
         ///     Sends email to user if they forgot password
         /// </summary>
         /// <param name="emailDTO"></param>
