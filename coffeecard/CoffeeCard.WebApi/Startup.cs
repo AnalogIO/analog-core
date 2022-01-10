@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -73,34 +75,23 @@ namespace CoffeeCard.WebApi
                     options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
                 });
 
-            services.AddApiVersioning();
+            services.AddApiVersioning(config =>
+            {
+                config.DefaultApiVersion = new ApiVersion(1, 0);
+                config.AssumeDefaultVersionWhenUnspecified = true;
+                config.ReportApiVersions = true;
+            });
+            services.AddVersionedApiExplorer(setup =>
+            {
+                setup.GroupNameFormat = "'v'VVV";
+                setup.SubstituteApiVersionInUrl = true;
+            });
+
+            GenerateOpenApiDocument(services);
 
             // Setup razor pages
             services.AddRazorPages();
 
-            // Setup Swagger
-            services.AddOpenApiDocument(config =>
-            {
-                config.PostProcess = document =>
-                {
-                    document.Info.Version = "v1";
-                    document.Info.Title = "Cafe Analog CoffeeCard API";
-                    document.Info.Description = "ASP.NET Core web API for the coffee bar Cafe Analog";
-                    document.Info.TermsOfService = "None";
-                    document.Info.Contact = new OpenApiContact
-                    {
-                        Name = "AnalogIO",
-                        Email = "support@analogio.dk",
-                        Url = "https://github.com/analogio"
-                    };
-                    document.Info.License = new OpenApiLicense
-                    {
-                        Name = "Use under MIT",
-                        Url = "https://github.com/AnalogIO/analog-core/blob/master/LICENSE"
-                    };
-                };
-            });
-            
             // Setup Authentication
             var identitySettings = Configuration.GetSection("IdentitySettings").Get<IdentitySettings>();
             services.AddAuthentication(options =>
@@ -141,8 +132,57 @@ namespace CoffeeCard.WebApi
             services.ConfigureValidatableSetting<MobilePaySettings>(Configuration.GetSection("MobilePaySettings"));
         }
 
+        
+        /// <summary>
+        /// Generate Open Api Document for each API Version
+        /// </summary>
+        private static void GenerateOpenApiDocument(IServiceCollection services)
+        {
+            var apiVersions = services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>();
+            foreach (var apiVersion in apiVersions.ApiVersionDescriptions)
+            {
+                // Add an OpenApi document per API version
+                services.AddOpenApiDocument(config =>
+                {
+                    config.Title = apiVersion.GroupName;
+                    config.Version = apiVersion.ApiVersion.ToString();
+                    config.DocumentName = apiVersion.GroupName;
+                    config.ApiGroupNames = new[] {apiVersion.GroupName};
+                    config.Description = "ASP.NET Core WebAPI for Cafe Analog";
+                    config.PostProcess = document =>
+                    {
+                        document.Info.Title = "Cafe Analog CoffeeCard API";
+                        document.Info.Version = $"v{apiVersion.ApiVersion}";
+                        document.Info.Contact = new OpenApiContact
+                        {
+                            Name = "AnalogIO",
+                            Email = "support@analogio.dk",
+                            Url = "https://github.com/analogio"
+                        };
+                        document.Info.License = new OpenApiLicense
+                        {
+                            Name = "Use under MIT",
+                            Url = "https://github.com/AnalogIO/analog-core/blob/master/LICENSE"
+                        };
+                    };
+
+                    // Configure OpenApi Security scheme
+                    // Allows using the Swagger UI with a Bearer token
+                    config.AddSecurity("Bearer", new OpenApiSecurityScheme()
+                    {
+                        Description = "Insert a JWT Bearer token: Bearer {token}",
+                        Name = "Authorization",
+                        Scheme = "Bearer",
+                        BearerFormat = "JWT",
+                        In = OpenApiSecurityApiKeyLocation.Header,
+                        Type = OpenApiSecuritySchemeType.ApiKey
+                    });
+                });
+            }
+        }
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)
         {
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();
