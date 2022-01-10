@@ -10,3 +10,4 @@ Analog Coffee Card API handles clip card sale, user management and statistics fo
 
 - [Contribution guidelines](CONTRIBUTING.md) `CONTRIBUTING.md`
 - [CoffeeCard API](coffeecard/README.md) `coffeecard/README.md`
+- [CoffeeCard.MobilePay.RefundConsoleApp documentation](coffeecard/CoffeeCard.MobilePay.RefundConsoleApp/README.md) `coffeecard/CoffeeCard.MobilePay.RefundConsoleApp/README.md`

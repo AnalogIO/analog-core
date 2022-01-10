@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace CoffeeCard.MobilePay.Refund.ConsoleApp.IO
+namespace CoffeeCard.MobilePay.RefundConsoleApp.IO
 {
     public interface IOutputWriter<in T>
     {

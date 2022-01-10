@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using CoffeeCard.MobilePay.Exception;
-using CoffeeCard.MobilePay.Refund.ConsoleApp.IO;
-using CoffeeCard.MobilePay.Refund.ConsoleApp.Model;
+using CoffeeCard.MobilePay.RefundConsoleApp.IO;
+using CoffeeCard.MobilePay.RefundConsoleApp.Model;
 using CoffeeCard.MobilePay.Service;
 using Microsoft.Extensions.Logging;
 
-namespace CoffeeCard.MobilePay.Refund.ConsoleApp.Handler
+namespace CoffeeCard.MobilePay.RefundConsoleApp.Handler
 {
     public class RefundHandler
     {
