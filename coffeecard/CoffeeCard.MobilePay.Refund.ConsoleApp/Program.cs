@@ -5,22 +5,26 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Autofac;
 using CoffeeCard.Common.Configuration;
-using CoffeeCard.Console.Refund.Handler;
-using CoffeeCard.Console.Refund.IO;
-using CoffeeCard.Console.Refund.Model;
 using CoffeeCard.MobilePay.Client;
+using CoffeeCard.MobilePay.Refund.ConsoleApp.Handler;
+using CoffeeCard.MobilePay.Refund.ConsoleApp.IO;
+using CoffeeCard.MobilePay.Refund.ConsoleApp.Model;
 using CoffeeCard.MobilePay.Service;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 
-namespace CoffeeCard.Console.Refund
+namespace CoffeeCard.MobilePay.Refund.ConsoleApp
 {
     internal class Program
     {
         private static ILogger _log;
 
         private static IContainer _container;
+
+        protected Program()
+        {
+        }
 
         private static async Task Main()
         {
@@ -32,7 +36,7 @@ namespace CoffeeCard.Console.Refund
                 _log.LogInformation("Finished processing refunds");
                 Environment.Exit(0);
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 _log.LogError("Error while processing refunds. Error={ex}", ex);
                 Environment.Exit(1);
@@ -79,10 +83,6 @@ namespace CoffeeCard.Console.Refund
 
             var refundHandler = _container.Resolve<RefundHandler>();
             await refundHandler.RefundPayments(completedOrders);
-        }
-
-        protected Program()
-        {
         }
     }
 }

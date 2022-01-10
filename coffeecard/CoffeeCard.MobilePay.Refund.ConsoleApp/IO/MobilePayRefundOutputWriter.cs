@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using CoffeeCard.Console.Refund.Model;
+using CoffeeCard.MobilePay.Refund.ConsoleApp.Model;
 using Microsoft.Extensions.Logging;
 
-namespace CoffeeCard.Console.Refund.IO
+namespace CoffeeCard.MobilePay.Refund.ConsoleApp.IO
 {
     public class MobilePayRefundOutputWriter : IOutputWriter<IList<RefundResponse>>
     {
