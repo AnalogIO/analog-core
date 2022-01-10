@@ -2,7 +2,16 @@
 
 ## Project structure
 
-TBA
+| Project                                 	| Description                                                                                                      	|
+|-----------------------------------------	|------------------------------------------------------------------------------------------------------------------	|
+| `CoffeeCard.Common`                     	| Commons project for classes which all projects have in common e.g. settings files, constants, common exceptions. 	|
+| `CoffeeCard.Library`                    	| Library project for the main business logic, e.g. Services, Persistence.                                         	|
+| `CoffeeCard.MobilePay`                  	| Domain specific project for MobilePay and communication with their backend.                                      	|
+| `CoffeeCard.MobilePay.RefundConsoleApp` 	| ConsoleApp for refunding MobilePay transactions.                                                                 	|
+| `CoffeeCard.Models`                     	| Models and DTO's classes                                                                                         	|
+| `CoffeeCard.Tests.Integration`          	| Integration tests                                                                                                	|
+| `CoffeeCard.Tests.Unit`                 	| Unit tests                                                                                                       	|
+| `CoffeeCard.WebApi`                     	| WebAPI project with controllers and API specific classes.  
 
 ## Configuration and running the solution
 
