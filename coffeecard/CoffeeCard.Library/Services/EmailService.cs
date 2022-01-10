@@ -141,9 +141,8 @@ namespace CoffeeCard.Library.Services
 
         private void SendEmail(MimeMessage mail)
         {
-            var client = new RestClient
+            var client = new RestClient(_mailgunSettings.MailgunApiUrl)
             {
-                BaseUrl = new Uri(_mailgunSettings.MailgunApiUrl),
                 Authenticator = new HttpBasicAuthenticator("api", _mailgunSettings.ApiKey)
             };
 
@@ -151,12 +150,12 @@ namespace CoffeeCard.Library.Services
             request.AddParameter("domain", _mailgunSettings.Domain, ParameterType.UrlSegment);
             request.Resource = "{domain}/messages";
             request.AddParameter("from", "Cafe Analog <mailgun@cafeanalog.dk>");
-            request.AddParameter("to", mail.To[0]);
+            request.AddParameter("to", mail.To[0].ToString());
             request.AddParameter("subject", mail.Subject);
             request.AddParameter("html", mail.HtmlBody);
             request.AddParameter("text", mail.TextBody);
-            request.Method = Method.POST;
-            client.Execute(request);
+            request.Method = Method.Post;
+            client.ExecutePostAsync(request);
         }
     }
 }
