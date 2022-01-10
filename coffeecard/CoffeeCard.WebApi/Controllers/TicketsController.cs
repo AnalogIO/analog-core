@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Services;
 using CoffeeCard.Models.DataTransferObjects.Ticket;
 using Microsoft.AspNetCore.Authorization;
@@ -37,8 +38,8 @@ namespace CoffeeCard.WebApi.Controllers
         /// <response code="200">Successful request</response>
         /// <response code="401">Invalid credentials</response>
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(List<TicketDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         public ActionResult<List<TicketDto>> Get([FromQuery] bool used)
         {
             var tickets = _ticketService.GetTickets(User.Claims, used);
@@ -54,16 +55,15 @@ namespace CoffeeCard.WebApi.Controllers
         /// <response code="400">Bad Request, not enough tickets. See explanation</response>
         /// <response code="401">Invalid credentials</response>
         [HttpPost("useMultiple")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(List<TicketDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         public ActionResult<List<TicketDto>> UseMultipleTickets([FromBody] UseMultipleTicketDto dto)
         {
             var usedTickets = _ticketService.UseMultipleTickets(User.Claims, dto);
             return Ok(_mapperService.Map(usedTickets));
         }
-
-
+        
         /// <summary>
         /// Use ticket request
         /// </summary>
@@ -72,9 +72,9 @@ namespace CoffeeCard.WebApi.Controllers
         /// <response code="200">Successful request</response>
         /// <response code="400">Bad Request, not enough tickets. See explanation</response>
         /// <response code="401">Invalid credentials</response>
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(TicketDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [HttpPost("use")]
         public ActionResult<TicketDto> Use([FromBody] UseTicketDTO dto)
         {

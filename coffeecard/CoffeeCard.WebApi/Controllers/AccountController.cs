@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using System.Threading.Tasks;
+using CoffeeCard.Models.DataTransferObjects;
 using CoffeeCard.Models.DataTransferObjects.User;
 
 namespace CoffeeCard.WebApi.Controllers
@@ -40,22 +41,19 @@ namespace CoffeeCard.WebApi.Controllers
         /// </summary>
         /// <param name="registerDto">Register data object</param>
         /// <response code="201">Successful account creation</response>
-        /// <response code="400">Invalid Account creation object</response>
         /// <response code="409">Email already registered</response>
         [HttpPost("register")]
         [AllowAnonymous]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiException), StatusCodes.Status409Conflict)]
-        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
+        [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status409Conflict)]
+        public async Task<ActionResult<MessageResponseDto>> Register([FromBody] RegisterDto registerDto)
         {
             await _accountService.RegisterAccountAsync(registerDto);
-            return Created("register", 
-                new
-                {
-                    message =
-                        "Your user has been created! Please check your email to verify your account.\n(Check your spam folder!)"
-                });
+            return Created(nameof(Get), new MessageResponseDto()
+            {
+                Message =
+                    "Your user has been created! Please check your email to verify your account.\n(Check your spam folder!)"
+            });
         }
 
         /// <summary>
@@ -64,14 +62,12 @@ namespace CoffeeCard.WebApi.Controllers
         /// <returns>Login token</returns>
         /// <param name="loginDto">Login data object</param>
         /// <response code="200">Successful account login</response>
-        /// <response code="400">Invalid Login creation object</response>
         /// <response code="401">Invalid credentials</response>
         /// <response code="403">Account email not verified</response>
         [HttpPost("login")]
         [AllowAnonymous]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(TokenDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiException), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ApiException), StatusCodes.Status429TooManyRequests)]
         public ActionResult<TokenDto> Login([FromBody] LoginDto loginDto)
@@ -94,8 +90,8 @@ namespace CoffeeCard.WebApi.Controllers
         /// <response code="200">Successful request</response>
         /// <response code="401">Invalid credentials</response>
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         public ActionResult<UserDto> Get()
         {
             var user = _accountService.GetAccountByClaims(User.Claims);
@@ -115,8 +111,8 @@ namespace CoffeeCard.WebApi.Controllers
         /// <response code="200">Successful request</response>
         /// <response code="401">Invalid credentials</response>
         [HttpPut]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         public ActionResult<UserDto> Update([FromBody] UpdateUserDto userDto)
         {
             var user = _accountService.UpdateAccount(User.Claims, userDto);
@@ -128,9 +124,11 @@ namespace CoffeeCard.WebApi.Controllers
         /// <param name="emailDTO">Account email</param>
         /// <returns>Account information</returns>
         /// <response code="200">Successful request</response>
-        /// <response code="400">Invalid request data model</response>
+        /// <response code="404">E-mail not found</response>
         [HttpPost("forgotpassword")]
         [AllowAnonymous]
+        [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiException), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> ForgotPasswordAsync([FromBody] EmailDto emailDTO)
         {
             await _accountService.ForgotPasswordAsync(emailDTO.Email);
@@ -138,7 +136,10 @@ namespace CoffeeCard.WebApi.Controllers
             Log.Information("Password reset requested for e-mail = {Email} from IP = {Ipaddress}", emailDTO.Email,
                 _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
 
-            return Ok("{ \"message\":\"We have send you a confirmation email\"}");
+            return Ok(new MessageResponseDto()
+            {
+                Message = "We have send you a confirmation email"
+            });
         }
     }
 }

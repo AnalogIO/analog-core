@@ -32,8 +32,8 @@ namespace CoffeeCard.WebApi.Controllers
         /// <response code="200">Successful request</response>
         /// <response code="401">Invalid credentials</response>
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(AppConfigDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         public ActionResult<AppConfigDto> Get()
         {
             var appConfig = _appConfigService.RetreiveConfiguration();

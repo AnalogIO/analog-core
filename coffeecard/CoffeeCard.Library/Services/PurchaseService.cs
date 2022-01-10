@@ -106,7 +106,7 @@ namespace CoffeeCard.Library.Services
             if (user == null) throw new ApiException("The user could not be found");
 
             var voucher = _context.Vouchers.Include(x => x.Product).FirstOrDefault(x => x.Code.Equals(voucherCode));
-            if (voucher == null) throw new ApiException($"Voucher '{voucherCode}' does not exist!", StatusCodes.Status400BadRequest);
+            if (voucher == null) throw new ApiException($"Voucher '{voucherCode}' does not exist!", StatusCodes.Status404NotFound);
             if (voucher.User != null) throw new ApiException("Voucher has already been redeemed!", StatusCodes.Status400BadRequest);
 
             var purchase = new Purchase

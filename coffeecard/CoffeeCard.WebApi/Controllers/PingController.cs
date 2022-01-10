@@ -17,7 +17,7 @@ namespace CoffeeCard.WebApi.Controllers
         /// <returns>pong</returns>
         /// <response code="200">Successful request</response>
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public IActionResult Ping()
         {
             return Ok("pong");

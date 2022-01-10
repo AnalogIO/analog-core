@@ -2,6 +2,7 @@
 using System.Linq;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
+using CoffeeCard.Models.DataTransferObjects;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,13 +17,13 @@ namespace CoffeeCard.Library.Services
             _context = context;
         }
 
-        public List<LeaderboardUser> GetLeaderboard(int preset, int top)
+        public List<LeaderboardDto> GetLeaderboard(int preset, int top)
         {
             if (preset == (int) StatisticPreset.Total)
             {
                 var users = _context.Statistics.Include(x => x.User).Where(s => s.Preset == StatisticPreset.Total)
                     .OrderByDescending(x => x.SwipeCount).ThenBy(x => x.LastSwipe).AsEnumerable().Take(top);
-                return users.Select(s => new LeaderboardUser {Name = s.User.Name, Score = s.SwipeCount}).ToList();
+                return users.Select(s => new LeaderboardDto {Name = s.User.Name, Score = s.SwipeCount}).ToList();
             }
 
             if (preset == (int) StatisticPreset.Semester)
@@ -31,7 +32,7 @@ namespace CoffeeCard.Library.Services
                     .AsEnumerable()
                     .Where(s => s.Preset == StatisticPreset.Semester && Statistic.ValidateSemesterExpired(s.LastSwipe))
                     .OrderByDescending(x => x.SwipeCount).ThenBy(x => x.LastSwipe).AsEnumerable().Take(top);
-                return users.Select(s => new LeaderboardUser {Name = s.User.Name, Score = s.SwipeCount}).ToList();
+                return users.Select(s => new LeaderboardDto {Name = s.User.Name, Score = s.SwipeCount}).ToList();
             }
 
             if (preset == (int) StatisticPreset.Monthly)
@@ -40,7 +41,7 @@ namespace CoffeeCard.Library.Services
                     .AsEnumerable()
                     .Where(s => s.Preset == StatisticPreset.Monthly && Statistic.ValidateMonthlyExpired(s.LastSwipe))
                     .OrderByDescending(x => x.SwipeCount).ThenBy(x => x.LastSwipe).AsEnumerable().Take(top);
-                return users.Select(s => new LeaderboardUser
+                return users.Select(s => new LeaderboardDto
                     {Name = s.User.PrivacyActivated ? "Anonymous" : s.User.Name, Score = s.SwipeCount}).ToList();
             }
 
