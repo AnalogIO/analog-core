@@ -1,4 +1,4 @@
-﻿namespace CoffeeCard.Console.Refund.Model
+﻿namespace CoffeeCard.MobilePay.Refund.ConsoleApp.Model
 {
     public class CompletedOrder
     {
