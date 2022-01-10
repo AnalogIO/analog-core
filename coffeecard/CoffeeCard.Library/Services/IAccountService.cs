@@ -9,12 +9,12 @@ namespace CoffeeCard.Library.Services
     public interface IAccountService
     {
         User GetAccountByClaims(IEnumerable<Claim> claims);
-        User RegisterAccount(RegisterDto registerDto);
+        Task<User> RegisterAccountAsync(RegisterDto registerDto);
         string Login(string username, string password, string version);
         bool VerifyRegistration(string token);
         User UpdateAccount(IEnumerable<Claim> claims, UpdateUserDto userDto);
         void UpdateExperience(int userId, int exp);
-        void ForgotPassword(string email);
-        Task<bool> RecoverUser(string token, string newPassword);
+        Task ForgotPasswordAsync(string email);
+        Task<bool> RecoverUserAsync(string token, string newPassword);
     }
 }

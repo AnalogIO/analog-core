@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Common.Models;
 using CoffeeCard.Common.Models.DataTransferObjects.Purchase;
@@ -27,7 +28,7 @@ namespace CoffeeCard.Library.Services
             _env = env;
         }
 
-        public void SendInvoice(UserDto user, PurchaseDto purchase)
+        public async Task SendInvoiceAsync(UserDto user, PurchaseDto purchase)
         {
             var message = new MimeMessage();
             var builder = RetrieveTemplate("invoice.html");
@@ -48,10 +49,10 @@ namespace CoffeeCard.Library.Services
 
             message.Body = builder.ToMessageBody();
 
-            SendEmail(message);
+            await SendEmailAsync(message);
         }
 
-        public void SendRegistrationVerificationEmail(User user, string token)
+        public async Task SendRegistrationVerificationEmailAsync(User user, string token)
         {
             Log.Information($"Sending registration verification email to {user.Email} ({user.Id})");
             var message = new MimeMessage();
@@ -65,29 +66,30 @@ namespace CoffeeCard.Library.Services
 
             message.Body = builder.ToMessageBody();
 
-            SendEmail(message);
+            await SendEmailAsync(message);
         }
 
-        public void SendVerificationEmailForChangedEmail(User user, string token, string newEmail)
+        public async Task SendVerificationEmailForChangedEmail(User user, string token, string newEmail)
         {
             throw new NotImplementedException();
             //TODO rethink current flow of updating emails. Currently the email is being updated in the database before an
-            var message = new MimeMessage();
-            var builder = RetrieveTemplate("email_verify_updatedemail.html");
-            const string endpoint = ""; //TODO Endpoint does not currently exist, consider removing method
+
+            //var message = new MimeMessage();
+            //var builder = RetrieveTemplate("email_verify_updatedemail.html");
+            //const string endpoint = ""; //TODO Endpoint does not currently exist, consider removing method
             
-            builder = BuildVerifyEmail(builder, token, user.Email, user.Name, endpoint);
-            builder.HtmlBody = builder.HtmlBody.Replace("{newEmail}", newEmail);
+            //builder = BuildVerifyEmail(builder, token, user.Email, user.Name, endpoint);
+            //builder.HtmlBody = builder.HtmlBody.Replace("{newEmail}", newEmail);
 
-            message.To.Add(new MailboxAddress(user.Name, user.Email));
-            message.Subject = "Verify your new email for your Cafe Analog account";
+            //message.To.Add(new MailboxAddress(user.Name, user.Email));
+            //message.Subject = "Verify your new email for your Cafe Analog account";
 
-            message.Body = builder.ToMessageBody();
+            //message.Body = builder.ToMessageBody();
 
-            SendEmail(message);
+            //SendEmailAsync(message);
         }
 
-        public void SendVerificationEmailForLostPw(User user, string token)
+        public async Task SendVerificationEmailForLostPwAsync(User user, string token)
         {
             var message = new MimeMessage();
             var builder = RetrieveTemplate("email_verify_lostpassword.html");
@@ -100,7 +102,7 @@ namespace CoffeeCard.Library.Services
 
             message.Body = builder.ToMessageBody();
 
-            SendEmail(message);
+            await SendEmailAsync(message);
         }
 
         private BodyBuilder BuildVerifyEmail(BodyBuilder builder, string token, string email, string name, string endpoint)
@@ -139,7 +141,7 @@ namespace CoffeeCard.Library.Services
             return builder;
         }
 
-        private void SendEmail(MimeMessage mail)
+        private async Task SendEmailAsync(MimeMessage mail)
         {
             var client = new RestClient(_mailgunSettings.MailgunApiUrl)
             {
@@ -153,9 +155,14 @@ namespace CoffeeCard.Library.Services
             request.AddParameter("to", mail.To[0].ToString());
             request.AddParameter("subject", mail.Subject);
             request.AddParameter("html", mail.HtmlBody);
-            request.AddParameter("text", mail.TextBody);
             request.Method = Method.Post;
-            client.ExecutePostAsync(request);
+
+            var response = await client.ExecutePostAsync(request);
+
+            if (!response.IsSuccessful)
+            {
+                Log.Error("Error sending request to Mailgun. StatusCode: {statusCode} ErrorMessage: {errorMessage}", response.StatusCode, response.ErrorMessage);
+            }
         }
     }
 }

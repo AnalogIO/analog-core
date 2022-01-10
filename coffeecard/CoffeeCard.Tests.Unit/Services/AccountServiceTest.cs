@@ -8,7 +8,6 @@ using CoffeeCard.Common.Errors;
 using CoffeeCard.Common.Models;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services;
-using CoffeeCard.WebApi.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -44,7 +43,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 var accountService = new AccountService(context, environmentSettings, new Mock<ITokenService>().Object,
                     new Mock<IEmailService>().Object, new Mock<IHashService>().Object,
                     new Mock<IHttpContextAccessor>().Object, new Mock<ILoginLimiter>().Object, loginLimiterSettings);
-                result = await accountService.RecoverUser("bogus", "3433");
+                result = await accountService.RecoverUserAsync("bogus", "3433");
             }
 
             // Assert
@@ -93,7 +92,7 @@ namespace CoffeeCard.Tests.Unit.Services
                     new Mock<IEmailService>().Object, new Mock<IHashService>().Object,
                     new Mock<IHttpContextAccessor>().Object, new Mock<ILoginLimiter>().Object, loginLimiterSettings);
 
-                result = await accountService.RecoverUser("valid", "3433");
+                result = await accountService.RecoverUserAsync("valid", "3433");
             }
 
             // Assert
@@ -144,7 +143,7 @@ namespace CoffeeCard.Tests.Unit.Services
                     new Mock<IEmailService>().Object, new Mock<IHashService>().Object,
                     new Mock<IHttpContextAccessor>().Object, new Mock<ILoginLimiter>().Object, loginLimiterSettings);
 
-                await accountService.RecoverUser("valid", "3433");
+                await accountService.RecoverUserAsync("valid", "3433");
 
                 var updatedUser = context.Users.FirstOrDefault(u => u.Email == user.Email);
                 newUserPass = updatedUser.Password;

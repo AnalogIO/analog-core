@@ -87,7 +87,7 @@ namespace CoffeeCard.Library.Services
                 StatusCodes.Status401Unauthorized);
         }
 
-        public User RegisterAccount(RegisterDto registerDto)
+        public async Task<User> RegisterAccountAsync(RegisterDto registerDto)
         {
             Log.Information($"Trying to register new user. Name: {registerDto.Name} Email: {registerDto.Email}");
 
@@ -126,7 +126,7 @@ namespace CoffeeCard.Library.Services
             };
             var verificationToken = _tokenService.GenerateToken(claims);
 
-            _emailService.SendRegistrationVerificationEmail(user, verificationToken);
+            await _emailService.SendRegistrationVerificationEmailAsync(user, verificationToken);
 
             return user;
         }
@@ -218,7 +218,7 @@ namespace CoffeeCard.Library.Services
             _context.SaveChanges();
         }
 
-        public void ForgotPassword(string email)
+        public async Task ForgotPasswordAsync(string email)
         {
             var user = GetAccountWithTokensByEmail(email);
             if (user == null) throw new ApiException($"The user could not be found {email}", 400);
@@ -231,10 +231,10 @@ namespace CoffeeCard.Library.Services
             var verificationToken = _tokenService.GenerateToken(claims);
             user.Tokens.Add(new Token(verificationToken));
             _context.SaveChanges();
-            _emailService.SendVerificationEmailForLostPw(user, verificationToken);
+            await _emailService.SendVerificationEmailForLostPwAsync(user, verificationToken);
         }
 
-        public async Task<bool> RecoverUser(string token, string newPassword)
+        public async Task<bool> RecoverUserAsync(string token, string newPassword)
         {
             var tokenObj = _tokenService.ReadToken(token);
             if (tokenObj == null) return false;

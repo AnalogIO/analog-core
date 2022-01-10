@@ -39,7 +39,7 @@ namespace CoffeeCard.WebApi.Pages
         {
             if (!ModelState.IsValid) return Page();
 
-            if (await _accountService.RecoverUser(Token, PinCode.NewPinCode))
+            if (await _accountService.RecoverUserAsync(Token, PinCode.NewPinCode))
             {
                 TempData["resultHeader"] = "Success";
                 TempData["result"] = "Your password has now been reset";
