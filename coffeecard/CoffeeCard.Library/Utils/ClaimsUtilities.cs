@@ -4,8 +4,8 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using CoffeeCard.Common;
 using CoffeeCard.Common.Errors;
-using CoffeeCard.Common.Models;
 using CoffeeCard.Library.Persistence;
+using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoffeeCard.Library.Utils

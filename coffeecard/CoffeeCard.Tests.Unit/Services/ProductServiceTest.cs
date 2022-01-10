@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
-using CoffeeCard.Common.Models;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services;
+using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 

@@ -1,7 +1,7 @@
 using System.Threading;
 using CoffeeCard.Common.Configuration;
-using CoffeeCard.Common.Models;
 using CoffeeCard.Library.Services;
+using CoffeeCard.Models.Entities;
 using Xunit;
 
 namespace CoffeeCard.Tests.Unit.Services

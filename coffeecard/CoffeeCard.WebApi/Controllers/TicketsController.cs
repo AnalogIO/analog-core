@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using CoffeeCard.Common.Models.DataTransferObjects.Ticket;
 using CoffeeCard.Library.Services;
+using CoffeeCard.Models.DataTransferObjects.Ticket;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -41,7 +41,7 @@ namespace CoffeeCard.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public ActionResult<List<TicketDto>> Get([FromQuery] bool used)
         {
-            var tickets = _ticketService.getTickets(User.Claims, used);
+            var tickets = _ticketService.GetTickets(User.Claims, used);
             return Ok(_mapperService.Map(tickets).OrderBy(t => t.DateUsed).ToList());
         }
 

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using CoffeeCard.Common.Configuration;
-using CoffeeCard.Common.Models;
+using CoffeeCard.Models.Entities;
 using Serilog;
 
 namespace CoffeeCard.Library.Services

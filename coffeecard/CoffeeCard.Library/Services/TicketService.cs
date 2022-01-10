@@ -4,9 +4,10 @@ using System.Linq;
 using System.Security.Claims;
 using CoffeeCard.Common;
 using CoffeeCard.Common.Errors;
-using CoffeeCard.Common.Models;
-using CoffeeCard.Common.Models.DataTransferObjects.Ticket;
 using CoffeeCard.Library.Persistence;
+using CoffeeCard.Models.DataTransferObjects.CoffeeCard;
+using CoffeeCard.Models.DataTransferObjects.Ticket;
+using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -28,7 +29,7 @@ namespace CoffeeCard.Library.Services
             _productService = productService;
         }
 
-        public IEnumerable<Ticket> getTickets(IEnumerable<Claim> claims, bool used)
+        public IEnumerable<Ticket> GetTickets(IEnumerable<Claim> claims, bool used)
         {
             var userId = claims.FirstOrDefault(x => x.Type == Constants.UserId);
             if (userId == null) throw new ApiException("The token is invalid!", StatusCodes.Status401Unauthorized);
@@ -114,7 +115,7 @@ namespace CoffeeCard.Library.Services
             return usedTickets;
         }
 
-        public IEnumerable<Common.Models.CoffeeCard> GetCoffeeCards(IEnumerable<Claim> claims)
+        public IEnumerable<CoffeeCardDto> GetCoffeeCards(IEnumerable<Claim> claims)
         {
             var userIdClaim = claims.FirstOrDefault(x => x.Type == Constants.UserId);
             if (userIdClaim == null) throw new ApiException("The token is invalid!", 401);
@@ -133,7 +134,7 @@ namespace CoffeeCard.Library.Services
                     tp => tp.Product,
                     tp => tp.Ticket,
                     (product, tp) =>
-                        new Common.Models.CoffeeCard
+                        new Models.Entities.CoffeeCard
                         {
                             ProductId = product.Id,
                             Name = product.Name,
@@ -142,10 +143,19 @@ namespace CoffeeCard.Library.Services
                             TicketsLeft = tp.Count()
                         }).ToList();
 
-            var products = _productService.GetProductsForUserAsync(user).Result.Select(p => new Common.Models.CoffeeCard
+            var products = _productService.GetProductsForUserAsync(user).Result.Select(p => new Models.Entities.CoffeeCard
                 {ProductId = p.Id, Name = p.Name, Price = p.Price, Quantity = p.NumberOfTickets, TicketsLeft = 0}).ToList();
 
-            return coffeeCards.Union(products, new CoffeeCardComparer());
+            var unionCoffeeCards = coffeeCards.Union(products, new CoffeeCardComparer());
+            var toDto = unionCoffeeCards.Select(cc => new CoffeeCardDto()
+            {
+                ProductId = cc.ProductId,
+                Name = cc.Name,
+                Price = cc.Price,
+                Quantity = cc.Quantity,
+                TicketsLeft = cc.TicketsLeft
+            });
+            return toDto.ToList();
         }
 
         private int GetFirstTicketIdFromProduct(int productId, int userId)

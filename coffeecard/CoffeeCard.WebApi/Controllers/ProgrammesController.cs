@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using CoffeeCard.Common.Models.DataTransferObjects.Programme;
 using CoffeeCard.Library.Services;
+using CoffeeCard.Models.DataTransferObjects.Programme;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

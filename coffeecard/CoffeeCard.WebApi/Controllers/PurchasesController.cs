@@ -2,8 +2,8 @@
 using System.Linq;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Common.Errors;
-using CoffeeCard.Common.Models.DataTransferObjects.Purchase;
 using CoffeeCard.Library.Services;
+using CoffeeCard.Models.DataTransferObjects.Purchase;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

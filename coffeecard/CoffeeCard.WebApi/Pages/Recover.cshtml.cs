@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using CoffeeCard.Common.Models.PagesModels;
 using CoffeeCard.Library.Services;
+using CoffeeCard.Models.PagesModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 

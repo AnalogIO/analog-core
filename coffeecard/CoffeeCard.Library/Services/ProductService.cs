@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CoffeeCard.Common.Models;
 using CoffeeCard.Library.Persistence;
+using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoffeeCard.Library.Services

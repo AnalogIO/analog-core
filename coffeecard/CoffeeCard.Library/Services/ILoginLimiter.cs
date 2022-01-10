@@ -1,4 +1,4 @@
-using CoffeeCard.Common.Models;
+using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Library.Services
 {

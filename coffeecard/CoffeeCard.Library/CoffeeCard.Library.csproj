@@ -29,6 +29,7 @@
     <ItemGroup>
       <ProjectReference Include="..\CoffeeCard.Common\CoffeeCard.Common.csproj" />
       <ProjectReference Include="..\CoffeeCard.MobilePay\CoffeeCard.MobilePay.csproj" />
+      <ProjectReference Include="..\CoffeeCard.Models\CoffeeCard.Models.csproj" />
     </ItemGroup>
 
     <ItemGroup>

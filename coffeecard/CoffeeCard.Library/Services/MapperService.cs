@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using CoffeeCard.Common.Models;
-using CoffeeCard.Common.Models.DataTransferObjects.Product;
-using CoffeeCard.Common.Models.DataTransferObjects.Programme;
-using CoffeeCard.Common.Models.DataTransferObjects.Purchase;
-using CoffeeCard.Common.Models.DataTransferObjects.Ticket;
-using CoffeeCard.Common.Models.DataTransferObjects.User;
+using CoffeeCard.Models.DataTransferObjects.Product;
+using CoffeeCard.Models.DataTransferObjects.Programme;
+using CoffeeCard.Models.DataTransferObjects.Purchase;
+using CoffeeCard.Models.DataTransferObjects.Ticket;
+using CoffeeCard.Models.DataTransferObjects.User;
+using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Library.Services
 {

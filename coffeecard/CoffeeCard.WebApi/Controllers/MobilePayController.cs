@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
-using CoffeeCard.Common.Models.DataTransferObjects.MobilePay;
 using CoffeeCard.Library.Services;
+using CoffeeCard.Models.DataTransferObjects.MobilePay;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
