@@ -261,7 +261,7 @@ namespace CoffeeCard.Library.Services
             }
 
             var purchase = DeliverProduct(dto, claims);
-            SendInvoiceEmail(purchase);
+            await SendInvoiceEmailAsync(purchase);
 
             Log.Information(
                 $"Completed purchase with success! OrderId: {dto.OrderId} transactionId: {dto.TransactionId}");
@@ -352,14 +352,14 @@ namespace CoffeeCard.Library.Services
             _mobilePayService.Dispose();
         }
 
-        private void SendInvoiceEmail(Purchase purchase)
+        private async Task SendInvoiceEmailAsync(Purchase purchase)
         {
             var user = _context.Users.FirstOrDefault(x => x.Id == purchase.PurchasedBy.Id);
 
             var purchaseDTO = _mapper.Map(purchase);
             var userDTO = _mapper.Map(user);
 
-            _emailService.SendInvoice(userDTO, purchaseDTO);
+            await _emailService.SendInvoiceAsync(userDTO, purchaseDTO);
         }
 
         private async Task<PaymentStatus> ValidateTransaction(CompletePurchaseDto payment)

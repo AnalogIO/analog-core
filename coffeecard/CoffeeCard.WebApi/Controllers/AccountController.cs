@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.WebApi.Controllers
 {
@@ -46,9 +47,9 @@ namespace CoffeeCard.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiException), StatusCodes.Status409Conflict)]
-        public IActionResult Register([FromBody] RegisterDto registerDto)
+        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
-            _accountService.RegisterAccount(registerDto);
+            await _accountService.RegisterAccountAsync(registerDto);
             return Created("register", 
                 new
                 {
@@ -130,9 +131,9 @@ namespace CoffeeCard.WebApi.Controllers
         /// <response code="400">Invalid request data model</response>
         [HttpPost("forgotpassword")]
         [AllowAnonymous]
-        public IActionResult ForgotPassword([FromBody] EmailDto emailDTO)
+        public async Task<IActionResult> ForgotPasswordAsync([FromBody] EmailDto emailDTO)
         {
-            _accountService.ForgotPassword(emailDTO.Email);
+            await _accountService.ForgotPasswordAsync(emailDTO.Email);
 
             Log.Information("Password reset requested for e-mail = {Email} from IP = {Ipaddress}", emailDTO.Email,
                 _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
