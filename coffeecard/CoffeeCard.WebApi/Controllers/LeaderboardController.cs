@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using CoffeeCard.Common.Models;
 using CoffeeCard.Library.Services;
+using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,5 +1,5 @@
 ﻿using CoffeeCard.Common.Configuration;
-using CoffeeCard.Common.Models.DataTransferObjects.AppConfig;
+using CoffeeCard.Models.DataTransferObjects.AppConfig;
 using Microsoft.Extensions.Options;
 
 namespace CoffeeCard.Library.Services

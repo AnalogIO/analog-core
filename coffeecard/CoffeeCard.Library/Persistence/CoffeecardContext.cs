@@ -1,5 +1,5 @@
 using CoffeeCard.Common.Configuration;
-using CoffeeCard.Common.Models;
+using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 

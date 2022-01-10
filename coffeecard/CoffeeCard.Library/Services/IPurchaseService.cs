@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using CoffeeCard.Common.Models;
-using CoffeeCard.Common.Models.DataTransferObjects.MobilePay;
-using CoffeeCard.Common.Models.DataTransferObjects.Purchase;
+using CoffeeCard.Models.DataTransferObjects.MobilePay;
+using CoffeeCard.Models.DataTransferObjects.Purchase;
+using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Library.Services
 {

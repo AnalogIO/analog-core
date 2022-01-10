@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using CoffeeCard.Library.Services;
+using CoffeeCard.Models.DataTransferObjects.CoffeeCard;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -34,7 +35,7 @@ namespace CoffeeCard.WebApi.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public ActionResult<List<Common.Models.CoffeeCard>> Get()
+        public ActionResult<CoffeeCardDto> Get()
         {
             return Ok(_ticketService.GetCoffeeCards(User.Claims));
         }

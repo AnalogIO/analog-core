@@ -5,8 +5,8 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
-using CoffeeCard.Common.Models;
 using CoffeeCard.Library.Utils;
+using CoffeeCard.Models.Entities;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 

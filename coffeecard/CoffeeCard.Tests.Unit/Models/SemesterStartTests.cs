@@ -1,5 +1,5 @@
 ﻿using System;
-using CoffeeCard.Common.Models;
+using CoffeeCard.Models.Entities;
 using Xunit;
 
 namespace CoffeeCard.Tests.Unit.Models

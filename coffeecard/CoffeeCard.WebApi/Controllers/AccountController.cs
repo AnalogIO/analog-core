@@ -1,11 +1,11 @@
 using CoffeeCard.Common.Errors;
-using CoffeeCard.Common.Models.DataTransferObjects.User;
 using CoffeeCard.Library.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using System.Threading.Tasks;
+using CoffeeCard.Models.DataTransferObjects.User;
 
 namespace CoffeeCard.WebApi.Controllers
 {

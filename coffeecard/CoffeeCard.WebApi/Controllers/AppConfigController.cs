@@ -1,5 +1,5 @@
-﻿using CoffeeCard.Common.Models.DataTransferObjects.AppConfig;
-using CoffeeCard.Library.Services;
+﻿using CoffeeCard.Library.Services;
+using CoffeeCard.Models.DataTransferObjects.AppConfig;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
