@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using CoffeeCard.Library.Services;
+using CoffeeCard.Models.DataTransferObjects;
 using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -33,9 +34,9 @@ namespace CoffeeCard.WebApi.Controllers
         /// <response code="200">Successful request</response>
         /// <response code="401">Invalid credentials</response>
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public ActionResult<List<LeaderboardUser>> Get([FromQuery] int preset, [FromQuery] int top = 10)
+        [ProducesResponseType(typeof(List<LeaderboardDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+        public ActionResult<List<LeaderboardDto>> Get([FromQuery] int preset, [FromQuery] int top = 10)
         {
             var leaderboard = _leaderboardService.GetLeaderboard(preset, top);
             return Ok(leaderboard);

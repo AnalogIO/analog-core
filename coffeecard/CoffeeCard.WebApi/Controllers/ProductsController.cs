@@ -45,8 +45,8 @@ namespace CoffeeCard.WebApi.Controllers
         /// <response code="200">Successful request</response>
         [HttpGet]
         [AllowAnonymous]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetProductsPublic()
+        [ProducesResponseType(typeof(List<ProductDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<ProductDto>>> GetProductsPublic()
         {
             IEnumerable<Product> products;
             try
@@ -71,8 +71,8 @@ namespace CoffeeCard.WebApi.Controllers
         /// <response code="200">Successful request</response>
         /// <response code="401">Invalid credentials</response>
         [HttpGet("app")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(List<ProductDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<List<ProductDto>>> GetProductsForUser()
         {
             var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);

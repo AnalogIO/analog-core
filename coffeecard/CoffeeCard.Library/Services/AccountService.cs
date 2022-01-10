@@ -221,7 +221,7 @@ namespace CoffeeCard.Library.Services
         public async Task ForgotPasswordAsync(string email)
         {
             var user = GetAccountWithTokensByEmail(email);
-            if (user == null) throw new ApiException($"The user could not be found {email}", 400);
+            if (user == null) throw new ApiException($"The user could not be found {email}", StatusCodes.Status404NotFound);
 
             var claims = new[]
             {

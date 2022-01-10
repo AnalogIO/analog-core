@@ -21,6 +21,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using NJsonSchema.Generation;
 using NSwag;
 
 namespace CoffeeCard.WebApi
@@ -86,8 +87,12 @@ namespace CoffeeCard.WebApi
                 setup.GroupNameFormat = "'v'VVV";
                 setup.SubstituteApiVersionInUrl = true;
             });
+            services.Configure<ApiBehaviorOptions>(config =>
+            {
+                config.SuppressMapClientErrors = true;
+            });
 
-            GenerateOpenApiDocument(services);
+                GenerateOpenApiDocument(services);
 
             // Setup razor pages
             services.AddRazorPages();
@@ -177,6 +182,9 @@ namespace CoffeeCard.WebApi
                         In = OpenApiSecurityApiKeyLocation.Header,
                         Type = OpenApiSecuritySchemeType.ApiKey
                     });
+
+                    // Assume not null as default unless parameter is marked as nullable
+                    config.DefaultReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull;
                 });
             }
         }
@@ -190,7 +198,12 @@ namespace CoffeeCard.WebApi
                 app.UseHsts();
 
             app.UseOpenApi();
+
             app.UseSwaggerUi3();
+            app.UseReDoc(config =>
+            {
+                config.Path = "/redoc";
+            });
 
             app.UseRouting();
 

@@ -37,8 +37,12 @@ namespace CoffeeCard.WebApi.Controllers
         /// <summary>
         /// Returns a list of purchases for the given user via the supplied token in the header
         /// </summary>
+        /// <returns>List of purchases</returns>
+        /// <response code="200">Successful request</response>
+        /// <response code="401">Invalid credentials</response>
         [HttpGet]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(List<PurchaseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         public ActionResult<List<PurchaseDto>> Get()
         {
             var purchases = _purchaseService.GetPurchases(User.Claims);
@@ -48,10 +52,16 @@ namespace CoffeeCard.WebApi.Controllers
         /// <summary>
         /// Redeems the voucher supplied as parameter in the path
         /// </summary>
+        /// <returns>Purchase description</returns>
+        /// <response code="200">Successful request</response>
+        /// <response code="400">Voucher code already used</response>
+        /// <response code="401">Invalid credentials</response>
+        /// <response code="404">Voucher code not found</response>
         [HttpPost("redeemvoucher")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(PurchaseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiException), StatusCodes.Status404NotFound)]
         public ActionResult<PurchaseDto> RedeemVoucher([FromQuery] string voucherCode)
         {
             var purchase = _purchaseService.RedeemVoucher(voucherCode, User.Claims);
@@ -61,17 +71,20 @@ namespace CoffeeCard.WebApi.Controllers
         /// <summary>
         /// Issue purchase used by the ipad in the cafe
         /// </summary>
+        /// <returns>Purchase description</returns>
         /// <param name="issueProduct"></param>
         /// <returns></returns>
+        /// <response code="200">Successful request</response>
+        /// <response code="401">Invalid credentials</response>
         [HttpPost("issueproduct")]
         [AllowAnonymous]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public IActionResult IssueProduct([FromBody] IssueProductDto issueProduct)
+        [ProducesResponseType(typeof(PurchaseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+        public ActionResult<PurchaseDto> IssueProduct([FromBody] IssueProductDto issueProduct)
         {
             var adminToken = Request.Headers.FirstOrDefault(x => x.Key == "admintoken").Value.FirstOrDefault();
             Log.Information(adminToken);
-            if (adminToken != _identitySettings.AdminToken) throw new ApiException("AdminToken was invalid", 401);
+            if (adminToken != _identitySettings.AdminToken) throw new ApiException("AdminToken was invalid", StatusCodes.Status401Unauthorized);
             var purchase = _purchaseService.IssueProduct(issueProduct);
             return Ok(_mapperService.Map(purchase));
         }

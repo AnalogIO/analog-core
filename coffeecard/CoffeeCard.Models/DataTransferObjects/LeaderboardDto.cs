@@ -1,4 +1,4 @@
-﻿namespace CoffeeCard.Models.Entities
+﻿namespace CoffeeCard.Models.DataTransferObjects
 {
     /// <summary>
     /// A user on the leaderboard
@@ -9,7 +9,7 @@
     ///     "score": 25
     /// }
     /// </example>
-    public class LeaderboardUser
+    public class LeaderboardDto
     {
         /// <summary>
         /// Account name

@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using CoffeeCard.Library.Services;
+using CoffeeCard.Models.DataTransferObjects;
 using CoffeeCard.Models.DataTransferObjects.MobilePay;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -34,8 +35,8 @@ namespace CoffeeCard.WebApi.Controllers
         /// <response code="200">Successful request</response>
         /// <response code="401">Invalid credentials</response>
         [HttpPost("initiate")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(InitiatePurchaseResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         public ActionResult<InitiatePurchaseResponseDto> InitiatePurchase([FromBody] InitiatePurchaseDto initiatePurchaseDto)
         {
             var orderId = _purchaseService.InitiatePurchase(initiatePurchaseDto.ProductId, User.Claims);
@@ -49,12 +50,15 @@ namespace CoffeeCard.WebApi.Controllers
         /// <response code="200">Purchase successfully fulfilled</response>
         /// <response code="401">Invalid credentials</response>
         [HttpPost("complete")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> CompletePurchase([FromBody] CompletePurchaseDto dto)
+        [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<MessageResponseDto>> CompletePurchase([FromBody] CompletePurchaseDto dto)
         {
             await _purchaseService.CompletePurchase(dto, User.Claims);
-            return Ok(new {Message = "The purchase was completed with success!"});
+            return Ok(new MessageResponseDto()
+            {
+                Message = "The purchase was completed with success!"
+            });
         }
     }
 }

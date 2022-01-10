@@ -35,7 +35,7 @@ namespace CoffeeCard.WebApi.Controllers
         /// <response code="200">Successful request</response>
         [HttpGet]
         [AllowAnonymous]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<ProgrammeDto>), StatusCodes.Status200OK)]
         public ActionResult<List<ProgrammeDto>> Get()
         {
             var programmes = _programmeService.GetProgrammes();
