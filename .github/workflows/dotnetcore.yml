@@ -27,9 +27,9 @@ jobs:
         FILE_NAME: "coffeecard/CoffeeCard.Console.Refund/www.analogio.dk.pfx"
         FILE_DATA: "empty file"
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v1.9.0
       with:
-        dotnet-version: 3.1.102
+        dotnet-version: 3.1.x
     - name: Build CoffeeCard solution
       run: dotnet build coffeecard/
     - name: Run tests
