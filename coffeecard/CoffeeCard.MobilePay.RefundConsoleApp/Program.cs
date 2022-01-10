@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 using Autofac;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.MobilePay.Client;
-using CoffeeCard.MobilePay.Refund.ConsoleApp.Handler;
-using CoffeeCard.MobilePay.Refund.ConsoleApp.IO;
-using CoffeeCard.MobilePay.Refund.ConsoleApp.Model;
+using CoffeeCard.MobilePay.RefundConsoleApp.Handler;
+using CoffeeCard.MobilePay.RefundConsoleApp.IO;
+using CoffeeCard.MobilePay.RefundConsoleApp.Model;
 using CoffeeCard.MobilePay.Service;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 
-namespace CoffeeCard.MobilePay.Refund.ConsoleApp
+namespace CoffeeCard.MobilePay.RefundConsoleApp
 {
     internal class Program
     {

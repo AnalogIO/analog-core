@@ -19,12 +19,12 @@ jobs:
     # Create an empty appsettings.json file since it it a build dependency
     - uses: "finnp/create-file-action@master"
       env:
-        FILE_NAME: "coffeecard/CoffeeCard.Console.Refund/appsettings.json"
+        FILE_NAME: "coffeecard/CoffeeCard.MobilePay.RefundConsoleApp/appsettings.json"
         FILE_DATA: "empty file"
     # Create an empty certificate file since it it a build dependency
     - uses: "finnp/create-file-action@master"
       env:
-        FILE_NAME: "coffeecard/CoffeeCard.Console.Refund/www.analogio.dk.pfx"
+        FILE_NAME: "coffeecard/CoffeeCard.MobilePay.RefundConsoleApp/www.analogio.dk.pfx"
         FILE_DATA: "empty file"
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1.9.0

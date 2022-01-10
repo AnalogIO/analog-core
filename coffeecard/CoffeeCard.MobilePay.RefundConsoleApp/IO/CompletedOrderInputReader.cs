@@ -2,10 +2,10 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using CoffeeCard.MobilePay.Refund.ConsoleApp.Model;
+using CoffeeCard.MobilePay.RefundConsoleApp.Model;
 using Microsoft.Extensions.Logging;
 
-namespace CoffeeCard.MobilePay.Refund.ConsoleApp.IO
+namespace CoffeeCard.MobilePay.RefundConsoleApp.IO
 {
     public class CompletedOrderInputReader : IInputReader<CompletedOrder>
     {

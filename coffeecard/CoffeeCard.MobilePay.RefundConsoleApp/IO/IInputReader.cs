@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using CoffeeCard.MobilePay.Refund.ConsoleApp.Model;
+using CoffeeCard.MobilePay.RefundConsoleApp.Model;
 
-namespace CoffeeCard.MobilePay.Refund.ConsoleApp.IO
+namespace CoffeeCard.MobilePay.RefundConsoleApp.IO
 {
     public interface IInputReader<T>
     {
