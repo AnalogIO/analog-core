@@ -8,8 +8,8 @@ namespace CoffeeCard.Models.DataTransferObjects.User
     /// <example>
     /// {
     ///     "email": "john@doe.com",
-    ///     "password": "0ffe1abd1a08215353c233d6e009613e95eec4253832a761af28ff37ac5a150c",
-    ///     "version": "2.0.0"
+    ///     "password": "[no example provided]",
+    ///     "version": "2.1.0"
     /// }
     /// </example>
     public class LoginDto
@@ -24,10 +24,10 @@ namespace CoffeeCard.Models.DataTransferObjects.User
         public string Email { get; set; }
 
         /// <summary>
-        /// Pin Code as first SHA256, then Base64 encoded string
+        /// Pin Code as first UTF8 encoded, then SHA256 hashed, and then Base64 encoded string
         /// </summary>
         /// <value>Pin code</value>
-        /// <example>no example provided</example>
+        /// <example>[no example provided]</example>
         [Required]
         public string Password { get; set; }
 

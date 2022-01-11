@@ -23,6 +23,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using NJsonSchema.Generation;
 using NSwag;
+using NSwag.Generation.Processors.Security;
 
 namespace CoffeeCard.WebApi
 {
@@ -177,11 +178,12 @@ namespace CoffeeCard.WebApi
                     {
                         Description = "Insert a JWT Bearer token: Bearer {token}",
                         Name = "Authorization",
-                        Scheme = "Bearer",
+                        Scheme = "bearer",
                         BearerFormat = "JWT",
                         In = OpenApiSecurityApiKeyLocation.Header,
-                        Type = OpenApiSecuritySchemeType.ApiKey
+                        Type = OpenApiSecuritySchemeType.Http
                     });
+                    config.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("Bearer"));
 
                     // Assume not null as default unless parameter is marked as nullable
                     config.DefaultReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull;
