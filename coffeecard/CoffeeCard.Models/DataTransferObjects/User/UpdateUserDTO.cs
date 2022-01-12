@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace CoffeeCard.Models.DataTransferObjects.User
 {
     /// <summary>
-    /// Update User information request object. All properties are optional as the server only the properties which are present
+    /// Update User information request object. All properties are optional as the server only updates the values of the properties which are present
     /// </summary>
     /// <example>
     /// {
