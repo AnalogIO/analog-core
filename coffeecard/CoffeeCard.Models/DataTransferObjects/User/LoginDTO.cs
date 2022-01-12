@@ -35,7 +35,7 @@ namespace CoffeeCard.Models.DataTransferObjects.User
         /// App version of device logging in
         /// </summary>
         /// <value>App version</value>
-        /// <example>2.0.0</example>
+        /// <example>2.1.0</example>
         [Required]
         public string Version { get; set; }
     }
