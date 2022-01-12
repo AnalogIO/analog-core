@@ -1,0 +1,71 @@
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+
+namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
+{
+    /// <summary>
+    /// {
+    ///     "id": 122,
+    ///     "dateCreated": "",
+    ///     "productId": 1,
+    ///     "totalAmount": 100,
+    ///     "purchaseStatus": "PendingPayment",
+    ///     "paymentDetails": {
+    ///         "paymentType": "MobilePay",
+    ///         "orderId": "f5cb3e0f-3b9b-4f50-8c4f-a7450f300a5c",
+    ///         "mobilePayAppRedirectUri": "mobilepay://merchant_payments?payment_id=186d2b31-ff25-4414-9fd1-bfe9807fa8b7",
+    ///         "paymentId": "186d2b31-ff25-4414-9fd1-bfe9807fa8b7"
+    ///     }
+    /// }
+    /// </summary>
+    public class InitiatePurchaseResponse
+    {
+        /// <summary>
+        /// Id of the purchase
+        /// </summary>
+        /// <value>Purchase Id</value>
+        /// <example>122</example>
+        [Required]
+        public int Id { get; set; }
+        
+        /// <summary>
+        /// Date time for purchase in Utc format
+        /// </summary>
+        /// <value>Purchase date time</value>
+        /// <example>2022-01-09T21:03:52.2283208Z</example>
+        [Required]
+        public DateTime DateCreated { get; set; }
+        
+        /// <summary>
+        /// Id of the product to be purchased
+        /// </summary>
+        /// <value>Product Id</value>
+        /// <example>1</example>
+        [Required]
+        public int ProductId { get; set; }
+        
+        /// <summary>
+        /// The amount of money to be collected by the purchase.
+        /// A positive integer representing how much to charge in the smallest currency unit (e.g., 100 ører to charge 1.00 Danish kroner).
+        /// </summary>
+        /// <value>Total Amount in smallest currency unit</value>
+        /// <example>100</example>
+        [Required]
+        public int TotalAmount { get; set; }
+        
+        /// <summary>
+        /// Status of the purchase
+        /// </summary>
+        /// <value>Purchase status</value>
+        /// <example>Completed</example>
+        [Required]
+        public PurchaseStatus PurchaseStatus { get; set; }
+        
+        /// <summary>
+        /// Details about the payment. The details object is specific to the Payment Type
+        /// </summary>
+        /// <value>Payment Details</value>
+        [Required]
+        public PaymentDetails PaymentDetails { get; set; }
+    }
+}

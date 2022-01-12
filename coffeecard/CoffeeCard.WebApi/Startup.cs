@@ -202,10 +202,6 @@ namespace CoffeeCard.WebApi
             app.UseOpenApi();
 
             app.UseSwaggerUi3();
-            app.UseReDoc(config =>
-            {
-                config.Path = "/redoc";
-            });
 
             app.UseRouting();
 
