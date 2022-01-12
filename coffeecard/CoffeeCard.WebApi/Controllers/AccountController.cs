@@ -104,9 +104,9 @@ namespace CoffeeCard.WebApi.Controllers
         }
 
         /// <summary>
-        /// Updates the account and returns the updated values
+        /// Updates the account and returns the updated values.
         /// </summary>
-        /// <param name="userDto">Update account information request</param>
+        /// <param name="userDto">Update account information request. All properties are optional</param>
         /// <returns>Account information</returns>
         /// <response code="200">Successful request</response>
         /// <response code="401">Invalid credentials</response>

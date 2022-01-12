@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace CoffeeCard.Models.DataTransferObjects.User
 {
     /// <summary>
-    /// Update User information request object
+    /// Update User information request object. All properties are optional as the server only the properties which are present
     /// </summary>
     /// <example>
     /// {
@@ -21,7 +21,6 @@ namespace CoffeeCard.Models.DataTransferObjects.User
         /// </summary>
         /// <value>Full Name</value>
         /// <example>John Doe</example>
-        [Required]
         public string Name { get; set; }
         
         /// <summary>
@@ -29,7 +28,6 @@ namespace CoffeeCard.Models.DataTransferObjects.User
         /// </summary>
         /// <value>Email</value>
         /// <example>john@doe.com</example>
-        [Required]
         [EmailAddress]
         public string Email { get; set; }
         
@@ -38,7 +36,6 @@ namespace CoffeeCard.Models.DataTransferObjects.User
         /// </summary>
         /// <value>Privacy Activated</value>
         /// <example>true</example>
-        [Required]
         public bool? PrivacyActivated { get; set; }
         
         /// <summary>
@@ -46,7 +43,6 @@ namespace CoffeeCard.Models.DataTransferObjects.User
         /// </summary>
         /// <value>Study Programme Id</value>
         /// <example>1</example>
-        [Required]
         public int? ProgrammeId { get; set; }
         
         /// <summary>
@@ -54,7 +50,6 @@ namespace CoffeeCard.Models.DataTransferObjects.User
         /// </summary>
         /// <value>Pin code</value>
         /// <example>no example provided</example>
-        [Required]
         public string Password { get; set; }
     }
 }
