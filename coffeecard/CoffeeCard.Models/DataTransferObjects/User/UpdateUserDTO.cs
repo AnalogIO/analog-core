@@ -11,7 +11,7 @@ namespace CoffeeCard.Models.DataTransferObjects.User
     ///     "email": "john@doe.com",
     ///     "privacyActivated": true,
     ///     "programmeId": 1,
-    ///     "password": "0ffe1abd1a08215353c233d6e009613e95eec4253832a761af28ff37ac5a150c"
+    ///     "password": "[no example provided]"
     /// }
     /// </example>
     public class UpdateUserDto
@@ -46,10 +46,10 @@ namespace CoffeeCard.Models.DataTransferObjects.User
         public int? ProgrammeId { get; set; }
         
         /// <summary>
-        /// Pin Code as first SHA256, then Base64 encoded string
+        /// Pin Code as first UTF8 encoded, then SHA256 hashed, and then Base64 encoded string
         /// </summary>
         /// <value>Pin code</value>
-        /// <example>no example provided</example>
+        /// <example>[no example provided]</example>
         public string Password { get; set; }
     }
 }
