@@ -1,0 +1,454 @@
+---
+swagger: "2.0"
+info:
+  x-ibm-name: webhooks-api
+  title: Webhooks API
+  description: |-
+    ## MobilePay Webhooks API
+    MobilePay Webhooks API makes it easy for you to register to webhooks.
+  version: 1.0.0
+  contact:
+    email: developer@mobilepay.dk
+schemes:
+- https
+basePath: /
+consumes:
+- application/json
+produces:
+- application/json
+securityDefinitions:
+  Client Id:
+    type: apiKey
+    in: header
+    name: X-IBM-Client-Id
+security:
+- Client Id: []
+x-ibm-configuration:
+  testable: true
+  enforced: true
+  phase: realized
+paths:
+  /v1/webhooks/{webhookid}/publishtestnotification:
+    post:
+      tags:
+      - Publish Test Notification
+      summary: Publish test notification to a specified webhook.
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: webhookid
+        required: true
+        type: string
+        format: uuid
+      - in: header
+        name: CorrelationId
+        description: CorrelationId used for logging
+        type: string
+      - in: header
+        name: Authorization
+        description: Bearer token (JWT or API key)
+        required: true
+        type: string
+      responses:
+        200:
+          description: ""
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+        409:
+          description: There was an error sending the test notification to webhook
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              code: "1234"
+              message: Error message explaining the error that happened while processing
+                the request
+              correlationId: 91f2b05f-2171-4cea-9d5a-1cdbed6ae2cd
+              origin: WBH
+  /v1/webhooks/{webhookid}:
+    put:
+      tags:
+      - Webhooks
+      summary: Update a webhook.
+      description: "<label>Request JSON body</label><table style=\"table-layout: auto\"><thead><tr><th>Name</th><th>Usage</th><th>Type</th><th>Description</th></tr></thead><tbody><tr><td><code>events</code></td><td><strong>Required</strong></td><td>array
+        of string</td><td>List of subscribed events.\n\n Allowed event types:\n* `payment.reserved`\n*
+        `payment.expired`\n* `paymentpoint.activated`\n</td></tr><tr><td><code>url</code></td><td><strong>Required</strong></td><td>string</td><td>URL
+        to where webhook requests will be sent. Must be HTTPS. Scheme and host will
+        be converted to lower case. Result can be seen in the response.</td></tr></tbody></table>\n\n<label>Response
+        JSON body</label><table style=\"table-layout: auto\"><thead><tr><th>Name</th><th>Usage</th><th>Type</th><th>Description</th></tr></thead><tbody><tr><td><code>events</code></td><td><strong>Required</strong></td><td>array
+        of string</td><td>List of subscribed events.\n\n</td></tr><tr><td><code>signatureKey</code></td><td><strong>Required</strong></td><td>string</td><td>The
+        webhook's secret is used to generate webhook signatures.\n\n</td></tr><tr><td><code>url</code></td><td><strong>Required</strong></td><td>string</td><td>The
+        URL of the webhook endpoint.\n\n</td></tr><tr><td><code>webhookId</code></td><td><strong>Required</strong></td><td>string
+        (uuid)</td><td>Unique identifier for the object.\n\n</td></tr></tbody></table>\n\n<label>Response
+        JSON example</label>\n\n```json\r\n{\r\n  \"webhookId\": \"e4a2e195-74f6-42e1-a172-83291c9d2a41\",\r\n
+        \ \"url\": \"https://www.my-site.com/webhooks\",\r\n  \"events\": [\r\n    \"payment.reserved\"\r\n
+        \ ],\r\n  \"signatureKey\": \"my-secure-signature-key\"\r\n}\r\n```\n\r\n"
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: webhookid
+        required: true
+        type: string
+        format: uuid
+      - in: header
+        name: CorrelationId
+        description: CorrelationId used for logging
+        type: string
+      - in: header
+        name: Authorization
+        description: Bearer token (JWT or API key)
+        required: true
+        type: string
+      - in: body
+        name: body
+        schema:
+          $ref: '#/definitions/UpdateWebhookRequest'
+      responses:
+        200:
+          description: ""
+          schema:
+            $ref: '#/definitions/SingleWebhookResponse'
+          examples:
+            application/json:
+              webhookId: e4a2e195-74f6-42e1-a172-83291c9d2a41
+              url: https://www.my-site.com/webhooks
+              events:
+              - payment.reserved
+              signatureKey: my-secure-signature-key
+        400:
+          description: Bad Request
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+        409:
+          description: Domain error response
+    get:
+      tags:
+      - Webhooks
+      summary: Gets a single webhook by its ID.
+      description: "<label>Response JSON body</label><table style=\"table-layout:
+        auto\"><thead><tr><th>Name</th><th>Usage</th><th>Type</th><th>Description</th></tr></thead><tbody><tr><td><code>events</code></td><td><strong>Required</strong></td><td>array
+        of string</td><td>List of subscribed events.\n\n</td></tr><tr><td><code>signatureKey</code></td><td><strong>Required</strong></td><td>string</td><td>The
+        webhook's secret is used to generate webhook signatures.\n\n</td></tr><tr><td><code>url</code></td><td><strong>Required</strong></td><td>string</td><td>The
+        URL of the webhook endpoint.\n\n</td></tr><tr><td><code>webhookId</code></td><td><strong>Required</strong></td><td>string
+        (uuid)</td><td>Unique identifier for the object.\n\n</td></tr></tbody></table>\n\n<label>Response
+        JSON example</label>\n\n```json\r\n{\r\n  \"webhookId\": \"e4a2e195-74f6-42e1-a172-83291c9d2a41\",\r\n
+        \ \"url\": \"https://www.my-site.com/webhooks\",\r\n  \"events\": [\r\n    \"payment.reserved\"\r\n
+        \ ],\r\n  \"signatureKey\": \"my-secure-signature-key\"\r\n}\r\n```\n\r\n"
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: webhookid
+        required: true
+        type: string
+        format: uuid
+      - in: header
+        name: CorrelationId
+        description: CorrelationId used for logging
+        type: string
+      - in: header
+        name: Authorization
+        description: Bearer token (JWT or API key)
+        required: true
+        type: string
+      responses:
+        200:
+          description: ""
+          schema:
+            $ref: '#/definitions/SingleWebhookResponse'
+          examples:
+            application/json:
+              webhookId: e4a2e195-74f6-42e1-a172-83291c9d2a41
+              url: https://www.my-site.com/webhooks
+              events:
+              - payment.reserved
+              signatureKey: my-secure-signature-key
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+        409:
+          description: Domain error response
+    delete:
+      tags:
+      - Webhooks
+      summary: Delete a webhook.
+      parameters:
+      - in: path
+        name: webhookid
+        required: true
+        type: string
+        format: uuid
+      - in: header
+        name: CorrelationId
+        description: CorrelationId used for logging
+        type: string
+      - in: header
+        name: Authorization
+        description: Bearer token (JWT or API key)
+        required: true
+        type: string
+      responses:
+        204:
+          description: Success
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
+        409:
+          description: Domain error response
+  /v1/webhooks:
+    get:
+      tags:
+      - Webhooks
+      summary: Gets all merchant's webhooks
+      description: |+
+        <label>Response JSON body</label><table style="table-layout: auto"><thead><tr><th>Name</th><th>Usage</th><th>Type</th><th>Description</th></tr></thead><tbody><tr><td><code>webhooks</code></td><td><strong>Required</strong></td><td>array of <code>SingleWebhookResponse</code></td><td>The requested list of webhooks.
+
+        </td></tr></tbody></table>
+
+      produces:
+      - application/json
+      parameters:
+      - in: header
+        name: CorrelationId
+        description: CorrelationId used for logging
+        type: string
+      - in: header
+        name: Authorization
+        description: Bearer token (JWT or API key)
+        required: true
+        type: string
+      responses:
+        200:
+          description: ""
+          schema:
+            $ref: '#/definitions/GetMultipleWebhooksResponse'
+        401:
+          description: Unauthorized
+        409:
+          description: Domain error response
+    post:
+      tags:
+      - Webhooks
+      summary: Create a webhook.
+      description: "<label>Request JSON body</label><table style=\"table-layout: auto\"><thead><tr><th>Name</th><th>Usage</th><th>Type</th><th>Description</th></tr></thead><tbody><tr><td><code>events</code></td><td><strong>Required</strong></td><td>array
+        of string</td><td>List of subscribed events.\n\n Allowed event types:\n* `payment.reserved`\n*
+        `payment.expired`\n* `paymentpoint.activated`\n</td></tr><tr><td><code>url</code></td><td><strong>Required</strong></td><td>string</td><td>URL
+        to where webhook requests will be sent. Must be HTTPS. Scheme and host will
+        be converted to lower case. Result can be seen in the response.</td></tr></tbody></table>\n\n<label>Response
+        JSON body</label><table style=\"table-layout: auto\"><thead><tr><th>Name</th><th>Usage</th><th>Type</th><th>Description</th></tr></thead><tbody><tr><td><code>events</code></td><td><strong>Required</strong></td><td>array
+        of string</td><td>List of subscribed events.\n\n</td></tr><tr><td><code>signatureKey</code></td><td><strong>Required</strong></td><td>string</td><td>The
+        webhook's secret is used to generate webhook signatures.\n\n</td></tr><tr><td><code>url</code></td><td><strong>Required</strong></td><td>string</td><td>The
+        URL of the webhook endpoint.\n\n</td></tr><tr><td><code>webhookId</code></td><td><strong>Required</strong></td><td>string
+        (uuid)</td><td>Unique identifier for the object.\n\n</td></tr></tbody></table>\n\n<label>Response
+        JSON example</label>\n\n```json\r\n{\r\n  \"webhookId\": \"e4a2e195-74f6-42e1-a172-83291c9d2a41\",\r\n
+        \ \"url\": \"https://www.my-site.com/webhooks\",\r\n  \"events\": [\r\n    \"payment.reserved\"\r\n
+        \ ],\r\n  \"signatureKey\": \"my-secure-signature-key\"\r\n}\r\n```\n\r\n"
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: header
+        name: CorrelationId
+        description: CorrelationId used for logging
+        type: string
+      - in: header
+        name: Authorization
+        description: Bearer token (JWT or API key)
+        required: true
+        type: string
+      - in: body
+        name: body
+        schema:
+          $ref: '#/definitions/CreateWebhookRequest'
+      responses:
+        200:
+          description: ""
+          schema:
+            $ref: '#/definitions/SingleWebhookResponse'
+          examples:
+            application/json:
+              webhookId: e4a2e195-74f6-42e1-a172-83291c9d2a41
+              url: https://www.my-site.com/webhooks
+              events:
+              - payment.reserved
+              signatureKey: my-secure-signature-key
+        400:
+          description: Bad Request
+        401:
+          description: Unauthorized
+        409:
+          description: Domain error response
+definitions:
+  CreateWebhookRequest:
+    description: |+
+      <table style="table-layout: auto"><thead><tr><th>Name</th><th>Usage</th><th>Type</th><th>Description</th></tr></thead><tbody><tr><td><code>events</code></td><td><strong>Required</strong></td><td>array of string</td><td>List of subscribed events.
+
+       Allowed event types:
+      * `payment.reserved`
+      * `payment.expired`
+      * `paymentpoint.activated`
+      </td></tr><tr><td><code>url</code></td><td><strong>Required</strong></td><td>string</td><td>URL to where webhook requests will be sent. Must be HTTPS. Scheme and host will be converted to lower case. Result can be seen in the response.</td></tr></tbody></table>
+
+    required:
+    - events
+    - url
+    type: object
+    properties:
+      url:
+        description: URL to where webhook requests will be sent. Must be HTTPS. Scheme
+          and host will be converted to lower case. Result can be seen in the response.
+        type: string
+      events:
+        description: |
+          List of subscribed events.
+
+           Allowed event types:
+          * `payment.reserved`
+          * `payment.expired`
+          * `paymentpoint.activated`
+        type: array
+        items:
+          description: ""
+          type: string
+  ErrorResponse:
+    description: |+
+      <table style="table-layout: auto"><thead><tr><th>Name</th><th>Usage</th><th>Type</th><th>Description</th></tr></thead><tbody><tr><td><code>code</code></td><td>Optional</td><td>string</td><td></td></tr><tr><td><code>correlationId</code></td><td>Optional</td><td>string</td><td></td></tr><tr><td><code>message</code></td><td>Optional</td><td>string</td><td></td></tr><tr><td><code>origin</code></td><td>Optional</td><td>string</td><td></td></tr></tbody></table>
+
+    type: object
+    properties:
+      code:
+        description: ""
+        type: string
+        example: "1234"
+      message:
+        description: ""
+        type: string
+        example: Error message explaining the error that happened while processing
+          the request
+      correlationId:
+        description: ""
+        type: string
+        example: 91f2b05f-2171-4cea-9d5a-1cdbed6ae2cd
+      origin:
+        description: ""
+        type: string
+        example: WBH
+  GetMultipleWebhooksResponse:
+    description: |+
+      <table style="table-layout: auto"><thead><tr><th>Name</th><th>Usage</th><th>Type</th><th>Description</th></tr></thead><tbody><tr><td><code>webhooks</code></td><td><strong>Required</strong></td><td>array of <code>SingleWebhookResponse</code></td><td>The requested list of webhooks.
+
+      </td></tr></tbody></table>
+
+    required:
+    - webhooks
+    type: object
+    properties:
+      webhooks:
+        description: |+
+          The requested list of webhooks.
+
+        type: array
+        items:
+          $ref: '#/definitions/SingleWebhookResponse'
+  SingleWebhookResponse:
+    description: |+
+      <table style="table-layout: auto"><thead><tr><th>Name</th><th>Usage</th><th>Type</th><th>Description</th></tr></thead><tbody><tr><td><code>events</code></td><td><strong>Required</strong></td><td>array of string</td><td>List of subscribed events.
+
+      </td></tr><tr><td><code>signatureKey</code></td><td><strong>Required</strong></td><td>string</td><td>The webhook's secret is used to generate webhook signatures.
+
+      </td></tr><tr><td><code>url</code></td><td><strong>Required</strong></td><td>string</td><td>The URL of the webhook endpoint.
+
+      </td></tr><tr><td><code>webhookId</code></td><td><strong>Required</strong></td><td>string (uuid)</td><td>Unique identifier for the object.
+
+      </td></tr></tbody></table>
+
+    required:
+    - events
+    - signatureKey
+    - url
+    - webhookId
+    type: object
+    properties:
+      webhookId:
+        format: uuid
+        description: |+
+          Unique identifier for the object.
+
+        type: string
+        example: e4a2e195-74f6-42e1-a172-83291c9d2a41
+      url:
+        description: |+
+          The URL of the webhook endpoint.
+
+        type: string
+        example: https://www.my-site.com/webhooks
+      events:
+        description: |+
+          List of subscribed events.
+
+        type: array
+        items:
+          description: ""
+          type: string
+        example:
+        - payment.reserved
+      signatureKey:
+        description: |+
+          The webhook's secret is used to generate webhook signatures.
+
+        type: string
+        example: my-secure-signature-key
+  UpdateWebhookRequest:
+    description: |+
+      <table style="table-layout: auto"><thead><tr><th>Name</th><th>Usage</th><th>Type</th><th>Description</th></tr></thead><tbody><tr><td><code>events</code></td><td><strong>Required</strong></td><td>array of string</td><td>List of subscribed events.
+
+       Allowed event types:
+      * `payment.reserved`
+      * `payment.expired`
+      * `paymentpoint.activated`
+      </td></tr><tr><td><code>url</code></td><td><strong>Required</strong></td><td>string</td><td>URL to where webhook requests will be sent. Must be HTTPS. Scheme and host will be converted to lower case. Result can be seen in the response.</td></tr></tbody></table>
+
+    required:
+    - events
+    - url
+    type: object
+    properties:
+      url:
+        description: URL to where webhook requests will be sent. Must be HTTPS. Scheme
+          and host will be converted to lower case. Result can be seen in the response.
+        type: string
+      events:
+        description: |
+          List of subscribed events.
+
+           Allowed event types:
+          * `payment.reserved`
+          * `payment.expired`
+          * `paymentpoint.activated`
+        type: array
+        items:
+          description: ""
+          type: string
+x-ibm-endpoints:
+- endpointUrl: https://api.mobilepay.dk
+  type:
+  - production
+  - development
+...
