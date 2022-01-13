@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <Nullable>enable</Nullable>
+        <LangVersion>8</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="NSwag.CodeGeneration.CSharp" Version="13.15.5" />
+      <PackageReference Include="NSwag.Core" Version="13.15.5" />
+    </ItemGroup>
+
+</Project>
