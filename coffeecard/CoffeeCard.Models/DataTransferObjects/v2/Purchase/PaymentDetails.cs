@@ -1,7 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+using NJsonSchema.Converters;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
 {
+    [KnownType(typeof(MobilePayPaymentDetails))]
+    [JsonConverter(typeof(JsonInheritanceConverter))]
     public abstract class PaymentDetails
     {
         /// <summary>
