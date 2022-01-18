@@ -32,10 +32,10 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <summary>
         /// Creates a new instance of <see cref="MobilePayPaymentDetails"/>
         /// </summary>
-        public MobilePayPaymentDetails(PaymentType paymentType, string orderId, string mobilePayAppRedirectUri, string paymentId)
+        public MobilePayPaymentDetails(string orderId, string mobilePayAppRedirectUri, string paymentId)
         {
+            PaymentType = PaymentType.MobilePay;
             OrderId = orderId;
-            PaymentType = paymentType;
             MobilePayAppRedirectUri = mobilePayAppRedirectUri;
             PaymentId = paymentId;
         }

@@ -29,9 +29,23 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<List<Purchase>>> GetAllPurchases()
         {
-            // return new OkObjectResult(new List<Purchase>());
-            
-            throw new NotImplementedException();
+            return new OkObjectResult(new List<Purchase>(2)
+            {
+                new Purchase
+                {
+                    Id = 122,
+                    DateCreated = DateTime.Today,
+                    ProductId = 1,
+                    PurchaseStatus = PurchaseStatus.Completed
+                },
+                new Purchase
+                {
+                    Id = 132,
+                    DateCreated = DateTime.Today,
+                    ProductId = 2,
+                    PurchaseStatus = PurchaseStatus.Completed
+                }
+            });
         }
         
         /// <summary>
@@ -46,11 +60,15 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(Purchase), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<List<Purchase>>> GetPurchase([FromRoute(Name = "purchase-id")] string purchaseId)
+        public async Task<ActionResult<Purchase>> GetPurchase([FromRoute(Name = "purchase-id")] string purchaseId)
         {
-            // return new OkObjectResult(new List<Purchase>());
-            
-            throw new NotImplementedException();
+            return new OkObjectResult(new Purchase
+            {
+                Id = 122,
+                DateCreated = DateTime.Today,
+                ProductId = 1,
+                PurchaseStatus = PurchaseStatus.Completed
+            });
         }
 
         /// <summary>
@@ -65,9 +83,21 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<InitiatePurchaseResponse>> InitiatePurchase([FromBody] InitatePurchaseRequest initiateRequest)
         {
-            // return CreatedAtAction(nameof(GetPurchase), new {PurchaseId = ""}, new object());
-            
-            throw new NotImplementedException();
+            var purchaseResponse = new InitiatePurchaseResponse()
+            {
+                Id = 122,
+                DateCreated = DateTime.Now,
+                ProductId = 1,
+                PurchaseStatus = PurchaseStatus.PendingPayment,
+                PaymentDetails = new MobilePayPaymentDetails(
+                    Guid.NewGuid().ToString(),
+                    "mobilepay://merchant_payments?payment_id=186d2b31-ff25-4414-9fd1-bfe9807fa8b7",
+                    "186d2b31-ff25-4414-9fd1-bfe9807fa8b7"
+                )
+            };
+
+            return new CreatedAtActionResult(nameof(GetPurchase), nameof(PurchasesController), new {PurchaseId = purchaseResponse.Id},
+                purchaseResponse);
         }
     }
 }

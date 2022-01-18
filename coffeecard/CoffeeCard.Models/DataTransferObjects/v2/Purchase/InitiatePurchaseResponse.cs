@@ -4,6 +4,9 @@ using System.ComponentModel.DataAnnotations;
 namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
 {
     /// <summary>
+    /// Response object to a purchase request containing purchase information and reference to payment provider
+    /// </summary>
+    /// <example>
     /// {
     ///     "id": 122,
     ///     "dateCreated": "",
@@ -17,7 +20,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
     ///         "paymentId": "186d2b31-ff25-4414-9fd1-bfe9807fa8b7"
     ///     }
     /// }
-    /// </summary>
+    /// </example>
     public class InitiatePurchaseResponse
     {
         /// <summary>
