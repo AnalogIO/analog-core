@@ -42,7 +42,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.MobilePay
         ///     </item>
         /// </list>
         /// </summary>
-        /// <example>payment.expired<</example>
+        /// <example>payment.expired</example>
         public string EventType { get; set; }
         
         /// <summary>

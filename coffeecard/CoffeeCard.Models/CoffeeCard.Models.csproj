@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -11,6 +11,9 @@
 
     <ItemGroup>
       <PackageReference Include="NJsonSchema" Version="10.6.6" />
+      <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" PrivateAssets="all" />
+      <PackageReference Include="System.Text.Encoding.Extensions" Version="4.3.0" PrivateAssets="all" />
+      <PackageReference Include="Microsoft.NETCore.Targets" Version="3.1.0" ExcludeAssets="all" PrivateAssets="all" />
     </ItemGroup>
 
 </Project>
