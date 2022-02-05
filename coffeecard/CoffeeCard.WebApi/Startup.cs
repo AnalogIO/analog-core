@@ -222,7 +222,7 @@ namespace CoffeeCard.WebApi
             Log.Information("Apply Database Migrations if any");
             using var scope = app.ApplicationServices.CreateScope();
             using var context = scope.ServiceProvider.GetService<CoffeeCardContext>();
-            if (context.Database.IsSqlServer())
+            if (context.Database.IsRelational())
             {
                 context.Database.Migrate();
             }

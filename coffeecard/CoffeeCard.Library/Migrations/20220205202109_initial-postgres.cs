@@ -1,9 +1,10 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace CoffeeCard.Library.Migrations
 {
-    public partial class current : Migration
+    public partial class initialpostgres : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -15,14 +16,14 @@ namespace CoffeeCard.Library.Migrations
                 schema: "dbo",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Price = table.Column<int>(nullable: false),
-                    NumberOfTickets = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(nullable: false),
-                    Description = table.Column<string>(nullable: true),
-                    ExperienceWorth = table.Column<int>(nullable: false),
-                    Visible = table.Column<bool>(nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Price = table.Column<int>(type: "integer", nullable: false),
+                    NumberOfTickets = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    ExperienceWorth = table.Column<int>(type: "integer", nullable: false),
+                    Visible = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -34,11 +35,11 @@ namespace CoffeeCard.Library.Migrations
                 schema: "dbo",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ShortName = table.Column<string>(nullable: true),
-                    FullName = table.Column<string>(nullable: true),
-                    SortPriority = table.Column<int>(nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ShortName = table.Column<string>(type: "text", nullable: true),
+                    FullName = table.Column<string>(type: "text", nullable: true),
+                    SortPriority = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -50,8 +51,8 @@ namespace CoffeeCard.Library.Migrations
                 schema: "dbo",
                 columns: table => new
                 {
-                    ProductId = table.Column<int>(nullable: false),
-                    UserGroup = table.Column<int>(nullable: false)
+                    ProductId = table.Column<int>(type: "integer", nullable: false),
+                    UserGroup = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -70,19 +71,19 @@ namespace CoffeeCard.Library.Migrations
                 schema: "dbo",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Email = table.Column<string>(nullable: false),
-                    Name = table.Column<string>(nullable: false),
-                    Password = table.Column<string>(nullable: false),
-                    Salt = table.Column<string>(nullable: false),
-                    Experience = table.Column<int>(nullable: false),
-                    DateCreated = table.Column<DateTime>(nullable: false),
-                    DateUpdated = table.Column<DateTime>(nullable: false),
-                    IsVerified = table.Column<bool>(nullable: false),
-                    PrivacyActivated = table.Column<bool>(nullable: false),
-                    UserGroup = table.Column<int>(nullable: false),
-                    Programme_Id = table.Column<int>(nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Password = table.Column<string>(type: "text", nullable: false),
+                    Salt = table.Column<string>(type: "text", nullable: false),
+                    Experience = table.Column<int>(type: "integer", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    DateUpdated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    IsVerified = table.Column<bool>(type: "boolean", nullable: false),
+                    PrivacyActivated = table.Column<bool>(type: "boolean", nullable: false),
+                    UserGroup = table.Column<int>(type: "integer", nullable: false),
+                    Programme_Id = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -101,10 +102,10 @@ namespace CoffeeCard.Library.Migrations
                 schema: "dbo",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Time = table.Column<DateTime>(nullable: false),
-                    User_Id = table.Column<int>(nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Time = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    User_Id = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -123,17 +124,17 @@ namespace CoffeeCard.Library.Migrations
                 schema: "dbo",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ProductName = table.Column<string>(nullable: true),
-                    ProductId = table.Column<int>(nullable: false),
-                    Price = table.Column<int>(nullable: false),
-                    NumberOfTickets = table.Column<int>(nullable: false),
-                    DateCreated = table.Column<DateTime>(nullable: false),
-                    Completed = table.Column<bool>(nullable: false),
-                    OrderId = table.Column<string>(nullable: true),
-                    TransactionId = table.Column<string>(nullable: true),
-                    PurchasedBy_Id = table.Column<int>(nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ProductName = table.Column<string>(type: "text", nullable: true),
+                    ProductId = table.Column<int>(type: "integer", nullable: false),
+                    Price = table.Column<int>(type: "integer", nullable: false),
+                    NumberOfTickets = table.Column<int>(type: "integer", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Completed = table.Column<bool>(type: "boolean", nullable: false),
+                    OrderId = table.Column<string>(type: "text", nullable: true),
+                    TransactionId = table.Column<string>(type: "text", nullable: true),
+                    PurchasedBy_Id = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -152,13 +153,13 @@ namespace CoffeeCard.Library.Migrations
                 schema: "dbo",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Preset = table.Column<int>(nullable: false),
-                    SwipeCount = table.Column<int>(nullable: false),
-                    LastSwipe = table.Column<DateTime>(nullable: false),
-                    ExpiryDate = table.Column<DateTime>(nullable: false),
-                    User_Id = table.Column<int>(nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Preset = table.Column<int>(type: "integer", nullable: false),
+                    SwipeCount = table.Column<int>(type: "integer", nullable: false),
+                    LastSwipe = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    ExpiryDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    User_Id = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -177,10 +178,10 @@ namespace CoffeeCard.Library.Migrations
                 schema: "dbo",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TokenHash = table.Column<string>(nullable: true),
-                    User_Id = table.Column<int>(nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TokenHash = table.Column<string>(type: "text", nullable: true),
+                    User_Id = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -199,13 +200,13 @@ namespace CoffeeCard.Library.Migrations
                 schema: "dbo",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Code = table.Column<string>(nullable: true),
-                    DateCreated = table.Column<DateTime>(nullable: false),
-                    DateUsed = table.Column<DateTime>(nullable: true),
-                    Product_Id = table.Column<int>(nullable: true),
-                    User_Id = table.Column<int>(nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Code = table.Column<string>(type: "text", nullable: true),
+                    DateCreated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    DateUsed = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    Product_Id = table.Column<int>(type: "integer", nullable: true),
+                    User_Id = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -231,30 +232,30 @@ namespace CoffeeCard.Library.Migrations
                 schema: "dbo",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DateCreated = table.Column<DateTime>(nullable: false),
-                    DateUsed = table.Column<DateTime>(nullable: true),
-                    ProductId = table.Column<int>(nullable: false),
-                    IsUsed = table.Column<bool>(nullable: false),
-                    Owner_Id = table.Column<int>(nullable: true),
-                    Purchase_Id = table.Column<int>(nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    DateCreated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    DateUsed = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ProductId = table.Column<int>(type: "integer", nullable: false),
+                    IsUsed = table.Column<bool>(type: "boolean", nullable: false),
+                    Owner_Id = table.Column<int>(type: "integer", nullable: true),
+                    Purchase_Id = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tickets", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Tickets_Users_Owner_Id",
-                        column: x => x.Owner_Id,
-                        principalSchema: "dbo",
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
                         name: "FK_Tickets_Purchases_Purchase_Id",
                         column: x => x.Purchase_Id,
                         principalSchema: "dbo",
                         principalTable: "Purchases",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Tickets_Users_Owner_Id",
+                        column: x => x.Owner_Id,
+                        principalSchema: "dbo",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -294,13 +295,11 @@ namespace CoffeeCard.Library.Migrations
                 schema: "dbo",
                 table: "ProductUserGroups",
                 columns: new[] { "ProductId", "UserGroup" },
-                values: new object[] { 1, 0 });
-
-            migrationBuilder.InsertData(
-                schema: "dbo",
-                table: "ProductUserGroups",
-                columns: new[] { "ProductId", "UserGroup" },
-                values: new object[] { 2, 0 });
+                values: new object[,]
+                {
+                    { 1, 0 },
+                    { 2, 0 }
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_LoginAttempts_User_Id",
