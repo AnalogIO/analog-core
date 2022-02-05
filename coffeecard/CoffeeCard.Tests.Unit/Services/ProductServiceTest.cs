@@ -21,8 +21,12 @@ namespace CoffeeCard.Tests.Unit.Services
             {
                 SchemaName = "test"
             };
+            var environmentSettings = new EnvironmentSettings()
+            {
+                EnvironmentType = EnvironmentType.Test
+            };
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings);
+            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
             var p1 = new Product
             {
                 Id = 1,
@@ -95,8 +99,12 @@ namespace CoffeeCard.Tests.Unit.Services
             {
                 SchemaName = "test"
             };
+            var environmentSettings = new EnvironmentSettings()
+            {
+                EnvironmentType = EnvironmentType.Test
+            };
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings);
+            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
             var p1 = new Product
             {
                 Id = 1,
@@ -208,8 +216,12 @@ namespace CoffeeCard.Tests.Unit.Services
             {
                 SchemaName = "test"
             };
+            var environmentSettings = new EnvironmentSettings()
+            {
+                EnvironmentType = EnvironmentType.Test
+            };
 
-            using (var context = new CoffeeCardContext(builder.Options, databaseSettings))
+            using (var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings))
             {
                 var p1 = new Product
                 {
@@ -279,8 +291,12 @@ namespace CoffeeCard.Tests.Unit.Services
             {
                 SchemaName = "test"
             };
+            var environmentSettings = new EnvironmentSettings()
+            {
+                EnvironmentType = EnvironmentType.Test
+            };
 
-            using (var context = new CoffeeCardContext(builder.Options, databaseSettings))
+            using (var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings))
             {
                 var p1 = new Product
                 {

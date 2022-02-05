@@ -24,6 +24,7 @@ using Newtonsoft.Json.Converters;
 using NJsonSchema.Generation;
 using NSwag;
 using NSwag.Generation.Processors.Security;
+using Serilog;
 
 namespace CoffeeCard.WebApi
 {
@@ -221,6 +222,14 @@ namespace CoffeeCard.WebApi
                 endpoints.MapRazorPages();
                 endpoints.MapFallbackToPage("/result");
             });
+
+            Log.Information("Apply Database Migrations if any");
+            using var scope = app.ApplicationServices.CreateScope();
+            using var context = scope.ServiceProvider.GetService<CoffeeCardContext>();
+            if (context.Database.IsSqlServer())
+            {
+                context.Database.Migrate();
+            }
         }
     }
 #pragma warning restore CS1591

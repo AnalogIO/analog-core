@@ -28,7 +28,10 @@ namespace CoffeeCard.Tests.Unit.Services
             {
                 SchemaName = "test"
             };
-            var environmentSettings = new EnvironmentSettings();
+            var environmentSettings = new EnvironmentSettings()
+            {
+                EnvironmentType = EnvironmentType.Test
+            };
             var loginLimiterSettings = new LoginLimiterSettings()
             {
                 IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 5, TimeOutPeriodInMinutes = 5
@@ -38,7 +41,7 @@ namespace CoffeeCard.Tests.Unit.Services
             bool result;
 
             // Act
-            await using (var context = new CoffeeCardContext(builder.Options, databaseSettings))
+            await using (var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings))
             {
                 var accountService = new AccountService(context, environmentSettings, new Mock<ITokenService>().Object,
                     new Mock<IEmailService>().Object, new Mock<IHashService>().Object,
@@ -61,7 +64,10 @@ namespace CoffeeCard.Tests.Unit.Services
             {
                 SchemaName = "test"
             };
-            var environmentSettings = new EnvironmentSettings();
+            var environmentSettings = new EnvironmentSettings()
+            {
+                EnvironmentType = EnvironmentType.Test
+            };
             var loginLimiterSettings = new LoginLimiterSettings()
             {
                 IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 5, TimeOutPeriodInMinutes = 5
@@ -79,7 +85,7 @@ namespace CoffeeCard.Tests.Unit.Services
             tokenService.Setup(t => t.ValidateToken("valid")).ReturnsAsync(true);
 
             // Act
-            await using (var context = new CoffeeCardContext(builder.Options, databaseSettings))
+            await using (var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings))
             {
                 var token = new Token("valid");
                 var userTokens = new List<Token> {token};
@@ -110,7 +116,10 @@ namespace CoffeeCard.Tests.Unit.Services
             {
                 SchemaName = "test"
             };
-            var environmentSettings = new EnvironmentSettings();
+            var environmentSettings = new EnvironmentSettings()
+            {
+                EnvironmentType = EnvironmentType.Test
+            };
             var loginLimiterSettings = new LoginLimiterSettings()
             {
                 IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 5, TimeOutPeriodInMinutes = 5
@@ -129,7 +138,7 @@ namespace CoffeeCard.Tests.Unit.Services
             ICollection<Token> newUserTokens;
 
             // Act
-            await using (var context = new CoffeeCardContext(builder.Options, databaseSettings))
+            await using (var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings))
             {
                 var token = new Token("valid");
                 var userTokens = new List<Token> {token};
@@ -192,7 +201,7 @@ namespace CoffeeCard.Tests.Unit.Services
             tokenService.Setup(t => t.GenerateToken(It.IsAny<IEnumerable<Claim>>())).Returns(expectedToken);
 
             // Act
-            await using (var context = new CoffeeCardContext(builder.Options, databaseSettings))
+            await using (var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings))
             {
                 context.Add(user);
                 context.SaveChanges();
@@ -242,7 +251,7 @@ namespace CoffeeCard.Tests.Unit.Services
             loginLimiter.Setup(l => l.LoginAllowed(user)).Returns(true);
 
             // Act
-            await using (var context = new CoffeeCardContext(builder.Options, databaseSettings))
+            await using (var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings))
             {
                 context.Add(user);
                 context.SaveChanges();
@@ -294,7 +303,7 @@ namespace CoffeeCard.Tests.Unit.Services
             loginLimiter.Setup(l => l.LoginAllowed(user)).Returns(true);
 
             // Act
-            await using (var context = new CoffeeCardContext(builder.Options, databaseSettings))
+            await using (var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings))
             {
                 context.Add(user);
                 context.SaveChanges();
@@ -342,7 +351,7 @@ namespace CoffeeCard.Tests.Unit.Services
             httpContextAccessor.Setup(h => h.HttpContext).Returns(new DefaultHttpContext().HttpContext);
 
             // Act
-            await using (var context = new CoffeeCardContext(builder.Options, databaseSettings))
+            await using (var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings))
             {
                 context.Add(user);
                 context.SaveChanges();
@@ -396,7 +405,7 @@ namespace CoffeeCard.Tests.Unit.Services
             var httpContextAccessor = new Mock<IHttpContextAccessor>();
             httpContextAccessor.Setup(h => h.HttpContext).Returns(new DefaultHttpContext().HttpContext);
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings);
+            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
             context.Add(user);
             await context.SaveChangesAsync();
             
@@ -445,7 +454,7 @@ namespace CoffeeCard.Tests.Unit.Services
             var hashService = new Mock<IHashService>();
             hashService.Setup(m => m.Hash(It.IsAny<string>())).Returns(somePass);
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings);
+            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
             context.Add(user);
             await context.SaveChangesAsync();
             
@@ -483,7 +492,7 @@ namespace CoffeeCard.Tests.Unit.Services
             var httpContextAccessor = new Mock<IHttpContextAccessor>();
             httpContextAccessor.Setup(h => h.HttpContext).Returns(new DefaultHttpContext().HttpContext);
             
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings);
+            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
             await context.SaveChangesAsync();
             
             // Act
