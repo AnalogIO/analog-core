@@ -1,0 +1,27 @@
+﻿version: "3.8"
+
+services:
+  mssql:
+    image: "mcr.microsoft.com/mssql/server"
+    container_name: mssql
+    hostname: mssql
+    environment:
+      SA_PASSWORD: LocalDB(!)Password
+      ACCEPT_EULA: Y
+      MSSQL_PID: Developer
+    restart: unless-stopped
+    ports:
+      - 11433:1433
+  
+  webapi:    
+    container_name: coffeecard-api
+    build:
+      context: .
+      dockerfile: CoffeeCard.WebApi/Dockerfile
+    depends_on: [ mssql ]
+    ports:
+      - 8080:80
+      - 8001:443
+    volumes:
+      - ./CoffeeCard.WebApi/appsettings.json:/app/appsettings.json
+      - ~/.aspnet/https:/https:ro
