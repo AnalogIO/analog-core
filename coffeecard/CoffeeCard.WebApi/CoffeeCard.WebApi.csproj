@@ -22,18 +22,6 @@
     <Compile Remove="Migrations\20200229143937_ProductUserGroups.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="www.analogio.dk.pfx" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="www.analogio.dk.pfx">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="appsettings-for-tests.json">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="jose-jwt" Version="3.2.0" />

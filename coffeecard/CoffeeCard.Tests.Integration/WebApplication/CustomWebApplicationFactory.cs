@@ -20,7 +20,7 @@ namespace CoffeeCard.Tests.Integration.WebApplication
             // Use TestAppSettings
             builder.ConfigureAppConfiguration(configuration =>
             {
-                configuration.AddJsonFile("appsettings-for-tests.json");
+                configuration.AddJsonFile("appsettings.json");
                 Configuration = configuration.Build();
             });
 

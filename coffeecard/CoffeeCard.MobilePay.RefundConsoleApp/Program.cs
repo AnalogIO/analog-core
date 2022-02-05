@@ -48,7 +48,7 @@ namespace CoffeeCard.MobilePay.RefundConsoleApp
             // Load Configuration File
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
+                .AddJsonFile("appsettings.json", false, true)
                 .Build();
 
             var builder = new ContainerBuilder();
