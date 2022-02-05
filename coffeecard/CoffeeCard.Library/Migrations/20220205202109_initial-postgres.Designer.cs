@@ -3,37 +3,37 @@ using System;
 using CoffeeCard.Library.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace CoffeeCard.Library.Migrations
 {
     [DbContext(typeof(CoffeeCardContext))]
-    [Migration("20220205132711_current")]
-    partial class current
+    [Migration("20220205202109_initial-postgres")]
+    partial class initialpostgres
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("dbo")
-                .HasAnnotation("ProductVersion", "3.1.22")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63)
+                .HasAnnotation("ProductVersion", "5.0.13")
+                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.LoginAttempt", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<DateTime>("Time")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int?>("User_Id")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -46,27 +46,27 @@ namespace CoffeeCard.Library.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<int>("ExperienceWorth")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<int>("NumberOfTickets")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("Price")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<bool>("Visible")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 
@@ -98,10 +98,10 @@ namespace CoffeeCard.Library.Migrations
             modelBuilder.Entity("CoffeeCard.Models.Entities.ProductUserGroup", b =>
                 {
                     b.Property<int>("ProductId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("UserGroup")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("ProductId", "UserGroup");
 
@@ -124,17 +124,17 @@ namespace CoffeeCard.Library.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("FullName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("ShortName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<int>("SortPriority")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -238,35 +238,35 @@ namespace CoffeeCard.Library.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<bool>("Completed")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("NumberOfTickets")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("OrderId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<int>("Price")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("ProductId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("ProductName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<int?>("PurchasedBy_Id")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("TransactionId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -279,23 +279,23 @@ namespace CoffeeCard.Library.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<DateTime>("ExpiryDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("LastSwipe")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("Preset")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("SwipeCount")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int?>("User_Id")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -308,26 +308,26 @@ namespace CoffeeCard.Library.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("DateUsed")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<bool>("IsUsed")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<int?>("Owner_Id")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("ProductId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int?>("Purchase_Id")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -342,14 +342,14 @@ namespace CoffeeCard.Library.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("TokenHash")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<int?>("User_Id")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -362,45 +362,45 @@ namespace CoffeeCard.Library.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("DateUpdated")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<int>("Experience")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<bool>("IsVerified")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<bool>("PrivacyActivated")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<int?>("Programme_Id")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Salt")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<int>("UserGroup")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -413,23 +413,23 @@ namespace CoffeeCard.Library.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("Code")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("DateUsed")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int?>("Product_Id")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int?>("User_Id")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -445,6 +445,8 @@ namespace CoffeeCard.Library.Migrations
                     b.HasOne("CoffeeCard.Models.Entities.User", "User")
                         .WithMany("LoginAttempts")
                         .HasForeignKey("User_Id");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.ProductUserGroup", b =>
@@ -454,6 +456,8 @@ namespace CoffeeCard.Library.Migrations
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.Purchase", b =>
@@ -461,6 +465,8 @@ namespace CoffeeCard.Library.Migrations
                     b.HasOne("CoffeeCard.Models.Entities.User", "PurchasedBy")
                         .WithMany("Purchases")
                         .HasForeignKey("PurchasedBy_Id");
+
+                    b.Navigation("PurchasedBy");
                 });
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.Statistic", b =>
@@ -468,6 +474,8 @@ namespace CoffeeCard.Library.Migrations
                     b.HasOne("CoffeeCard.Models.Entities.User", "User")
                         .WithMany("Statistics")
                         .HasForeignKey("User_Id");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.Ticket", b =>
@@ -479,6 +487,10 @@ namespace CoffeeCard.Library.Migrations
                     b.HasOne("CoffeeCard.Models.Entities.Purchase", "Purchase")
                         .WithMany("Tickets")
                         .HasForeignKey("Purchase_Id");
+
+                    b.Navigation("Owner");
+
+                    b.Navigation("Purchase");
                 });
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.Token", b =>
@@ -486,6 +498,8 @@ namespace CoffeeCard.Library.Migrations
                     b.HasOne("CoffeeCard.Models.Entities.User", "User")
                         .WithMany("Tokens")
                         .HasForeignKey("User_Id");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.User", b =>
@@ -493,6 +507,8 @@ namespace CoffeeCard.Library.Migrations
                     b.HasOne("CoffeeCard.Models.Entities.Programme", "Programme")
                         .WithMany("Users")
                         .HasForeignKey("Programme_Id");
+
+                    b.Navigation("Programme");
                 });
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.Voucher", b =>
@@ -504,6 +520,38 @@ namespace CoffeeCard.Library.Migrations
                     b.HasOne("CoffeeCard.Models.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("User_Id");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("CoffeeCard.Models.Entities.Product", b =>
+                {
+                    b.Navigation("ProductUserGroup");
+                });
+
+            modelBuilder.Entity("CoffeeCard.Models.Entities.Programme", b =>
+                {
+                    b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("CoffeeCard.Models.Entities.Purchase", b =>
+                {
+                    b.Navigation("Tickets");
+                });
+
+            modelBuilder.Entity("CoffeeCard.Models.Entities.User", b =>
+                {
+                    b.Navigation("LoginAttempts");
+
+                    b.Navigation("Purchases");
+
+                    b.Navigation("Statistics");
+
+                    b.Navigation("Tickets");
+
+                    b.Navigation("Tokens");
                 });
 #pragma warning restore 612, 618
         }
