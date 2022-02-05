@@ -1,24 +1,23 @@
 ﻿version: "3.8"
 
 services:
-  mssql:
-    image: "mcr.microsoft.com/mssql/server"
-    container_name: mssql
-    hostname: mssql
+  psql:
+    image: postgres:13.5
+    container_name: psql
+    hostname: psql
     environment:
-      SA_PASSWORD: LocalDB(!)Password
-      ACCEPT_EULA: Y
-      MSSQL_PID: Developer
+      POSTGRES_PASSWORD: LocalDB(!)Password
+      POSTGRES_DB: coffeecard
     restart: unless-stopped
     ports:
-      - 11433:1433
+      - 5432:5432
   
   webapi:    
     container_name: coffeecard-api
     build:
       context: .
       dockerfile: CoffeeCard.WebApi/Dockerfile
-    depends_on: [ mssql ]
+    depends_on: [ psql ]
     ports:
       - 8080:80
       - 8001:443
