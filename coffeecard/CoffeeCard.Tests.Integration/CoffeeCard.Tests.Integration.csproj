@@ -27,4 +27,9 @@
   <ItemGroup>
     <ProjectReference Include="..\CoffeeCard.WebApi\CoffeeCard.WebApi.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\CoffeeCard.WebApi\appsettings.json">
+      <Link>appsettings.json</Link>
+    </Content>
+  </ItemGroup>
 </Project>

@@ -13,7 +13,8 @@ namespace CoffeeCard.WebApi
     {
         private static IConfiguration Configuration { get; } = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", false, true)
+            .AddJsonFile($"appsettings.json", false, true)
+            .AddEnvironmentVariables()
             .Build();
 
         public static int Main(string[] args)
@@ -26,6 +27,7 @@ namespace CoffeeCard.WebApi
             {
                 Log.Information("Starting web host");
                 CreateHostBuilder(args).Build().Run();
+
                 return 0;
             }
             catch (Exception ex)
@@ -42,6 +44,11 @@ namespace CoffeeCard.WebApi
         private static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration(((context, builder) =>
+                {
+                    builder.AddJsonFile("appsettings.json", false, true);
+                    builder.AddEnvironmentVariables();
+                }))
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
