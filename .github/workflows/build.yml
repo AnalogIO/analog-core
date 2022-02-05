@@ -1,0 +1,29 @@
+name: Build and test solution
+
+on:
+  push:
+    branches: [ develop, production ]
+  pull_request:
+    branches: [ develop, production]
+
+  workflow_dispatch:
+  
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1.9.0
+      with:
+        dotnet-version: 3.1.x
+    - name: Restore dependencies
+      run: dotnet restore coffeecard/
+    - name: Build CoffeeCard solution
+      run: dotnet build coffeecard/ --no-restore /p:ContinuousIntegrationBuild=true
+    - name: Run tests
+      run: dotnet test coffeecard/ /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+    - name: Upload test coverage to Codecov
+      uses: codecov/codecov-action@v2.1.0
+      with:
+        files: coffeecard/CoffeeCard.Tests.Integration/coverage.opencover.xml, coffeecard/CoffeeCard.Tests.Unit/coverage.opencover.xml
