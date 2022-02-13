@@ -196,6 +196,9 @@ namespace CoffeeCard.WebApi
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)
         {
+            // Important note!
+            // The order of the below app configuration is sensitive and should be changed with care
+            // UsePathBase must be first as several subsequent configuration depends on it
             app.UsePathBase("/coffeecard");
 
             if (env.IsDevelopment())
