@@ -98,6 +98,7 @@ namespace CoffeeCard.WebApi
 
             // Setup razor pages
             services.AddRazorPages();
+            services.AddServerSideBlazor();
 
             // Setup Authentication
             var identitySettings = Configuration.GetSection("IdentitySettings").Get<IdentitySettings>();
@@ -218,6 +219,8 @@ namespace CoffeeCard.WebApi
                 endpoints.MapRazorPages();
                 endpoints.MapFallbackToPage("/result");
             });
+
+            app.UsePathBase("/coffeecard");
 
             Log.Information("Apply Database Migrations if any");
             using var scope = app.ApplicationServices.CreateScope();
