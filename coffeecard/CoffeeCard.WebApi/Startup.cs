@@ -202,16 +202,13 @@ namespace CoffeeCard.WebApi
                 app.UseHsts();
 
             app.UseOpenApi();
-
             app.UseSwaggerUi3();
-
-            app.UseRouting();
 
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseHttpsRedirection();
 
-            app.UseStaticFiles();
+            app.UseRouting();
+            app.UseHttpsRedirection();
 
             app.UseEndpoints(endpoints =>
             {
@@ -220,7 +217,9 @@ namespace CoffeeCard.WebApi
                 endpoints.MapFallbackToPage("/result");
             });
 
-            app.UsePathBase("/coffeecard");
+            app.UsePathBase("coffeecard");
+
+            app.UseStaticFiles();
 
             Log.Information("Apply Database Migrations if any");
             using var scope = app.ApplicationServices.CreateScope();
