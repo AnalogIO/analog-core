@@ -217,7 +217,7 @@ namespace CoffeeCard.WebApi
                 endpoints.MapFallbackToPage("/result");
             });
 
-            app.UsePathBase("coffeecard");
+            app.UsePathBase("/coffeecard");
 
             app.UseStaticFiles();
 
