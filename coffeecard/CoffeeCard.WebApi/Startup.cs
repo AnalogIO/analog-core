@@ -196,6 +196,8 @@ namespace CoffeeCard.WebApi
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)
         {
+            app.UsePathBase("/coffeecard");
+
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();
             else
@@ -204,11 +206,14 @@ namespace CoffeeCard.WebApi
             app.UseOpenApi();
             app.UseSwaggerUi3();
 
-            app.UseAuthentication();
-            app.UseAuthorization();
+            app.UseHttpsRedirection();
+
+            app.UseStaticFiles();
 
             app.UseRouting();
-            app.UseHttpsRedirection();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
@@ -216,10 +221,6 @@ namespace CoffeeCard.WebApi
                 endpoints.MapRazorPages();
                 endpoints.MapFallbackToPage("/result");
             });
-
-            app.UsePathBase("/coffeecard");
-
-            app.UseStaticFiles();
 
             Log.Information("Apply Database Migrations if any");
             using var scope = app.ApplicationServices.CreateScope();
