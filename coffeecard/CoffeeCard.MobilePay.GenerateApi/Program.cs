@@ -41,7 +41,8 @@ namespace CoffeeCard.MobilePay.GenerateApi
                 CSharpGeneratorSettings =
                 {
                     Namespace = $"CoffeeCard.MobilePay.Generated.Api.{WebhooksApi}"
-                }
+                },
+                UseBaseUrl = false
             };
 
             var generator = new CSharpClientGenerator(document, settings);
@@ -62,7 +63,8 @@ namespace CoffeeCard.MobilePay.GenerateApi
                 CSharpGeneratorSettings =
                 {
                     Namespace = $"CoffeeCard.MobilePay.Generated.Api.{PaymentsApi}"
-                }
+                },
+                UseBaseUrl = false
             };
 
             var generator = new CSharpClientGenerator(document, settings);
