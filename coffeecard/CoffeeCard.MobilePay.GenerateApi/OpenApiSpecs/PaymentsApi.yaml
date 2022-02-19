@@ -22,8 +22,14 @@ securityDefinitions:
     type: apiKey
     in: header
     name: X-IBM-Client-Id
+  API Key:
+    name: Authorization
+    type: apiKey
+    in: header
+    description: 'Bearer {API_Key}'
 security:
 - Client Id: []
+- API Key: []
 x-ibm-configuration:
   testable: true
   enforced: true
@@ -71,11 +77,6 @@ paths:
       - in: header
         name: CorrelationId
         description: CorrelationId used for logging
-        type: string
-      - in: header
-        name: Authorization
-        description: Bearer token (JWT or API key)
-        required: true
         type: string
       - in: body
         name: body
@@ -201,11 +202,6 @@ paths:
         name: CorrelationId
         description: CorrelationId used for logging
         type: string
-      - in: header
-        name: Authorization
-        description: Bearer token (JWT or API key)
-        required: true
-        type: string
       responses:
         200:
           description: ""
@@ -290,11 +286,6 @@ paths:
         name: CorrelationId
         description: CorrelationId used for logging
         type: string
-      - in: header
-        name: Authorization
-        description: Bearer token (JWT or API key)
-        required: true
-        type: string
       responses:
         200:
           description: ""
@@ -342,11 +333,6 @@ paths:
       - in: header
         name: CorrelationId
         description: CorrelationId used for logging
-        type: string
-      - in: header
-        name: Authorization
-        description: Bearer token (JWT or API key)
-        required: true
         type: string
       - in: body
         name: body
@@ -398,11 +384,6 @@ paths:
         name: CorrelationId
         description: CorrelationId used for logging
         type: string
-      - in: header
-        name: Authorization
-        description: Bearer token (JWT or API key)
-        required: true
-        type: string
       responses:
         204:
           description: Success
@@ -448,11 +429,6 @@ paths:
       - in: header
         name: CorrelationId
         description: CorrelationId used for logging
-        type: string
-      - in: header
-        name: Authorization
-        description: Bearer token (JWT or API key)
-        required: true
         type: string
       - in: body
         name: body

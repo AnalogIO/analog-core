@@ -19,13 +19,11 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.15.5.0 (NJsonSchema v10.6.6.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class PaymentsApi 
     {
-        private string _baseUrl = "";
         private System.Net.Http.HttpClient _httpClient;
         private System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings;
 
-        public PaymentsApi(string baseUrl, System.Net.Http.HttpClient httpClient)
+        public PaymentsApi(System.Net.Http.HttpClient httpClient)
         {
-            BaseUrl = baseUrl;
             _httpClient = httpClient;
             _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings);
         }
@@ -35,12 +33,6 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
             var settings = new Newtonsoft.Json.JsonSerializerSettings();
             UpdateJsonSerializerSettings(settings);
             return settings;
-        }
-
-        public string BaseUrl
-        {
-            get { return _baseUrl; }
-            set { _baseUrl = value; }
         }
 
         protected Newtonsoft.Json.JsonSerializerSettings JsonSerializerSettings { get { return _settings.Value; } }
@@ -55,11 +47,10 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
         /// Initiates a new payment.
         /// </summary>
         /// <param name="correlationId">CorrelationId used for logging</param>
-        /// <param name="authorization">Bearer token (JWT or API key)</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<InitiatePaymentResponse> PaymentsPOSTAsync(string correlationId, string authorization, InitiatePaymentRequest body)
+        public virtual System.Threading.Tasks.Task<InitiatePaymentResponse> PaymentsPOSTAsync(string correlationId, InitiatePaymentRequest body)
         {
-            return PaymentsPOSTAsync(correlationId, authorization, body, System.Threading.CancellationToken.None);
+            return PaymentsPOSTAsync(correlationId, body, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -67,12 +58,11 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
         /// Initiates a new payment.
         /// </summary>
         /// <param name="correlationId">CorrelationId used for logging</param>
-        /// <param name="authorization">Bearer token (JWT or API key)</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<InitiatePaymentResponse> PaymentsPOSTAsync(string correlationId, string authorization, InitiatePaymentRequest body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<InitiatePaymentResponse> PaymentsPOSTAsync(string correlationId, InitiatePaymentRequest body, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/v1/payments");
+            urlBuilder_.Append("v1/payments");
 
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -83,10 +73,6 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
 
                     if (correlationId != null)
                         request_.Headers.TryAddWithoutValidation("CorrelationId", ConvertToString(correlationId, System.Globalization.CultureInfo.InvariantCulture));
-
-                    if (authorization == null)
-                        throw new System.ArgumentNullException("authorization");
-                    request_.Headers.TryAddWithoutValidation("Authorization", ConvertToString(authorization, System.Globalization.CultureInfo.InvariantCulture));
                     var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(body, _settings.Value));
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
@@ -189,11 +175,10 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
         /// <param name="startDate">Filter payments by InitiatedOn property.</param>
         /// <param name="endDate">Filter payments by InitiatedOn property.</param>
         /// <param name="correlationId">CorrelationId used for logging</param>
-        /// <param name="authorization">Bearer token (JWT or API key)</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<GetPaymentsResponse> PaymentsGETAsync(System.Guid? paymentPointId, int? pageNumber, int? pageSize, System.Collections.Generic.IEnumerable<Anonymous> stateFilter, System.DateTimeOffset? startDate, System.DateTimeOffset? endDate, string correlationId, string authorization)
+        public virtual System.Threading.Tasks.Task<GetPaymentsResponse> PaymentsGETAsync(System.Guid? paymentPointId, int? pageNumber, int? pageSize, System.Collections.Generic.IEnumerable<Anonymous> stateFilter, System.DateTimeOffset? startDate, System.DateTimeOffset? endDate, string correlationId)
         {
-            return PaymentsGETAsync(paymentPointId, pageNumber, pageSize, stateFilter, startDate, endDate, correlationId, authorization, System.Threading.CancellationToken.None);
+            return PaymentsGETAsync(paymentPointId, pageNumber, pageSize, stateFilter, startDate, endDate, correlationId, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -211,12 +196,11 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
         /// <param name="startDate">Filter payments by InitiatedOn property.</param>
         /// <param name="endDate">Filter payments by InitiatedOn property.</param>
         /// <param name="correlationId">CorrelationId used for logging</param>
-        /// <param name="authorization">Bearer token (JWT or API key)</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<GetPaymentsResponse> PaymentsGETAsync(System.Guid? paymentPointId, int? pageNumber, int? pageSize, System.Collections.Generic.IEnumerable<Anonymous> stateFilter, System.DateTimeOffset? startDate, System.DateTimeOffset? endDate, string correlationId, string authorization, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<GetPaymentsResponse> PaymentsGETAsync(System.Guid? paymentPointId, int? pageNumber, int? pageSize, System.Collections.Generic.IEnumerable<Anonymous> stateFilter, System.DateTimeOffset? startDate, System.DateTimeOffset? endDate, string correlationId, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/v1/payments?");
+            urlBuilder_.Append("v1/payments?");
             if (paymentPointId != null)
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("paymentPointId") + "=").Append(System.Uri.EscapeDataString(ConvertToString(paymentPointId, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
@@ -252,10 +236,6 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
 
                     if (correlationId != null)
                         request_.Headers.TryAddWithoutValidation("CorrelationId", ConvertToString(correlationId, System.Globalization.CultureInfo.InvariantCulture));
-
-                    if (authorization == null)
-                        throw new System.ArgumentNullException("authorization");
-                    request_.Headers.TryAddWithoutValidation("Authorization", ConvertToString(authorization, System.Globalization.CultureInfo.InvariantCulture));
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -335,11 +315,10 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
         /// Gets a single payment by its ID.
         /// </summary>
         /// <param name="correlationId">CorrelationId used for logging</param>
-        /// <param name="authorization">Bearer token (JWT or API key)</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<GetSinglePaymentResponse> PaymentsGET2Async(System.Guid paymentid, string correlationId, string authorization)
+        public virtual System.Threading.Tasks.Task<GetSinglePaymentResponse> PaymentsGET2Async(System.Guid paymentid, string correlationId)
         {
-            return PaymentsGET2Async(paymentid, correlationId, authorization, System.Threading.CancellationToken.None);
+            return PaymentsGET2Async(paymentid, correlationId, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -347,15 +326,14 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
         /// Gets a single payment by its ID.
         /// </summary>
         /// <param name="correlationId">CorrelationId used for logging</param>
-        /// <param name="authorization">Bearer token (JWT or API key)</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<GetSinglePaymentResponse> PaymentsGET2Async(System.Guid paymentid, string correlationId, string authorization, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<GetSinglePaymentResponse> PaymentsGET2Async(System.Guid paymentid, string correlationId, System.Threading.CancellationToken cancellationToken)
         {
             if (paymentid == null)
                 throw new System.ArgumentNullException("paymentid");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/v1/payments/{paymentid}");
+            urlBuilder_.Append("v1/payments/{paymentid}");
             urlBuilder_.Replace("{paymentid}", System.Uri.EscapeDataString(ConvertToString(paymentid, System.Globalization.CultureInfo.InvariantCulture)));
 
             var client_ = _httpClient;
@@ -367,10 +345,6 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
 
                     if (correlationId != null)
                         request_.Headers.TryAddWithoutValidation("CorrelationId", ConvertToString(correlationId, System.Globalization.CultureInfo.InvariantCulture));
-
-                    if (authorization == null)
-                        throw new System.ArgumentNullException("authorization");
-                    request_.Headers.TryAddWithoutValidation("Authorization", ConvertToString(authorization, System.Globalization.CultureInfo.InvariantCulture));
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -446,12 +420,11 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
         /// Capture specific payment
         /// </summary>
         /// <param name="correlationId">CorrelationId used for logging</param>
-        /// <param name="authorization">Bearer token (JWT or API key)</param>
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task CaptureAsync(System.Guid paymentid, string correlationId, string authorization, CapturePaymentRequest body)
+        public virtual System.Threading.Tasks.Task CaptureAsync(System.Guid paymentid, string correlationId, CapturePaymentRequest body)
         {
-            return CaptureAsync(paymentid, correlationId, authorization, body, System.Threading.CancellationToken.None);
+            return CaptureAsync(paymentid, correlationId, body, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -459,16 +432,15 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
         /// Capture specific payment
         /// </summary>
         /// <param name="correlationId">CorrelationId used for logging</param>
-        /// <param name="authorization">Bearer token (JWT or API key)</param>
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task CaptureAsync(System.Guid paymentid, string correlationId, string authorization, CapturePaymentRequest body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task CaptureAsync(System.Guid paymentid, string correlationId, CapturePaymentRequest body, System.Threading.CancellationToken cancellationToken)
         {
             if (paymentid == null)
                 throw new System.ArgumentNullException("paymentid");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/v1/payments/{paymentid}/capture");
+            urlBuilder_.Append("v1/payments/{paymentid}/capture");
             urlBuilder_.Replace("{paymentid}", System.Uri.EscapeDataString(ConvertToString(paymentid, System.Globalization.CultureInfo.InvariantCulture)));
 
             var client_ = _httpClient;
@@ -480,10 +452,6 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
 
                     if (correlationId != null)
                         request_.Headers.TryAddWithoutValidation("CorrelationId", ConvertToString(correlationId, System.Globalization.CultureInfo.InvariantCulture));
-
-                    if (authorization == null)
-                        throw new System.ArgumentNullException("authorization");
-                    request_.Headers.TryAddWithoutValidation("Authorization", ConvertToString(authorization, System.Globalization.CultureInfo.InvariantCulture));
                     var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(body, _settings.Value));
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
@@ -576,12 +544,11 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
         /// Cancel specific payment
         /// </summary>
         /// <param name="correlationId">CorrelationId used for logging</param>
-        /// <param name="authorization">Bearer token (JWT or API key)</param>
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task CancelAsync(System.Guid paymentid, string correlationId, string authorization)
+        public virtual System.Threading.Tasks.Task CancelAsync(System.Guid paymentid, string correlationId)
         {
-            return CancelAsync(paymentid, correlationId, authorization, System.Threading.CancellationToken.None);
+            return CancelAsync(paymentid, correlationId, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -589,16 +556,15 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
         /// Cancel specific payment
         /// </summary>
         /// <param name="correlationId">CorrelationId used for logging</param>
-        /// <param name="authorization">Bearer token (JWT or API key)</param>
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task CancelAsync(System.Guid paymentid, string correlationId, string authorization, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task CancelAsync(System.Guid paymentid, string correlationId, System.Threading.CancellationToken cancellationToken)
         {
             if (paymentid == null)
                 throw new System.ArgumentNullException("paymentid");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/v1/payments/{paymentid}/cancel");
+            urlBuilder_.Append("v1/payments/{paymentid}/cancel");
             urlBuilder_.Replace("{paymentid}", System.Uri.EscapeDataString(ConvertToString(paymentid, System.Globalization.CultureInfo.InvariantCulture)));
 
             var client_ = _httpClient;
@@ -610,10 +576,6 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
 
                     if (correlationId != null)
                         request_.Headers.TryAddWithoutValidation("CorrelationId", ConvertToString(correlationId, System.Globalization.CultureInfo.InvariantCulture));
-
-                    if (authorization == null)
-                        throw new System.ArgumentNullException("authorization");
-                    request_.Headers.TryAddWithoutValidation("Authorization", ConvertToString(authorization, System.Globalization.CultureInfo.InvariantCulture));
                     request_.Content = new System.Net.Http.StringContent(string.Empty, System.Text.Encoding.UTF8, "application/json");
                     request_.Method = new System.Net.Http.HttpMethod("POST");
 
@@ -698,12 +660,11 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
         /// Cancel specific payment using idempotency key
         /// </summary>
         /// <param name="correlationId">CorrelationId used for logging</param>
-        /// <param name="authorization">Bearer token (JWT or API key)</param>
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task Cancel2Async(string correlationId, string authorization, CancelPaymentRequest body)
+        public virtual System.Threading.Tasks.Task Cancel2Async(string correlationId, CancelPaymentRequest body)
         {
-            return Cancel2Async(correlationId, authorization, body, System.Threading.CancellationToken.None);
+            return Cancel2Async(correlationId, body, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -711,13 +672,12 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
         /// Cancel specific payment using idempotency key
         /// </summary>
         /// <param name="correlationId">CorrelationId used for logging</param>
-        /// <param name="authorization">Bearer token (JWT or API key)</param>
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task Cancel2Async(string correlationId, string authorization, CancelPaymentRequest body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task Cancel2Async(string correlationId, CancelPaymentRequest body, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/v1/payments/cancel");
+            urlBuilder_.Append("v1/payments/cancel");
 
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -728,10 +688,6 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
 
                     if (correlationId != null)
                         request_.Headers.TryAddWithoutValidation("CorrelationId", ConvertToString(correlationId, System.Globalization.CultureInfo.InvariantCulture));
-
-                    if (authorization == null)
-                        throw new System.ArgumentNullException("authorization");
-                    request_.Headers.TryAddWithoutValidation("Authorization", ConvertToString(authorization, System.Globalization.CultureInfo.InvariantCulture));
                     var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(body, _settings.Value));
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;

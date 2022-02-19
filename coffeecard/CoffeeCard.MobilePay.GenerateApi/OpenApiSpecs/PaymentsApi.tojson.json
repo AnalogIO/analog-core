@@ -24,11 +24,20 @@
          "type": "apiKey",
          "in": "header",
          "name": "X-IBM-Client-Id"
+      },
+      "API Key": {
+         "name": "Authorization",
+         "type": "apiKey",
+         "in": "header",
+         "description": "Bearer {API_Key}"
       }
    },
    "security": [
       {
          "Client Id": []
+      },
+      {
+         "API Key": []
       }
    ],
    "x-ibm-configuration": {
@@ -55,13 +64,6 @@
                   "in": "header",
                   "name": "CorrelationId",
                   "description": "CorrelationId used for logging",
-                  "type": "string"
-               },
-               {
-                  "in": "header",
-                  "name": "Authorization",
-                  "description": "Bearer token (JWT or API key)",
-                  "required": true,
                   "type": "string"
                },
                {
@@ -188,13 +190,6 @@
                   "name": "CorrelationId",
                   "description": "CorrelationId used for logging",
                   "type": "string"
-               },
-               {
-                  "in": "header",
-                  "name": "Authorization",
-                  "description": "Bearer token (JWT or API key)",
-                  "required": true,
-                  "type": "string"
                }
             ],
             "responses": {
@@ -272,13 +267,6 @@
                   "name": "CorrelationId",
                   "description": "CorrelationId used for logging",
                   "type": "string"
-               },
-               {
-                  "in": "header",
-                  "name": "Authorization",
-                  "description": "Bearer token (JWT or API key)",
-                  "required": true,
-                  "type": "string"
                }
             ],
             "responses": {
@@ -341,13 +329,6 @@
                   "in": "header",
                   "name": "CorrelationId",
                   "description": "CorrelationId used for logging",
-                  "type": "string"
-               },
-               {
-                  "in": "header",
-                  "name": "Authorization",
-                  "description": "Bearer token (JWT or API key)",
-                  "required": true,
                   "type": "string"
                },
                {
@@ -424,13 +405,6 @@
                   "name": "CorrelationId",
                   "description": "CorrelationId used for logging",
                   "type": "string"
-               },
-               {
-                  "in": "header",
-                  "name": "Authorization",
-                  "description": "Bearer token (JWT or API key)",
-                  "required": true,
-                  "type": "string"
                }
             ],
             "responses": {
@@ -492,13 +466,6 @@
                   "in": "header",
                   "name": "CorrelationId",
                   "description": "CorrelationId used for logging",
-                  "type": "string"
-               },
-               {
-                  "in": "header",
-                  "name": "Authorization",
-                  "description": "Bearer token (JWT or API key)",
-                  "required": true,
                   "type": "string"
                },
                {
