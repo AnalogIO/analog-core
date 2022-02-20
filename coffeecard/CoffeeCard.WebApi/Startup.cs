@@ -32,26 +32,28 @@ namespace CoffeeCard.WebApi
 #pragma warning disable CS1591
     public class Startup
     {
+        private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _environment;
+        
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
-            Configuration = configuration;
-            Environment = env;
+            _configuration = configuration;
+            _environment = env;
         }
-
-        public IConfiguration Configuration { get; }
-        public IWebHostEnvironment Environment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddConfigurationSettings(_configuration);
+            
             // Setup database connection
-            var databaseSettings = Configuration.GetSection("DatabaseSettings").Get<DatabaseSettings>();
+            var databaseSettings = _configuration.GetSection("DatabaseSettings").Get<DatabaseSettings>();
             services.AddDbContext<CoffeeCardContext>(opt =>
                 opt.UseNpgsql(databaseSettings.ConnectionString,
                     c => c.MigrationsHistoryTable("__EFMigrationsHistory", databaseSettings.SchemaName)));
 
             // Setup Dependency Injection
-            services.AddSingleton(Environment);
+            services.AddSingleton(_environment);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IHashService, HashService>();
             services.AddTransient<ITokenService, TokenService>();
@@ -68,7 +70,12 @@ namespace CoffeeCard.WebApi
             services.AddScoped<IAppConfigService, AppConfigService>();
             services.AddScoped<ClaimsUtilities>();
             services.AddHttpClient<IMobilePayApiHttpClient, MobilePayApiHttpClient>();
-            services.AddSingleton(Environment.ContentRootFileProvider);
+            services.AddSingleton(_environment.ContentRootFileProvider);
+
+            services.AddScoped<Library.Services.v2.IPurchaseService, Library.Services.v2.PurchaseService>();
+            services.AddScoped<Library.Services.v2.ITicketService, Library.Services.v2.TicketService>();
+            services.AddMobilePayHttpClients(_configuration.GetSection("MobilePaySettings").Get<MobilePaySettingsV2>());
+            services.AddScoped<MobilePay.Service.v2.IMobilePayService, MobilePay.Service.v2.MobilePayService>();
 
             // Setup filter to catch outgoing exceptions
             services.AddControllers(options => { options.Filters.Add(new ApiExceptionFilter()); })
@@ -102,7 +109,7 @@ namespace CoffeeCard.WebApi
             services.AddServerSideBlazor();
 
             // Setup Authentication
-            var identitySettings = Configuration.GetSection("IdentitySettings").Get<IdentitySettings>();
+            var identitySettings = _configuration.GetSection("IdentitySettings").Get<IdentitySettings>();
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = "bearer";
@@ -129,16 +136,6 @@ namespace CoffeeCard.WebApi
                     }
                 };
             });
-
-            services.UseConfigurationValidation();
-
-            // Parse and setup settings from configuration
-            services.ConfigureValidatableSetting<DatabaseSettings>(Configuration.GetSection("DatabaseSettings"));
-            services.ConfigureValidatableSetting<EnvironmentSettings>(Configuration.GetSection("EnvironmentSettings"));
-            services.ConfigureValidatableSetting<LoginLimiterSettings>(Configuration.GetSection("LoginLimiterSettings"));
-            services.ConfigureValidatableSetting<IdentitySettings>(Configuration.GetSection("IdentitySettings"));
-            services.ConfigureValidatableSetting<MailgunSettings>(Configuration.GetSection("MailgunSettings"));
-            services.ConfigureValidatableSetting<MobilePaySettings>(Configuration.GetSection("MobilePaySettings"));
         }
 
         
