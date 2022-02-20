@@ -70,14 +70,13 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <response code="201">Purchased initiated</response>
         /// <response code="401">Invalid credentials</response>
         [HttpPost]
-        [ProducesResponseType(typeof(InitiatePurchaseResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(InitiatePurchaseResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<InitiatePurchaseResponse>> InitiatePurchase([FromBody] InitiatePurchaseRequest initiateRequest)
         {
             var purchaseResponse = await _purchaseService.InitiatePurchase(initiateRequest);
 
-            return new CreatedAtActionResult(nameof(GetPurchase), nameof(PurchasesController), new {id = purchaseResponse.Id, version = "v2"},
-                purchaseResponse);
+            return new OkObjectResult(purchaseResponse);
         }
     }
 }
