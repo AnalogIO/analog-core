@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using CoffeeCard.MobilePay.Exception.v2;
+using CoffeeCard.MobilePay.Generated.Api.WebhooksApi;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 
@@ -39,8 +40,16 @@ namespace CoffeeCard.MobilePay.Service.v2
         /// <exception cref="MobilePayException">Cancellation failed</exception>
         Task CancelPayment(Guid paymentId);
 
-        Task RegisterWebhook();
+        /// <summary>
+        /// Register Webhook at MobilePay
+        /// </summary>
+        /// <returns>Response with Webhook Id</returns>
+        Task<SingleWebhookResponse> RegisterWebhook();
 
-        Task DeregisterWebhook();
+        /// <summary>
+        /// Deregister Webhook at MobilePay
+        /// </summary>
+        /// <param name="webhookId">Existing Webhook Id</param>
+        Task DeregisterWebhook(Guid webhookId);
     }
 }
