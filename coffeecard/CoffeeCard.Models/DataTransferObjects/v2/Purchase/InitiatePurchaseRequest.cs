@@ -6,7 +6,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
     /// <summary>
     /// Initiate a new purchase request
     /// </summary>
-    public class InitatePurchaseRequest
+    public class InitiatePurchaseRequest
     {
         /// <summary>
         /// Id of product to be purchased
