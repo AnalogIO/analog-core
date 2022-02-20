@@ -20,14 +20,14 @@ namespace CoffeeCard.MobilePay.Utils
         {
             services.AddHttpClient<PaymentsApi>(client =>
             {
-                client.BaseAddress = mobilePaySettings.ApiUri;
+                client.BaseAddress = mobilePaySettings.ApiUrl;
                 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {mobilePaySettings.ApiKey}");
                 client.DefaultRequestHeaders.Add("x-ibm-client-id", mobilePaySettings.ClientId);
             });
             
             services.AddHttpClient<WebhooksApi>(client =>
             {
-                client.BaseAddress = mobilePaySettings.ApiUri;
+                client.BaseAddress = mobilePaySettings.ApiUrl;
                 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {mobilePaySettings.ApiKey}");
                 client.DefaultRequestHeaders.Add("x-ibm-client-id", mobilePaySettings.ClientId);
             });
