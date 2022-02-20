@@ -34,7 +34,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.MobilePay
         ///     </item>
         ///     <item>
         ///         <term>payment.cancelled_by_user</term>
-        ///         <description>Published when payment has been cancelled by user insinde Mobilepay app</description>
+        ///         <description>Published when payment has been cancelled by user inside MobilePay app</description>
         ///     </item>
         ///     <item>
         ///         <term>payment.expired</term>
