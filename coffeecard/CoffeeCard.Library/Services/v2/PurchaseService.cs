@@ -98,6 +98,8 @@ namespace CoffeeCard.Library.Services.v2
                 Log.Error("No purchase was found by TransactionId: {Id}", webhook.Data.Id);
                 // throw some exception
             }
+            
+            // FIXME Check purchase is not already completed
 
             switch (webhook.EventType.ToLower())
             {
@@ -127,6 +129,7 @@ namespace CoffeeCard.Library.Services.v2
 
         private async Task CompletePurchase(Purchase purchase)
         {
+            await _mobilePayService.CapturePayment(Guid.Parse(purchase.TransactionId), purchase.Price);
             await _ticketService.IssueTickets(purchase);
             // Send email
         }
