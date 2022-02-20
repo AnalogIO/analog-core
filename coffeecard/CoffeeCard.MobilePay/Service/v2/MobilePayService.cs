@@ -35,7 +35,7 @@ namespace CoffeeCard.MobilePay.Service.v2
                     Amount = ConvertAmountToOrer(paymentRequest.Amount),
                     IdempotencyKey = paymentRequest.OrderId,
                     PaymentPointId = _mobilePaySettings.PaymentPointId,
-                    RedirectUri = "myapp://redirect", // FIXME
+                    RedirectUri = "analogcoffeecard://mobilepay_purchase", // FIXME
                     Reference = paymentRequest.OrderId.ToString(),
                     Description = paymentRequest.Description
                 });
