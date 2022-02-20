@@ -7,7 +7,7 @@ namespace CoffeeCard.Common.Configuration
     public class MobilePaySettingsV2  : IValidatable
     {
         [Required]
-        public Uri ApiUri { get; set; }
+        public Uri ApiUrl { get; set; }
         
         [Required]
         public string ApiKey { get; set; }
