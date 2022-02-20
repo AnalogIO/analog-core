@@ -7,7 +7,7 @@ using CoffeeCard.MobilePay.RequestMessage;
 using CoffeeCard.MobilePay.ResponseMessage;
 using Microsoft.Extensions.Logging;
 
-namespace CoffeeCard.MobilePay.Service
+namespace CoffeeCard.MobilePay.Service.v1
 {
     public class MobilePayService : IMobilePayService
     {
