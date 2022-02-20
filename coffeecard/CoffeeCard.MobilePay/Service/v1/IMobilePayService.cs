@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using CoffeeCard.MobilePay.ResponseMessage;
 
-namespace CoffeeCard.MobilePay.Service
+namespace CoffeeCard.MobilePay.Service.v1
 {
     public interface IMobilePayService : IDisposable
     {

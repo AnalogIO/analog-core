@@ -4,6 +4,7 @@ using CoffeeCard.MobilePay.Exception;
 using CoffeeCard.MobilePay.RefundConsoleApp.IO;
 using CoffeeCard.MobilePay.RefundConsoleApp.Model;
 using CoffeeCard.MobilePay.Service;
+using CoffeeCard.MobilePay.Service.v1;
 using Microsoft.Extensions.Logging;
 
 namespace CoffeeCard.MobilePay.RefundConsoleApp.Handler
