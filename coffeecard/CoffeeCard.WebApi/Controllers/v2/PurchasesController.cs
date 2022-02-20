@@ -46,18 +46,18 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <summary>
         /// Get purchase
         /// </summary>
-        /// <param name="purchaseId">Purchase Id</param>
+        /// <param name="id">Purchase Id</param>
         /// <returns>Purchase</returns>
         /// <response code="200">Successful request</response>
         /// <response code="401">Invalid credentials</response>
         /// <response code="404">No purchase found with purchase-id</response>
-        [HttpGet("{purchaseid}")]
+        [HttpGet("{id}")]
         [ProducesResponseType(typeof(SinglePurchaseResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<SinglePurchaseResponse>> GetPurchase([FromRoute(Name = "purchaseid")] int purchaseId)
+        public async Task<ActionResult<SinglePurchaseResponse>> GetPurchase([FromRoute] int id)
         {
-            var purchase = await _purchaseService.GetPurchase(purchaseId);
+            var purchase = await _purchaseService.GetPurchase(id);
             
             return new OkObjectResult(purchase);
         }
@@ -76,7 +76,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         {
             var purchaseResponse = await _purchaseService.InitiatePurchase(initiateRequest);
 
-            return new CreatedAtActionResult(nameof(GetPurchase), nameof(PurchasesController), new {purchaseid = purchaseResponse.Id},
+            return new CreatedAtActionResult(nameof(GetPurchase), nameof(PurchasesController), new {id = purchaseResponse.Id},
                 purchaseResponse);
         }
     }
