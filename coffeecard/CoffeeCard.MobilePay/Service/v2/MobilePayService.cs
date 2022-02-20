@@ -151,21 +151,20 @@ namespace CoffeeCard.MobilePay.Service.v2
             }
         }
 
-        public async Task RegisterWebhook()
+        public async Task<SingleWebhookResponse> RegisterWebhook()
         {
             Log.Information("Register Webhook at MobilePay for Events: {Events} and Url: {Uri}", null, null);
-            await _webhooksApi.WebhooksPOSTAsync(null, new CreateWebhookRequest
+            return await _webhooksApi.WebhooksPOSTAsync(null, new CreateWebhookRequest
             {
                 Events = new List<string> { "payment.reserved", "payment.expired" },
-                Url = ""
+                Url = _mobilePaySettings.WebhookUrl
             });
         }
 
-        public async Task DeregisterWebhook()
+        public async Task DeregisterWebhook(Guid webhookId)
         {
             Log.Information("Deregister MobilePay Webhook with Id: {Id}", null);
-            // FIXME
-            await _webhooksApi.WebhooksDELETEAsync(Guid.Empty, null);
+            await _webhooksApi.WebhooksDELETEAsync(webhookId, null);
         }
 
         /// <summary>

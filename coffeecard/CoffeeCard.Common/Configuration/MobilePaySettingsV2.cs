@@ -17,6 +17,9 @@ namespace CoffeeCard.Common.Configuration
         
         [Required]
         public Guid PaymentPointId { get; set; }
+        
+        [Required]
+        public string WebhookUrl { get; set; }
 
         public void Validate()
         {
