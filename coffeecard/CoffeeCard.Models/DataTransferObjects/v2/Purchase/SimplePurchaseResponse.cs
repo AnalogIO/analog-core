@@ -13,10 +13,9 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
     ///     "productId": 1,
     ///     "totalAmount": 300,
     ///     "purchaseStatus": "Completed"
-    ///     
     /// }
     /// </example>
-    public class Purchase
+    public class SimplePurchaseResponse
     {
         /// <summary>
         /// Id of purchase
