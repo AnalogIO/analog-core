@@ -76,7 +76,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         {
             var purchaseResponse = await _purchaseService.InitiatePurchase(initiateRequest);
 
-            return new CreatedAtActionResult(nameof(GetPurchase), nameof(PurchasesController), new {id = purchaseResponse.Id},
+            return new CreatedAtActionResult(nameof(GetPurchase), nameof(PurchasesController), new {id = purchaseResponse.Id, version = "v2"},
                 purchaseResponse);
         }
     }
