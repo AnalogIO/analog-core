@@ -18,6 +18,8 @@ namespace CoffeeCard.MobilePay.Utils
         public static void AddMobilePayHttpClients(this IServiceCollection services,
             MobilePaySettingsV2 mobilePaySettings)
         {
+            mobilePaySettings.Validate();
+            
             services.AddHttpClient<PaymentsApi>(client =>
             {
                 client.BaseAddress = mobilePaySettings.ApiUrl;
