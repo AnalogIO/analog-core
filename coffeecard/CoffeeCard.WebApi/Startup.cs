@@ -192,7 +192,7 @@ namespace CoffeeCard.WebApi
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public async Task Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)
         {
             // Important note!
             // The order of the below app configuration is sensitive and should be changed with care
@@ -230,14 +230,14 @@ namespace CoffeeCard.WebApi
             {
                 context.Database.Migrate();
             }
-
-            await RegisterMobilePayWebhook(app);
+            
+            RegisterMobilePayWebhook(app);
         }
 
-        private static async Task RegisterMobilePayWebhook(IApplicationBuilder app)
+        private void RegisterMobilePayWebhook(IApplicationBuilder app)
         {
             var mobilePayService = app.ApplicationServices.GetService<MobilePay.Service.v2.IMobilePayService>();
-            var webhook = await mobilePayService.RegisterWebhook();
+            var webhook = mobilePayService.RegisterWebhook().Result;
             Log.Information("Webhook registered at MobilePay. WebhookId: {Id}", webhook.WebhookId);
         }
     }
