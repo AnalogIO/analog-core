@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CoffeeCard.Library.Services.v2;
+using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.DataTransferObjects;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 using Microsoft.AspNetCore.Authorization;
@@ -20,13 +21,15 @@ namespace CoffeeCard.WebApi.Controllers.v2
     public class PurchasesController : ControllerBase
     {
         private readonly IPurchaseService _purchaseService;
+        private readonly ClaimsUtilities _claimsUtilities;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PurchaseController"/> class.
         /// </summary>
-        public PurchasesController(IPurchaseService purchaseService)
+        public PurchasesController(IPurchaseService purchaseService, ClaimsUtilities claimsUtilities)
         {
             _purchaseService = purchaseService;
+            _claimsUtilities = claimsUtilities;
         }
 
         /// <summary>
@@ -74,7 +77,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<InitiatePurchaseResponse>> InitiatePurchase([FromBody] InitiatePurchaseRequest initiateRequest)
         {
-            var purchaseResponse = await _purchaseService.InitiatePurchase(initiateRequest);
+            var purchaseResponse = await _purchaseService.InitiatePurchase(initiateRequest, await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims));
 
             return new OkObjectResult(purchaseResponse);
         }
