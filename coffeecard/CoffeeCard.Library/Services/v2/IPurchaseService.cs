@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
+using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Library.Services.v2
 {
@@ -10,8 +11,9 @@ namespace CoffeeCard.Library.Services.v2
         /// Initiate a new purchase. Depending on the PaymentType, the purchase might be completed in the future
         /// </summary>
         /// <param name="initiateRequest">Initiate request with information on purchasable product and payment type</param>
+        /// <param name="user">User</param>
         /// <returns>Response with Purchase details, status and payment details</returns>
-        Task<InitiatePurchaseResponse> InitiatePurchase(InitiatePurchaseRequest initiateRequest);
+        Task<InitiatePurchaseResponse> InitiatePurchase(InitiatePurchaseRequest initiateRequest, User user);
 
         /// <summary>
         /// Get purchase by Purchase Id

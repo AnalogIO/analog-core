@@ -5,6 +5,7 @@ using CoffeeCard.Library.Persistence;
 using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
+using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Purchase = CoffeeCard.Models.Entities.Purchase;
@@ -24,7 +25,7 @@ namespace CoffeeCard.Library.Services.v2
             _ticketService = ticketService;
         }
 
-        public async Task<InitiatePurchaseResponse> InitiatePurchase(InitiatePurchaseRequest initiateRequest)
+        public async Task<InitiatePurchaseResponse> InitiatePurchase(InitiatePurchaseRequest initiateRequest, User user)
         {
             var product = await _context.Products.FindAsync(initiateRequest.ProductId);
             if (product == null)
@@ -50,7 +51,8 @@ namespace CoffeeCard.Library.Services.v2
                 DateCreated = DateTime.UtcNow,
                 Completed = false,
                 OrderId = paymentDetails.OrderId,
-                TransactionId = paymentDetails.PaymentId
+                TransactionId = paymentDetails.PaymentId,
+                PurchasedBy = user
             };
             await _context.Purchases.AddAsync(purchase);
             await _context.SaveChangesAsync();
