@@ -62,12 +62,25 @@ namespace CoffeeCard.WebApi.Controllers.v2
 
         private async Task<bool> VerifySignature(string requestSignature)
         {
-            var rawRequestBody = await new StreamReader(Request.Body).ReadToEndAsync();
+            if (!Request.Body.CanSeek)
+            {
+                Request.EnableBuffering();
+            }
+            
+            Request.Body.Position = 0;
+            
+            var rawRequestBody = await new StreamReader(Request.Body).ReadToEndAsync().ConfigureAwait(false);
+            
+            Request.Body.Position = 0;
+            
+            Log.Information("Body: '{Body}'", rawRequestBody);
 
             var hash = new HMACSHA1(Encoding.UTF8.GetBytes(await _webhookService.SignatureKey()))
                 .ComputeHash(Encoding.UTF8.GetBytes(_mobilePaySettings.WebhookUrl + rawRequestBody.Trim()));
             var computedSignature = Convert.ToBase64String(hash);
 
+            Log.Information("ComputedSignature: {Signature}", computedSignature);
+            
             return requestSignature.Equals(computedSignature);
         }
     }
