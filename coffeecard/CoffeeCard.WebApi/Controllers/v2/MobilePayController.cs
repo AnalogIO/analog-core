@@ -1,4 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.IO;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
+using CoffeeCard.Common.Configuration;
 using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using Microsoft.AspNetCore.Http;
@@ -16,14 +21,17 @@ namespace CoffeeCard.WebApi.Controllers.v2
     public class MobilePayController : ControllerBase
     {
         private readonly IPurchaseService _purchaseService;
+        private readonly MobilePaySettingsV2 _mobilePaySettings;
+        private readonly IWebhookService _webhookService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MobilePayController"/> class.
         /// </summary>
-        /// <param name="purchaseService"></param>
-        public MobilePayController(IPurchaseService purchaseService)
+        public MobilePayController(IPurchaseService purchaseService, IWebhookService webhookService, MobilePaySettingsV2 mobilePaySettings)
         {
             _purchaseService = purchaseService;
+            _webhookService = webhookService;
+            _mobilePaySettings = mobilePaySettings;
         }
 
         /// <summary>
@@ -31,17 +39,36 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// </summary>
         /// <param name="request">Webhook request</param>
         /// <param name="signature">Webhook signature</param>
-        /// <response code="200">Webhook processed</response>
+        /// <response code="204">Webhook processed</response>
+        /// <response code="400">Signature is not valid</response>
         [HttpPost("webhook")]
-        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesDefaultResponseType]
         public async Task<ActionResult> Webhook([FromBody] MobilePayWebhook request, [FromHeader(Name = "x-mobilepay-signature")] string signature)
         {
-            // FIXME Validate Header
-
+            var isSignatureValid = await VerifySignature(signature);
+            if (!isSignatureValid)
+            {
+                Log.Error("Signature did not match the computed signature. Request Body: {Request} Signature: {Signature}", request, signature);
+                return BadRequest("Signature is not valid");
+            }
+            
             Log.Information("MobilePay Webhook invoked. Request: {Request}", request);
             await _purchaseService.HandleMobilePayPaymentUpdate(request);
 
-            return Ok();
+            return NoContent();
+        }
+
+        private async Task<bool> VerifySignature(string requestSignature)
+        {
+            var rawRequestBody = await new StreamReader(Request.Body).ReadToEndAsync();
+
+            var hash = new HMACSHA1(Encoding.UTF8.GetBytes(await _webhookService.SignatureKey()))
+                .ComputeHash(Encoding.UTF8.GetBytes(_mobilePaySettings.WebhookUrl + rawRequestBody.Trim()));
+            var computedSignature = Convert.ToBase64String(hash);
+
+            return requestSignature.Equals(computedSignature);
         }
     }
 }

@@ -13,13 +13,13 @@ using ErrorResponse = CoffeeCard.MobilePay.Generated.Api.PaymentsApi.ErrorRespon
 
 namespace CoffeeCard.MobilePay.Service.v2
 {
-    public class MobilePayService : IMobilePayService
+    public class MobilePayPaymentsService : IMobilePayPaymentsService
     {
         private readonly MobilePaySettingsV2 _mobilePaySettings;
         private readonly PaymentsApi _paymentsApi;
         private readonly WebhooksApi _webhooksApi;
 
-        public MobilePayService(PaymentsApi paymentsApi, MobilePaySettingsV2 mobilePaySettings, WebhooksApi webhooksApi)
+        public MobilePayPaymentsService(PaymentsApi paymentsApi, MobilePaySettingsV2 mobilePaySettings, WebhooksApi webhooksApi)
         {
             _paymentsApi = paymentsApi;
             _mobilePaySettings = mobilePaySettings;
@@ -52,7 +52,7 @@ namespace CoffeeCard.MobilePay.Service.v2
 
                 // FIXME Consider retry
 
-                throw new MobilePayException(e.StatusCode, errorResponse.Message, errorResponse.Code);
+                throw new MobilePayApiException(e.StatusCode, errorResponse.Message, errorResponse.Code);
             }
             catch (ApiException e)
             {
@@ -60,7 +60,7 @@ namespace CoffeeCard.MobilePay.Service.v2
                     "MobilePay InitiatePayment failed with HTTP {StatusCode}. ErrorCode: {ErrorCode} Message: {Message} CorrelationId: {CorrelationId}",
                     e.StatusCode, e.Message);
 
-                throw new MobilePayException(e.StatusCode, e.Message);
+                throw new MobilePayApiException(e.StatusCode, e.Message);
             }
         }
 
@@ -82,7 +82,7 @@ namespace CoffeeCard.MobilePay.Service.v2
 
                 // FIXME Consider retry
 
-                throw new MobilePayException(e.StatusCode, errorResponse.Message, errorResponse.Code);
+                throw new MobilePayApiException(e.StatusCode, errorResponse.Message, errorResponse.Code);
             }
             catch (ApiException e)
             {
@@ -90,7 +90,7 @@ namespace CoffeeCard.MobilePay.Service.v2
                     "MobilePay GetPayment failed with HTTP {StatusCode}. ErrorCode: {ErrorCode} Message: {Message} CorrelationId: {CorrelationId}",
                     e.StatusCode, e.Message);
 
-                throw new MobilePayException(e.StatusCode, e.Message);
+                throw new MobilePayApiException(e.StatusCode, e.Message);
             }
         }
 
@@ -112,7 +112,7 @@ namespace CoffeeCard.MobilePay.Service.v2
 
                 // FIXME Consider retry
 
-                throw new MobilePayException(e.StatusCode, errorResponse.Message, errorResponse.Code);
+                throw new MobilePayApiException(e.StatusCode, errorResponse.Message, errorResponse.Code);
             }
             catch (ApiException e)
             {
@@ -120,7 +120,7 @@ namespace CoffeeCard.MobilePay.Service.v2
                     "MobilePay CapturePayment failed with HTTP {StatusCode}. ErrorCode: {ErrorCode} Message: {Message} CorrelationId: {CorrelationId}",
                     e.StatusCode, e.Message);
 
-                throw new MobilePayException(e.StatusCode, e.Message);
+                throw new MobilePayApiException(e.StatusCode, e.Message);
             }
         }
 
@@ -139,7 +139,7 @@ namespace CoffeeCard.MobilePay.Service.v2
 
                 // FIXME Consider retry
 
-                throw new MobilePayException(e.StatusCode, errorResponse.Message, errorResponse.Code);
+                throw new MobilePayApiException(e.StatusCode, errorResponse.Message, errorResponse.Code);
             }
             catch (ApiException e)
             {
@@ -147,7 +147,7 @@ namespace CoffeeCard.MobilePay.Service.v2
                     "MobilePay CancelPayment failed with HTTP {StatusCode}. ErrorCode: {ErrorCode} Message: {Message} CorrelationId: {CorrelationId}",
                     e.StatusCode, e.Message);
 
-                throw new MobilePayException(e.StatusCode, e.Message);
+                throw new MobilePayApiException(e.StatusCode, e.Message);
             }
         }
 
