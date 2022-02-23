@@ -60,7 +60,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<SinglePurchaseResponse>> GetPurchase([FromRoute] int id)
         {
-            var purchase = await _purchaseService.GetPurchase(id);
+            var purchase = await _purchaseService.GetPurchase(id, await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims));
             
             return new OkObjectResult(purchase);
         }
@@ -79,6 +79,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         {
             var purchaseResponse = await _purchaseService.InitiatePurchase(initiateRequest, await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims));
 
+            // Return CreatedAtAction
             return new OkObjectResult(purchaseResponse);
         }
     }
