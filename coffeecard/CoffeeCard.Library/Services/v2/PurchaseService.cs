@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
@@ -15,13 +16,13 @@ namespace CoffeeCard.Library.Services.v2
     public class PurchaseService : IPurchaseService
     {
         private readonly CoffeeCardContext _context;
-        private readonly IMobilePayService _mobilePayService;
+        private readonly IMobilePayPaymentsService _mobilePayPaymentsService;
         private readonly ITicketService _ticketService;
 
-        public PurchaseService(CoffeeCardContext context, IMobilePayService mobilePayService, ITicketService ticketService)
+        public PurchaseService(CoffeeCardContext context, IMobilePayPaymentsService mobilePayPaymentsService, ITicketService ticketService)
         {
             _context = context;
-            _mobilePayService = mobilePayService;
+            _mobilePayPaymentsService = mobilePayPaymentsService;
             _ticketService = ticketService;
         }
 
@@ -34,7 +35,7 @@ namespace CoffeeCard.Library.Services.v2
                 // throw EntityNotFoundException mapping to a ProblemDetails object
             }
 
-            var paymentDetails = await _mobilePayService.InitiatePayment(new MobilePayPaymentRequest
+            var paymentDetails = await _mobilePayPaymentsService.InitiatePayment(new MobilePayPaymentRequest
             {
                 Amount = product.Price,
                 OrderId = await GenerateUniqueOrderId(),
@@ -68,18 +69,20 @@ namespace CoffeeCard.Library.Services.v2
             };
         }
 
-        public async Task<SinglePurchaseResponse> GetPurchase(int purchaseId)
+        public async Task<SinglePurchaseResponse> GetPurchase(int purchaseId, User user)
         {
-            var purchase = await _context.Purchases.FindAsync(purchaseId);
+            var purchase = await _context.Purchases
+                .Include(p => p.PurchasedBy)
+                .Where(p => p.Id == purchaseId 
+                            && p.PurchasedBy.Equals(user))
+                .FirstOrDefaultAsync();
             if (purchase == null)
             {
-                Log.Error("No purchase was found by Purchase Id: {Id}", purchaseId);
-                // throw exception
+                Log.Error("No purchase was found by Purchase Id: {Id} and User Id: {UId}", purchaseId, user.Id);
+                throw new EntityNotFoundException($"No purchase was found by Purchase Id: {purchaseId}");
             }
             
-            // FIXME. Verify ownership. A user can only get a purchase which the user owns
-
-            var paymentDetails = await _mobilePayService.GetPayment(Guid.Parse(purchase.TransactionId));
+            var paymentDetails = await _mobilePayPaymentsService.GetPayment(Guid.Parse(purchase.TransactionId));
 
             return new SinglePurchaseResponse
             {
@@ -94,11 +97,14 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task HandleMobilePayPaymentUpdate(MobilePayWebhook webhook)
         {
-            var purchase = await _context.Purchases.Where(p => p.TransactionId.Equals(webhook.Data.Id)).FirstAsync();
+            var purchase = await _context.Purchases
+                .Include(p => p.PurchasedBy)
+                .Where(p => p.TransactionId.Equals(webhook.Data.Id))
+                .FirstOrDefaultAsync();
             if (purchase == null)
             {
-                Log.Error("No purchase was found by TransactionId: {Id}", webhook.Data.Id);
-                // throw some exception
+                Log.Error("No purchase was found by TransactionId: {Id} from Webhook request", webhook.Data.Id);
+                throw new EntityNotFoundException($"No purchase was found by TransactionId: {webhook.Data.Id} from webhook request");
             }
             
             // FIXME Check purchase is not already completed
@@ -131,9 +137,9 @@ namespace CoffeeCard.Library.Services.v2
 
         private async Task CompletePurchase(Purchase purchase)
         {
-            await _mobilePayService.CapturePayment(Guid.Parse(purchase.TransactionId), purchase.Price);
+            await _mobilePayPaymentsService.CapturePayment(Guid.Parse(purchase.TransactionId), purchase.Price);
             await _ticketService.IssueTickets(purchase);
-            // Send email
+            // FIXME Send email
         }
 
         private async Task<Guid> GenerateUniqueOrderId()

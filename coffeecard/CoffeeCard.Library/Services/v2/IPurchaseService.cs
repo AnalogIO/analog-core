@@ -19,8 +19,9 @@ namespace CoffeeCard.Library.Services.v2
         /// Get purchase by Purchase Id
         /// </summary>
         /// <param name="purchaseId">Purchase Id</param>
+        /// <param name="user">User</param>
         /// <returns>Purchase details</returns>
-        Task<SinglePurchaseResponse> GetPurchase(int purchaseId);
+        Task<SinglePurchaseResponse> GetPurchase(int purchaseId, User user);
         
         /// <summary>
         /// Handle MobilePay webhook invocation and update purchase accordingly
