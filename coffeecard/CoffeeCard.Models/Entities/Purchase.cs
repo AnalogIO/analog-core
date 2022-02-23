@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace CoffeeCard.Models.Entities
 {
+    [Index(nameof(OrderId), IsUnique = true)]
     public class Purchase
     {
         public Purchase()
@@ -70,7 +72,6 @@ namespace CoffeeCard.Models.Entities
         /// <value>Order Id</value>
         /// <example>79ef0af3-02dd-4634-83fa-c15ddc05d338</example>
         
-        // FIXME Uniqueness constraint? Indexed?
         public string OrderId { get; set; }
         
         /// <summary>
@@ -82,7 +83,8 @@ namespace CoffeeCard.Models.Entities
         // FIXME Uniqueness constraint? Nullable?
         public string TransactionId { get; set; }
 
-        [ForeignKey("PurchasedBy_Id")] public virtual User PurchasedBy { get; set; }
+        [ForeignKey("PurchasedBy_Id")]
+        public virtual User PurchasedBy { get; set; }
 
         public virtual ICollection<Ticket> Tickets { get; set; }
     }

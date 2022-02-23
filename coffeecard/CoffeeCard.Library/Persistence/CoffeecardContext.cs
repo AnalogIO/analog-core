@@ -28,6 +28,7 @@ namespace CoffeeCard.Library.Persistence
         public DbSet<Voucher> Vouchers { get; set; }
         public DbSet<Statistic> Statistics { get; set; }
         public DbSet<ProductUserGroup> ProductUserGroups { get; set; }
+        public DbSet<WebhookConfiguration> WebhookConfigurations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -52,6 +53,10 @@ namespace CoffeeCard.Library.Persistence
                 .Property(pug => pug.UserGroup)
                 .HasConversion(userGroupIntConverter);
 
+            modelBuilder.Entity<WebhookConfiguration>()
+                .Property(w => w.Status)
+                .HasConversion<string>();
+            
             if (_environmentSettings.EnvironmentType == EnvironmentType.Test)
             {
                 SeedData(modelBuilder);
