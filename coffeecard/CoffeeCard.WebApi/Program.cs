@@ -1,8 +1,11 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
+using CoffeeCard.Library.Services.v2;
 using CoffeeCard.WebApi.Logging;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
@@ -17,7 +20,7 @@ namespace CoffeeCard.WebApi
             .AddEnvironmentVariables()
             .Build();
 
-        public static int Main(string[] args)
+        public static async Task<int> Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(Configuration)
@@ -26,8 +29,12 @@ namespace CoffeeCard.WebApi
             try
             {
                 Log.Information("Starting web host");
-                CreateHostBuilder(args).Build().Run();
+                var webhost = CreateHostBuilder(args).Build();
 
+                var webhookService = webhost.Services.GetRequiredService<IWebhookService>();
+                await webhookService.EnsureWebhookIsRegistered();
+                
+                await webhost.RunAsync();
                 return 0;
             }
             catch (Exception ex)
