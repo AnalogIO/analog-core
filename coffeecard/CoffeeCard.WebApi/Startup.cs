@@ -4,9 +4,11 @@ using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services;
+using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.MobilePay.Client;
 using CoffeeCard.MobilePay.Service.v1;
+using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.MobilePay.Utils;
 using CoffeeCard.WebApi.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -26,6 +28,10 @@ using NJsonSchema.Generation;
 using NSwag;
 using NSwag.Generation.Processors.Security;
 using Serilog;
+using IPurchaseService = CoffeeCard.Library.Services.IPurchaseService;
+using ITicketService = CoffeeCard.Library.Services.ITicketService;
+using PurchaseService = CoffeeCard.Library.Services.PurchaseService;
+using TicketService = CoffeeCard.Library.Services.TicketService;
 
 namespace CoffeeCard.WebApi
 {
@@ -75,7 +81,9 @@ namespace CoffeeCard.WebApi
             services.AddScoped<Library.Services.v2.IPurchaseService, Library.Services.v2.PurchaseService>();
             services.AddScoped<Library.Services.v2.ITicketService, Library.Services.v2.TicketService>();
             services.AddMobilePayHttpClients(_configuration.GetSection("MobilePaySettingsV2").Get<MobilePaySettingsV2>());
-            services.AddScoped<MobilePay.Service.v2.IMobilePayService, MobilePay.Service.v2.MobilePayService>();
+            services.AddScoped<IMobilePayPaymentsService, MobilePayPaymentsService>();
+            services.AddScoped<IMobilePayWebhooksService, MobilePayWebhooksService>();
+            services.AddScoped<IWebhookService, WebhookService>();
 
             // Setup filter to catch outgoing exceptions
             services.AddControllers(options => { options.Filters.Add(new ApiExceptionFilter()); })
@@ -236,9 +244,8 @@ namespace CoffeeCard.WebApi
 
         private void RegisterMobilePayWebhook(IApplicationBuilder app)
         {
-            var mobilePayService = app.ApplicationServices.GetService<MobilePay.Service.v2.IMobilePayService>();
-            var webhook = mobilePayService.RegisterWebhook().Result;
-            Log.Information("Webhook registered at MobilePay. WebhookId: {Id}", webhook.WebhookId);
+            var webhookService = app.ApplicationServices.GetService<IWebhookService>();
+            webhookService.EnsureWebhookIsRegistered().RunSynchronously();
         }
     }
 #pragma warning restore CS1591
