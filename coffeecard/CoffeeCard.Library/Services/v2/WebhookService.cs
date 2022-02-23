@@ -67,6 +67,7 @@ namespace CoffeeCard.Library.Services.v2
                 
                 webhook.Url = mobilePayWebhook.Url;
                 webhook.SignatureKey = mobilePayWebhook.SignatureKey;
+                webhook.Status = WebhookStatus.Active;
                 webhook.LastUpdated = DateTime.UtcNow;
 
                 await _context.SaveChangesAsync();
@@ -94,6 +95,7 @@ namespace CoffeeCard.Library.Services.v2
             var webhook = new WebhookConfiguration
             {
                 Id = mobilePayWebhook.WebhookId,
+                Url = mobilePayWebhook.Url,
                 SignatureKey = mobilePayWebhook.SignatureKey,
                 Status = WebhookStatus.Active,
                 LastUpdated = DateTime.UtcNow
