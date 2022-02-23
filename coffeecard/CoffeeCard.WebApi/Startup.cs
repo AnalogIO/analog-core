@@ -245,7 +245,7 @@ namespace CoffeeCard.WebApi
         private void RegisterMobilePayWebhook(IApplicationBuilder app)
         {
             var webhookService = app.ApplicationServices.GetService<IWebhookService>();
-            webhookService.EnsureWebhookIsRegistered().RunSynchronously();
+            webhookService.EnsureWebhookIsRegistered().GetAwaiter().GetResult();
         }
     }
 #pragma warning restore CS1591

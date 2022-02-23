@@ -8,6 +8,7 @@ using CoffeeCard.Library.Persistence;
 using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace CoffeeCard.Library.Services.v2
 {
@@ -44,10 +45,12 @@ namespace CoffeeCard.Library.Services.v2
             if (await webhooks.AnyAsync())
             {
                 await SyncWebhook(await webhooks.FirstAsync());
+                Log.Information("A MobilePay Webhook was already registered. Configuration has been synced");
             }
             else
             {
                 await RegisterWebhook();
+                Log.Information("A MobilePay Webhook has been registered");
             }
         }
 
