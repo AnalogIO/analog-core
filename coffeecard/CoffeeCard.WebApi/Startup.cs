@@ -230,22 +230,12 @@ namespace CoffeeCard.WebApi
                 endpoints.MapRazorPages();
                 endpoints.MapFallbackToPage("/result");
             });
-
-            Log.Information("Apply Database Migrations if any");
-            using var scope = app.ApplicationServices.CreateScope();
-            using var context = scope.ServiceProvider.GetService<CoffeeCardContext>();
-            if (context.Database.IsRelational())
-            {
-                context.Database.Migrate();
-            }
             
-            RegisterMobilePayWebhook(app);
-        }
-
-        private void RegisterMobilePayWebhook(IApplicationBuilder app)
-        {
-            var webhookService = app.ApplicationServices.GetService<IWebhookService>();
-            webhookService.EnsureWebhookIsRegistered().GetAwaiter().GetResult();
+            // Enable Request Buffering so that a raw request body can be read after aspnet model binding
+            app.Use(next => context => {
+                context.Request.EnableBuffering();
+                return next(context);
+            });
         }
     }
 #pragma warning restore CS1591
