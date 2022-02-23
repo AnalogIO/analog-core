@@ -47,12 +47,12 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesDefaultResponseType]
         public async Task<ActionResult> Webhook([FromBody] MobilePayWebhook request, [FromHeader(Name = "x-mobilepay-signature")] string signature)
         {
-            var isSignatureValid = await VerifySignature(signature);
-            if (!isSignatureValid)
-            {
-                Log.Error("Signature did not match the computed signature. Request Body: {Request} Signature: {Signature}", request, signature);
-                return BadRequest("Signature is not valid");
-            }
+            // var isSignatureValid = await VerifySignature(signature);
+            // if (!isSignatureValid)
+            // {
+            //     Log.Error("Signature did not match the computed signature. Request Body: {Request} Signature: {Signature}", request, signature);
+            //     return BadRequest("Signature is not valid");
+            // }
             
             Log.Information("MobilePay Webhook invoked. Request: {Request}", request);
             await _purchaseService.HandleMobilePayPaymentUpdate(request);
