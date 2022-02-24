@@ -230,12 +230,6 @@ namespace CoffeeCard.WebApi
                 endpoints.MapRazorPages();
                 endpoints.MapFallbackToPage("/result");
             });
-            
-            // Enable Request Buffering so that a raw request body can be read after aspnet model binding
-            app.Use(next => context => {
-                context.Request.EnableBuffering();
-                return next(context);
-            });
         }
     }
 #pragma warning restore CS1591
