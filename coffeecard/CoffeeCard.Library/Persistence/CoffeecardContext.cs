@@ -57,7 +57,7 @@ namespace CoffeeCard.Library.Persistence
                 .Property(w => w.Status)
                 .HasConversion<string>();
             
-            if (_environmentSettings.EnvironmentType == EnvironmentType.Test)
+            if (_environmentSettings.EnvironmentType != EnvironmentType.Production)
             {
                 SeedData(modelBuilder);
             }

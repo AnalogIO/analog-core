@@ -20,6 +20,7 @@ namespace CoffeeCard.Common.Configuration
     public enum EnvironmentType
     {
         Production,
-        Test
+        Test,
+        LocalDevelopment
     }
 }
