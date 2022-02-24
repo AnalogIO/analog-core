@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -8,6 +9,7 @@ using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Serilog;
 
 namespace CoffeeCard.WebApi.Controllers.v2
@@ -45,38 +47,29 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult> Webhook([FromBody] MobilePayWebhook request, [FromHeader(Name = "x-mobilepay-signature")] string signature)
+        public async Task<ActionResult> Webhook([FromBody] MobilePayWebhook request, [FromHeader(Name = "x-mobilepay-signature"), Required] string signature)
         {
-            // var isSignatureValid = await VerifySignature(signature);
-            // if (!isSignatureValid)
-            // {
-            //     Log.Error("Signature did not match the computed signature. Request Body: {Request} Signature: {Signature}", request, signature);
-            //     return BadRequest("Signature is not valid");
-            // }
-            
+            var isSignatureValid = await VerifySignature(signature, request);
+            if (!isSignatureValid)
+            {
+                Log.Error("Signature did not match the computed signature. Request Body: {Request} Signature: {Signature}", request, signature);
+                return BadRequest("Signature is not valid");
+            }
+
             Log.Information("MobilePay Webhook invoked. Request: {Request}", request);
             await _purchaseService.HandleMobilePayPaymentUpdate(request);
 
             return NoContent();
         }
 
-        private async Task<bool> VerifySignature(string requestSignature)
+        private async Task<bool> VerifySignature(string requestSignature, MobilePayWebhook request)
         {
-            if (!Request.Body.CanSeek)
-            {
-                Request.EnableBuffering();
-            }
+            var bodyAsJson = JsonConvert.SerializeObject(request);
             
-            Request.Body.Position = 0;
-            
-            var rawRequestBody = await new StreamReader(Request.Body).ReadToEndAsync().ConfigureAwait(false);
-            
-            Request.Body.Position = 0;
-            
-            Log.Information("Body: '{Body}'", rawRequestBody);
+            Log.Information("Body: '{Body}'", bodyAsJson);
 
             var hash = new HMACSHA1(Encoding.UTF8.GetBytes(await _webhookService.SignatureKey()))
-                .ComputeHash(Encoding.UTF8.GetBytes(_mobilePaySettings.WebhookUrl + rawRequestBody.Trim()));
+                .ComputeHash(Encoding.UTF8.GetBytes(_mobilePaySettings.WebhookUrl + bodyAsJson.Trim()));
             var computedSignature = Convert.ToBase64String(hash);
 
             Log.Information("ComputedSignature: {Signature}", computedSignature);
