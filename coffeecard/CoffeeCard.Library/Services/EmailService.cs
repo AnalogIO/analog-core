@@ -105,6 +105,23 @@ namespace CoffeeCard.Library.Services
             await SendEmailAsync(message);
         }
 
+        public async Task SendVerificationEmailForDeleteAccount(User user, string token)
+        {
+            Log.Information($"Sending delete verification email to {user.Email} ({user.Id})");
+            var message = new MimeMessage();
+            var builder = RetrieveTemplate("email_verify_account_deletion.html");
+            const string endpoint = "verifydelete?token=";
+            
+            builder = BuildVerifyEmail(builder, token, user.Email, user.Name, endpoint);
+
+            message.To.Add(new MailboxAddress(user.Name, user.Email));
+            message.Subject = "Verify the deletion of your Cafe Analog account";
+
+            message.Body = builder.ToMessageBody();
+
+            await SendEmailAsync(message);
+        }
+
         private BodyBuilder BuildVerifyEmail(BodyBuilder builder, string token, string email, string name, string endpoint)
         {
             var baseUrl = _environmentSettings.DeploymentUrl;

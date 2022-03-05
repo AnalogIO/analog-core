@@ -55,6 +55,5 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="logs" />
-    <Folder Include="wwwroot\Templates\EmailTemplate\GeneratedEmails" />
   </ItemGroup>
 </Project>
