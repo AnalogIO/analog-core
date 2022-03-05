@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -255,6 +256,53 @@ namespace CoffeeCard.Library.Services
             user.Tokens.Clear();
             await _context.SaveChangesAsync();
             return true;
+        }
+        
+        public bool UserExists(string email)
+        {
+            return _context.Users.Any(x => x.Email == email);
+        }
+
+        public void AnonymizeAccount(string email)
+        {
+            var user = _context.Users.First(x => x.Email == email);
+            
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Email, user.Email), new Claim(ClaimTypes.Name, user.Name),
+                new Claim(ClaimTypes.Role, "verification_token")
+            };
+            var verificationToken = _tokenService.GenerateToken(claims);
+            
+            _emailService.SendVerificationEmailForDeleteAccount(user, verificationToken);
+        }
+        
+        public bool VerifyAnonymization(string token)
+        {
+            Log.Information($"Trying to verify deletion with token: {token}");
+
+            var jwtToken = _tokenService.ReadToken(token);
+            if (!jwtToken.Claims.Any(x => x.Type == ClaimTypes.Role && x.Value == "verification_token"))
+                throw new ApiException("The token is invalid!", 400);
+
+            var emailClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
+            if (emailClaim == null) throw new ApiException("The token is invalid!", 400);
+
+            var user = _context.Users.FirstOrDefault(x => x.Email == emailClaim.Value);
+            if (user == null) throw new ApiException("The token is invalid!", 400);
+
+            AnonymizeUser(user);
+            return _context.SaveChanges() > 0;
+        }
+        private void AnonymizeUser(User user)
+        {
+            user.Email = string.Empty;
+            user.Name = string.Empty;
+            user.Password = string.Empty;
+            user.Salt = string.Empty;
+            user.DateUpdated = DateTime.Now;
+            user.PrivacyActivated = true;
+            _context.SaveChanges();            
         }
 
         private User GetAccountByEmail(string email)
