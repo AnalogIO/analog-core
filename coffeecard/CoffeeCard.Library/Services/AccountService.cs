@@ -136,20 +136,11 @@ namespace CoffeeCard.Library.Services
         {
             Log.Information($"Trying to verify registration with token: {token}");
 
-            var jwtToken = _tokenService.ReadToken(token);
-            if (!jwtToken.Claims.Any(x => x.Type == ClaimTypes.Role && x.Value == "verification_token"))
-                throw new ApiException("The token is invalid!", 400);
-
-            var emailClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
-            if (emailClaim == null) throw new ApiException("The token is invalid!", 400);
-
-            var user = _context.Users.FirstOrDefault(x => x.Email == emailClaim.Value);
-            if (user == null) throw new ApiException("The token is invalid!", 400);
+            var user = VerifyTokenClaimAndUser(token);
 
             user.IsVerified = true;
             return _context.SaveChanges() > 0;
         }
-
         public User UpdateAccount(IEnumerable<Claim> claims, UpdateUserDto userDto)
         {
             var user = GetAccountByClaims(claims);
@@ -281,15 +272,7 @@ namespace CoffeeCard.Library.Services
         {
             Log.Information($"Trying to verify deletion with token: {token}");
 
-            var jwtToken = _tokenService.ReadToken(token);
-            if (!jwtToken.Claims.Any(x => x.Type == ClaimTypes.Role && x.Value == "verification_token"))
-                throw new ApiException("The token is invalid!", 400);
-
-            var emailClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
-            if (emailClaim == null) throw new ApiException("The token is invalid!", 400);
-
-            var user = _context.Users.FirstOrDefault(x => x.Email == emailClaim.Value);
-            if (user == null) throw new ApiException("The token is invalid!", 400);
+            var user = VerifyTokenClaimAndUser(token);
 
             AnonymizeUser(user);
             return _context.SaveChanges() > 0;
@@ -303,6 +286,21 @@ namespace CoffeeCard.Library.Services
             user.DateUpdated = DateTime.Now;
             user.PrivacyActivated = true;
             _context.SaveChanges();            
+        }
+        
+        private User VerifyTokenClaimAndUser(string token)
+        {
+            var jwtToken = _tokenService.ReadToken(token);
+            if (!jwtToken.Claims.Any(x => x.Type == ClaimTypes.Role && x.Value == "verification_token"))
+                throw new ApiException("The token is invalid!", 400);
+
+            var emailClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
+            if (emailClaim == null) throw new ApiException("The token is invalid!", 400);
+
+            var user = _context.Users.FirstOrDefault(x => x.Email == emailClaim.Value);
+            if (user == null) throw new ApiException("The token is invalid!", 400);
+
+            return user;
         }
 
         private User GetAccountByEmail(string email)
