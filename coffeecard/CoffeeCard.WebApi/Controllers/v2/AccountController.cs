@@ -34,7 +34,6 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <response code="404">Account not found</response>
         /// <response code="401">Invalid credentials</response>
         [HttpDelete("account")]
-        [AllowAnonymous]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
