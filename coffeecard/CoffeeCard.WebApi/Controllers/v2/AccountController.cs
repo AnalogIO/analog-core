@@ -11,7 +11,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
     /// </summary>
     [ApiController]
     [ApiVersion("2")]
-    [Route("api/v{version:apiVersion}/[controller]")]
+    [Route("api/v{version:apiVersion}/account")]
     [Authorize]
     public class AccountController : ControllerBase
     {
@@ -33,19 +33,13 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <response code="204">Successful account deletion</response>
         /// <response code="404">Account not found</response>
         /// <response code="401">Invalid credentials</response>
-        [HttpDelete("account")]
+        [HttpDelete]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
-        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiException), StatusCodes.Status429TooManyRequests)]
         public ActionResult Delete([FromBody] string email)
         {
-            var exists = _accountService.UserExists(email);
-            if (!exists) {
-                return NotFound();
-            }
-
-            _accountService.AnonymizeAccount(email);
+            _accountService.RequestAnonymization(email);
             return NoContent();
         }
     }

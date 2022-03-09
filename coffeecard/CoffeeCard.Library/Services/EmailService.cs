@@ -54,7 +54,7 @@ namespace CoffeeCard.Library.Services
 
         public async Task SendRegistrationVerificationEmailAsync(User user, string token)
         {
-            Log.Information($"Sending registration verification email to {user.Email} ({user.Id})");
+            Log.Information("Sending registration verification email to {email} {userid}", user.Email, user.Id);
             var message = new MimeMessage();
             var builder = RetrieveTemplate("email_verify_registration.html");
             const string endpoint = "verifyemail?token=";
@@ -107,7 +107,7 @@ namespace CoffeeCard.Library.Services
 
         public async Task SendVerificationEmailForDeleteAccount(User user, string token)
         {
-            Log.Information($"Sending delete verification email to {user.Email} ({user.Id})");
+            Log.Information("Sending delete verification email to {email} {userid}", user.Email, user.Id);
             var message = new MimeMessage();
             var builder = RetrieveTemplate("email_verify_account_deletion.html");
             const string endpoint = "verifydelete?token=";
