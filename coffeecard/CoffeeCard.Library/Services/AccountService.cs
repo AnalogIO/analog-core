@@ -248,13 +248,7 @@ namespace CoffeeCard.Library.Services
             await _context.SaveChangesAsync();
             return true;
         }
-        
-        public bool UserExists(string email)
-        {
-            return _context.Users.Any(x => x.Email == email);
-        }
-
-        public void AnonymizeAccount(string email)
+        public async Task RequestAnonymization(string email)
         {
             var user = _context.Users.First(x => x.Email == email);
             
@@ -265,19 +259,18 @@ namespace CoffeeCard.Library.Services
             };
             var verificationToken = _tokenService.GenerateToken(claims);
             
-            _emailService.SendVerificationEmailForDeleteAccount(user, verificationToken);
+            await _emailService.SendVerificationEmailForDeleteAccount(user, verificationToken);
         }
         
-        public bool VerifyAnonymization(string token)
+        public void AnonymizeAccount(string token)
         {
             Log.Information($"Trying to verify deletion with token: {token}");
 
             var user = VerifyTokenClaimAndUser(token);
 
             AnonymizeUser(user);
-            return _context.SaveChanges() > 0;
         }
-        private void AnonymizeUser(User user)
+        private async void AnonymizeUser(User user)
         {
             user.Email = string.Empty;
             user.Name = string.Empty;
@@ -285,7 +278,7 @@ namespace CoffeeCard.Library.Services
             user.Salt = string.Empty;
             user.DateUpdated = DateTime.Now;
             user.PrivacyActivated = true;
-            _context.SaveChanges();            
+            await _context.SaveChangesAsync();            
         }
         
         private User VerifyTokenClaimAndUser(string token)

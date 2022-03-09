@@ -17,7 +17,7 @@ namespace CoffeeCard.WebApi.Pages
 
         public IActionResult OnGet()
         {
-            var emailVerified = _accountService.VerifyAnonymization(Token);
+            var emailVerified = _accountService.AnonymizeAccount(Token);
             if (emailVerified)
             {
                 TempData["resultHeader"] = "Success";
