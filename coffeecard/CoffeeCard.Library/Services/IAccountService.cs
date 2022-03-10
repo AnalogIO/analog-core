@@ -16,7 +16,7 @@ namespace CoffeeCard.Library.Services
         void UpdateExperience(int userId, int exp);
         Task ForgotPasswordAsync(string email);
         Task<bool> RecoverUserAsync(string token, string newPassword);
-        Task RequestAnonymization(string email);
+        Task RequestAnonymization(User user);
         void AnonymizeAccount(string token);
     }
 }
