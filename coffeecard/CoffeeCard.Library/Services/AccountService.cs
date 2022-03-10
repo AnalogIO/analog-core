@@ -248,10 +248,8 @@ namespace CoffeeCard.Library.Services
             await _context.SaveChangesAsync();
             return true;
         }
-        public async Task RequestAnonymization(string email)
+        public async Task RequestAnonymization(User user)
         {
-            var user = _context.Users.First(x => x.Email == email);
-            
             var claims = new[]
             {
                 new Claim(ClaimTypes.Email, user.Email), new Claim(ClaimTypes.Name, user.Name),

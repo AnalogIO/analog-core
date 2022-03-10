@@ -1,5 +1,7 @@
+using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Services;
+using CoffeeCard.Library.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,14 +18,16 @@ namespace CoffeeCard.WebApi.Controllers.v2
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
+        private readonly ClaimsUtilities _claimsUtilities;
         
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
         /// </summary>
-        public AccountController(IAccountService accountService)
+        public AccountController(IAccountService accountService, ClaimsUtilities claimsUtilities)
         {
             _accountService = accountService;
+            _claimsUtilities = claimsUtilities;
         }
 
         /// <summary>
@@ -37,9 +41,11 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiException), StatusCodes.Status429TooManyRequests)]
-        public ActionResult Delete([FromBody] string email)
+        public async Task<ActionResult> Delete([FromBody] string email)
         {
-            _accountService.RequestAnonymization(email);
+            var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
+            
+            await _accountService.RequestAnonymization(user);
             return NoContent();
         }
     }
