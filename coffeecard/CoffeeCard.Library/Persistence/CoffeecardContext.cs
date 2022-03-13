@@ -49,6 +49,8 @@ namespace CoffeeCard.Library.Persistence
                 .Property(u => u.UserGroup)
                 .HasConversion(userGroupIntConverter);
 
+            modelBuilder.Entity<User>().Property(u => u.UserState).HasConversion<string>();
+            
             modelBuilder.Entity<ProductUserGroup>()
                 .Property(pug => pug.UserGroup)
                 .HasConversion(userGroupIntConverter);
