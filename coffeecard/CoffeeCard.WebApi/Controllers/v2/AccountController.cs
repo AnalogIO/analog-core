@@ -34,14 +34,14 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// Delete an account
         /// </summary>
         /// <param name="email">email of account to delete</param>
-        /// <response code="204">Successful account deletion</response>
+        /// <response code="204">Successful initiation of account deletion process</response>
         /// <response code="404">Account not found</response>
         /// <response code="401">Invalid credentials</response>
         [HttpDelete]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiException), StatusCodes.Status429TooManyRequests)]
-        public async Task<ActionResult> Delete([FromBody] string email)
+        public async Task<ActionResult> Delete()
         {
             var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
             
