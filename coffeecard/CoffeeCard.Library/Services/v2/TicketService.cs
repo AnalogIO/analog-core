@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CoffeeCard.Library.Persistence;
+using CoffeeCard.Models.DataTransferObjects.v2.Ticket;
 using CoffeeCard.Models.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace CoffeeCard.Library.Services.v2
 {
@@ -32,6 +35,19 @@ namespace CoffeeCard.Library.Services.v2
 
             await _context.Tickets.AddRangeAsync(tickets);
             await _context.SaveChangesAsync();
+        }
+
+        public Task<List<TicketResponse>> GetTickets(User user, bool includeUsed)
+        {
+            return _context.Tickets.Where(t => t.Owner.Equals(user) && t.IsUsed == includeUsed).Include(t => t.Purchase)
+                .Select(t => new TicketResponse
+                {
+                    Id = t.Id,
+                    DateCreated = t.DateCreated,
+                    DateUsed = t.DateUsed,
+                    ProductId = t.ProductId,
+                    ProductName = t.Purchase.ProductName
+                }).ToListAsync();
         }
     }
 }
