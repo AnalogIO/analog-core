@@ -39,25 +39,31 @@ namespace CoffeeCard.Library.Services
             _loginLimiterSettings = loginLimiterSettings;
         }
 
-        public string Login(string username, string password, string version)
+        public string Login(string email, string password, string version)
         {
-            Log.Information("Logging in user with username: {username} version: {version}", username, version);
+            Log.Information("Logging in user with username: {username} version: {version}", email, version);
 
             ValidateVersion(version);
 
-            var user = _context.Users.FirstOrDefault(x => x.Email == username);
+            var user = _context.Users.FirstOrDefault(x => x.Email == email);
             if (user != null)
             {
+                if (user.UserState == UserState.Deleted)
+                {
+                    Log.Information("Login attempt with deleted user id = {id}", user.Id);
+                    throw new ApiException("The username or password does not match", StatusCodes.Status401Unauthorized);
+                }
+                
                 if (!user.IsVerified)
                 {
-                    Log.Information("E-mail not verified. E-mail = {username} from IP = {ipAddress} ", username,
+                    Log.Information("E-mail not verified. E-mail = {username} from IP = {ipAddress} ", email,
                         _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
                     throw new ApiException("E-mail has not been verified", StatusCodes.Status403Forbidden);
                 }
                 
                 if (_loginLimiterSettings.IsEnabled && !_loginLimiter.LoginAllowed(user)) //Login limiter is only called if it is enabled in the settings
                 {
-                    Log.Warning("Login attempts exceeding maximum allowed for e-mail = {username} from IP = {ipaddress} ", username,
+                    Log.Warning("Login attempts exceeding maximum allowed for e-mail = {username} from IP = {ipaddress} ", email,
                         _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
                     throw new ApiException($"Amount of failed login attempts exceeds the allowed amount, please wait for {_loginLimiterSettings.TimeOutPeriodInMinutes} minutes before trying again", StatusCodes.Status429TooManyRequests);
                 }
@@ -67,7 +73,7 @@ namespace CoffeeCard.Library.Services
                 {
                     var claims = new[]
                     {
-                        new Claim(ClaimTypes.Email, username), new Claim(ClaimTypes.Name, user.Name),
+                        new Claim(ClaimTypes.Email, email), new Claim(ClaimTypes.Name, user.Name),
                         new Claim("UserId", user.Id.ToString())
                     };
                     var token = _tokenService.GenerateToken(claims);
@@ -81,7 +87,7 @@ namespace CoffeeCard.Library.Services
                 }
             }
 
-            Log.Information("Unsuccessful login for e-mail = {username} from IP = {ipAddress} ", username,
+            Log.Information("Unsuccessful login for e-mail = {username} from IP = {ipAddress} ", email,
                 _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
 
             throw new ApiException("The username or password does not match",
@@ -276,6 +282,7 @@ namespace CoffeeCard.Library.Services
             user.Salt = string.Empty;
             user.DateUpdated = DateTime.Now;
             user.PrivacyActivated = true;
+            user.UserState = UserState.Deleted;
             await _context.SaveChangesAsync();            
         }
         
@@ -301,6 +308,7 @@ namespace CoffeeCard.Library.Services
                 //.Include(x => x.Statistics)
                 .FirstOrDefault(x => x.Email == email);
             if (user == null) throw new ApiException("No user found with the given email", 401);
+
             return user;
         }
 
