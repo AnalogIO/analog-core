@@ -10,7 +10,7 @@ namespace CoffeeCard.Library.Services
     {
         User GetAccountByClaims(IEnumerable<Claim> claims);
         Task<User> RegisterAccountAsync(RegisterDto registerDto);
-        string Login(string username, string password, string version);
+        string Login(string email, string password, string version);
         bool VerifyRegistration(string token);
         User UpdateAccount(IEnumerable<Claim> claims, UpdateUserDto userDto);
         void UpdateExperience(int userId, int exp);
