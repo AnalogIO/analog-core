@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace CoffeeCard.Models.Entities
 {
@@ -42,6 +43,9 @@ namespace CoffeeCard.Models.Entities
         [Required]
         [DefaultValue(UserGroup.Customer)]
         public UserGroup UserGroup { get; set; }
+
+        [Required]
+        public UserState UserState { get; set; }
 
         [ForeignKey("Programme_Id")] public virtual Programme Programme { get; set; }
 
@@ -143,5 +147,13 @@ namespace CoffeeCard.Models.Entities
             monthStatistics.SwipeCount += increaseBy;
             monthStatistics.LastSwipe = utcNow;
         }
+    }
+    
+    public enum  UserState
+    {
+        Active,
+        Deleted,
+        PendingActivition,
+        
     }
 }
