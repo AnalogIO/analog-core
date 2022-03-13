@@ -266,15 +266,16 @@ namespace CoffeeCard.Library.Services
             await _emailService.SendVerificationEmailForDeleteAccount(user, verificationToken);
         }
         
-        public void AnonymizeAccount(string token)
+        public async void AnonymizeAccount(string token)
         {
             Log.Information($"Trying to verify deletion with token: {token}");
 
             var user = VerifyTokenClaimAndUser(token);
 
-            AnonymizeUser(user);
+            await AnonymizeUser(user);
         }
-        private async void AnonymizeUser(User user)
+        
+        private async Task AnonymizeUser(User user)
         {
             user.Email = string.Empty;
             user.Name = string.Empty;
