@@ -153,7 +153,6 @@ namespace CoffeeCard.Models.Entities
     {
         Active,
         Deleted,
-        PendingActivition,
-        
+        PendingActivition
     }
 }

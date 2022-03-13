@@ -20,7 +20,6 @@ namespace CoffeeCard.WebApi.Controllers.v2
         private readonly IAccountService _accountService;
         private readonly ClaimsUtilities _claimsUtilities;
         
-
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
         /// </summary>
@@ -31,9 +30,8 @@ namespace CoffeeCard.WebApi.Controllers.v2
         }
 
         /// <summary>
-        /// Delete an account
+        /// Request the deletion of the user coupled to the provided token
         /// </summary>
-        /// <param name="email">email of account to delete</param>
         /// <response code="204">Successful initiation of account deletion process</response>
         /// <response code="404">Account not found</response>
         /// <response code="401">Invalid credentials</response>
