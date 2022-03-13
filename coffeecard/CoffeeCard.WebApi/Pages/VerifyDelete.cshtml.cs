@@ -27,10 +27,9 @@ namespace CoffeeCard.WebApi.Pages
             }
             catch (Exception)
             {
-                //FIXME: there was an error updating the user, how do we handle this?
                 TempData["resultHeader"] = "Error";
                 TempData["result"] =
-                    @"Looks like the link you used has expired or already been used.";                
+                    @"Looks like the link you used has expired or already been used. Request a new link and try again";                
             }
             return RedirectToPage("result");
         }

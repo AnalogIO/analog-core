@@ -30,7 +30,6 @@ namespace CoffeeCard.WebApi.Pages
             }
             catch (Exception)
             {
-                //FIXME: how do we handle this error? display it? log it?
                 TempData["resultHeader"] = "Error";
                 TempData["result"] =
                     @"Looks like the link you used has expired or already been used. Request a new password in the app to verify your email.";
