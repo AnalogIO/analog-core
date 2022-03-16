@@ -70,7 +70,7 @@ namespace CoffeeCard.MobilePay.Service.v2
             {
                 var response = await _paymentsApi.PaymentsGET2Async(paymentId, null);
 
-                return new MobilePayPaymentDetails(response.Reference, response.MobilePayAppRedirectUri,
+                return new MobilePayPaymentDetails(response.Reference, response.RedirectUri,
                     response.PaymentId.ToString(), response.State.ToString());
             }
             catch (Generated.Api.PaymentsApi.ApiException<ErrorResponse> e)
