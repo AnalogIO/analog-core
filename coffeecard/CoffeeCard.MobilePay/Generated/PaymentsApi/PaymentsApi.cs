@@ -162,16 +162,12 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
         }
 
         /// <summary>
-        /// Gets a list of all merchant payments if no filters(e.g. stateFilter,
-        /// <br/>startDate, endDate, paymentPointId) are provided. Can also return only payments
-        /// <br/>of specific payment point if paymentPointId is provided.
+        /// Gets a list of all merchant payments if no filters(e.g. stateFilter, startDate, endDate, paymentPointId) are provided. Can also return only payments of specific payment point if paymentPointId is provided.
         /// </summary>
         /// <param name="paymentPointId">Filter specific payment point payments</param>
-        /// <param name="pageNumber">Default and minimum value is 1. Values that are less than 1 will
-        /// <br/>be replaced by 1.</param>
+        /// <param name="pageNumber">Default and minimum value is 1. Values that are less than 1 will be replaced by 1.</param>
         /// <param name="pageSize">Number of payments to be returned. Between 1 and 1000.</param>
-        /// <param name="stateFilter">Filter payments by state. Allowed values: "initiated", "reserved",
-        /// <br/>"captured", "cancelledByMerchant", "cancelledByUser.</param>
+        /// <param name="stateFilter">Filter payments by state. Allowed values: "initiated", "reserved", "captured", "cancelledByMerchant", "cancelledByUser.</param>
         /// <param name="startDate">Filter payments by InitiatedOn property.</param>
         /// <param name="endDate">Filter payments by InitiatedOn property.</param>
         /// <param name="correlationId">CorrelationId used for logging</param>
@@ -183,16 +179,12 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Gets a list of all merchant payments if no filters(e.g. stateFilter,
-        /// <br/>startDate, endDate, paymentPointId) are provided. Can also return only payments
-        /// <br/>of specific payment point if paymentPointId is provided.
+        /// Gets a list of all merchant payments if no filters(e.g. stateFilter, startDate, endDate, paymentPointId) are provided. Can also return only payments of specific payment point if paymentPointId is provided.
         /// </summary>
         /// <param name="paymentPointId">Filter specific payment point payments</param>
-        /// <param name="pageNumber">Default and minimum value is 1. Values that are less than 1 will
-        /// <br/>be replaced by 1.</param>
+        /// <param name="pageNumber">Default and minimum value is 1. Values that are less than 1 will be replaced by 1.</param>
         /// <param name="pageSize">Number of payments to be returned. Between 1 and 1000.</param>
-        /// <param name="stateFilter">Filter payments by state. Allowed values: "initiated", "reserved",
-        /// <br/>"captured", "cancelledByMerchant", "cancelledByUser.</param>
+        /// <param name="stateFilter">Filter payments by state. Allowed values: "initiated", "reserved", "captured", "cancelledByMerchant", "cancelledByUser.</param>
         /// <param name="startDate">Filter payments by InitiatedOn property.</param>
         /// <param name="endDate">Filter payments by InitiatedOn property.</param>
         /// <param name="correlationId">CorrelationId used for logging</param>
@@ -895,10 +887,7 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
     }
 
     /// <summary>
-    /// &lt;table style="table-layout: auto"&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Usage&lt;/th&gt;&lt;th&gt;Type&lt;/th&gt;&lt;th&gt;Description&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;amount&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;number
-    /// <br/>(integer)&lt;/td&gt;&lt;td&gt;The amount to be captured. A positive integer representing
-    /// <br/>how much to capture in the smallest currency unit (e.g., 100 cents to capture
-    /// <br/>€1.00). The minimum amount is 1.&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+    /// &lt;table style="table-layout: auto"&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Usage&lt;/th&gt;&lt;th&gt;Type&lt;/th&gt;&lt;th&gt;Description&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;amount&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;number (integer)&lt;/td&gt;&lt;td&gt;The amount to be captured. A positive integer representing how much to capture in the smallest currency unit (e.g., 100 cents to capture €1.00). The minimum amount is 1.&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.5.0 (NJsonSchema v10.6.6.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class CapturePaymentRequest
@@ -977,56 +966,34 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
     }
 
     /// <summary>
-    /// &lt;table style="table-layout: auto"&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Usage&lt;/th&gt;&lt;th&gt;Type&lt;/th&gt;&lt;th&gt;Description&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;amount&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;number
-    /// <br/>(integer)&lt;/td&gt;&lt;td&gt;The amount of money to be collected by this payment.&lt;br&gt;A
-    /// <br/>positive integer representing how much to charge in the smallest currency unit
-    /// <br/>(e.g., 100 cents to charge €1.00). The minimum amount is 1. The maximum amount
-    /// <br/>is defined by user's daily/yearly limits.
+    /// &lt;table style="table-layout: auto"&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Usage&lt;/th&gt;&lt;th&gt;Type&lt;/th&gt;&lt;th&gt;Description&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;amount&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;number (integer)&lt;/td&gt;&lt;td&gt;The amount of money to be collected by this payment.&lt;br&gt;A positive integer representing how much to charge in the smallest currency unit (e.g., 100 cents to charge €1.00). The minimum amount is 1. The maximum amount is defined by user's daily/yearly limits.
     /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;initiatedOn&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string
-    /// <br/>(date-time)&lt;/td&gt;&lt;td&gt;The timestamp of when the payment was created, in ISO 8601-1:2019
-    /// <br/>format.&lt;br /&gt;
-    /// <br/>Examples for July 19th, 2021 12:42:38am Pacific Standard Time:&lt;br
-    /// <br/>/&gt;
+    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;initiatedOn&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string (date-time)&lt;/td&gt;&lt;td&gt;The timestamp of when the payment was created, in ISO 8601-1:2019 format.&lt;br /&gt;
+    /// <br/>Examples for July 19th, 2021 12:42:38am Pacific Standard Time:&lt;br /&gt;
     /// <br/>UTC: 2021-07-19T12:42:38Z
     /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;isoCurrencyCode&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;Three-letter
-    /// <br/>&lt;a href="https://www.iso.org/iso-4217-currency-codes.html"&gt;ISO currency code&lt;/a&gt;,
-    /// <br/>in uppercase.&lt;br /&gt;
+    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;isoCurrencyCode&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;Three-letter &lt;a href="https://www.iso.org/iso-4217-currency-codes.html"&gt;ISO currency code&lt;/a&gt;, in uppercase.&lt;br /&gt;
     /// <br/>Possible values:&lt;br /&gt;
     /// <br/>"DKK",&lt;br /&gt;
     /// <br/>"EUR"
     /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;lastUpdatedOn&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string
-    /// <br/>(date-time)&lt;/td&gt;&lt;td&gt;The timestamp of when the payment was created, in ISO 8601-1:2019
-    /// <br/>format.
+    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;lastUpdatedOn&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string (date-time)&lt;/td&gt;&lt;td&gt;The timestamp of when the payment was created, in ISO 8601-1:2019 format.
     /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;merchantId&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string
-    /// <br/>(uuid)&lt;/td&gt;&lt;td&gt;Merchant ID associated with the payment.
+    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;merchantId&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string (uuid)&lt;/td&gt;&lt;td&gt;Merchant ID associated with the payment.
     /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;mobilePayAppRedirectUri&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;Deeplink
-    /// <br/>is used to redirect MobilePay users back to the merchant's app.
+    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;redirectUri&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;Deeplink is used to redirect MobilePay users back to the merchant's app.
     /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;paymentId&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string
-    /// <br/>(uuid)&lt;/td&gt;&lt;td&gt;The ID of the payment.
+    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;paymentId&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string (uuid)&lt;/td&gt;&lt;td&gt;The ID of the payment.
     /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;paymentPointId&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string
-    /// <br/>(uuid)&lt;/td&gt;&lt;td&gt;The payment point on which payment was initiated.
+    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;paymentPointId&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string (uuid)&lt;/td&gt;&lt;td&gt;The payment point on which payment was initiated.
     /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;paymentPointName&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;Payment
-    /// <br/>point name displayed to the user in MobilePay app.
+    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;paymentPointName&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;Payment point name displayed to the user in MobilePay app.
     /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;state&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;Indicates
-    /// <br/>whether the payment is "initiated", "reserved", "captured", "cancelledByMerchant",
-    /// <br/>"cancelledBySystem", "cancelledByUser".
+    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;state&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;Indicates whether the payment is "initiated", "reserved", "captured", "cancelledByMerchant", "cancelledBySystem", "cancelledByUser".
     /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;description&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Optional&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;Optional
-    /// <br/>payment information to be displayed in MobilePay app to the customer. This can
-    /// <br/>be, for example, an invoice number, ticket number, or short description that
-    /// <br/>uniquely identifies the purchase.
+    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;description&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Optional&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;Optional payment information to be displayed in MobilePay app to the customer. This can be, for example, an invoice number, ticket number, or short description that uniquely identifies the purchase.
     /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;reference&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Optional&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;Payment's
-    /// <br/>reference provided by you.
+    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;reference&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Optional&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;Payment's reference provided by you.
     /// <br/>
     /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
     /// <br/>
@@ -1053,9 +1020,7 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
         public int Amount { get; set; }
 
         /// <summary>
-        /// Optional payment information to be displayed in MobilePay app
-        /// <br/>to the customer. This can be, for example, an invoice number, ticket number,
-        /// <br/>or short description that uniquely identifies the purchase.
+        /// Optional payment information to be displayed in MobilePay app to the customer. This can be, for example, an invoice number, ticket number, or short description that uniquely identifies the purchase.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Description { get; set; }
@@ -1082,9 +1047,9 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
         /// <br/>
         /// <br/>
         /// </summary>
-        [Newtonsoft.Json.JsonProperty("mobilePayAppRedirectUri", Required = Newtonsoft.Json.Required.Always)]
+        [Newtonsoft.Json.JsonProperty("redirectUri", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string MobilePayAppRedirectUri { get; set; }
+        public string RedirectUri { get; set; }
 
         /// <summary>
         /// Indicates whether the payment is "initiated", "reserved", "captured", "cancelledByMerchant", "cancelledBySystem", "cancelledByUser".
@@ -1096,10 +1061,8 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
         public GetSinglePaymentResponseState State { get; set; }
 
         /// <summary>
-        /// The timestamp of when the payment was created, in ISO 8601-1:2019
-        /// <br/>format.&lt;br /&gt;
-        /// <br/>Examples for July 19th, 2021 12:42:38am Pacific Standard
-        /// <br/>Time:&lt;br /&gt;
+        /// The timestamp of when the payment was created, in ISO 8601-1:2019 format.&lt;br /&gt;
+        /// <br/>Examples for July 19th, 2021 12:42:38am Pacific Standard Time:&lt;br /&gt;
         /// <br/>UTC: 2021-07-19T12:42:38Z
         /// <br/>
         /// <br/>
@@ -1128,8 +1091,7 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
 
         /// <summary>
         /// Three-letter ISO currency code in uppercase.&lt;br /&gt;
-        /// <br/>Possible
-        /// <br/>values:&lt;br /&gt;
+        /// <br/>Possible values:&lt;br /&gt;
         /// <br/>"DKK",&lt;br /&gt;
         /// <br/>"EUR"
         /// <br/>
@@ -1151,34 +1113,16 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
     }
 
     /// <summary>
-    /// &lt;table style="table-layout: auto"&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Usage&lt;/th&gt;&lt;th&gt;Type&lt;/th&gt;&lt;th&gt;Description&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;amount&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;number
-    /// <br/>(integer)&lt;/td&gt;&lt;td&gt;The amount of money to be collected by this payment.&lt;br&gt;A
-    /// <br/>positive integer representing how much to charge in the smallest currency unit
-    /// <br/>(e.g., 100 cents to charge €1.00). The minimum amount is 1. The maximum amount
-    /// <br/>is defined by user's daily/yearly limits.
+    /// &lt;table style="table-layout: auto"&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Usage&lt;/th&gt;&lt;th&gt;Type&lt;/th&gt;&lt;th&gt;Description&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;amount&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;number (integer)&lt;/td&gt;&lt;td&gt;The amount of money to be collected by this payment.&lt;br&gt;A positive integer representing how much to charge in the smallest currency unit (e.g., 100 cents to charge €1.00). The minimum amount is 1. The maximum amount is defined by user's daily/yearly limits.
     /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;idempotencyKey&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string
-    /// <br/>(uuid)&lt;/td&gt;&lt;td&gt;A unique value that identifies this InitiatePayment request.
-    /// <br/>Must be a valid GUID, and is used to protect against accidental duplicate calls.
-    /// <br/>Multiple requests with the same idempotency key have the same result.
+    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;idempotencyKey&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string (uuid)&lt;/td&gt;&lt;td&gt;A unique value that identifies this InitiatePayment request. Must be a valid GUID, and is used to protect against accidental duplicate calls. Multiple requests with the same idempotency key have the same result.
     /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;paymentPointId&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string
-    /// <br/>(uuid)&lt;/td&gt;&lt;td&gt;The Payment Point ID to associate with a payment.
+    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;paymentPointId&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string (uuid)&lt;/td&gt;&lt;td&gt;The Payment Point ID to associate with a payment.
     /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;redirectUri&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;MobilePay
-    /// <br/>will use the redirectUri URL to redirect the MobilePay user to the merchant's
-    /// <br/>confirmation page once user action is completed in MobilePay app. Must be a
-    /// <br/>valid URI.&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;reference&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;An
-    /// <br/>ID to associate with the payment. Max length: 64 characters.&lt;br /&gt;
-    /// <br/>You can
-    /// <br/>use this field to associate the payment to an entity in an external system (for
-    /// <br/>example, you might specify an order ID that is generated by your system). It
-    /// <br/>is recommended to use a unique value for each payment.
+    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;redirectUri&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;MobilePay will use the redirectUri URL to redirect the MobilePay user to the merchant's confirmation page once user action is completed in MobilePay app. Must be a valid URI.&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;reference&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;An ID to associate with the payment. Max length: 64 characters.&lt;br /&gt;
+    /// <br/>You can use this field to associate the payment to an entity in an external system (for example, you might specify an order ID that is generated by your system). It is recommended to use a unique value for each payment.
     /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;description&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Optional&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;Optional
-    /// <br/>payment information to be displayed in MobilePay app to the customer. Max length:
-    /// <br/>200 characters.&lt;br /&gt; This can be, for example, an invoice number, ticket number,
-    /// <br/>or short description that uniquely identifies the purchase.
+    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;description&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Optional&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;Optional payment information to be displayed in MobilePay app to the customer. Max length: 200 characters.&lt;br /&gt; This can be, for example, an invoice number, ticket number, or short description that uniquely identifies the purchase.
     /// <br/>
     /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
     /// <br/>
@@ -1196,10 +1140,7 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
         public int Amount { get; set; }
 
         /// <summary>
-        /// Optional payment information to be displayed in MobilePay app
-        /// <br/>to the customer. Max length: 200 characters.&lt;br /&gt;This can be, for example,
-        /// <br/>an invoice number, ticket number, or short description that uniquely identifies
-        /// <br/>the purchase.
+        /// Optional payment information to be displayed in MobilePay app to the customer. Max length: 200 characters.&lt;br /&gt;This can be, for example, an invoice number, ticket number, or short description that uniquely identifies the purchase.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.StringLength(200)]
@@ -1215,11 +1156,8 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
         public System.Guid PaymentPointId { get; set; }
 
         /// <summary>
-        /// An ID to associate with the payment. Max length: 64 characters.&lt;br
-        /// <br/>/&gt;
-        /// <br/>You can use this field to associate the payment to an entity in an
-        /// <br/>external system (for example, you might specify an order ID that is generated
-        /// <br/>by your system). It is recommended to use a unique value for each payment.
+        /// An ID to associate with the payment. Max length: 64 characters.&lt;br /&gt;
+        /// <br/>You can use this field to associate the payment to an entity in an external system (for example, you might specify an order ID that is generated by your system). It is recommended to use a unique value for each payment.
         /// <br/>
         /// <br/>
         /// </summary>
@@ -1238,9 +1176,7 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
         public System.Guid IdempotencyKey { get; set; }
 
         /// <summary>
-        /// MobilePay will use the redirectUri URL to redirect the MobilePay
-        /// <br/>user to the merchant's confirmation page once user action is completed in
-        /// <br/>MobilePay app. Must be a valid URI.
+        /// MobilePay will use the redirectUri URL to redirect the MobilePay user to the merchant's confirmation page once user action is completed in MobilePay app. Must be a valid URI.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("redirectUri", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]

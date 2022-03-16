@@ -7,7 +7,7 @@ info:
     for you to collect money from your customers using MobilePay.\r\n\r\n#### General
     notes\r\nAll dates use the (`ISO 8601-1:2019`) format: date-time format - (`YYYY-MM-DDTHH:mm:ssZ`)
     or (`YYYY-MM-DDTHH:mm:ss+00:00`).\r\n"
-  version: 1.0.1
+  version: 1.0.3
   contact:
     email: developer@mobilepay.dk
 schemes:
@@ -143,7 +143,7 @@ paths:
               "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
               "paymentPointId": "7347ba06-95c5-4181-82e5-7c7a23609a0e",
               "reference": "My-Payment-1",
-              "mobilePayAppRedirectUri": "mobilepay://merchant_payments?payment_id=186d2b31-ff25-4414-9fd1-bfe9807fa8b7",
+              "redirectUri": "myapp://redirect",
               "state": "initiated",
               "initiatedOn": "2021-09-27T08:42:22Z",
               "lastUpdatedOn": "2021-09-27T08:42:22Z",
@@ -217,7 +217,7 @@ paths:
                 description: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                 paymentPointId: 7347ba06-95c5-4181-82e5-7c7a23609a0e
                 reference: My-Payment-1
-                mobilePayAppRedirectUri: mobilepay://merchant_payments?payment_id=186d2b31-ff25-4414-9fd1-bfe9807fa8b7
+                redirectUri: myapp://redirect
                 state: initiated
                 initiatedOn: "2021-09-27T08:42:22Z"
                 lastUpdatedOn: "2021-09-27T08:42:22Z"
@@ -256,7 +256,7 @@ paths:
         code</a>, in uppercase.<br />\r\nPossible values:<br />\r\n\"DKK\",<br />\r\n\"EUR\"\n\n</td></tr><tr><td><code>lastUpdatedOn</code></td><td><strong>Required</strong></td><td>string
         (date-time)</td><td>The timestamp of when the payment was created, in ISO
         8601-1:2019 format.\n\n</td></tr><tr><td><code>merchantId</code></td><td><strong>Required</strong></td><td>string
-        (uuid)</td><td>Merchant ID associated with the payment.\n\n</td></tr><tr><td><code>mobilePayAppRedirectUri</code></td><td><strong>Required</strong></td><td>string</td><td>Deeplink
+        (uuid)</td><td>Merchant ID associated with the payment.\n\n</td></tr><tr><td><code>redirectUri</code></td><td><strong>Required</strong></td><td>string</td><td>Deeplink
         is used to redirect MobilePay users back to the merchant's app.\n\n</td></tr><tr><td><code>paymentId</code></td><td><strong>Required</strong></td><td>string
         (uuid)</td><td>The ID of the payment.\n\n</td></tr><tr><td><code>paymentPointId</code></td><td><strong>Required</strong></td><td>string
         (uuid)</td><td>The payment point on which payment was initiated.\n\n</td></tr><tr><td><code>paymentPointName</code></td><td><strong>Required</strong></td><td>string</td><td>Payment
@@ -270,7 +270,7 @@ paths:
         JSON example</label>\n\n```json\r\n{\r\n  \"paymentId\": \"186d2b31-ff25-4414-9fd1-bfe9807fa8b7\",\r\n
         \ \"amount\": 1250,\r\n  \"description\": \"Lorem ipsum dolor sit amet, consectetur
         adipiscing elit.\",\r\n  \"paymentPointId\": \"7347ba06-95c5-4181-82e5-7c7a23609a0e\",\r\n
-        \ \"reference\": \"My-Payment-1\",\r\n  \"mobilePayAppRedirectUri\": \"mobilepay://merchant_payments?payment_id=186d2b31-ff25-4414-9fd1-bfe9807fa8b7\",\r\n
+        \ \"reference\": \"My-Payment-1\",\r\n  \"redirectUri\": \"myapp://redirect\",\r\n
         \ \"state\": \"initiated\",\r\n  \"initiatedOn\": \"2021-09-27T08:42:22Z\",\r\n
         \ \"lastUpdatedOn\": \"2021-09-27T08:42:22Z\",\r\n  \"merchantId\": \"655ad36f-70b0-4add-a123-b943daca50e8\",\r\n
         \ \"isoCurrencyCode\": \"DKK\",\r\n  \"paymentPointName\": \"MyPaymentPoint\"\r\n}\r\n```\n\r\n"
@@ -298,7 +298,7 @@ paths:
               description: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
               paymentPointId: 7347ba06-95c5-4181-82e5-7c7a23609a0e
               reference: My-Payment-1
-              mobilePayAppRedirectUri: mobilepay://merchant_payments?payment_id=186d2b31-ff25-4414-9fd1-bfe9807fa8b7
+              redirectUri: myapp://redirect
               state: initiated
               initiatedOn: "2021-09-27T08:42:22Z"
               lastUpdatedOn: "2021-09-27T08:42:22Z"
@@ -557,7 +557,7 @@ definitions:
           Description: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
           PaymentPointId: 7347ba06-95c5-4181-82e5-7c7a23609a0e
           Reference: My-Payment-1
-          MobilePayAppRedirectUri: mobilepay://merchant_payments?payment_id=186d2b31-ff25-4414-9fd1-bfe9807fa8b7
+          redirectUri: myapp://redirect
           State: initiated
           InitiatedOn: "2021-09-27T11:42:22Z"
           LastUpdatedOn: "2021-09-27T11:42:22Z"
@@ -577,7 +577,7 @@ definitions:
       in uppercase.<br />\r\nPossible values:<br />\r\n\"DKK\",<br />\r\n\"EUR\"\n\n</td></tr><tr><td><code>lastUpdatedOn</code></td><td><strong>Required</strong></td><td>string
       (date-time)</td><td>The timestamp of when the payment was created, in ISO 8601-1:2019
       format.\n\n</td></tr><tr><td><code>merchantId</code></td><td><strong>Required</strong></td><td>string
-      (uuid)</td><td>Merchant ID associated with the payment.\n\n</td></tr><tr><td><code>mobilePayAppRedirectUri</code></td><td><strong>Required</strong></td><td>string</td><td>Deeplink
+      (uuid)</td><td>Merchant ID associated with the payment.\n\n</td></tr><tr><td><code>redirectUri</code></td><td><strong>Required</strong></td><td>string</td><td>Deeplink
       is used to redirect MobilePay users back to the merchant's app.\n\n</td></tr><tr><td><code>paymentId</code></td><td><strong>Required</strong></td><td>string
       (uuid)</td><td>The ID of the payment.\n\n</td></tr><tr><td><code>paymentPointId</code></td><td><strong>Required</strong></td><td>string
       (uuid)</td><td>The payment point on which payment was initiated.\n\n</td></tr><tr><td><code>paymentPointName</code></td><td><strong>Required</strong></td><td>string</td><td>Payment
@@ -594,7 +594,7 @@ definitions:
     - isoCurrencyCode
     - lastUpdatedOn
     - merchantId
-    - mobilePayAppRedirectUri
+    - redirectUri
     - paymentId
     - paymentPointId
     - paymentPointName
@@ -634,12 +634,12 @@ definitions:
 
         type: string
         example: My-Payment-1
-      mobilePayAppRedirectUri:
+      redirectUri:
         description: |+
           Deeplink is used to redirect MobilePay users back to the merchant's app.
 
         type: string
-        example: mobilepay://merchant_payments?payment_id=186d2b31-ff25-4414-9fd1-bfe9807fa8b7
+        example: myapp://redirect
       state:
         format: string
         description: |
