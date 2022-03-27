@@ -3,6 +3,7 @@ using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Services;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.DataTransferObjects.User;
+using CoffeeCard.Models.DataTransferObjects.v2.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -55,13 +56,14 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <response code="200">Successful request</response>
         /// <response code="401">Invalid credentials</response>
         [HttpPost]
-        [ProducesResponseType(typeof(EmailInUseDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(EmailInUseResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-        [Route("emailinuse")]
-        public async Task<ActionResult<EmailInUseDTO>> EmailInUse([FromBody] string email)
+        [AllowAnonymous]
+        [Route("check-email-in-use")]
+        public async Task<ActionResult<EmailInUseResponse>> EmailInUse([FromBody] EmailInUseRequest request)
         {
-            var emailInUse = await _accountService.EmailExists(email);
-            return Ok(new EmailInUseDTO()
+            var emailInUse = await _accountService.EmailExists(request.Email);
+            return Ok(new EmailInUseResponse()
             {
                 InUse = emailInUse
             });
