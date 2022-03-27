@@ -28,11 +28,20 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task<InitiatePurchaseResponse> InitiatePurchase(InitiatePurchaseRequest initiateRequest, User user)
         {
-            var product = await _context.Products.FindAsync(initiateRequest.ProductId);
+            var product = await _context.Products.Include(p => p.ProductUserGroup).FirstAsync(p => p.Id == initiateRequest.ProductId);
             if (product == null)
             {
                 Log.Error("No product was found by Product Id: {Id}", initiateRequest.ProductId);
                 // throw EntityNotFoundException mapping to a ProblemDetails object
+            }
+            ;
+            var userGroups = product.ProductUserGroup.Select(x => x.UserGroup);
+            var canUserPurchase = userGroups.Contains(user.UserGroup);
+
+            if (!canUserPurchase)
+            {
+                Log.Information("User {userId} is not authorized to purchase product {productId}", user.Id, product.Id);
+                throw new ApiException("User is unable to purchase selected product", 403);
             }
 
             var paymentDetails = await _mobilePayPaymentsService.InitiatePayment(new MobilePayPaymentRequest
