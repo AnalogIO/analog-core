@@ -7,7 +7,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
     /// </summary>
     /// <example>
     /// {
-    ///     "InUse": true,
+    ///     "InUse": true
     /// }
     /// </example>
     public class EmailInUseResponse
@@ -16,6 +16,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
         /// Contains information about an email being in use
         /// </summary>
         [Required]
-        public bool InUse { get; set; }
+        public bool EmailExists { get; set; }
     }
 }

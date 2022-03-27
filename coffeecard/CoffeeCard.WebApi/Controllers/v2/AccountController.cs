@@ -52,6 +52,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <summary>
         /// Check if a given email is in use
         /// </summary>
+        /// <param name="request">The email that should be checked</param>
         /// <returns>Account information</returns>
         /// <response code="200">Successful request</response>
         /// <response code="401">Invalid credentials</response>
@@ -59,13 +60,13 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(EmailInUseResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [AllowAnonymous]
-        [Route("check-email-in-use")]
+        [Route("email-exists")]
         public async Task<ActionResult<EmailInUseResponse>> EmailInUse([FromBody] EmailInUseRequest request)
         {
             var emailInUse = await _accountService.EmailExists(request.Email);
             return Ok(new EmailInUseResponse()
             {
-                InUse = emailInUse
+                EmailExists = emailInUse
             });
         }
     }

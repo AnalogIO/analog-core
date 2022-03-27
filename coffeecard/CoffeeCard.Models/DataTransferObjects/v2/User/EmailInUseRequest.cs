@@ -7,7 +7,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
     /// </summary>
     /// <example>
     /// {
-    ///     "email": "johndoe@mail.com",
+    ///     "email": "johndoe@mail.com"
     /// }
     /// </example>
     public class EmailInUseRequest
