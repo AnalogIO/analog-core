@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
@@ -7,6 +8,7 @@ using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 using CoffeeCard.Models.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Purchase = CoffeeCard.Models.Entities.Purchase;
@@ -28,7 +30,7 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task<InitiatePurchaseResponse> InitiatePurchase(InitiatePurchaseRequest initiateRequest, User user)
         {
-            var product = await _context.Products.Include(p => p.ProductUserGroup).FirstAsync(p => p.Id == initiateRequest.ProductId);
+            var product = await _context.Products.Include(p => p.ProductUserGroup).FirstOrDefaultAsync(p => p.Id == initiateRequest.ProductId);
             if (product == null)
             {
                 Log.Error("No product was found by Product Id: {Id}", initiateRequest.ProductId);
@@ -41,7 +43,7 @@ namespace CoffeeCard.Library.Services.v2
             if (!canUserPurchase)
             {
                 Log.Information("User {userId} is not authorized to purchase product {productId}", user.Id, product.Id);
-                throw new ApiException("User is unable to purchase selected product", 403);
+                throw new ApiException("User is unable to purchase selected product", StatusCodes.Status403Forbidden);
             }
 
             var paymentDetails = await _mobilePayPaymentsService.InitiatePayment(new MobilePayPaymentRequest
