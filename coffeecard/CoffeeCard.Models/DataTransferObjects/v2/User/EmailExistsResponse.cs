@@ -7,10 +7,10 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
     /// </summary>
     /// <example>
     /// {
-    ///     "InUse": true
+    ///     "EmailExists": true
     /// }
     /// </example>
-    public class EmailInUseResponse
+    public class EmailExistsResponse
     {
         /// <summary>
         /// Contains information about an email being in use

@@ -57,14 +57,14 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <response code="200">Successful request</response>
         /// <response code="401">Invalid credentials</response>
         [HttpPost]
-        [ProducesResponseType(typeof(EmailInUseResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(EmailExistsResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [AllowAnonymous]
         [Route("email-exists")]
-        public async Task<ActionResult<EmailInUseResponse>> EmailInUse([FromBody] EmailInUseRequest request)
+        public async Task<ActionResult<EmailExistsResponse>> EmailExists([FromBody] EmailExistsRequest request)
         {
             var emailInUse = await _accountService.EmailExists(request.Email);
-            return Ok(new EmailInUseResponse()
+            return Ok(new EmailExistsResponse()
             {
                 EmailExists = emailInUse
             });
