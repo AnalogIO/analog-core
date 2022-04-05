@@ -7,7 +7,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
     /// </summary>
     /// <example>
     /// {
-    ///     "EmailExists": true
+    ///     "emailExists": true
     /// }
     /// </example>
     public class EmailExistsResponse
