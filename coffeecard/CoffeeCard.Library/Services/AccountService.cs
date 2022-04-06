@@ -274,7 +274,12 @@ namespace CoffeeCard.Library.Services
 
             await AnonymizeUser(user);
         }
-        
+
+        public Task<bool> EmailExists(string email)
+        {
+            return _context.Users.AnyAsync(x => x.Email == email);
+        }
+
         private async Task AnonymizeUser(User user)
         {
             user.Email = string.Empty;
