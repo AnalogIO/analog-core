@@ -17,15 +17,16 @@ namespace CoffeeCard.Library.Services
     {
         private readonly IWebHostEnvironment _env;
         private readonly EnvironmentSettings _environmentSettings;
-
         private readonly MailgunSettings _mailgunSettings;
+        private readonly IMapperService _mapperService;
 
         public EmailService(MailgunSettings mailgunSettings, EnvironmentSettings environmentSettings,
-            IWebHostEnvironment env)
+            IWebHostEnvironment env, IMapperService mapperService)
         {
             _mailgunSettings = mailgunSettings;
             _environmentSettings = environmentSettings;
             _env = env;
+            _mapperService = mapperService;
         }
 
         public async Task SendInvoiceAsync(UserDto user, PurchaseDto purchase)
@@ -120,6 +121,14 @@ namespace CoffeeCard.Library.Services
             message.Body = builder.ToMessageBody();
 
             await SendEmailAsync(message);
+        }
+        
+        public async Task SendInvoiceAsyncV2(Purchase purchase, User user)
+        {
+            var purchaseDto = _mapperService.Map(purchase);
+            var userDto = _mapperService.Map(user);
+
+            await SendInvoiceAsync(userDto, purchaseDto);
         }
 
         private BodyBuilder BuildVerifyEmail(BodyBuilder builder, string token, string email, string name, string endpoint)

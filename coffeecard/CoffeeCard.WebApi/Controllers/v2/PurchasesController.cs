@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Library.Utils;
@@ -36,14 +36,24 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// Get all purchases
         /// </summary>
         /// <returns>List of purchases</returns>
-        /// <response code="200">Successful request</response>
+        /// <response code="200">All purchases</response>
+        /// <response code="204">No purchases</response>
         /// <response code="401">Invalid credentials</response>
         [HttpGet]
-        [ProducesResponseType(typeof(List<SinglePurchaseResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<SimplePurchaseResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<List<SinglePurchaseResponse>>> GetAllPurchases()
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<List<SimplePurchaseResponse>>> GetAllPurchases()
         {
-            throw new NotImplementedException();
+            var purchases = await _purchaseService.GetPurchases(await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims));
+
+            if (purchases.Any())
+            {
+                return Ok(purchases);
+            }
+
+            return NoContent();
         }
         
         /// <summary>
@@ -62,7 +72,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         {
             var purchase = await _purchaseService.GetPurchase(id, await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims));
             
-            return new OkObjectResult(purchase);
+            return Ok(purchase);
         }
 
         /// <summary>
@@ -70,7 +80,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// </summary>
         /// <param name="initiateRequest">Initiate request</param>
         /// <returns>Purchase with payment details</returns>
-        /// <response code="201">Purchased initiated</response>
+        /// <response code="200">Purchased initiated</response>
         /// <response code="401">Invalid credentials</response>
         [HttpPost]
         [ProducesResponseType(typeof(InitiatePurchaseResponse), StatusCodes.Status200OK)]
@@ -80,7 +90,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
             var purchaseResponse = await _purchaseService.InitiatePurchase(initiateRequest, await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims));
 
             // Return CreatedAtAction
-            return new OkObjectResult(purchaseResponse);
+            return Ok(purchaseResponse);
         }
     }
 }
