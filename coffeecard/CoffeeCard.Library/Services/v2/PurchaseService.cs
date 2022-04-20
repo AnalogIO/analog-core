@@ -19,14 +19,16 @@ namespace CoffeeCard.Library.Services.v2
     public class PurchaseService : IPurchaseService
     {
         private readonly CoffeeCardContext _context;
+        private readonly IEmailService _emailService;
         private readonly IMobilePayPaymentsService _mobilePayPaymentsService;
         private readonly ITicketService _ticketService;
 
-        public PurchaseService(CoffeeCardContext context, IMobilePayPaymentsService mobilePayPaymentsService, ITicketService ticketService)
+        public PurchaseService(CoffeeCardContext context, IMobilePayPaymentsService mobilePayPaymentsService, ITicketService ticketService, IEmailService emailService)
         {
             _context = context;
             _mobilePayPaymentsService = mobilePayPaymentsService;
             _ticketService = ticketService;
+            _emailService = emailService;
         }
 
         public async Task<InitiatePurchaseResponse> InitiatePurchase(InitiatePurchaseRequest initiateRequest, User user)
@@ -35,16 +37,17 @@ namespace CoffeeCard.Library.Services.v2
             if (product == null)
             {
                 Log.Error("No product was found by Product Id: {Id}", initiateRequest.ProductId);
-                // throw EntityNotFoundException mapping to a ProblemDetails object
+                throw new EntityNotFoundException($"No purchase was found by Purchase Id: {initiateRequest.ProductId}");
+                // Exception mapper 
             }
-            ;
-            var userGroups = product.ProductUserGroup.Select(x => x.UserGroup);
-            var canUserPurchase = userGroups.Contains(user.UserGroup);
+            
+            var productUserGroup = product.ProductUserGroup.Select(pug => pug.UserGroup);
+            var isUserInProductUserGroup = productUserGroup.Contains(user.UserGroup);
 
-            if (!canUserPurchase)
+            if (!isUserInProductUserGroup)
             {
-                Log.Information("User {userId} is not authorized to purchase product {productId}", user.Id, product.Id);
-                throw new ApiException("User is unable to purchase selected product", StatusCodes.Status403Forbidden);
+                Log.Information("User {UserId} is not authorized to purchase Product Id: {ProductId} as user is not in Product User Group", user.Id, product.Id);
+                throw new ApiException("Product is not available for user to purchase", StatusCodes.Status403Forbidden);
             }
 
             var paymentDetails = await _mobilePayPaymentsService.InitiatePayment(new MobilePayPaymentRequest
@@ -92,7 +95,7 @@ namespace CoffeeCard.Library.Services.v2
             if (purchase == null)
             {
                 Log.Error("No purchase was found by Purchase Id: {Id} and User Id: {UId}", purchaseId, user.Id);
-                throw new EntityNotFoundException($"No purchase was found by Purchase Id: {purchaseId}");
+                throw new EntityNotFoundException($"No purchase was found by Purchase Id: {purchaseId} and User Id: {user.Id}");
             }
             
             var paymentDetails = await _mobilePayPaymentsService.GetPayment(Guid.Parse(purchase.TransactionId));
@@ -107,6 +110,21 @@ namespace CoffeeCard.Library.Services.v2
                 PaymentDetails = paymentDetails
             };
         }
+        
+        public async Task<List<SimplePurchaseResponse>> GetPurchases(User user)
+        {
+            return await _context.Purchases
+                .Where(p => p.PurchasedBy.Equals(user))
+                .Select(p => new SimplePurchaseResponse
+                {
+                    Id = p.Id,
+                    DateCreated = p.DateCreated,
+                    ProductId = p.ProductId,
+                    TotalAmount = p.Price,
+                    PurchaseStatus = p.Status
+                })
+                .ToListAsync();
+        }
 
         public async Task HandleMobilePayPaymentUpdate(MobilePayWebhook webhook)
         {
@@ -117,12 +135,18 @@ namespace CoffeeCard.Library.Services.v2
             if (purchase == null)
             {
                 Log.Error("No purchase was found by TransactionId: {Id} from Webhook request", webhook.Data.Id);
-                throw new EntityNotFoundException($"No purchase was found by TransactionId: {webhook.Data.Id} from webhook request");
+                throw new EntityNotFoundException($"No purchase was found by Transaction Id: {webhook.Data.Id} from webhook request");
             }
-            
-            // FIXME Check purchase is not already completed
 
-            switch (webhook.EventType.ToLower())
+            if (purchase.Completed)
+            {
+                // FIXME Check purchase is not already completed. Should we throw an error? Conflict?
+                Log.Information("Purchase from Webhook request is already completed. Purchase Id: {PurchaseId}, Transaction Id: {TransactionId}", purchase.Id, webhook.Data.Id);
+                return;
+            }
+
+            var eventTypeLowerCase = webhook.EventType.ToLower();
+            switch (eventTypeLowerCase)
             {
                 case "payment.reserved":
                 {
@@ -144,8 +168,8 @@ namespace CoffeeCard.Library.Services.v2
                     break;
                 }
                 default:
-                    // log, throw exception
-                break;
+                    Log.Error("Unknown EventType from Webhook request. Event Type: {EventType}, Purchase Id: {PurchaseId}, Transaction Id: {TransactionId}", eventTypeLowerCase, purchase.Id, webhook.Data.Id);
+                    throw new ArgumentException($"Event Type {eventTypeLowerCase} is not valid");
             }
 
             await _context.SaveChangesAsync();
@@ -155,7 +179,7 @@ namespace CoffeeCard.Library.Services.v2
         {
             await _mobilePayPaymentsService.CapturePayment(Guid.Parse(purchase.TransactionId), purchase.Price);
             await _ticketService.IssueTickets(purchase);
-            // FIXME Send email
+            await _emailService.SendInvoiceAsyncV2(purchase, purchase.PurchasedBy);
         }
 
         private async Task<Guid> GenerateUniqueOrderId()

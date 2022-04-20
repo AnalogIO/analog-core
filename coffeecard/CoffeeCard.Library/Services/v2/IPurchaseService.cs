@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 using CoffeeCard.Models.Entities;
@@ -23,6 +24,13 @@ namespace CoffeeCard.Library.Services.v2
         /// <returns>Purchase details</returns>
         Task<SinglePurchaseResponse> GetPurchase(int purchaseId, User user);
         
+        /// <summary>
+        /// Get all purchase for user
+        /// </summary>
+        /// <param name="user">User</param>
+        /// <returns>Purchase details</returns>
+        Task<List<SimplePurchaseResponse>> GetPurchases(User user);
+
         /// <summary>
         /// Handle MobilePay webhook invocation and update purchase accordingly
         /// </summary>
