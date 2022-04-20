@@ -12,5 +12,6 @@ namespace CoffeeCard.Library.Services
         Task SendRegistrationVerificationEmailAsync(User user, string token);
         Task SendVerificationEmailForLostPwAsync(User user, string token);
         Task SendVerificationEmailForDeleteAccount(User user, string token);
+        Task SendInvoiceAsyncV2(Purchase purchase, User user);
     }
 }
