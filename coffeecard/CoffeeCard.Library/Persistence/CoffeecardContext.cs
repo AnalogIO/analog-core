@@ -59,6 +59,10 @@ namespace CoffeeCard.Library.Persistence
                 .Property(w => w.Status)
                 .HasConversion<string>();
             
+            modelBuilder.Entity<Purchase>()
+                .Property(p => p.Status)
+                .HasConversion<string>();
+            
             if (_environmentSettings.EnvironmentType != EnvironmentType.Production)
             {
                 SeedData(modelBuilder);

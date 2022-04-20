@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -64,7 +65,8 @@ namespace CoffeeCard.Library.Services.v2
                 Completed = false,
                 OrderId = paymentDetails.OrderId,
                 TransactionId = paymentDetails.PaymentId,
-                PurchasedBy = user
+                PurchasedBy = user,
+                Status = PurchaseStatus.PendingPayment
             };
             await _context.Purchases.AddAsync(purchase);
             await _context.SaveChangesAsync();
@@ -75,7 +77,7 @@ namespace CoffeeCard.Library.Services.v2
                 DateCreated = purchase.DateCreated,
                 ProductId = product.Id,
                 TotalAmount = purchase.Price,
-                PurchaseStatus = PurchaseStatus.PendingPayment,
+                PurchaseStatus = purchase.Status,
                 PaymentDetails = paymentDetails
             };
         }
@@ -101,7 +103,7 @@ namespace CoffeeCard.Library.Services.v2
                 DateCreated = purchase.DateCreated,
                 TotalAmount = purchase.Price,
                 ProductId = purchase.ProductId,
-                PurchaseStatus = PurchaseStatus.Completed, // FIXME Handle state
+                PurchaseStatus = purchase.Status,
                 PaymentDetails = paymentDetails
             };
         }
@@ -126,16 +128,19 @@ namespace CoffeeCard.Library.Services.v2
                 {
                     await CompletePurchase(purchase);
                     purchase.Completed = true;
+                    purchase.Status = PurchaseStatus.Completed;
                     break;
                 }
                 case "payment.cancelled_by_user":
                 {
                     purchase.Completed = false;
+                    purchase.Status = PurchaseStatus.Cancelled;
                     break;
                 }
                 case "payment.expired":
                 {
                     purchase.Completed = false;
+                    purchase.Status = PurchaseStatus.Cancelled;
                     break;
                 }
                 default:

@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoffeeCard.Models.Entities
 {
     [Index(nameof(OrderId), IsUnique = true)]
+    [Index(nameof(TransactionId))]
     public class Purchase
     {
         public Purchase()
@@ -71,7 +73,6 @@ namespace CoffeeCard.Models.Entities
         /// </summary>
         /// <value>Order Id</value>
         /// <example>79ef0af3-02dd-4634-83fa-c15ddc05d338</example>
-        
         public string OrderId { get; set; }
         
         /// <summary>
@@ -79,9 +80,15 @@ namespace CoffeeCard.Models.Entities
         /// </summary>
         /// <value>Transaction Id</value>
         /// <example>186d2b31-ff25-4414-9fd1-bfe9807fa8b7</example>
-        
-        // FIXME Uniqueness constraint? Nullable?
         public string TransactionId { get; set; }
+        
+        // Status is nullable for migration purposes
+        /// <summary>
+        /// Purchase Status. The status should also reflect the status at the external payment provider
+        /// </summary>
+        /// <value>Status</value>
+        /// <example>Completed</example>
+        public PurchaseStatus? Status { get; set; }
 
         [ForeignKey("PurchasedBy_Id")]
         public virtual User PurchasedBy { get; set; }
