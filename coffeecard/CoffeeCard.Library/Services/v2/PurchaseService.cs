@@ -138,10 +138,10 @@ namespace CoffeeCard.Library.Services.v2
                 throw new EntityNotFoundException($"No purchase was found by Transaction Id: {webhook.Data.Id} from webhook request");
             }
 
-            if (purchase.Completed)
+            if (purchase.Completed || purchase.Completed)
             {
                 // FIXME Check purchase is not already completed. Should we throw an error? Conflict?
-                Log.Information("Purchase from Webhook request is already completed. Purchase Id: {PurchaseId}, Transaction Id: {TransactionId}", purchase.Id, webhook.Data.Id);
+                Log.Warning("Purchase from Webhook request is already completed. Purchase Id: {PurchaseId}, Transaction Id: {TransactionId}", purchase.Id, webhook.Data.Id);
                 return;
             }
 
@@ -151,35 +151,41 @@ namespace CoffeeCard.Library.Services.v2
                 case "payment.reserved":
                 {
                     await CompletePurchase(purchase);
-                    purchase.Completed = true;
-                    purchase.Status = PurchaseStatus.Completed;
                     break;
                 }
                 case "payment.cancelled_by_user":
                 {
-                    purchase.Completed = false;
-                    purchase.Status = PurchaseStatus.Cancelled;
+                    await CancelPurchase(purchase);
                     break;
                 }
                 case "payment.expired":
                 {
-                    purchase.Completed = false;
-                    purchase.Status = PurchaseStatus.Cancelled;
+                    await CancelPurchase(purchase);
                     break;
                 }
                 default:
                     Log.Error("Unknown EventType from Webhook request. Event Type: {EventType}, Purchase Id: {PurchaseId}, Transaction Id: {TransactionId}", eventTypeLowerCase, purchase.Id, webhook.Data.Id);
                     throw new ArgumentException($"Event Type {eventTypeLowerCase} is not valid");
             }
-
-            await _context.SaveChangesAsync();
         }
 
         private async Task CompletePurchase(Purchase purchase)
         {
             await _mobilePayPaymentsService.CapturePayment(Guid.Parse(purchase.TransactionId), purchase.Price);
             await _ticketService.IssueTickets(purchase);
+            
+            purchase.Completed = true;
+            purchase.Status = PurchaseStatus.Completed;
+            await _context.SaveChangesAsync();
+
             await _emailService.SendInvoiceAsyncV2(purchase, purchase.PurchasedBy);
+        }
+        
+        private async Task CancelPurchase(Purchase purchase)
+        {
+            purchase.Completed = false;
+            purchase.Status = PurchaseStatus.Cancelled;
+            await _context.SaveChangesAsync();
         }
 
         private async Task<Guid> GenerateUniqueOrderId()

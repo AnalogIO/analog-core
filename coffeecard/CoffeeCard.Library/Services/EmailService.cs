@@ -10,6 +10,7 @@ using MimeKit;
 using RestSharp;
 using RestSharp.Authenticators;
 using Serilog;
+using TimeZoneConverter;
 
 namespace CoffeeCard.Library.Services
 {
@@ -34,7 +35,8 @@ namespace CoffeeCard.Library.Services
             var message = new MimeMessage();
             var builder = RetrieveTemplate("invoice.html");
             var utcTime = DateTime.UtcNow;
-            var cetTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utcTime, "Central Europe Standard Time");
+            var dkTimeZone = TZConvert.GetTimeZoneInfo("Europe/Copenhagen");
+            var dkTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, dkTimeZone);
 
             builder.HtmlBody = builder.HtmlBody.Replace("{email}", user.Email);
             builder.HtmlBody = builder.HtmlBody.Replace("{name}", user.Name);
@@ -43,7 +45,7 @@ namespace CoffeeCard.Library.Services
             builder.HtmlBody = builder.HtmlBody.Replace("{vat}", (purchase.Price * 0.2).ToString());
             builder.HtmlBody = builder.HtmlBody.Replace("{price}", purchase.Price.ToString());
             builder.HtmlBody = builder.HtmlBody.Replace("{orderId}", purchase.OrderId);
-            builder.HtmlBody = builder.HtmlBody.Replace("{date}", cetTime.ToShortDateString());
+            builder.HtmlBody = builder.HtmlBody.Replace("{date}", dkTime.ToShortDateString());
 
             message.To.Add(new MailboxAddress(user.Name, user.Email));
             message.Subject = "Thank you for your purchase at Cafe Analog";
