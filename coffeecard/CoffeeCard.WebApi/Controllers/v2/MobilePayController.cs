@@ -47,12 +47,12 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesDefaultResponseType]
         public async Task<ActionResult> Webhook([FromBody] MobilePayWebhook request, [FromHeader(Name = "x-mobilepay-signature")] string signature)
         {
-            // var isSignatureValid = await VerifySignature(signature);
-            // if (!isSignatureValid)
-            // {
-            //     Log.Error("Signature did not match the computed signature. Request Body: {Request} Signature: {Signature}", request, signature);
-            //     return BadRequest("Signature is not valid");
-            // }
+            var isSignatureValid = await VerifySignature(signature);
+            if (!isSignatureValid)
+            { 
+                Log.Error("Signature did not match the computed signature. Request Body: {Request} Signature: {Signature}", request, signature);
+                return BadRequest("Signature is not valid");
+            }
             
             Log.Information("MobilePay Webhook invoked. Request: {Request}", request);
             await _purchaseService.HandleMobilePayPaymentUpdate(request);
@@ -67,16 +67,20 @@ namespace CoffeeCard.WebApi.Controllers.v2
                 Request.EnableBuffering();
             }
             
-            Request.Body.Position = 0;
-            
-            var rawRequestBody = await new StreamReader(Request.Body).ReadToEndAsync().ConfigureAwait(false);
-            
-            Request.Body.Position = 0;
+            HttpContext.Request.Body.Seek(0, SeekOrigin.Begin);
+
+            string rawRequestBody;
+            using (StreamReader stream = new StreamReader(HttpContext.Request.Body))
+            {
+                rawRequestBody = await stream.ReadToEndAsync();
+            }
             
             Log.Information("Body: '{Body}'", rawRequestBody);
-
-            var hash = new HMACSHA1(Encoding.UTF8.GetBytes(await _webhookService.SignatureKey()))
-                .ComputeHash(Encoding.UTF8.GetBytes(_mobilePaySettings.WebhookUrl + rawRequestBody.Trim()));
+            
+            var endpointUrl = _mobilePaySettings.WebhookUrl;
+            var signatureKey = await _webhookService.SignatureKey();
+            var hash = new HMACSHA1(Encoding.UTF8.GetBytes(signatureKey))
+                .ComputeHash(Encoding.UTF8.GetBytes(endpointUrl + rawRequestBody.Trim()));
             var computedSignature = Convert.ToBase64String(hash);
 
             Log.Information("ComputedSignature: {Signature}", computedSignature);
