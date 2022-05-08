@@ -87,7 +87,11 @@ namespace CoffeeCard.WebApi
             services.AddScoped<IWebhookService, WebhookService>();
 
             // Setup filter to catch outgoing exceptions
-            services.AddControllers(options => { options.Filters.Add(new ApiExceptionFilter()); })
+            services.AddControllers(options =>
+                {
+                    options.Filters.Add(new ApiExceptionFilter());
+                    options.Filters.Add(new ReadableBodyFilter());
+                })
                 // Setup Json Serializing
                 .AddNewtonsoftJson(options =>
                 {
