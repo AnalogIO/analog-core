@@ -183,9 +183,12 @@ namespace CoffeeCard.Library.Services.v2
         
         private async Task CancelPurchase(Purchase purchase)
         {
+            await _mobilePayPaymentsService.CancelPayment(Guid.Parse(purchase.TransactionId));
             purchase.Completed = false;
             purchase.Status = PurchaseStatus.Cancelled;
             await _context.SaveChangesAsync();
+
+            Log.Information("Purchase has been cancelled Purchase Id {PurchaseId}, Transaction Id {TransactionId}", purchase.Id, purchase.TransactionId);
         }
 
         private async Task<Guid> GenerateUniqueOrderId()
