@@ -2,7 +2,7 @@ name: Build and push Docker container
 
 on:
   push:
-    branches: [ develop, production, integration/api-v2 ]
+    branches: [ develop, production ]
 
 jobs:
   docker:
