@@ -56,7 +56,7 @@ namespace CoffeeCard.WebApi
             // Setup database connection
             var databaseSettings = _configuration.GetSection("DatabaseSettings").Get<DatabaseSettings>();
             services.AddDbContext<CoffeeCardContext>(opt =>
-                opt.UseNpgsql(databaseSettings.ConnectionString,
+                opt.UseSqlServer(databaseSettings.ConnectionString,
                     c => c.MigrationsHistoryTable("__EFMigrationsHistory", databaseSettings.SchemaName)));
 
             // Setup Dependency Injection
