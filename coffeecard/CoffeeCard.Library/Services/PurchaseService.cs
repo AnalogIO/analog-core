@@ -10,6 +10,7 @@ using CoffeeCard.Library.Persistence;
 using CoffeeCard.MobilePay.Exception;
 using CoffeeCard.MobilePay.ResponseMessage;
 using CoffeeCard.MobilePay.Service;
+using CoffeeCard.MobilePay.Service.v1;
 using CoffeeCard.Models.DataTransferObjects.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.Purchase;
 using CoffeeCard.Models.Entities;

@@ -1,0 +1,42 @@
+<mjml>
+    <mj-head>
+        <mj-include path="./style.mjml" />
+    </mj-head>
+    <!-- Start content -->
+    <mj-body background-color="#ece9e9">
+        <!-- Logo and intro text -->
+        <mj-section>
+            <mj-column>
+                <mj-image src="https://analogio.dk/resources/ANALOGO.png" alt="Analog logo"></mj-image>
+            </mj-column>
+        </mj-section>
+
+        <!-- Start recipient details -->
+        <mj-section>
+            <mj-column mj-class="detailsCard" css-class="detailsCard" >
+                <mj-text mj-class="header">
+                    Hello {name},
+                </mj-text>
+                <mj-spacer height="20px" />
+                <mj-text mj-class="description">
+                    A request to delete your account ({email}) has been made. Simply click the button below within the next {expiry} to delete your account
+                </mj-text>
+                <mj-spacer height="20px" />
+                <mj-text mj-class="description">
+                    If you did not request this, we strongly encourage you to change your passcode.
+                </mj-text>
+                <mj-spacer height="20px" />
+                <mj-button background-color="#38251a" href="{baseUrl}{endpoint}{token}"  mj-class="description" color="#ece9e9">
+                    Verify now
+                </mj-button>
+                <mj-spacer height="15px" />
+            </mj-column>
+        </mj-section>
+        <!-- End recipient details -->
+
+        <!-- Include footer -->
+        <mj-include path="./footer.mjml" />
+
+    </mj-body>
+    <!-- End content -->
+</mjml>

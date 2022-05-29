@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -38,25 +39,31 @@ namespace CoffeeCard.Library.Services
             _loginLimiterSettings = loginLimiterSettings;
         }
 
-        public string Login(string username, string password, string version)
+        public string Login(string email, string password, string version)
         {
-            Log.Information("Logging in user with username: {username} version: {version}", username, version);
+            Log.Information("Logging in user with username: {username} version: {version}", email, version);
 
             ValidateVersion(version);
 
-            var user = _context.Users.FirstOrDefault(x => x.Email == username);
+            var user = _context.Users.FirstOrDefault(x => x.Email == email);
             if (user != null)
             {
+                if (user.UserState == UserState.Deleted)
+                {
+                    Log.Information("Login attempt with deleted user id = {id}", user.Id);
+                    throw new ApiException("The username or password does not match", StatusCodes.Status401Unauthorized);
+                }
+                
                 if (!user.IsVerified)
                 {
-                    Log.Information("E-mail not verified. E-mail = {username} from IP = {ipAddress} ", username,
+                    Log.Information("E-mail not verified. E-mail = {username} from IP = {ipAddress} ", email,
                         _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
                     throw new ApiException("E-mail has not been verified", StatusCodes.Status403Forbidden);
                 }
                 
                 if (_loginLimiterSettings.IsEnabled && !_loginLimiter.LoginAllowed(user)) //Login limiter is only called if it is enabled in the settings
                 {
-                    Log.Warning("Login attempts exceeding maximum allowed for e-mail = {username} from IP = {ipaddress} ", username,
+                    Log.Warning("Login attempts exceeding maximum allowed for e-mail = {username} from IP = {ipaddress} ", email,
                         _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
                     throw new ApiException($"Amount of failed login attempts exceeds the allowed amount, please wait for {_loginLimiterSettings.TimeOutPeriodInMinutes} minutes before trying again", StatusCodes.Status429TooManyRequests);
                 }
@@ -66,7 +73,7 @@ namespace CoffeeCard.Library.Services
                 {
                     var claims = new[]
                     {
-                        new Claim(ClaimTypes.Email, username), new Claim(ClaimTypes.Name, user.Name),
+                        new Claim(ClaimTypes.Email, email), new Claim(ClaimTypes.Name, user.Name),
                         new Claim("UserId", user.Id.ToString())
                     };
                     var token = _tokenService.GenerateToken(claims);
@@ -80,7 +87,7 @@ namespace CoffeeCard.Library.Services
                 }
             }
 
-            Log.Information("Unsuccessful login for e-mail = {username} from IP = {ipAddress} ", username,
+            Log.Information("Unsuccessful login for e-mail = {username} from IP = {ipAddress} ", email,
                 _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
 
             throw new ApiException("The username or password does not match",
@@ -135,20 +142,11 @@ namespace CoffeeCard.Library.Services
         {
             Log.Information($"Trying to verify registration with token: {token}");
 
-            var jwtToken = _tokenService.ReadToken(token);
-            if (!jwtToken.Claims.Any(x => x.Type == ClaimTypes.Role && x.Value == "verification_token"))
-                throw new ApiException("The token is invalid!", 400);
-
-            var emailClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
-            if (emailClaim == null) throw new ApiException("The token is invalid!", 400);
-
-            var user = _context.Users.FirstOrDefault(x => x.Email == emailClaim.Value);
-            if (user == null) throw new ApiException("The token is invalid!", 400);
+            var user = VerifyTokenClaimAndUser(token);
 
             user.IsVerified = true;
             return _context.SaveChanges() > 0;
         }
-
         public User UpdateAccount(IEnumerable<Claim> claims, UpdateUserDto userDto)
         {
             var user = GetAccountByClaims(claims);
@@ -256,6 +254,58 @@ namespace CoffeeCard.Library.Services
             await _context.SaveChangesAsync();
             return true;
         }
+        public async Task RequestAnonymization(User user)
+        {
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Email, user.Email), new Claim(ClaimTypes.Name, user.Name),
+                new Claim(ClaimTypes.Role, "verification_token")
+            };
+            var verificationToken = _tokenService.GenerateToken(claims);
+            
+            await _emailService.SendVerificationEmailForDeleteAccount(user, verificationToken);
+        }
+        
+        public async void AnonymizeAccount(string token)
+        {
+            Log.Information($"Trying to verify deletion with token: {token}");
+
+            var user = VerifyTokenClaimAndUser(token);
+
+            await AnonymizeUser(user);
+        }
+
+        public Task<bool> EmailExists(string email)
+        {
+            return _context.Users.AnyAsync(x => x.Email == email);
+        }
+
+        private async Task AnonymizeUser(User user)
+        {
+            user.Email = string.Empty;
+            user.Name = string.Empty;
+            user.Password = string.Empty;
+            user.Salt = string.Empty;
+            user.DateUpdated = DateTime.Now;
+            user.PrivacyActivated = true;
+            user.UserState = UserState.Deleted;
+            await _context.SaveChangesAsync();            
+        }
+        
+        private User VerifyTokenClaimAndUser(string token)
+        {
+            var jwtToken = _tokenService.ReadToken(token);
+            if (!jwtToken.Claims.Any(x => x.Type == ClaimTypes.Role && x.Value == "verification_token"))
+                throw new ApiException("The token is invalid!", 400);
+
+            var emailClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
+            if (emailClaim == null) throw new ApiException("The token is invalid!", 400);
+
+            var user = _context.Users.FirstOrDefault(x => x.Email == emailClaim.Value);
+            if (user == null) throw new ApiException("The token is invalid!", 400);
+
+            return user;
+        }
 
         private User GetAccountByEmail(string email)
         {
@@ -264,6 +314,7 @@ namespace CoffeeCard.Library.Services
                 //.Include(x => x.Statistics)
                 .FirstOrDefault(x => x.Email == email);
             if (user == null) throw new ApiException("No user found with the given email", 401);
+
             return user;
         }
 

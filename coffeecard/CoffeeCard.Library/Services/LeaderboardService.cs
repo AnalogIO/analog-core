@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Models.DataTransferObjects;
 using CoffeeCard.Models.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoffeeCard.Library.Services
@@ -19,33 +21,30 @@ namespace CoffeeCard.Library.Services
 
         public List<LeaderboardDto> GetLeaderboard(int preset, int top)
         {
-            if (preset == (int) StatisticPreset.Total)
+            Func<Statistic, bool> filterExpression = preset switch
             {
-                var users = _context.Statistics.Include(x => x.User).Where(s => s.Preset == StatisticPreset.Total)
-                    .OrderByDescending(x => x.SwipeCount).ThenBy(x => x.LastSwipe).AsEnumerable().Take(top);
-                return users.Select(s => new LeaderboardDto {Name = s.User.Name, Score = s.SwipeCount}).ToList();
-            }
+                (int)StatisticPreset.Total => s => s.Preset == StatisticPreset.Total,
+                (int)StatisticPreset.Semester => s => s.Preset == StatisticPreset.Semester &&
+                                                      Statistic.ValidateSemesterExpired(s.LastSwipe),
+                (int)StatisticPreset.Monthly => s => s.Preset == StatisticPreset.Monthly &&
+                                                     Statistic.ValidateMonthlyExpired(s.LastSwipe),
+                _ => throw new ApiException("Not a correct preset was given", StatusCodes.Status400BadRequest)
+            };
 
-            if (preset == (int) StatisticPreset.Semester)
-            {
-                var users = _context.Statistics.Include(x => x.User)
-                    .AsEnumerable()
-                    .Where(s => s.Preset == StatisticPreset.Semester && Statistic.ValidateSemesterExpired(s.LastSwipe))
-                    .OrderByDescending(x => x.SwipeCount).ThenBy(x => x.LastSwipe).AsEnumerable().Take(top);
-                return users.Select(s => new LeaderboardDto {Name = s.User.Name, Score = s.SwipeCount}).ToList();
-            }
-
-            if (preset == (int) StatisticPreset.Monthly)
-            {
-                var users = _context.Statistics.Include(x => x.User)
-                    .AsEnumerable()
-                    .Where(s => s.Preset == StatisticPreset.Monthly && Statistic.ValidateMonthlyExpired(s.LastSwipe))
-                    .OrderByDescending(x => x.SwipeCount).ThenBy(x => x.LastSwipe).AsEnumerable().Take(top);
-                return users.Select(s => new LeaderboardDto
-                    {Name = s.User.PrivacyActivated ? "Anonymous" : s.User.Name, Score = s.SwipeCount}).ToList();
-            }
-
-            throw new ApiException("Not a correct preset was given", 400);
+            var statistics = _context.Statistics
+                .Include(s => s.User)
+                .AsEnumerable()
+                .Where(filterExpression)
+                .OrderByDescending(s => s.SwipeCount)
+                .ThenBy(s => s.LastSwipe)
+                .AsEnumerable()
+                .Take(top);
+            
+            return statistics.Select(s => new LeaderboardDto
+                { 
+                    Name = s.User.PrivacyActivated ? "Anonymous" : s.User.Name, 
+                    Score = s.SwipeCount 
+                }).ToList();
         }
 
         public (int Total, int Semester, int Month) GetLeaderboardPlacement(User user)

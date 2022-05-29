@@ -5,39 +5,31 @@
         <ProjectGuid>DFDD8F8A-7D35-4108-8AA2-B1F46A237155</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
-        <None Remove="appsettings.json"/>
-        <None Remove="input.txt"/>
-        <None Remove="www.analogio.dk.pfx"/>
-    </ItemGroup>
-    <ItemGroup>
-        <Content Include="appsettings.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        <Content Include="..\CoffeeCard.WebApi\appsettings.json">
+          <Link>appsettings.json</Link>
+        </Content>
+        <Content Include="..\CoffeeCard.WebApi\www.analogio.dk.pfx">
+          <Link>www.analogio.dk.pfx</Link>
         </Content>
         <Content Include="input.txt">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
-        <Content Include="www.analogio.dk.pfx">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-        </Content>
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Autofac" Version="6.3.0"/>
-        <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0"/>
-        <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.22"/>
-        <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.1.22"/>
-        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.22"/>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.22"/>
-        <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="3.1.22"/>
-        <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.22"/>
-        <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.22"/>
-        <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.22"/>
-        <PackageReference Include="NetEscapades.Configuration.Validation" Version="2.0.0"/>
+        <PackageReference Include="Autofac" Version="6.3.0" />
+        <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.22" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.1.22" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.22" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.22" />
+        <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="3.1.22" />
+        <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.22" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.22" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.22" />
+        <PackageReference Include="NetEscapades.Configuration.Validation" Version="2.0.0" />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\CoffeeCard.Common\CoffeeCard.Common.csproj"/>
-        <ProjectReference Include="..\CoffeeCard.MobilePay\CoffeeCard.MobilePay.csproj"/>
+        <ProjectReference Include="..\CoffeeCard.Common\CoffeeCard.Common.csproj" />
+        <ProjectReference Include="..\CoffeeCard.MobilePay\CoffeeCard.MobilePay.csproj" />
     </ItemGroup>
 </Project>

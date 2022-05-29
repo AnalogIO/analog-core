@@ -10,6 +10,7 @@ using CoffeeCard.MobilePay.RefundConsoleApp.Handler;
 using CoffeeCard.MobilePay.RefundConsoleApp.IO;
 using CoffeeCard.MobilePay.RefundConsoleApp.Model;
 using CoffeeCard.MobilePay.Service;
+using CoffeeCard.MobilePay.Service.v1;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
@@ -48,7 +49,7 @@ namespace CoffeeCard.MobilePay.RefundConsoleApp
             // Load Configuration File
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
+                .AddJsonFile("appsettings.json", false, true)
                 .Build();
 
             var builder = new ContainerBuilder();

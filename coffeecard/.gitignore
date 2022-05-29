@@ -280,6 +280,3 @@ __pycache__/
 
 # Logs
 **/logs/
-
-# Appsettings
-appsettings.json

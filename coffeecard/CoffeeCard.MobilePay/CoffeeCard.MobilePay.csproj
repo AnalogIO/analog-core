@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <ProjectGuid>AFF9D584-58F4-4A8D-A6BF-515890A9A3EF</ProjectGuid>
   </PropertyGroup>
   <ItemGroup>
@@ -10,9 +10,11 @@
     <PackageReference Include="Microsoft.Extensions.FileProviders.Abstractions" Version="3.1.22" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.22" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.22" />
+    <PackageReference Include="Serilog.AspNetCore" Version="4.1.0" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CoffeeCard.Common\CoffeeCard.Common.csproj" />
+    <ProjectReference Include="..\CoffeeCard.Models\CoffeeCard.Models.csproj" />
   </ItemGroup>
 </Project>

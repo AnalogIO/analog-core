@@ -36,8 +36,12 @@ namespace CoffeeCard.Tests.Unit.Services
             {
                 SchemaName = "test"
             };
+            var environmentSettings = new EnvironmentSettings()
+            {
+                EnvironmentType = EnvironmentType.Test
+            };
 
-            _context = new CoffeeCardContext(builder.Options, databaseSettings);
+            _context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
         }
 
         private readonly CoffeeCardContext _context;

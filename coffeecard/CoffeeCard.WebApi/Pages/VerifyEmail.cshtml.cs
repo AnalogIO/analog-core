@@ -1,4 +1,5 @@
-﻿using CoffeeCard.Library.Services;
+﻿using System;
+using CoffeeCard.Library.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -17,17 +18,23 @@ namespace CoffeeCard.WebApi.Pages
 
         public IActionResult OnGet()
         {
-            var emailVerified = _accountService.VerifyRegistration(Token);
-            if (emailVerified)
+            try
             {
-                TempData["resultHeader"] = "Success";
-                TempData["result"] = @"Your email has been successfully verified";
-                return RedirectToPage("result");
+                var emailVerified = _accountService.VerifyRegistration(Token);
+                if (emailVerified)
+                {
+                    TempData["resultHeader"] = "Success";
+                    TempData["result"] = @"Your email has been successfully verified";
+                    return RedirectToPage("result");
+                }
             }
-
-            TempData["resultHeader"] = "Error";
-            TempData["result"] =
-                @"Looks like the link you used has expired or already been used. Request a new password in the app to verify your email.";
+            catch (Exception)
+            {
+                TempData["resultHeader"] = "Error";
+                TempData["result"] =
+                    @"Looks like the link you used has expired or already been used. Request a new password in the app to verify your email.";
+            }
+            
             return RedirectToPage("result");
         }
     }

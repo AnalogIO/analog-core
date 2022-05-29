@@ -1,0 +1,26 @@
+﻿version: "3.8"
+
+services:
+  psql:
+    image: postgres:13.5
+    container_name: psql
+    hostname: psql
+    environment:
+      POSTGRES_PASSWORD: LocalDB(!)Password
+      POSTGRES_DB: coffeecard
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+  
+  webapi:    
+    container_name: coffeecard-api
+    build:
+      context: .
+      dockerfile: CoffeeCard.WebApi/Dockerfile
+    depends_on: [ psql ]
+    ports:
+      - 8080:80
+      - 8001:443
+    volumes:
+      - ./CoffeeCard.WebApi/appsettings.json:/app/appsettings.json
+      - ~/.aspnet/https:/https:ro

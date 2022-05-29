@@ -13,25 +13,28 @@
 | `CoffeeCard.Tests.Unit`                 	| Unit tests                                                                                                       	|
 | `CoffeeCard.WebApi`                     	| WebAPI project with controllers and API specific classes.  
 
-## Configuration and running the solution
+## Configuration
 
-### Compiletime dependencies
-
-In order to build the solution, the following prerequisites are expected to be present in the root of the `CoffeeCard` project folder:
+The CoffeeCard WebApi solution has a few runtime dependencies. The following prerequisites are expected to be present in the root of the `CoffeeCard.WebApi` project folder at runtime:
 
 - Application configuration (`appsettings.json`)
 - MobilePay certificate for backend communications
 
-**These dependencies should be supplied with mock data when developing locally**
+Local development versions of the above are checked into the codebase.
 
-## Running the solution using Docker
+## Run the solution locally
 
-The Coffeecard solution can be built and run using Docker. 
+The Coffeecard WebApi solution can be built and run locally using Docker. A `docker-compose` file is provided in the coffeecard folder. The Docker Compose contains a MSSQL database server image and a reference to the WebApi Dockerfile.
 
-Build the `Dockerfile` with the following command
+The solution will use the MSSQL database run in the Docker Compose if the default `appsettings.json` configuration file is used. The WebApi will be available at `localhost:8080`.
+
+The solution is built and run using the following commands
 ```bash
-docker build -t coffeecard-webapi
+docker-compose build
+docker-compose up
 ```
+
+### Setting up https
 
 To run the container over HTTPS, a self-signed certificate has to be created. This can setup using the guide [Developing ASP.NET Core Applications with Docker over HTTPS](https://github.com/dotnet/dotnet-docker/blob/main/samples/run-aspnetcore-https-development.md#building-and-running-the-sample-with-https) or using the commands:
 ```bash

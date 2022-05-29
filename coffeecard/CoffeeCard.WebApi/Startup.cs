@@ -4,9 +4,12 @@ using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services;
+using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.MobilePay.Client;
-using CoffeeCard.MobilePay.Service;
+using CoffeeCard.MobilePay.Service.v1;
+using CoffeeCard.MobilePay.Service.v2;
+using CoffeeCard.MobilePay.Utils;
 using CoffeeCard.WebApi.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -24,32 +27,40 @@ using Newtonsoft.Json.Converters;
 using NJsonSchema.Generation;
 using NSwag;
 using NSwag.Generation.Processors.Security;
+using AccountService = CoffeeCard.Library.Services.AccountService;
+using IAccountService = CoffeeCard.Library.Services.IAccountService;
+using IPurchaseService = CoffeeCard.Library.Services.IPurchaseService;
+using ITicketService = CoffeeCard.Library.Services.ITicketService;
+using PurchaseService = CoffeeCard.Library.Services.PurchaseService;
+using TicketService = CoffeeCard.Library.Services.TicketService;
 
 namespace CoffeeCard.WebApi
 {
 #pragma warning disable CS1591
     public class Startup
     {
+        private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _environment;
+        
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
-            Configuration = configuration;
-            Environment = env;
+            _configuration = configuration;
+            _environment = env;
         }
-
-        public IConfiguration Configuration { get; }
-        public IWebHostEnvironment Environment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddConfigurationSettings(_configuration);
+            
             // Setup database connection
-            var databaseSettings = Configuration.GetSection("DatabaseSettings").Get<DatabaseSettings>();
+            var databaseSettings = _configuration.GetSection("DatabaseSettings").Get<DatabaseSettings>();
             services.AddDbContext<CoffeeCardContext>(opt =>
                 opt.UseSqlServer(databaseSettings.ConnectionString,
                     c => c.MigrationsHistoryTable("__EFMigrationsHistory", databaseSettings.SchemaName)));
 
             // Setup Dependency Injection
-            services.AddSingleton(Environment);
+            services.AddSingleton(_environment);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IHashService, HashService>();
             services.AddTransient<ITokenService, TokenService>();
@@ -66,10 +77,21 @@ namespace CoffeeCard.WebApi
             services.AddScoped<IAppConfigService, AppConfigService>();
             services.AddScoped<ClaimsUtilities>();
             services.AddHttpClient<IMobilePayApiHttpClient, MobilePayApiHttpClient>();
-            services.AddSingleton(Environment.ContentRootFileProvider);
+            services.AddSingleton(_environment.ContentRootFileProvider);
+
+            services.AddScoped<Library.Services.v2.IPurchaseService, Library.Services.v2.PurchaseService>();
+            services.AddScoped<Library.Services.v2.ITicketService, Library.Services.v2.TicketService>();
+            services.AddMobilePayHttpClients(_configuration.GetSection("MobilePaySettingsV2").Get<MobilePaySettingsV2>());
+            services.AddScoped<IMobilePayPaymentsService, MobilePayPaymentsService>();
+            services.AddScoped<IMobilePayWebhooksService, MobilePayWebhooksService>();
+            services.AddScoped<IWebhookService, WebhookService>();
 
             // Setup filter to catch outgoing exceptions
-            services.AddControllers(options => { options.Filters.Add(new ApiExceptionFilter()); })
+            services.AddControllers(options =>
+                {
+                    options.Filters.Add(new ApiExceptionFilter());
+                    options.Filters.Add(new ReadableBodyFilter());
+                })
                 // Setup Json Serializing
                 .AddNewtonsoftJson(options =>
                 {
@@ -97,9 +119,10 @@ namespace CoffeeCard.WebApi
 
             // Setup razor pages
             services.AddRazorPages();
+            services.AddServerSideBlazor();
 
             // Setup Authentication
-            var identitySettings = Configuration.GetSection("IdentitySettings").Get<IdentitySettings>();
+            var identitySettings = _configuration.GetSection("IdentitySettings").Get<IdentitySettings>();
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = "bearer";
@@ -126,16 +149,6 @@ namespace CoffeeCard.WebApi
                     }
                 };
             });
-
-            services.UseConfigurationValidation();
-
-            // Parse and setup settings from configuration
-            services.ConfigureValidatableSetting<DatabaseSettings>(Configuration.GetSection("DatabaseSettings"));
-            services.ConfigureValidatableSetting<EnvironmentSettings>(Configuration.GetSection("EnvironmentSettings"));
-            services.ConfigureValidatableSetting<LoginLimiterSettings>(Configuration.GetSection("LoginLimiterSettings"));
-            services.ConfigureValidatableSetting<IdentitySettings>(Configuration.GetSection("IdentitySettings"));
-            services.ConfigureValidatableSetting<MailgunSettings>(Configuration.GetSection("MailgunSettings"));
-            services.ConfigureValidatableSetting<MobilePaySettings>(Configuration.GetSection("MobilePaySettings"));
         }
 
         
@@ -194,32 +207,39 @@ namespace CoffeeCard.WebApi
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)
         {
+            // Important note!
+            // The order of the below app configuration is sensitive and should be changed with care
+            // UsePathBase must be first as several subsequent configuration depends on it
+            app.UsePathBase("/coffeecard");
+
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();
             else
                 app.UseHsts();
 
             app.UseOpenApi();
-
             app.UseSwaggerUi3();
-            app.UseReDoc(config =>
-            {
-                config.Path = "/redoc";
-            });
+
+            app.UseHttpsRedirection();
+
+            app.UseStaticFiles();
 
             app.UseRouting();
 
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseHttpsRedirection();
-
-            app.UseStaticFiles();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
                 endpoints.MapRazorPages();
                 endpoints.MapFallbackToPage("/result");
+            });
+            
+            // Enable Request Buffering so that a raw request body can be read after aspnet model binding
+            app.Use(next => context => {
+                context.Request.EnableBuffering();
+                return next(context);
             });
         }
     }
