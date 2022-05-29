@@ -6,7 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CoffeeCard.Models.Entities
 {
-    [Index(nameof(OrderId), IsUnique = true)]
+    // TODO Should me marked as unique
+    [Index(nameof(OrderId))]
     [Index(nameof(TransactionId))]
     public class Purchase
     {
