@@ -79,6 +79,7 @@ namespace CoffeeCard.Library.Services.v2
                 Id = purchase.Id,
                 DateCreated = purchase.DateCreated,
                 ProductId = product.Id,
+                ProductName = product.Name,
                 TotalAmount = purchase.Price,
                 PurchaseStatus = purchase.Status,
                 PaymentDetails = paymentDetails

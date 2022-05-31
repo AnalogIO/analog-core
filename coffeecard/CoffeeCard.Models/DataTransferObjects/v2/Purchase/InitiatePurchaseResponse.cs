@@ -11,6 +11,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
     ///     "id": 122,
     ///     "dateCreated": "",
     ///     "productId": 1,
+    ///     "productName": "Coffee",
     ///     "totalAmount": 100,
     ///     "purchaseStatus": "PendingPayment",
     ///     "paymentDetails": {
@@ -46,6 +47,14 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <example>1</example>
         [Required]
         public int ProductId { get; set; }
+
+        /// <summary>
+        /// Name of the product to be purchased
+        /// </summary>
+        /// <value>Coffee</value>
+        /// <example>Coffee</example>
+        [Required]
+        public string ProductName { get; set; }
         
         /// <summary>
         /// The amount of money to be collected by the purchase.
