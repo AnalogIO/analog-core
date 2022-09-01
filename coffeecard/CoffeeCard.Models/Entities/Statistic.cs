@@ -22,24 +22,5 @@ namespace CoffeeCard.Models.Entities
 
         [ForeignKey("User_Id")]
         public virtual User User { get; set; }
-
-        public static DateTime[] PresetToDateArr(string preset)
-        {
-            if (preset.Equals("semester"))
-            {
-                var semesterStart = SemesterUtils.GetSemesterStart(DateTime.UtcNow);
-                var semesterEnd = SemesterUtils.GetSemesterEnd(DateTime.UtcNow);
-                return new[] { semesterStart, semesterEnd };
-            }
-
-            if (preset.Equals("month"))
-            {
-                var monthStart = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1);
-                var monthEnd = monthStart.AddMonths(1);
-                return new[] { monthStart, monthEnd };
-            }
-
-            return new DateTime[0];
-        }
     }
 }

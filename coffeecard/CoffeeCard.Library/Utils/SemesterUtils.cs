@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CoffeeCard.Models.Entities
+namespace CoffeeCard.Library.Utils
 {
     public class SemesterUtils
     {

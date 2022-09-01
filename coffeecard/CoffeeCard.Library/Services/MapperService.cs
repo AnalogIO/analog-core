@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.DataTransferObjects.Product;
 using CoffeeCard.Models.DataTransferObjects.Programme;
 using CoffeeCard.Models.DataTransferObjects.Purchase;
@@ -52,8 +53,8 @@ namespace CoffeeCard.Library.Services
             return new UserDto
             {
                 Email = user.Email, Id = user.Id, Name = user.Name, PrivacyActivated = user.PrivacyActivated,
-                ProgrammeId = user.Programme?.Id, Level = user.CalculateLevelFromXp(),
-                RequiredExp = user.CalculateRequiredXpByLevel()
+                ProgrammeId = user.Programme?.Id, Level = StatisticUils.CalculateLevelFromXp(user.Experience),
+                RequiredExp = StatisticUils.CalculateRequiredXpByLevel(user.Experience)
             };
         }
 

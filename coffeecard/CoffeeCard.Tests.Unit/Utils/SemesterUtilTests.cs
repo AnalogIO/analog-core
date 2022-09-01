@@ -1,8 +1,8 @@
 ﻿using System;
-using CoffeeCard.Models.Entities;
+using CoffeeCard.Library.Utils;
 using Xunit;
 
-namespace CoffeeCard.Tests.Unit.Models
+namespace CoffeeCard.Tests.Unit.Utils
 {
     public class SemesterUtilTests
     {
