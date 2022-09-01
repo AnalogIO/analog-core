@@ -88,8 +88,8 @@ namespace CoffeeCard.Models.Entities
             totalStatistics.LastSwipe = utcNow;
 
             // semester statistics
-            var semesterStart = Statistic.GetSemesterStart(utcNow);
-            var semesterEnd = Statistic.GetSemesterEnd(utcNow);
+            var semesterStart = SemesterUtils.GetSemesterStart(utcNow);
+            var semesterEnd = SemesterUtils.GetSemesterEnd(utcNow);
             var semesterStatistics = Statistics.FirstOrDefault(x => x.Preset == StatisticPreset.Semester);
 
             if (semesterStatistics == null)
