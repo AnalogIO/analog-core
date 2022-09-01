@@ -2,7 +2,7 @@
 
 namespace CoffeeCard.Library.Utils
 {
-    public class StatisticUils
+    public static class StatisticUtils
     {
         public static int CalculateLevelFromXp(int userExperience)
         {

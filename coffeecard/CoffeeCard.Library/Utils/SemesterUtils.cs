@@ -2,7 +2,7 @@
 
 namespace CoffeeCard.Library.Utils
 {
-    public class SemesterUtils
+    public static class SemesterUtils
     {
         /// <summary>
         /// Get the start of date of the semester.

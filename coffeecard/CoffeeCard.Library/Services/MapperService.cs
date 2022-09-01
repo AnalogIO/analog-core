@@ -53,8 +53,8 @@ namespace CoffeeCard.Library.Services
             return new UserDto
             {
                 Email = user.Email, Id = user.Id, Name = user.Name, PrivacyActivated = user.PrivacyActivated,
-                ProgrammeId = user.Programme?.Id, Level = StatisticUils.CalculateLevelFromXp(user.Experience),
-                RequiredExp = StatisticUils.CalculateRequiredXpByLevel(user.Experience)
+                ProgrammeId = user.Programme?.Id, Level = StatisticUtils.CalculateLevelFromXp(user.Experience),
+                RequiredExp = StatisticUtils.CalculateRequiredXpByLevel(user.Experience)
             };
         }
 
