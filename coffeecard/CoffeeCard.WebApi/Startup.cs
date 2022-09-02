@@ -73,7 +73,7 @@ namespace CoffeeCard.WebApi
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ITicketService, TicketService>();
             services.AddScoped<IMobilePayService, MobilePayService>();
-            services.AddScoped<ILeaderboardService, LeaderboardService>();
+            services.AddScoped<Library.Services.ILeaderboardService, Library.Services.LeaderboardService>();
             services.AddScoped<IAppConfigService, AppConfigService>();
             services.AddScoped<ClaimsUtilities>();
             services.AddHttpClient<IMobilePayApiHttpClient, MobilePayApiHttpClient>();
@@ -85,6 +85,8 @@ namespace CoffeeCard.WebApi
             services.AddScoped<IMobilePayPaymentsService, MobilePayPaymentsService>();
             services.AddScoped<IMobilePayWebhooksService, MobilePayWebhooksService>();
             services.AddScoped<IWebhookService, WebhookService>();
+            services.AddScoped<Library.Services.v2.ILeaderboardService, Library.Services.v2.LeaderboardService>();
+            services.AddScoped<IStatisticService, StatisticService>();
 
             // Setup filter to catch outgoing exceptions
             services.AddControllers(options =>
