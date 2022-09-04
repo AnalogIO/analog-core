@@ -46,7 +46,13 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       shell: powershell
       run: |
-        .\.sonar\scanner\dotnet-sonarscanner begin /k:"AnalogIO_analog-core" /o:"analogio" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-        dotnet build coffeecard/
-        dotnet test --collect "Code Coverage" coffeecard/
+        .\.sonar\scanner\dotnet-sonarscanner begin /k:"AnalogIO_analog-core" /o:"analogio" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="coverageunit.xml,coverageintegration.xml"
+        
+        dotnet tool install --global coverlet.console
+
+        dotnet build --no-incremental coffeecard/
+
+        coverlet ./coffeecard/CoffeeCard.Tests.Unit/bin/Debug/netcoreapp3.1/CoffeeCard.Tests.Unit.dll --target "dotnet" --targetargs "test --no-build coffeecard/CoffeeCard.Tests.Unit" -f=opencover -o="coverageunit.xml"
+        coverlet ./coffeecard/CoffeeCard.Tests.Integration/bin/Debug/netcoreapp3.1/CoffeeCard.Tests.Integration.dll --target "dotnet" --targetargs "test --no-build coffeecard/CoffeeCard.Tests.Integration" -f=opencover -o="coverageintegration.xml"
+
         .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"

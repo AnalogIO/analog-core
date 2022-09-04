@@ -1,4 +1,6 @@
-﻿namespace CoffeeCard.Models.DataTransferObjects.v2.Leaderboard
+﻿using System;
+
+namespace CoffeeCard.Models.DataTransferObjects.v2.Leaderboard
 {
     /// <summary>
     /// A user on the leaderboard
@@ -7,10 +9,11 @@
     /// {
     ///     "id": "1",
     ///     "name": "John Doe",
+    ///     "rank": 2,
     ///     "score": 25
     /// }
     /// </example>
-    public class LeaderboardEntry
+    public sealed class LeaderboardEntry : IEquatable<LeaderboardEntry>
     {
         /// <summary>
         /// Account Id
@@ -27,10 +30,37 @@
         public string Name { get; set; }
         
         /// <summary>
+        /// Leaderboard rank
+        /// </summary>
+        /// <value>Rank</value>
+        /// <example>2</example>
+        public int Rank { get; set; }
+        
+        /// <summary>
         /// Account score
         /// </summary>
         /// <value>Account score</value>
         /// <example>25</example>
         public int Score { get; set; }
+
+#pragma warning disable CS1591
+        public bool Equals(LeaderboardEntry other)
+        {
+            return other != null && Id == other.Id && Name == other.Name && Rank == other.Rank && Score == other.Score;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((LeaderboardEntry) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Id, Name, Rank, Score);
+        }
+#pragma warning restore CS1591
     }
 }

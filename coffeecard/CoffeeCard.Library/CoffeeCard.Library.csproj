@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="MailKit" Version="2.5.1" />
+        <PackageReference Include="MailKit" Version="2.15.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.13">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -33,10 +33,6 @@
       <ProjectReference Include="..\CoffeeCard.Common\CoffeeCard.Common.csproj" />
       <ProjectReference Include="..\CoffeeCard.MobilePay\CoffeeCard.MobilePay.csproj" />
       <ProjectReference Include="..\CoffeeCard.Models\CoffeeCard.Models.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="MailKit" Version="3.0.0" />
     </ItemGroup>
 
 </Project>

@@ -26,9 +26,9 @@ namespace CoffeeCard.Library.Services
             {
                 (int)StatisticPreset.Total => s => s.Preset == StatisticPreset.Total,
                 (int)StatisticPreset.Semester => s => s.Preset == StatisticPreset.Semester &&
-                                                      SemesterUtils.ValidateExpiredSemester(s.LastSwipe, DateTime.Now),
+                                                      SemesterUtils.IsSwipeValidInSemester(s.LastSwipe, DateTime.Now),
                 (int)StatisticPreset.Monthly => s => s.Preset == StatisticPreset.Monthly &&
-                                                     SemesterUtils.ValidateExpiredMonthly(s.LastSwipe, DateTime.Now),
+                                                     SemesterUtils.IsSwipeValidInMonth(s.LastSwipe, DateTime.Now),
                 _ => throw new ApiException("Not a correct preset was given", StatusCodes.Status400BadRequest)
             };
 
@@ -58,13 +58,13 @@ namespace CoffeeCard.Library.Services
 
             var semesterUsers = _context.Statistics.Include(x => x.User)
                 .AsEnumerable()
-                .Where(s => s.Preset == StatisticPreset.Semester && SemesterUtils.ValidateExpiredSemester(s.LastSwipe, DateTime.Now))
+                .Where(s => s.Preset == StatisticPreset.Semester && SemesterUtils.IsSwipeValidInSemester(s.LastSwipe, DateTime.Now))
                 .OrderByDescending(x => x.SwipeCount).ThenBy(x => x.LastSwipe).ToList();
             var semesterSwipeRank = semesterUsers.FindIndex(x => x.User.Id == user.Id) + 1;
 
             var monthUsers = _context.Statistics.Include(x => x.User)
                 .AsEnumerable()
-                .Where(s => s.Preset == StatisticPreset.Monthly && SemesterUtils.ValidateExpiredMonthly(s.LastSwipe, DateTime.Now))
+                .Where(s => s.Preset == StatisticPreset.Monthly && SemesterUtils.IsSwipeValidInMonth(s.LastSwipe, DateTime.Now))
                 .OrderByDescending(x => x.SwipeCount).ThenBy(x => x.LastSwipe).ToList();
             var monthSwipeRank = monthUsers.FindIndex(x => x.User.Id == user.Id) + 1;
 
