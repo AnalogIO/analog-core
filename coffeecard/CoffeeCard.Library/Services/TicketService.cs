@@ -5,6 +5,7 @@ using System.Security.Claims;
 using CoffeeCard.Common;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
+using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Models.DataTransferObjects.CoffeeCard;
 using CoffeeCard.Models.DataTransferObjects.Ticket;
 using CoffeeCard.Models.Entities;
@@ -17,16 +18,16 @@ namespace CoffeeCard.Library.Services
     public class TicketService : ITicketService
     {
         private readonly IAccountService _accountService;
-
         private readonly IProductService _productService;
-
+        private readonly IStatisticService _statisticService;
         private readonly CoffeeCardContext _context;
 
-        public TicketService(CoffeeCardContext context, IAccountService accountService, IProductService productService)
+        public TicketService(CoffeeCardContext context, IAccountService accountService, IProductService productService, IStatisticService statisticService)
         {
             _context = context;
             _accountService = accountService;
             _productService = productService;
+            _statisticService = statisticService;
         }
 
         public IEnumerable<Ticket> GetTickets(IEnumerable<Claim> claims, bool used)
@@ -195,8 +196,7 @@ namespace CoffeeCard.Library.Services
 
         private void UpdateUserRank(int userId, int tickets)
         {
-            var user = _context.Users.Include(x => x.Statistics).FirstOrDefault(x => x.Id == userId);
-            user?.IncreaseStatisticsBy(tickets);
+            _statisticService.IncreaseStatisticsBy(userId, tickets);
         }
     }
 }
