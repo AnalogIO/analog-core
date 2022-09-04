@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using CoffeeCard.Common;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
@@ -38,7 +39,7 @@ namespace CoffeeCard.Library.Services
             return _context.Tickets.Include(p => p.Purchase).Where(x => x.Owner.Id == id && x.IsUsed == used);
         }
 
-        public Ticket UseTicket(IEnumerable<Claim> claims, int productId)
+        public async Task<Ticket> UseTicket(IEnumerable<Claim> claims, int productId)
         {
             var userIdClaim = claims.FirstOrDefault(x => x.Type == Constants.UserId);
             if (userIdClaim == null) throw new ApiException("The token is invalid!", 401);
@@ -51,14 +52,14 @@ namespace CoffeeCard.Library.Services
             var usedTicket = ValidateTicket(ticketId, userId);
 
             UpdateTicket(usedTicket);
-            UpdateUserRank(userId, 1);
+            await UpdateUserRank(userId, 1);
 
             _context.SaveChanges();
 
             return usedTicket;
         }
 
-        public IEnumerable<Ticket> UseMultipleTickets(IEnumerable<Claim> claims, UseMultipleTicketDto dto)
+        public async Task<IEnumerable<Ticket>> UseMultipleTickets(IEnumerable<Claim> claims, UseMultipleTicketDto dto)
         {
             //Throws exception if the list is empty
             if (!dto.ProductIds.Any()) throw new ApiException("The list is empty", StatusCodes.Status400BadRequest);
@@ -97,7 +98,7 @@ namespace CoffeeCard.Library.Services
                     countTicketForRank++;
             }
 
-            UpdateUserRank(userId, countTicketForRank);
+            await UpdateUserRank(userId, countTicketForRank);
 
             // only save changes if all tickets was successfully used!
             if (usedTickets.Count == tickets.Count)
@@ -194,9 +195,9 @@ namespace CoffeeCard.Library.Services
             return product?.ExperienceWorth ?? 0;
         }
 
-        private void UpdateUserRank(int userId, int tickets)
+        private async Task UpdateUserRank(int userId, int tickets)
         {
-            _statisticService.IncreaseStatisticsBy(userId, tickets);
+            await _statisticService.IncreaseStatisticsBy(userId, tickets);
         }
     }
 }
