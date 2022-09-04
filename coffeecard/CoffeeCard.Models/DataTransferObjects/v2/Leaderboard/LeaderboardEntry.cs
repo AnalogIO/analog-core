@@ -13,7 +13,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Leaderboard
     ///     "score": 25
     /// }
     /// </example>
-    public class LeaderboardEntry
+    public class LeaderboardEntry : IEquatable<LeaderboardEntry>
     {
         /// <summary>
         /// Account Id
@@ -43,9 +43,10 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Leaderboard
         /// <example>25</example>
         public int Score { get; set; }
 
-        protected bool Equals(LeaderboardEntry other)
+#pragma warning disable CS1591
+        public bool Equals(LeaderboardEntry other)
         {
-            return Id == other.Id && Name == other.Name && Rank == other.Rank && Score == other.Score;
+            return other != null && Id == other.Id && Name == other.Name && Rank == other.Rank && Score == other.Score;
         }
 
         public override bool Equals(object obj)
@@ -60,5 +61,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Leaderboard
         {
             return HashCode.Combine(Id, Name, Rank, Score);
         }
+#pragma warning restore CS1591
     }
 }
