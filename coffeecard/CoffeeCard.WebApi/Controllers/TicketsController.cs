@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Services;
 using CoffeeCard.Models.DataTransferObjects.Ticket;
@@ -58,9 +59,9 @@ namespace CoffeeCard.WebApi.Controllers
         [ProducesResponseType(typeof(List<TicketDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiException), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-        public ActionResult<List<TicketDto>> UseMultipleTickets([FromBody] UseMultipleTicketDto dto)
+        public async Task<ActionResult<List<TicketDto>>> UseMultipleTickets([FromBody] UseMultipleTicketDto dto)
         {
-            var usedTickets = _ticketService.UseMultipleTickets(User.Claims, dto);
+            var usedTickets = await _ticketService.UseMultipleTickets(User.Claims, dto);
             return Ok(_mapperService.Map(usedTickets));
         }
         
@@ -76,9 +77,9 @@ namespace CoffeeCard.WebApi.Controllers
         [ProducesResponseType(typeof(ApiException), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [HttpPost("use")]
-        public ActionResult<TicketDto> Use([FromBody] UseTicketDTO dto)
+        public async Task<ActionResult<TicketDto>> Use([FromBody] UseTicketDTO dto)
         {
-            var usedTicket = _ticketService.UseTicket(User.Claims, dto.ProductId);
+            var usedTicket = await _ticketService.UseTicket(User.Claims, dto.ProductId);
             return Ok(_mapperService.Map(usedTicket));
         }
     }
