@@ -35,21 +35,21 @@ namespace CoffeeCard.Library.Utils
         /// </summary>
         /// <param name="lastSwipe">Last swipe</param>
         /// <param name="now">Current DateTime</param>
-        /// <returns>Expired if the year and month of lastSwipe is equal to now's</returns>
-        public static bool ValidateExpiredMonthly(DateTime lastSwipe, DateTime now)
+        /// <returns>Valid if the year and month of lastSwipe is equal to now's year and month, else expired</returns>
+        public static bool IsSwipeValidInMonth(DateTime lastSwipe, DateTime now)
         {
             return lastSwipe.Year == now.Year && lastSwipe.Month == now.Month;
         }
 
         /// <summary>
-        /// Validate if swipe is expired compared by semester start
+        /// Validate if swipe is expired compared by semester start and semester end
         /// </summary>
         /// <param name="lastSwipe">Last swipe</param>
         /// <param name="now">Current DateTime</param>
-        /// <returns>Expired if last swipe is after or equal to semester start</returns>
-        public static bool ValidateExpiredSemester(DateTime lastSwipe, DateTime now)
+        /// <returns>Valid if last swipe is equal to or within semester start and end, else expired</returns>
+        public static bool IsSwipeValidInSemester(DateTime lastSwipe, DateTime now)
         {
-            return lastSwipe >= GetSemesterStart(now);
+            return lastSwipe >= GetSemesterStart(now) && lastSwipe <= GetSemesterEnd(now);
         }
     }
 }

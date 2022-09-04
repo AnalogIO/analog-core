@@ -87,6 +87,7 @@ namespace CoffeeCard.WebApi
             services.AddScoped<IWebhookService, WebhookService>();
             services.AddScoped<Library.Services.v2.ILeaderboardService, Library.Services.v2.LeaderboardService>();
             services.AddScoped<IStatisticService, StatisticService>();
+            services.AddScoped<IDateTimeProvider, DateTimeProvider>();
 
             // Setup filter to catch outgoing exceptions
             services.AddControllers(options =>
