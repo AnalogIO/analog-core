@@ -13,7 +13,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Leaderboard
     ///     "score": 25
     /// }
     /// </example>
-    public class LeaderboardEntry : IEquatable<LeaderboardEntry>
+    public sealed class LeaderboardEntry : IEquatable<LeaderboardEntry>
     {
         /// <summary>
         /// Account Id
