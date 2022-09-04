@@ -51,7 +51,7 @@ jobs:
           /o:"analogio" 
           /d:sonar.login="${{ secrets.SONAR_TOKEN }}" 
           /d:sonar.host.url="https://sonarcloud.io" 
-          /d:sonar.cs.opencover.reportsPaths=coverageunit.xml,coverageintegration.xml
+          /d:sonar.cs.opencover.reportsPaths="coverageunit.xml,coverageintegration.xml"
         
         dotnet tool install --global coverlet.console
 
