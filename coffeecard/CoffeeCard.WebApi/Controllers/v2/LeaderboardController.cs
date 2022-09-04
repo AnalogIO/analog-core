@@ -36,7 +36,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <param name="top">Number of top results to return</param>
         /// <returns>Top leader board entries</returns>
         /// <response code="200">Top leader board entries</response>
-        [HttpGet(Name = "top")]
+        [HttpGet("top")]
         [ProducesResponseType(typeof(List<LeaderboardEntry>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<LeaderboardEntry>>> GetTopEntries([FromQuery] LeaderboardPreset preset = LeaderboardPreset.Semester, [FromQuery] int top = 10)
         {
