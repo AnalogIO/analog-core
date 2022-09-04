@@ -16,7 +16,7 @@ namespace CoffeeCard.Library.Services.v2
         Task<IEnumerable<LeaderboardEntry>> GetTopLeaderboardEntries(LeaderboardPreset preset, int top);
 
         /// <summary>
-        /// Get leaderboard entry for user
+        /// Get leaderboard entry for user. A user will have rank 0 if they do not have any valid swipes
         /// </summary>
         /// <param name="user">User</param>
         /// <param name="preset">Preset to filter</param>

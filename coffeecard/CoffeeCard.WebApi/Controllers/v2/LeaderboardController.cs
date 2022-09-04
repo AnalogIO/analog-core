@@ -44,7 +44,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         }
         
         /// <summary>
-        /// Get leaderboard stats for authenticated user
+        /// Get leaderboard stats for authenticated user. A user will have rank 0 if they do not have any valid swipes
         /// </summary>
         /// <param name="preset">Leaderboard preset for date filtering</param>
         /// <returns>Leader board entry for user</returns>
