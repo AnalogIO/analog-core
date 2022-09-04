@@ -28,7 +28,7 @@ namespace CoffeeCard.Library.Services.v2
                 .ToListAsync();
 
             var topStatistics = allStatisticsByPreset
-                .Where(s => ParsePresetAndCheckValidity(s, preset))
+                .Where(IsSwipeValid)
                 .OrderByDescending(s => s.SwipeCount)
                 .ThenBy(s => s.LastSwipe)
                 .Take(top);
@@ -49,7 +49,7 @@ namespace CoffeeCard.Library.Services.v2
                 .ToListAsync();
 
             var sortedStatistics = allStatisticsByPreset
-                .Where(s => ParsePresetAndCheckValidity(s, preset))
+                .Where(IsSwipeValid)
                 .OrderByDescending(s => s.SwipeCount)
                 .ThenBy(s => s.LastSwipe)
                 .ToList();
@@ -74,18 +74,15 @@ namespace CoffeeCard.Library.Services.v2
             };
         }
 
-        private bool ParsePresetAndCheckValidity(Statistic s, LeaderboardPreset preset)
+        private bool IsSwipeValid(Statistic s)
         {
             var now = _dateTimeProvider.UtcNow();
-            
-            return preset switch
+
+            return s.Preset switch
             {
-                LeaderboardPreset.Total => s.Preset == StatisticPreset.Total,
-                LeaderboardPreset.Semester => s.Preset == StatisticPreset.Semester &&
-                                              SemesterUtils.IsSwipeValidInSemester(s.LastSwipe, now),
-                LeaderboardPreset.Month => s.Preset == StatisticPreset.Monthly &&
-                                           SemesterUtils.IsSwipeValidInMonth(s.LastSwipe, now),
-                _ => true
+                StatisticPreset.Semester => SemesterUtils.IsSwipeValidInSemester(s.LastSwipe, now),
+                StatisticPreset.Monthly => SemesterUtils.IsSwipeValidInMonth(s.LastSwipe, now),
+                _ => true // For StatisticPreset.Total a swipe does not expire
             };
         }
     }
