@@ -58,15 +58,15 @@ jobs:
         dotnet build --no-incremental coffeecard/
 
         coverlet ./coffeecard/CoffeeCard.Tests.Unit/bin/Debug/netcoreapp3.1/CoffeeCard.Tests.Unit.dll
-        --target "dotnet"
-        --targetargs "test --no-build"
-        -f=opencover
+        --target "dotnet" ` 
+        --targetargs "test --no-build" ` 
+        -f=opencover ` 
         -o="coverageunit.xml"
 
         coverlet ./coffeecard/CoffeeCard.Tests.Unit/bin/Debug/netcoreapp3.1/CoffeeCard.Tests.Integration.dll
-        --target "dotnet"
-        --targetargs "test --no-build"
-        -f=opencover
+        --target "dotnet" ` 
+        --targetargs "test --no-build" ` 
+        -f=opencover ` 
         -o="coverageintegration.xml"
 
         .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
