@@ -33,9 +33,9 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// Gets the top leaderboard by the specified preset
         /// </summary>
         /// <param name="preset">Leaderboard preset for date filtering</param>
-        /// <param name="top">Number of results to return</param>
+        /// <param name="top">Number of top results to return</param>
         /// <returns>Top leader board entries</returns>
-        /// <response code="200">Successful request</response>
+        /// <response code="200">Top leader board entries</response>
         [HttpGet(Name = "top")]
         [ProducesResponseType(typeof(List<LeaderboardEntry>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<LeaderboardEntry>>> GetTopEntries([FromQuery] LeaderboardPreset preset = LeaderboardPreset.Semester, [FromQuery] int top = 10)
@@ -48,11 +48,11 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// </summary>
         /// <param name="preset">Leaderboard preset for date filtering</param>
         /// <returns>Leader board entry for user</returns>
-        /// <response code="200">Successful request</response>
+        /// <response code="200">Leaderboard entry for user</response>
         /// <response code="401">Invalid credentials</response>
         [HttpGet]
         [Authorize]
-        [ProducesResponseType(typeof(List<LeaderboardEntry>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(LeaderboardEntry), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<LeaderboardEntry>> Get([FromQuery] LeaderboardPreset preset = LeaderboardPreset.Semester)
         {
