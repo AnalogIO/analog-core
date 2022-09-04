@@ -24,6 +24,6 @@ jobs:
     - name: Run tests
       run: dotnet test coffeecard/ /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
     - name: Upload test coverage to Codecov
-      uses: codecov/codecov-action@v2.1.0
+      uses: codecov/codecov-action@v3.1.0
       with:
-        files: coffeecard/CoffeeCard.Tests.Integration/coverage.opencover.xml, coffeecard/CoffeeCard.Tests.Unit/coverage.opencover.xml
+        files: coffeecard/CoffeeCard.Tests.Integration/coverage.opencover.xml,coffeecard/CoffeeCard.Tests.Unit/coverage.opencover.xml
