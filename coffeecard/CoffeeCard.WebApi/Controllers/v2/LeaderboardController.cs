@@ -32,7 +32,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <summary>
         /// Gets the top leaderboard by the specified preset
         /// </summary>
-        /// <param name="preset">Leaderboard preset for date filtering</param>
+        /// <param name="preset">Leaderboard preset for date filtering. See <c>LeaderboardPreset</c> for possible values</param>
         /// <param name="top">Number of top results to return</param>
         /// <returns>Top leader board entries</returns>
         /// <response code="200">Top leader board entries</response>
@@ -42,11 +42,11 @@ namespace CoffeeCard.WebApi.Controllers.v2
         {
             return Ok(await _leaderboardService.GetTopLeaderboardEntries(preset, top));
         }
-        
+
         /// <summary>
         /// Get leaderboard stats for authenticated user. A user will have rank 0 if they do not have any valid swipes
         /// </summary>
-        /// <param name="preset">Leaderboard preset for date filtering</param>
+        /// <param name="preset">Leaderboard preset for date filtering. See <c>LeaderboardPreset</c> for possible values</param>
         /// <returns>Leader board entry for user</returns>
         /// <response code="200">Leaderboard entry for user</response>
         /// <response code="401">Invalid credentials</response>

@@ -23,8 +23,8 @@ namespace CoffeeCard.Library.Services.v2
         public async Task<IEnumerable<LeaderboardEntry>> GetTopLeaderboardEntries(LeaderboardPreset preset, int top)
         {
             var allStatisticsByPreset = await _context.Statistics
-                .Include(s => s.User)
                 .Where(s => s.Preset == preset.ToStatisticPreset())
+                .Include(s => s.User)
                 .ToListAsync();
 
             var topStatistics = allStatisticsByPreset
@@ -46,6 +46,7 @@ namespace CoffeeCard.Library.Services.v2
         {
             var allStatisticsByPreset = await _context.Statistics
                 .Where(s => s.Preset == preset.ToStatisticPreset())
+                .Include(s => s.User)
                 .ToListAsync();
 
             var sortedStatistics = allStatisticsByPreset
