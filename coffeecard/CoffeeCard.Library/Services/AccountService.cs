@@ -26,8 +26,10 @@ namespace CoffeeCard.Library.Services
         private readonly ITokenService _tokenService;
         private readonly ILoginLimiter _loginLimiter;
 
-        public AccountService(CoffeeCardContext context, EnvironmentSettings environmentSettings, ITokenService tokenService,
-            IEmailService emailService, IHashService hashService, IHttpContextAccessor httpContextAccessor, ILoginLimiter loginLimiter, LoginLimiterSettings loginLimiterSettings)
+        public AccountService(CoffeeCardContext context, EnvironmentSettings environmentSettings,
+            ITokenService tokenService,
+            IEmailService emailService, IHashService hashService, IHttpContextAccessor httpContextAccessor,
+            ILoginLimiter loginLimiter, LoginLimiterSettings loginLimiterSettings)
         {
             _context = context;
             _environmentSettings = environmentSettings;
@@ -51,35 +53,40 @@ namespace CoffeeCard.Library.Services
                 if (user.UserState == UserState.Deleted)
                 {
                     Log.Information("Login attempt with deleted user id = {id}", user.Id);
-                    throw new ApiException("The username or password does not match", StatusCodes.Status401Unauthorized);
+                    throw new ApiException("The username or password does not match",
+                        StatusCodes.Status401Unauthorized);
                 }
-                
+
                 if (!user.IsVerified)
                 {
                     Log.Information("E-mail not verified. E-mail = {username} from IP = {ipAddress} ", email,
                         _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
                     throw new ApiException("E-mail has not been verified", StatusCodes.Status403Forbidden);
                 }
-                
-                if (_loginLimiterSettings.IsEnabled && !_loginLimiter.LoginAllowed(user)) //Login limiter is only called if it is enabled in the settings
+
+                if (_loginLimiterSettings.IsEnabled &&
+                    !_loginLimiter.LoginAllowed(user)) //Login limiter is only called if it is enabled in the settings
                 {
-                    Log.Warning("Login attempts exceeding maximum allowed for e-mail = {username} from IP = {ipaddress} ", email,
+                    Log.Warning(
+                        "Login attempts exceeding maximum allowed for e-mail = {username} from IP = {ipaddress} ",
+                        email,
                         _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
-                    throw new ApiException($"Amount of failed login attempts exceeds the allowed amount, please wait for {_loginLimiterSettings.TimeOutPeriodInMinutes} minutes before trying again", StatusCodes.Status429TooManyRequests);
+                    throw new ApiException(
+                        $"Amount of failed login attempts exceeds the allowed amount, please wait for {_loginLimiterSettings.TimeOutPeriodInMinutes} minutes before trying again",
+                        StatusCodes.Status429TooManyRequests);
                 }
-                
+
                 var hashedPw = _hashService.Hash(password + user.Salt);
                 if (user.Password.Equals(hashedPw))
                 {
                     var claims = new[]
                     {
                         new Claim(ClaimTypes.Email, email), new Claim(ClaimTypes.Name, user.Name),
-                        new Claim("UserId", user.Id.ToString())
+                        new Claim("UserId", user.Id.ToString()),
+                        new Claim(ClaimTypes.Role, user.UserGroup.ToString() )
                     };
+                    
                     var token = _tokenService.GenerateToken(claims);
-
-                    // check for incomplete purchases //TODO Fix this and reimplement
-                    //_purchaseService.CheckIncompletePurchases(user);
 
                     _loginLimiter.ResetLoginAttemptsForUser(user);
 
@@ -102,7 +109,8 @@ namespace CoffeeCard.Library.Services
             {
                 Log.Information(
                     $"Could not register user Name: {registerDto.Name}. Email:{registerDto.Email} already exists");
-                throw new ApiException($"The email {registerDto.Email} is already being used by another user", StatusCodes.Status409Conflict);
+                throw new ApiException($"The email {registerDto.Email} is already being used by another user",
+                    StatusCodes.Status409Conflict);
             }
 
             var salt = _hashService.GenerateSalt();
@@ -110,7 +118,8 @@ namespace CoffeeCard.Library.Services
 
             //This can potentially be implemented again, but is just sat to 1 for now
             var programme = _context.Programmes.FirstOrDefault(x => x.Id == 1);
-            if (programme == null) throw new ApiException("No programme found with the id: 0", StatusCodes.Status400BadRequest);
+            if (programme == null)
+                throw new ApiException("No programme found with the id: 0", StatusCodes.Status400BadRequest);
 
             var user = new User
             {
@@ -147,6 +156,7 @@ namespace CoffeeCard.Library.Services
             user.IsVerified = true;
             return _context.SaveChanges() > 0;
         }
+
         public User UpdateAccount(IEnumerable<Claim> claims, UpdateUserDto userDto)
         {
             var user = GetAccountByClaims(claims);
@@ -168,8 +178,8 @@ namespace CoffeeCard.Library.Services
             if (userDto.PrivacyActivated != null)
             {
                 Log.Information(
-                    $"Changing privacy of user from {user.PrivacyActivated} to {(bool) userDto.PrivacyActivated}");
-                user.PrivacyActivated = (bool) userDto.PrivacyActivated;
+                    $"Changing privacy of user from {user.PrivacyActivated} to {(bool)userDto.PrivacyActivated}");
+                user.PrivacyActivated = (bool)userDto.PrivacyActivated;
             }
 
             if (userDto.ProgrammeId != null)
@@ -219,7 +229,8 @@ namespace CoffeeCard.Library.Services
         public async Task ForgotPasswordAsync(string email)
         {
             var user = GetAccountWithTokensByEmail(email);
-            if (user == null) throw new ApiException($"The user could not be found {email}", StatusCodes.Status404NotFound);
+            if (user == null)
+                throw new ApiException($"The user could not be found {email}", StatusCodes.Status404NotFound);
 
             var claims = new[]
             {
@@ -254,6 +265,7 @@ namespace CoffeeCard.Library.Services
             await _context.SaveChangesAsync();
             return true;
         }
+
         public async Task RequestAnonymization(User user)
         {
             var claims = new[]
@@ -262,10 +274,10 @@ namespace CoffeeCard.Library.Services
                 new Claim(ClaimTypes.Role, "verification_token")
             };
             var verificationToken = _tokenService.GenerateToken(claims);
-            
+
             await _emailService.SendVerificationEmailForDeleteAccount(user, verificationToken);
         }
-        
+
         public async void AnonymizeAccount(string token)
         {
             Log.Information($"Trying to verify deletion with token: {token}");
@@ -289,9 +301,9 @@ namespace CoffeeCard.Library.Services
             user.DateUpdated = DateTime.Now;
             user.PrivacyActivated = true;
             user.UserState = UserState.Deleted;
-            await _context.SaveChangesAsync();            
+            await _context.SaveChangesAsync();
         }
-        
+
         private User VerifyTokenClaimAndUser(string token)
         {
             var jwtToken = _tokenService.ReadToken(token);
