@@ -8,6 +8,11 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <summary>
         /// MobilePay App Payments
         /// </summary>
-        MobilePay
+        MobilePay,
+        
+        /// <summary>
+        /// Free product as Staff 
+        /// </summary>
+        StaffPerk
     }
 }
