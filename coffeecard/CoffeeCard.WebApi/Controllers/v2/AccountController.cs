@@ -2,8 +2,9 @@ using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Services;
 using CoffeeCard.Library.Utils;
-using CoffeeCard.Models.DataTransferObjects.User;
+using CoffeeCard.Models.DataTransferObjects;
 using CoffeeCard.Models.DataTransferObjects.v2.User;
+using CoffeeCard.Models.DataTransferObjects.V2.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -29,6 +30,27 @@ namespace CoffeeCard.WebApi.Controllers.v2
         {
             _accountService = accountService;
             _claimsUtilities = claimsUtilities;
+        }
+
+                /// <summary>
+        /// Register a new account. A account is required to verify its email before logging in
+        /// </summary>
+        /// <param name="registerDto">Register data object</param>
+        /// <response code="201">Successful account creation</response>
+        /// <response code="409">Email already registered</response>
+        [HttpPost("register")]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status409Conflict)]
+        public async Task<ActionResult<MessageResponseDto>> Register([FromBody] RegisterDto registerDto)
+        {
+            await _accountService.RegisterAccountAsync(registerDto.Name, registerDto.Email, registerDto.Password, registerDto.ProgrammeId);
+
+            return Created("get", new MessageResponseDto()
+            {
+                Message =
+                    "Your user has been created! Please check your email to verify your account.\n(Check your spam folder!)"
+            });
         }
 
         /// <summary>

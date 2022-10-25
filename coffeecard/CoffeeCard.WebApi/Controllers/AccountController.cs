@@ -48,7 +48,7 @@ namespace CoffeeCard.WebApi.Controllers
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status409Conflict)]
         public async Task<ActionResult<MessageResponseDto>> Register([FromBody] RegisterDto registerDto)
         {
-            await _accountService.RegisterAccountAsync(registerDto);
+            await _accountService.RegisterAccountAsync(registerDto.Name, registerDto.Email, registerDto.Password);
             return Created(nameof(Get), new MessageResponseDto()
             {
                 Message =
