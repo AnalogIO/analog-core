@@ -18,7 +18,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 {
     public class PurchaseServiceTests
     {
-        [Theory(DisplayName = "UserMayIssueFreeProduct throws error given bad ids")]
+        [Theory(DisplayName = "IssueFreeProduct throws error given bad ids")]
+        [InlineData(1,1)] // Paid product
         [InlineData(2,1)] // Bad UserId
         [InlineData(1,2)] // Bad ProductId
         [InlineData(1,3)] // Not matching UserGroups
@@ -53,20 +54,30 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 UserState = UserState.Active
             };
             context.Add(user);
-
+            
             var pug = new ProductUserGroup
+            {
+                ProductId = 1, UserGroup = UserGroup.Customer
+            };
+            context.Add(pug);
+            var product = new Product
+            {
+                Id = 1, Price = 100,
+                ProductUserGroup = new List<ProductUserGroup> { pug }
+            };
+
+            context.Add(product);
+            var pug2 = new ProductUserGroup
             {
                 ProductId = 3, UserGroup = UserGroup.Barista
             };
-
-            var product = new Product();
-            context.Add(product);
+            context.Add(pug2);
             var product2 = new Product
             {
                 Id = 3,
                 Name = "Test3",
             };
-            product2.ProductUserGroup = new List<ProductUserGroup> { pug };
+            product2.ProductUserGroup = new List<ProductUserGroup> { pug2 };
             context.Add(product2);
             
             await context.SaveChangesAsync();

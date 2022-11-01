@@ -285,6 +285,15 @@ namespace CoffeeCard.Library.Services.v2
                 throw new ApiException($"You do not have access to this product",
                     StatusCodes.Status403Forbidden);
             }
+            
+            if (product.Price != 0 ) //Product is not free
+            {
+                Log.Warning(
+                    "User tried to issue paid product to themselves, User {UserId}, Product {ProductId}",
+                    user.Id, product.Id);
+                throw new ApiException($"Product is not free",
+                    StatusCodes.Status403Forbidden);
+            }
 
             return new Tuple<User, Product>(user, product);
         }
