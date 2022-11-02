@@ -19,7 +19,6 @@ namespace CoffeeCard.WebApi.Helpers
         public void OnAuthorization(AuthorizationFilterContext context)
         {
             var user = context.HttpContext.User;
-
             var isAuthorized = false;
             foreach (var userGroup in _roles)
             {

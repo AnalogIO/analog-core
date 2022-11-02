@@ -111,6 +111,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(ApiException), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+        [Authorize]
         [AuthorizeRoles(UserGroup.Barista, UserGroup.Manager, UserGroup.Board)]
         [HttpPost("useFree")]
         public async Task<ActionResult<TicketDto>> UseFree([FromBody] UseTicketDTO dto)
