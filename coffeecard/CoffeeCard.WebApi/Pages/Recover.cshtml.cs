@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using CoffeeCard.Library.Services;
 using CoffeeCard.Models.PagesModels;
 using Microsoft.AspNetCore.Mvc;
@@ -25,9 +26,16 @@ namespace CoffeeCard.WebApi.Pages
 
         public async Task<IActionResult> OnGet()
         {
-            IsTokenValid = await _tokenService.ValidateToken(Token);
+            try
+            {
+                IsTokenValid = await _tokenService.ValidateTokenIsUnused(Token);
 
-            if (IsTokenValid) return Page();
+                if (IsTokenValid) return Page();
+            }
+            catch (Exception e)
+            {
+                // ignored
+            }
 
             TempData["resultHeader"] = "Error";
             TempData["result"] =
@@ -39,12 +47,15 @@ namespace CoffeeCard.WebApi.Pages
         {
             if (!ModelState.IsValid) return Page();
 
-            if (await _accountService.RecoverUserAsync(Token, PinCode.NewPinCode))
+            try
             {
-                TempData["resultHeader"] = "Success";
-                TempData["result"] = "Your password has now been reset";
+                if (await _accountService.RecoverUserAsync(Token, PinCode.NewPinCode))
+                {
+                    TempData["resultHeader"] = "Success";
+                    TempData["result"] = "Your password has now been reset";
+                }
             }
-            else
+            catch (Exception e)
             {
                 TempData["resultHeader"] = "Something went wrong";
                 TempData["result"] =
