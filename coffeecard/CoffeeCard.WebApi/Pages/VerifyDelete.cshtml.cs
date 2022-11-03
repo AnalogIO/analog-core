@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using CoffeeCard.Library.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -16,11 +17,11 @@ namespace CoffeeCard.WebApi.Pages
 
         [BindProperty(SupportsGet = true)] public string Token { get; set; }
 
-        public IActionResult OnGet()
+        public async Task<IActionResult> OnGet()
         {
             try
             {
-                _accountService.AnonymizeAccount(Token);
+                await _accountService.AnonymizeAccount(Token);
                 
                 TempData["resultHeader"] = "Success";
                 TempData["result"] = @"Your account has been successfully deleted";

@@ -44,9 +44,10 @@ namespace CoffeeCard.Library.Services
             return new JwtSecurityTokenHandler().ReadToken(token) as JwtSecurityToken;
         }
 
+        
         /// <summary>
-        ///     Receives the serialized version of a JWT token as a string. Checks if the JWT token is valid (Based on its lifetime
-        ///     and if it has been used before)
+        /// Receives the serialized version of a JWT token as a string.
+        /// Checks if the JWT token is valid (Based on its lifetime)
         /// </summary>
         /// <param name="tokenString"></param>
         /// <returns></returns>
@@ -54,14 +55,57 @@ namespace CoffeeCard.Library.Services
         {
             try
             {
-                var tokenNotUsed = false;
+                var securityKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(_identitySettings.TokenKey));
+
+                try
+                {
+                    var securityTokenHandler = new JwtSecurityTokenHandler();
+                    var validationParameters = new TokenValidationParameters
+                    {
+                        ValidateAudience = false,
+                        ValidateIssuer = false,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = securityKey,
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero //the default for this setting is 5 minutes
+                    };
+
+                    securityTokenHandler.ValidateToken(tokenString, validationParameters, out _); // Throws exception if token is invalid
+                }
+                catch (Exception e)
+                {
+                    Log.Information("Received invalid token");
+                    return false;
+                }
+
+                return true;
+            }
+            catch (ArgumentException e)
+            {
+                Log.Error($"Unable to read token. Exception thrown = {e}");
+                return false;
+            }
+        }
+        
+        /// <summary>
+        /// Receives the serialized version of a JWT token as a string.
+        /// Checks if the JWT token is valid (Based on its lifetime and if it has been used before)
+        /// </summary>
+        /// <param name="tokenString"></param>
+        /// <returns></returns>
+        public async Task<bool> ValidateTokenIsUnused(string tokenString)
+        {
+            try
+            {
+                var tokenIsUnused = false;
                 var token = ReadToken(tokenString);
 
                 var user = await _claimsUtilities.ValidateAndReturnUserFromEmailClaimAsync(token.Claims);
 
-                if (user.Tokens.Contains(new Token(tokenString))) tokenNotUsed = true;
+                if (user.Tokens.Contains(new Token(tokenString))) tokenIsUnused = true; // Tokens are removed from the user on account recovery
 
-                return token.ValidTo > DateTime.UtcNow && tokenNotUsed;
+                return await ValidateToken(tokenString) && tokenIsUnused;
             }
             catch (ArgumentException e)
             {
