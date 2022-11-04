@@ -13,7 +13,7 @@ namespace CoffeeCard.Models.DataTransferObjects.V2.User
     ///     "programme": 1
     /// }
     /// </example>
-    public class RegisterDto
+    public class RegisterAccountRequest
     {
         /// <summary>
         /// Full Name of user

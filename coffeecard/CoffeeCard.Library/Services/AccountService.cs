@@ -96,12 +96,11 @@ namespace CoffeeCard.Library.Services
 
         public async Task<User> RegisterAccountAsync(string name, string email, string password, int programme = 1)
         {
-            Log.Information($"Trying to register new user. Name: {name} Email: {email}");
+            Log.Information("Trying to register new user. Name: {name} Email: {email}", name, email);
 
             if (_context.Users.Any(x => x.Email == email))
             {
-                Log.Information(
-                    $"Could not register user Name: {name}. Email:{email} already exists");
+                Log.Information("Could not register user Name: {name}. Email:{email} already exists", name, email);
                 throw new ApiException($"The email {email} is already being used by another user", StatusCodes.Status409Conflict);
             }
 

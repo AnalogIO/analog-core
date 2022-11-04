@@ -32,21 +32,21 @@ namespace CoffeeCard.WebApi.Controllers.v2
             _claimsUtilities = claimsUtilities;
         }
 
-                /// <summary>
+        /// <summary>
         /// Register a new account. A account is required to verify its email before logging in
         /// </summary>
-        /// <param name="registerDto">Register data object</param>
-        /// <response code="201">Successful account creation</response>
+        /// <param name="registerRequest">Register data object</param>
+        /// <response code="201">Successful account creation. Verification request email sent to provided email</response>
         /// <response code="409">Email already registered</response>
         [HttpPost("register")]
         [AllowAnonymous]
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status409Conflict)]
-        public async Task<ActionResult<MessageResponseDto>> Register([FromBody] RegisterDto registerDto)
+        public async Task<ActionResult<MessageResponseDto>> Register([FromBody] RegisterAccountRequest registerRequest)
         {
-            await _accountService.RegisterAccountAsync(registerDto.Name, registerDto.Email, registerDto.Password, registerDto.ProgrammeId);
+            await _accountService.RegisterAccountAsync(registerRequest.Name, registerRequest.Email, registerRequest.Password, registerRequest.ProgrammeId);
 
-            return Created("get", new MessageResponseDto()
+            return Created("/api/v1/account/Get", new MessageResponseDto()
             {
                 Message =
                     "Your user has been created! Please check your email to verify your account.\n(Check your spam folder!)"
