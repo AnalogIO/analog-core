@@ -9,7 +9,11 @@ namespace CoffeeCard.Library.Services
     public interface IAccountService
     {
         User GetAccountByClaims(IEnumerable<Claim> claims);
-        // Programme 1 is SWU
+
+        /// <summary>
+        /// Register an account. Sends out an verification email to provided email
+        /// </summary>
+        /// <param name="programme">Programme Id of ITU Study programme. Default value is 1 (for SWU) for backwards compability</param>
         Task<User> RegisterAccountAsync(string name, string email, string password, int programme = 1);
         string Login(string email, string password, string version);
         bool VerifyRegistration(string token);
