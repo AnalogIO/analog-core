@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace CoffeeCard.Models.DataTransferObjects.V2.User
 {
     /// <summary>
-    /// Register a new user data object
+    /// Register a new user
     /// </summary>
     /// <example>
     /// {

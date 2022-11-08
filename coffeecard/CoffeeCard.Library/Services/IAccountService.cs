@@ -9,6 +9,7 @@ namespace CoffeeCard.Library.Services
     public interface IAccountService
     {
         User GetAccountByClaims(IEnumerable<Claim> claims);
+        // Programme 1 is SWU
         Task<User> RegisterAccountAsync(string name, string email, string password, int programme = 1);
         string Login(string email, string password, string version);
         bool VerifyRegistration(string token);

@@ -33,7 +33,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         }
 
         /// <summary>
-        /// Register a new account. A account is required to verify its email before logging in
+        /// Register data request. An account is required to verify its email before logging in
         /// </summary>
         /// <param name="registerRequest">Register data object</param>
         /// <response code="201">Successful account creation. Verification request email sent to provided email</response>

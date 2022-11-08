@@ -94,7 +94,7 @@ namespace CoffeeCard.Library.Services
                 StatusCodes.Status401Unauthorized);
         }
 
-        public async Task<User> RegisterAccountAsync(string name, string email, string password, int programme = 1)
+        public async Task<User> RegisterAccountAsync(string name, string email, string password, int programme)
         {
             Log.Information("Trying to register new user. Name: {name} Email: {email}", name, email);
 
@@ -121,8 +121,7 @@ namespace CoffeeCard.Library.Services
             };
 
             _context.Users.Add(user);
-            if (_context.SaveChanges() == 0)
-                throw new ApiException("The user could not be created - try again in a minute");
+            await _context.SaveChangesAsync();
 
             var claims = new[]
             {
