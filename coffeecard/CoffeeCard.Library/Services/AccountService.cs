@@ -142,7 +142,7 @@ namespace CoffeeCard.Library.Services
         {
             Log.Information($"Trying to verify registration with token: {token}");
 
-            var user = await VerifyTokenClaimAndUser(token);
+            var user = await VerifyTokenClaimAndUserAsync(token);
 
             user.IsVerified = true;
             return await _context.SaveChangesAsync() > 0;
@@ -238,7 +238,7 @@ namespace CoffeeCard.Library.Services
             if (tokenObj == null) return false;
 
             Log.Information($"User tried to recover with token {token}");
-            if (!await _tokenService.ValidateTokenIsUnused(token)) return false;
+            if (!await _tokenService.ValidateTokenIsUnusedAsync(token)) return false;
 
             var user = GetAccountByClaims(tokenObj.Claims);
             if (user == null) return false;
@@ -266,11 +266,11 @@ namespace CoffeeCard.Library.Services
             await _emailService.SendVerificationEmailForDeleteAccount(user, verificationToken);
         }
 
-        public async Task AnonymizeAccount(string token)
+        public async Task AnonymizeAccountAsync(string token)
         {
             Log.Information($"Trying to verify deletion with token: {token}");
 
-            var user = await VerifyTokenClaimAndUser(token);
+            var user = await VerifyTokenClaimAndUserAsync(token);
 
             await AnonymizeUser(user);
         }
@@ -292,9 +292,9 @@ namespace CoffeeCard.Library.Services
             await _context.SaveChangesAsync();
         }
 
-        private async Task<User> VerifyTokenClaimAndUser(string token)
+        private async Task<User> VerifyTokenClaimAndUserAsync(string token)
         {
-            if (await _tokenService.ValidateToken(token))
+            if (await _tokenService.ValidateTokenAsync(token))
             {
                 throw new ApiException("The token is invalid!", StatusCodes.Status401Unauthorized);
             }

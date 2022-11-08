@@ -51,7 +51,7 @@ namespace CoffeeCard.Library.Services
         /// </summary>
         /// <param name="tokenString"></param>
         /// <returns></returns>
-        public async Task<bool> ValidateToken(string tokenString)
+        public async Task<bool> ValidateTokenAsync(string tokenString)
         {
             try
             {
@@ -73,7 +73,8 @@ namespace CoffeeCard.Library.Services
 
                     securityTokenHandler.ValidateToken(tokenString, validationParameters, out _); // Throws exception if token is invalid
                 }
-                catch (Exception e)
+                catch (Exception e) when (e is ArgumentException ||
+                                          e is SecurityTokenException)
                 {
                     Log.Information("Received invalid token");
                     return false;
@@ -83,7 +84,7 @@ namespace CoffeeCard.Library.Services
             }
             catch (ArgumentException e)
             {
-                Log.Error($"Unable to read token. Exception thrown = {e}");
+                Log.Error("Unable to read token. Exception thrown = {}", e);
                 return false;
             }
         }
@@ -94,7 +95,7 @@ namespace CoffeeCard.Library.Services
         /// </summary>
         /// <param name="tokenString"></param>
         /// <returns></returns>
-        public async Task<bool> ValidateTokenIsUnused(string tokenString)
+        public async Task<bool> ValidateTokenIsUnusedAsync(string tokenString)
         {
             try
             {
@@ -105,11 +106,11 @@ namespace CoffeeCard.Library.Services
 
                 if (user.Tokens.Contains(new Token(tokenString))) tokenIsUnused = true; // Tokens are removed from the user on account recovery
 
-                return await ValidateToken(tokenString) && tokenIsUnused;
+                return await ValidateTokenAsync(tokenString) && tokenIsUnused;
             }
             catch (ArgumentException e)
             {
-                Log.Error($"Unable to read token. Exception thrown = {e}");
+                Log.Error("Unable to read token. Exception thrown = {}", e);
                 return false;
             }
         }

@@ -28,7 +28,7 @@ namespace CoffeeCard.WebApi.Pages
         {
             try
             {
-                IsTokenValid = await _tokenService.ValidateTokenIsUnused(Token);
+                IsTokenValid = await _tokenService.ValidateTokenIsUnusedAsync(Token);
 
                 if (IsTokenValid) return Page();
             }

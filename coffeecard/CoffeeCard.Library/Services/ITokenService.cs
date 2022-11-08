@@ -9,7 +9,7 @@ namespace CoffeeCard.Library.Services
     {
         string GenerateToken(IEnumerable<Claim> claims);
         JwtSecurityToken ReadToken(string token);
-        Task<bool> ValidateToken(string tokenString);
-        Task<bool> ValidateTokenIsUnused(string tokenString);
+        Task<bool> ValidateTokenAsync(string tokenString);
+        Task<bool> ValidateTokenIsUnusedAsync(string tokenString);
     }
 }

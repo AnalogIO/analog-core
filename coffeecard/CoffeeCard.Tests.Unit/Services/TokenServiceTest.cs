@@ -68,7 +68,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 _context.SaveChanges();
 
                 // Act
-                result = await tokenService.ValidateTokenIsUnused("Bogus token");
+                result = await tokenService.ValidateTokenIsUnusedAsync("Bogus token");
             }
 
             // Assert
@@ -96,7 +96,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 await _context.SaveChangesAsync();
 
                 // Act
-                result = await tokenService.ValidateTokenIsUnused(token);
+                result = await tokenService.ValidateTokenIsUnusedAsync(token);
             }
 
             // Assert
@@ -128,7 +128,7 @@ namespace CoffeeCard.Tests.Unit.Services
             var tokenService = new TokenService(_identity, claimsUtility);
 
             // Act
-            var result = await tokenService.ValidateToken(token);
+            var result = await tokenService.ValidateTokenAsync(token);
 
             // Assert
             Assert.False(result);
@@ -168,7 +168,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 _context.SaveChanges();
 
                 // Act
-                result = await tokenService.ValidateTokenIsUnused(token);
+                result = await tokenService.ValidateTokenIsUnusedAsync(token);
             }
 
             // Assert
@@ -198,7 +198,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 _context.SaveChanges();
 
                 // Act
-                result = await tokenService.ValidateTokenIsUnused(token);
+                result = await tokenService.ValidateTokenIsUnusedAsync(token);
             }
 
             // Assert

@@ -21,7 +21,7 @@ namespace CoffeeCard.WebApi.Pages
         {
             try
             {
-                await _accountService.AnonymizeAccount(Token);
+                await _accountService.AnonymizeAccountAsync(Token);
                 
                 TempData["resultHeader"] = "Success";
                 TempData["result"] = @"Your account has been successfully deleted";

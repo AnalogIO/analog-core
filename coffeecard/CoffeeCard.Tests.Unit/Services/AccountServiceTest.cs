@@ -82,7 +82,7 @@ namespace CoffeeCard.Tests.Unit.Services
 
             var tokenService = new Mock<ITokenService>();
             tokenService.Setup(t => t.ReadToken("valid")).Returns(validToken);
-            tokenService.Setup(t => t.ValidateTokenIsUnused("valid")).ReturnsAsync(true);
+            tokenService.Setup(t => t.ValidateTokenIsUnusedAsync("valid")).ReturnsAsync(true);
 
             // Act
             await using (var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings))
@@ -131,7 +131,7 @@ namespace CoffeeCard.Tests.Unit.Services
 
             var tokenService = new Mock<ITokenService>();
             tokenService.Setup(t => t.ReadToken("valid")).Returns(validToken);
-            tokenService.Setup(t => t.ValidateTokenIsUnused("valid")).ReturnsAsync(true);
+            tokenService.Setup(t => t.ValidateTokenIsUnusedAsync("valid")).ReturnsAsync(true);
 
             var userPass = "not set";
             string newUserPass;
