@@ -94,7 +94,7 @@ namespace CoffeeCard.Library.Services
                 StatusCodes.Status401Unauthorized);
         }
 
-        public async Task<User> RegisterAccountAsync(string name, string email, string password, int programme)
+        public async Task<User> RegisterAccountAsync(string name, string email, string password, int programme = 1)
         {
             Log.Information("Trying to register new user. Name: {name} Email: {email}", name, email);
 
