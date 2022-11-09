@@ -6,6 +6,7 @@ using NJsonSchema.Converters;
 namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
 {
     [KnownType(typeof(MobilePayPaymentDetails))]
+    [KnownType(typeof(FreeProductPaymentDetails))]
     [JsonConverter(typeof(JsonInheritanceConverter))]
     public abstract class PaymentDetails
     {
