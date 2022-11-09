@@ -38,7 +38,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <param name="registerRequest">Register data object</param>
         /// <response code="201">Successful account creation. Verification request email sent to provided email</response>
         /// <response code="409">Email already registered</response>
-        [HttpPost("register")]
+        [HttpPost]
         [AllowAnonymous]
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status409Conflict)]
