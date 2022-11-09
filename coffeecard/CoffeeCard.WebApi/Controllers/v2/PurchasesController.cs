@@ -88,47 +88,18 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <returns>Purchase with payment details</returns>
         /// <response code="200">Purchased initiated</response>
         /// <response code="401">Invalid credentials</response>
+        /// <response code="403">User not allowed to purchase given product</response>
         [HttpPost]
         [ProducesResponseType(typeof(InitiatePurchaseResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<InitiatePurchaseResponse>> InitiatePurchase([FromBody] InitiatePurchaseRequest initiateRequest)
         {
-            var purchaseResponse = await _purchaseService.InitiatePurchase(initiateRequest, await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims));
+            var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
+            var purchaseResponse = await _purchaseService.InitiatePurchase(initiateRequest, user);
 
             // Return CreatedAtAction
             return Ok(purchaseResponse);
-        }
-        
-        /// <summary>
-        /// Receive and use a free drink using your barista perks
-        /// </summary>
-        /// <param name="dto">Use ticket request</param>
-        /// <returns>Used ticket </returns>
-        /// <response code="200">Successful request</response>
-        /// <response code="400">Bad Request. See explanation</response>
-        /// <response code="401">Invalid credentials</response>
-        [ProducesResponseType(typeof(TicketDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiException), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
-        [Authorize]
-        [AuthorizeRoles(UserGroup.Barista, UserGroup.Manager, UserGroup.Board)]
-        [HttpPost("useFree")]
-        public async Task<ActionResult<TicketDto>> UseFree([FromBody] UseTicketDTO dto)
-        {
-            // Todo consider if this endpoint is under the right controller. ticket instead perhaps?
-            var currentUser = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
-            
-            var issueProductDto = new IssueProductDto
-            {
-                IssuedBy = "Barista perk - App",
-                UserId = currentUser.Id,
-                ProductId = dto.ProductId
-            };
-            var purchase = await _purchaseService.IssueFreeProduct(issueProductDto);
-            var ticketDto = await _ticketService.UseTicket(currentUser.Id, purchase.ProductId);
-
-            return Ok(ticketDto);
         }
     }
 }

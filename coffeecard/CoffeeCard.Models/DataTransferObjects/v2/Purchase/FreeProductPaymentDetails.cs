@@ -6,26 +6,28 @@ using NJsonSchema.Converters;
 namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
 {
     /// <summary>
-    /// Staff payment details for free coffee
+    /// Payment details for a free purchase
     /// </summary>
     /// <example>
     /// {
-    ///     "paymentType": "StaffPerk",
+    ///     "paymentType": "FreeProduct",
     ///     "orderId": "f5cb3e0f-3b9b-4f50-8c4f-a7450f300a5c",
     /// }
     /// </example>
     [KnownType(typeof(MobilePayPaymentDetails))]
     [JsonConverter(typeof(JsonInheritanceConverter))]
-    public class StaffPaymentDetails : PaymentDetails
+    public class FreeProductPaymentDetails : PaymentDetails
     {
         /// <summary>
-        /// Creates a new instance of <see cref="StaffPaymentDetails"/>
+        /// Creates a new instance of <see cref="FreeProductPaymentDetails"/>
         /// </summary>
         /// <param name="orderId"></param>
-        public StaffPaymentDetails(string orderId)
+        public FreeProductPaymentDetails(string orderId)
         {
-            PaymentType = PaymentType.StaffPerk;
+            PaymentType = PaymentType.Free;
             OrderId = orderId;
+            PurchaseStatus = PurchaseStatus.Completed;
+            PaymentId = "Free product - App";
         }
     }
 }

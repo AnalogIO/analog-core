@@ -13,6 +13,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <summary>
         /// Free product as Staff 
         /// </summary>
-        StaffPerk
+        Free
     }
 }

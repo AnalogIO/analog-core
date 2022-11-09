@@ -87,19 +87,17 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var mailService = new Mock<IEmailService>();
             var purchaseService = new PurchaseService(context, mobilePayService.Object, ticketService.Object, mailService.Object);
 
-            var issueProductDto = new IssueProductDto
-            {
-                ProductId = productId,
-                UserId = userId,
-                IssuedBy = "Barista perk - App"
+            var request = new InitiatePurchaseRequest{
+                PaymentType = PaymentType.Free,
+                ProductId = productId
             };
             // Act
-            var exception = await Assert.ThrowsAsync<ApiException>(() => purchaseService.IssueFreeProduct(issueProductDto)) ;
+            var exception = await Assert.ThrowsAsync<ApiException>(() => purchaseService.InitiatePurchase(request, user)) ;
         }
 
-        [Theory(DisplayName = "IssueFreeProduct adds tickets and purchase to user")]
+        [Theory(DisplayName = "InitiatePurchase adds tickets to user when free")]
         [MemberData(nameof(ProductGenerator))]
-        public async Task IssueFreeProductAddsTicketsAndPurchaseToUser(Product product)
+        public async Task InitiatePurchaseAddsTicketsToUserWhenFree(Product product)
         {
             // Arrange
             var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
@@ -139,15 +137,13 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var purchaseService = new PurchaseService(context, mobilePayService.Object, ticketService.Object,
                 mailService.Object);
 
-            var issueProductDto = new IssueProductDto
-            {
-                ProductId = product.Id,
-                UserId = user.Id,
-                IssuedBy = "Barista perk - App"
+            var request = new InitiatePurchaseRequest{
+                PaymentType = PaymentType.Free,
+                ProductId = product.Id
             };
 
             // Act
-            var purchaseResponse = await purchaseService.IssueFreeProduct(issueProductDto);
+            var purchaseResponse = await purchaseService.InitiatePurchase(request, user);
             
             // Assert
             var userUpdated = await context.Users.FindAsync(user.Id);

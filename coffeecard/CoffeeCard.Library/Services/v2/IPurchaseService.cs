@@ -37,12 +37,5 @@ namespace CoffeeCard.Library.Services.v2
         /// <param name="webhook">Webhook data object</param>
         /// <returns></returns>
         Task HandleMobilePayPaymentUpdate(MobilePayWebhook webhook);
-
-        /// <summary>
-        /// Handle MobilePay webhook invocation and update purchase accordingly
-        /// </summary>
-        /// <param name="issueProductDto"></param>
-        /// <returns></returns>
-        Task<SinglePurchaseResponse> IssueFreeProduct(IssueProductDto issueProductDto);
     }
 }

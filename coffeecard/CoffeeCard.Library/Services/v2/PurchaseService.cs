@@ -34,32 +34,9 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task<InitiatePurchaseResponse> InitiatePurchase(InitiatePurchaseRequest initiateRequest, User user)
         {
-            var product = await _context.Products.Include(p => p.ProductUserGroup)
-                .FirstOrDefaultAsync(p => p.Id == initiateRequest.ProductId);
-            if (product == null)
-            {
-                Log.Error("No product was found by Product Id: {Id}", initiateRequest.ProductId);
-                throw new EntityNotFoundException($"No purchase was found by Purchase Id: {initiateRequest.ProductId}");
-                // Exception mapper 
-            }
-
-            var productUserGroup = product.ProductUserGroup.Select(pug => pug.UserGroup);
-            var isUserInProductUserGroup = productUserGroup.Contains(user.UserGroup);
-
-            if (!isUserInProductUserGroup)
-            {
-                Log.Information(
-                    "User {UserId} is not authorized to purchase Product Id: {ProductId} as user is not in Product User Group",
-                    user.Id, product.Id);
-                throw new ApiException("Product is not available for user to purchase", StatusCodes.Status403Forbidden);
-            }
-
-            var paymentDetails = await _mobilePayPaymentsService.InitiatePayment(new MobilePayPaymentRequest
-            {
-                Amount = product.Price,
-                OrderId = await GenerateUniqueOrderId(),
-                Description = product.Name
-            });
+            var product = await UserMayPurchaseProduct(user, initiateRequest);
+            
+            var paymentDetails = await GetPaymentDetails(initiateRequest, product);
 
             // FIXME State management, PaymentType
             var purchase = new Purchase
@@ -73,8 +50,18 @@ namespace CoffeeCard.Library.Services.v2
                 OrderId = paymentDetails.OrderId,
                 TransactionId = paymentDetails.PaymentId,
                 PurchasedBy = user,
-                Status = PurchaseStatus.PendingPayment
+                Status = paymentDetails.PurchaseStatus
             };
+
+            if (paymentDetails.PurchaseStatus == PurchaseStatus.Completed)
+            {
+                for (var i = 0; i < product.NumberOfTickets; i++)
+                {
+                    var ticket = new Ticket { ProductId = product.Id, Purchase = purchase, Owner = user};
+                    await _context.Tickets.AddAsync(ticket);
+                }
+            }
+            
             await _context.Purchases.AddAsync(purchase);
             await _context.SaveChangesAsync();
 
@@ -180,6 +167,22 @@ namespace CoffeeCard.Library.Services.v2
             }
         }
 
+        private async Task<PaymentDetails> GetPaymentDetails(InitiatePurchaseRequest purchaseRequest, Product product)
+        {
+            var orderId = await GenerateUniqueOrderId();
+            return purchaseRequest.PaymentType switch
+            {
+                PaymentType.MobilePay => await _mobilePayPaymentsService.InitiatePayment(new MobilePayPaymentRequest
+                {
+                    Amount = product.Price,
+                    OrderId = orderId,
+                    Description = product.Name
+                }),
+                PaymentType.Free => new FreeProductPaymentDetails(orderId.ToString()),
+                _ => throw new ApiException("Not such payment type defined", StatusCodes.Status400BadRequest)
+            };
+        }
+
         private async Task CompletePurchase(Purchase purchase)
         {
             await _mobilePayPaymentsService.CapturePayment(Guid.Parse(purchase.TransactionId), purchase.Price);
@@ -203,76 +206,24 @@ namespace CoffeeCard.Library.Services.v2
                 purchase.Id, purchase.TransactionId);
         }
 
-        public async Task<SinglePurchaseResponse> IssueFreeProduct(IssueProductDto issueProduct)
-        {
-            var (user, product) = await UserMayIssueFreeProduct(issueProduct.UserId, issueProduct.ProductId);
-
-            Log.Information(
-                "Issuing product {} for user {} with {} issuer id",
-                issueProduct.ProductId, issueProduct.UserId, issueProduct.IssuedBy);
-            var purchase = new Purchase
-            {
-                Completed = true,
-                NumberOfTickets = product.NumberOfTickets,
-                OrderId = (await GenerateUniqueOrderId()).ToString(),
-                Price = product.Price,
-                ProductId = issueProduct.ProductId,
-                ProductName = product.Name,
-                DateCreated = DateTime.UtcNow,
-                PurchasedBy = user,
-                TransactionId = issueProduct.IssuedBy,
-                //TODO consider if this should include "status = PurchaseStatus.Completed 
-            };
-
-            for (var i = 0; i < product.NumberOfTickets; i++)
-            {
-                var ticket = new Ticket { ProductId = product.Id, Purchase = purchase };
-                user.Tickets.Add (ticket);
-            }
-
-            user.Purchases.Add(purchase);
-
-            _context.Update(user);
-
-            await _context.SaveChangesAsync();
-
-            return new SinglePurchaseResponse
-            {
-                Id = purchase.Id,
-                DateCreated = purchase.DateCreated,
-                TotalAmount = purchase.Price,
-                ProductId = purchase.ProductId,
-                PurchaseStatus = purchase.Status,
-                PaymentDetails = new StaffPaymentDetails(purchase.OrderId)
-            };
-        }
-
         /// <summary>
         /// Checks if a user with the given Id may issue a free product of that Id
         /// Throws an ApiException if it does not pass the checks
         /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="productId"></param>
+        /// <param name="user"></param>
+        /// <param name="initiateRequest"></param>
         /// <returns>A tuple containing the User and Product of the given Ids</returns>
         /// <exception cref="ApiException"></exception>
-        private async Task<Tuple<User, Product>> UserMayIssueFreeProduct(int userId, int productId)
+        private async Task<Product> UserMayPurchaseProduct(User user, InitiatePurchaseRequest initiateRequest)
         {
-            var user = await _context.Users.FindAsync(userId);
             var product = await _context.Products
                 .Include(p => p.ProductUserGroup)
-                .FirstOrDefaultAsync(x => x.Id == productId);
-
-            if (user == null)
-            {
-                Log.Error("No user was found by User Id: {Id}", userId);
-                throw new ApiException($"No user was found by User Id: {userId}",
-                    StatusCodes.Status404NotFound);
-            }
+                .FirstOrDefaultAsync(x => x.Id == initiateRequest.ProductId);
 
             if (product == null)
             {
-                Log.Error("No product was found by Product Id: {Id}", productId);
-                throw new ApiException($"No product was found by Product Id: {productId}",
+                Log.Error("No product was found by Product Id: {Id}", initiateRequest.ProductId);
+                throw new ApiException($"No product was found by Product Id: {initiateRequest.ProductId}",
                     StatusCodes.Status404NotFound);
             }
 
@@ -280,13 +231,13 @@ namespace CoffeeCard.Library.Services.v2
                 //Product does not belong to same userGroup as user
             {
                 Log.Warning(
-                    "User tried to purchase product without being in correct user group, User {UserId}, Product {ProductId}",
+                    "User {UserId} is not authorized to purchase Product Id: {ProductId} as user is not in Product User Group",
                     user.Id, product.Id);
                 throw new ApiException($"You do not have access to this product",
                     StatusCodes.Status403Forbidden);
             }
-            
-            if (product.Price != 0 ) //Product is not free
+
+            if (initiateRequest.PaymentType == PaymentType.Free && product.Price != 0)
             {
                 Log.Warning(
                     "User tried to issue paid product to themselves, User {UserId}, Product {ProductId}",
@@ -294,8 +245,8 @@ namespace CoffeeCard.Library.Services.v2
                 throw new ApiException($"Product is not free",
                     StatusCodes.Status403Forbidden);
             }
-
-            return new Tuple<User, Product>(user, product);
+            
+            return product;
         }
 
         private async Task<Guid> GenerateUniqueOrderId()
