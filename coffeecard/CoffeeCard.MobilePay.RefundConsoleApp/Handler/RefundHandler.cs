@@ -32,10 +32,8 @@ namespace CoffeeCard.MobilePay.RefundConsoleApp.Handler
                     var result = await _mobilePayService.RefundPayment(completedOrder.OrderId);
                     _log.LogInformation("SUCCESS Refunded order={result}", result);
 
-                    results.Add(new RefundResponse
+                    results.Add(new RefundResponse(completedOrder.OrderId, Status.Success)
                     {
-                        Status = Status.Success,
-                        OrderId = completedOrder.OrderId,
                         OriginalTransactionId = result.OriginalTransactionId,
                         RefundTransactionId = result.TransactionId,
                         Remainder = result.Remainder
@@ -44,11 +42,7 @@ namespace CoffeeCard.MobilePay.RefundConsoleApp.Handler
                 catch (MobilePayException ex)
                 {
                     _log.LogError("FAILED Could not refund order={order}. Error={ex}", completedOrder.OrderId, ex);
-                    results.Add(new RefundResponse
-                    {
-                        Status = Status.Failed,
-                        OrderId = completedOrder.OrderId
-                    });
+                    results.Add(new RefundResponse(completedOrder.OrderId, Status.Failed));
                 }
 
             await _outputWriter.WriteToFileAsync(results);

@@ -3,6 +3,7 @@
         <OutputType>Exe</OutputType>
         <TargetFramework>net6.0</TargetFramework>
         <ProjectGuid>DFDD8F8A-7D35-4108-8AA2-B1F46A237155</ProjectGuid>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
         <Content Include="..\CoffeeCard.WebApi\appsettings.json">

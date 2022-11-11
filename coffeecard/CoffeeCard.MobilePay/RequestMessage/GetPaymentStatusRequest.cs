@@ -36,7 +36,7 @@ namespace CoffeeCard.MobilePay.RequestMessage
             return _merchantId == other._merchantId && _orderId == other._orderId;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;

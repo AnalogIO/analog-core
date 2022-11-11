@@ -30,11 +30,7 @@ namespace CoffeeCard.Tests.Unit.Services
             mobilePayApiClient
                 .Setup(m => m.SendRequest<CancelReservationResponse>(
                     requestMessage))
-                .ReturnsAsync(
-                    new CancelReservationResponse
-                    {
-                        TransactionId = "transId"
-                    });
+                .ReturnsAsync(new CancelReservationResponse("transId"));
 
             var log = new Mock<ILogger<MobilePayService>>();
 
@@ -110,12 +106,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 .Setup(m => m.SendRequest<GetPaymentStatusResponse>(
                     mobilePayApiRequestMessage))
                 .ReturnsAsync(
-                    new GetPaymentStatusResponse
-                    {
-                        LatestPaymentStatus = PaymentStatus.Cancelled,
-                        OriginalAmount = 80.0,
-                        TransactionId = "transId"
-                    });
+                    new GetPaymentStatusResponse(PaymentStatus.Cancelled, "transId", 80.0));
 
             var log = new Mock<ILogger<MobilePayService>>();
 
@@ -148,10 +139,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 .Setup(m => m.SendRequest<CaptureAmountResponse>(
                     requestMessage))
                 .ReturnsAsync(
-                    new CaptureAmountResponse
-                    {
-                        TransactionId = "transId"
-                    });
+                    new CaptureAmountResponse("transId"));
 
             var log = new Mock<ILogger<MobilePayService>>();
 
@@ -226,13 +214,7 @@ namespace CoffeeCard.Tests.Unit.Services
             mobilePayApiClient
                 .Setup(m => m.SendRequest<GetPaymentStatusResponse>(
                     mobilePayApiRequestMessage))
-                .ReturnsAsync(
-                    new GetPaymentStatusResponse
-                    {
-                        LatestPaymentStatus = PaymentStatus.Captured,
-                        OriginalAmount = 80.0,
-                        TransactionId = "transId"
-                    });
+                .ReturnsAsync(new GetPaymentStatusResponse(PaymentStatus.Captured, "transId", 80.0));
 
             var log = new Mock<ILogger<MobilePayService>>();
 
@@ -264,13 +246,7 @@ namespace CoffeeCard.Tests.Unit.Services
             mobilePayApiClient
                 .Setup(m => m.SendRequest<GetPaymentStatusResponse>(
                     mobilePayApiRequestMessage))
-                .ReturnsAsync(
-                    new GetPaymentStatusResponse
-                    {
-                        LatestPaymentStatus = PaymentStatus.Reserved,
-                        OriginalAmount = 80.0,
-                        TransactionId = "transId"
-                    });
+                .ReturnsAsync(new GetPaymentStatusResponse(PaymentStatus.Reserved, "transId", 80.0));
 
             var log = new Mock<ILogger<MobilePayService>>();
 
@@ -340,13 +316,7 @@ namespace CoffeeCard.Tests.Unit.Services
                         Reason = MobilePayErrorReason.Other
                     }, HttpStatusCode.RequestTimeout))
                 // Second time returns Response
-                .ReturnsAsync(
-                    new GetPaymentStatusResponse
-                    {
-                        LatestPaymentStatus = PaymentStatus.Reserved,
-                        OriginalAmount = 80.0,
-                        TransactionId = "transId"
-                    });
+                .ReturnsAsync(new GetPaymentStatusResponse(PaymentStatus.Reserved, "transId", 80.0 ));
 
             var log = new Mock<ILogger<MobilePayService>>();
 

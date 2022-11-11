@@ -44,12 +44,12 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Leaderboard
         public int Score { get; set; }
 
 #pragma warning disable CS1591
-        public bool Equals(LeaderboardEntry other)
+        public bool Equals(LeaderboardEntry? other)
         {
             return other != null && Id == other.Id && Name == other.Name && Rank == other.Rank && Score == other.Score;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;

@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ProjectGuid>AFF9D584-58F4-4A8D-A6BF-515890A9A3EF</ProjectGuid>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="jose-jwt" Version="4.0.1" />
