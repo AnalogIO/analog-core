@@ -1,15 +1,19 @@
+using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services;
+using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Moq;
 using Xunit;
 
@@ -507,6 +511,145 @@ namespace CoffeeCard.Tests.Unit.Services
             var expectedException = new ApiException("The username or password does not match", 401);
             Assert.Equal(exception.StatusCode, expectedException.StatusCode);
             Assert.Equal(exception.Message, expectedException.Message);
+        }
+
+        [Theory (DisplayName = "VerifyRegistration returns false on invalid token")]
+        [MemberData(nameof(TokenGenerator))]
+        public async Task VerifyRegistrationReturnsFalseOnInvalidToken(string token)
+        {
+            // Arrange
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
+                .UseInMemoryDatabase(nameof(VerifyRegistrationReturnsFalseOnInvalidToken) +
+                                     token);
+
+            var databaseSettings = new DatabaseSettings
+            {
+                SchemaName = "test"
+            };
+            var environmentSettings = new EnvironmentSettings()
+            {
+                EnvironmentType = EnvironmentType.Test
+            };
+
+            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            
+            var httpContextAccessor = new Mock<IHttpContextAccessor>();
+            var loginLimiterSettings = new LoginLimiterSettings()
+            {
+                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 1, TimeOutPeriodInMinutes = 1
+            };
+            var identitySettings = new IdentitySettings
+            {
+                TokenKey = "This is a long test token key"
+            };
+            var tokenService = new TokenService(identitySettings, new ClaimsUtilities(context));
+            
+            httpContextAccessor.Setup(h => h.HttpContext).Returns(new DefaultHttpContext().HttpContext);
+            var accountService = new AccountService(context, environmentSettings, tokenService,
+                new Mock<IEmailService>().Object, new Mock<IHashService>().Object, httpContextAccessor.Object,
+                new LoginLimiter(loginLimiterSettings), loginLimiterSettings);
+            
+            //Act
+            var result = await accountService.VerifyRegistration(token);
+            
+            //Assert
+            Assert.False(result);
+        }
+        
+        [Fact (DisplayName = "VerifyRegistration returns true given valid token")]
+        public async Task VerifyRegistrationReturnsTrueGivenValidToken()
+        {
+            // Arrange
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
+                .UseInMemoryDatabase(nameof(VerifyRegistrationReturnsTrueGivenValidToken));
+
+            var databaseSettings = new DatabaseSettings
+            {
+                SchemaName = "test"
+            };
+            var environmentSettings = new EnvironmentSettings()
+            {
+                EnvironmentType = EnvironmentType.Test
+            };
+
+            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            
+            var httpContextAccessor = new Mock<IHttpContextAccessor>();
+            var loginLimiterSettings = new LoginLimiterSettings
+            {
+                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 1, TimeOutPeriodInMinutes = 1
+            };
+            var identitySettings = new IdentitySettings
+            {
+                TokenKey = "This is a long test token key"
+            };
+            var tokenService = new TokenService(identitySettings, new ClaimsUtilities(context));
+            
+            httpContextAccessor.Setup(h => h.HttpContext).Returns(new DefaultHttpContext().HttpContext);
+            var accountService = new AccountService(context, environmentSettings, tokenService,
+                new Mock<IEmailService>().Object, new Mock<IHashService>().Object, httpContextAccessor.Object,
+                new LoginLimiter(loginLimiterSettings), loginLimiterSettings);
+
+            var token = WriteTokenString(new List<Claim> 
+            {
+                new Claim(ClaimTypes.Role, "verification_token"),
+                new Claim(ClaimTypes.Email, "test@test.test")
+            });
+
+            var user = new User
+            {
+                Email = "test@test.test"
+            };
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
+            
+            //Act
+            var result = await accountService.VerifyRegistration(token);
+            
+            //Assert
+            Assert.True(result);
+        }
+        
+        public static IEnumerable<object[]> TokenGenerator()
+        {
+            yield return new object[] { 
+                "Malformed token"
+            };
+            yield return new object[] { 
+                WriteTokenString(new List<Claim> // Incorrect role
+                {
+                    new Claim(ClaimTypes.Role, "")
+                })
+            };
+            yield return new object[] { 
+                WriteTokenString(new List<Claim> // No email claim
+                {
+                    new Claim(ClaimTypes.Role, "verification_token")
+                })
+            };
+            yield return new object[] { 
+                WriteTokenString(new List<Claim> // Good token, assuming user can be found in database
+                {
+                    new Claim(ClaimTypes.Role, "verification_token"),
+                    new Claim(ClaimTypes.Email, "test@test.test")
+                })
+            };
+        }
+
+        private static string WriteTokenString(IEnumerable<Claim> claims)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes("This is a long test token key"));
+            
+            var jwt = new JwtSecurityToken("AnalogIO",
+                "Everyone",
+                claims,
+                DateTime.UtcNow,
+                DateTime.UtcNow.AddHours(24),
+                new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
+            );
+            return tokenHandler.WriteToken(jwt);
         }
     }
 }

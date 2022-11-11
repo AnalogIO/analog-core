@@ -50,43 +50,35 @@ namespace CoffeeCard.Library.Services
         /// Checks if the JWT token is valid (Based on its lifetime)
         /// </summary>
         /// <param name="tokenString"></param>
-        /// <returns></returns>
+        /// <returns>bool</returns>
         public async Task<bool> ValidateTokenAsync(string tokenString)
         {
+            var securityKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(_identitySettings.TokenKey));
+
             try
             {
-                var securityKey = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(_identitySettings.TokenKey));
-
-                try
+                var securityTokenHandler = new JwtSecurityTokenHandler();
+                var validationParameters = new TokenValidationParameters
                 {
-                    var securityTokenHandler = new JwtSecurityTokenHandler();
-                    var validationParameters = new TokenValidationParameters
-                    {
-                        ValidateAudience = false,
-                        ValidateIssuer = false,
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = securityKey,
-                        ValidateLifetime = true,
-                        ClockSkew = TimeSpan.Zero //the default for this setting is 5 minutes
-                    };
+                    ValidateAudience = false,
+                    ValidateIssuer = false,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = securityKey,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero //the default for this setting is 5 minutes
+                };
 
-                    securityTokenHandler.ValidateToken(tokenString, validationParameters, out _); // Throws exception if token is invalid
-                }
-                catch (Exception e) when (e is ArgumentException ||
-                                          e is SecurityTokenException)
-                {
-                    Log.Information("Received invalid token");
-                    return false;
-                }
-
-                return true;
+                securityTokenHandler.ValidateToken(tokenString, validationParameters, out _); // Throws exception if token is invalid
             }
-            catch (ArgumentException e)
+            catch (Exception e) when (e is ArgumentException ||
+                                      e is SecurityTokenException)
             {
-                Log.Error("Unable to read token. Exception thrown = {}", e);
+                Log.Information("Received invalid token");
                 return false;
             }
+
+            return true;
         }
         
         /// <summary>
@@ -94,7 +86,7 @@ namespace CoffeeCard.Library.Services
         /// Checks if the JWT token is valid (Based on its lifetime and if it has been used before)
         /// </summary>
         /// <param name="tokenString"></param>
-        /// <returns></returns>
+        /// <returns>bool</returns>
         public async Task<bool> ValidateTokenIsUnusedAsync(string tokenString)
         {
             try

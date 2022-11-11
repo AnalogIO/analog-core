@@ -26,17 +26,25 @@ namespace CoffeeCard.WebApi.Pages
                 {
                     TempData["resultHeader"] = "Success";
                     TempData["result"] = @"Your email has been successfully verified";
-                    return RedirectToPage("result");
                 }
+                else
+                {
+                    SetErrorMessage("Looks like the link you used has expired or already been used. Request a new password in the app to verify your email.");
+                }
+                return RedirectToPage("result");
             }
             catch (Exception)
             {
-                TempData["resultHeader"] = "Error";
-                TempData["result"] =
-                    @"Looks like the link you used has expired or already been used. Request a new password in the app to verify your email.";
+                SetErrorMessage("An unhandled error occured, please try again later");
             }
             
             return RedirectToPage("result");
+        }
+
+        private void SetErrorMessage(string message)
+        {
+            TempData["resultHeader"] = "Error";
+            TempData["result"] = message;
         }
     }
 }

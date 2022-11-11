@@ -142,7 +142,16 @@ namespace CoffeeCard.Library.Services
         {
             Log.Information($"Trying to verify registration with token: {token}");
 
-            var user = await VerifyTokenClaimAndUserAsync(token);
+            User user;
+            try
+            {
+                user = await VerifyTokenClaimAndUserAsync(token);
+            }
+            catch (ApiException e)
+            {
+                // No log, since the ApiException should have been logged on throwing
+                return false;
+            }
 
             user.IsVerified = true;
             return await _context.SaveChangesAsync() > 0;
@@ -268,10 +277,19 @@ namespace CoffeeCard.Library.Services
 
         public async Task AnonymizeAccountAsync(string token)
         {
-            Log.Information($"Trying to verify deletion with token: {token}");
+            Log.Information("Trying to verify deletion with token: {token}", token);
 
-            var user = await VerifyTokenClaimAndUserAsync(token);
-
+            User user;
+            try
+            {
+                user = await VerifyTokenClaimAndUserAsync(token);
+            }
+            catch (ApiException e)
+            {
+                // No log, since the ApiException should have been logged on throwing
+                return;
+            }
+            
             await AnonymizeUser(user);
         }
 
@@ -294,21 +312,33 @@ namespace CoffeeCard.Library.Services
 
         private async Task<User> VerifyTokenClaimAndUserAsync(string token)
         {
-            if (await _tokenService.ValidateTokenAsync(token))
+            if (!await _tokenService.ValidateTokenAsync(token))
             {
+                Log.Information("Token validation failed. DId not pass validation parameters");
                 throw new ApiException("The token is invalid!", StatusCodes.Status401Unauthorized);
             }
             
             var jwtToken = _tokenService.ReadToken(token);
-            if (!jwtToken.Claims.Any(x => x.Type == ClaimTypes.Role && x.Value == "verification_token"))
+            if (jwtToken.Claims.Any(x => x.Type == ClaimTypes.Role && x.Value != "verification_token"))
+            {
+                Log.Information("Token validation failed. Not a verification token");
                 throw new ApiException("The token is invalid!", StatusCodes.Status401Unauthorized);
+            }
             
             var emailClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
-            if (emailClaim == null) throw new ApiException("The token is invalid!", StatusCodes.Status401Unauthorized);
-
+            if (emailClaim == null)
+            {
+                Log.Information("Token validation failed. No email found in token");
+                throw new ApiException("The token is invalid!", StatusCodes.Status401Unauthorized);
+            }
+            
             var user = _context.Users.FirstOrDefault(x => x.Email == emailClaim.Value);
-            if (user == null) throw new ApiException("The token is invalid!", StatusCodes.Status401Unauthorized);
-
+            if (user == null)
+            {
+                Log.Information("Token validation failed. No user associated with email");
+                throw new ApiException("The token is invalid!", StatusCodes.Status401Unauthorized);
+            }
+            
             return user;
         }
 

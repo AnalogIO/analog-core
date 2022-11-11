@@ -4,6 +4,7 @@ using CoffeeCard.Library.Services;
 using CoffeeCard.Models.PagesModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Serilog;
 
 namespace CoffeeCard.WebApi.Pages
 {
@@ -34,7 +35,7 @@ namespace CoffeeCard.WebApi.Pages
             }
             catch (Exception e)
             {
-                // ignored
+                Log.Error("An unknown exception {ex} occured while validating token {token} for account recovery", e, Token);
             }
 
             TempData["resultHeader"] = "Error";
