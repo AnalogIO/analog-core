@@ -12,6 +12,6 @@ namespace CoffeeCard.Library.Services.v2
 
         Task<List<TicketResponse>> GetTickets(User user, bool includeUsed);
 
-        public Task<TicketDto> UseTicket(int userId, int productId);
+        public Task<UsedTicketResponse> UseTicketAsync(int userId, int productId);
     }
 }

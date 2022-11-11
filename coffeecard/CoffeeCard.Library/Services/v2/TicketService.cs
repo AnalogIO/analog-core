@@ -56,22 +56,22 @@ namespace CoffeeCard.Library.Services.v2
                 }).ToListAsync();
         }
         
-        public async Task<TicketDto> UseTicket(int userId, int productId)
+        public async Task<UsedTicketResponse> UseTicketAsync(int userId, int productId)
         {
-            Log.Information($"Using ticket with id, {productId}");
-            var ticket = GetFirstTicketFromProduct(productId, userId);
+            Log.Information("Using ticket with id, {productId}", productId);
+            var ticket = await GetFirstTicketFromProductAsync(productId, userId);
 
             ticket.IsUsed = true;
             ticket.DateUsed = DateTime.UtcNow;
             
-            if (ticket.Purchase.Price != 0) //Paid products increases your rank on the leaderboard
+            if (ticket.Purchase.Price > 0) //Paid products increases your rank on the leaderboard
             {
                 await _statisticService.IncreaseStatisticsBy(userId, 1);
             }
 
             await _context.SaveChangesAsync();
 
-            return new TicketDto
+            return new UsedTicketResponse
             {
                 Id = ticket.Id,
                 DateCreated = ticket.DateCreated,
@@ -80,21 +80,17 @@ namespace CoffeeCard.Library.Services.v2
             };
         }
         
-        private Ticket GetFirstTicketFromProduct(int productId, int userId)
+        private async Task<Ticket> GetFirstTicketFromProductAsync(int productId, int userId)
         {
-            var ticket = _context.Tickets
+            var ticket = await _context.Tickets
                 .Include(t => t.Purchase)
-                .FirstOrDefault(t => t.Owner.Id == userId && t.ProductId == productId && !t.IsUsed);
+                .FirstOrDefaultAsync(t => t.Owner.Id == userId && t.ProductId == productId && !t.IsUsed);
             
             if (ticket == null)
             {
                 throw new ApiException("No tickets found for the given product with this user", StatusCodes.Status404NotFound);
             }
             return ticket;
-        }
-
-        private async Task UpdateUserRank(int userId, int tickets)
-        {
         }
     }
 }

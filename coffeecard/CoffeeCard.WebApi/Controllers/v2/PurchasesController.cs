@@ -1,14 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.DataTransferObjects;
-using CoffeeCard.Models.DataTransferObjects.Ticket;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
-using CoffeeCard.Models.Entities;
-using CoffeeCard.WebApi.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -26,16 +22,14 @@ namespace CoffeeCard.WebApi.Controllers.v2
     {
         private readonly IPurchaseService _purchaseService;
         private readonly ClaimsUtilities _claimsUtilities;
-        private readonly ITicketService _ticketService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PurchasesController"/> class.
         /// </summary>
-        public PurchasesController(IPurchaseService purchaseService, ClaimsUtilities claimsUtilities, ITicketService ticketService)
+        public PurchasesController(IPurchaseService purchaseService, ClaimsUtilities claimsUtilities)
         {
             _purchaseService = purchaseService;
             _claimsUtilities = claimsUtilities;
-            _ticketService = ticketService;
         }
 
         /// <summary>
