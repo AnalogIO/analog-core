@@ -22,6 +22,6 @@ namespace CoffeeCard.Models.DataTransferObjects.Ticket
         /// <value>Product Ids</value>
         /// <example>1, 2</example>
         [Required]
-        public List<int> ProductIds { get; set; }
+        public List<int> ProductIds { get; set; } = new List<int>();
     }
 }

@@ -46,14 +46,14 @@ namespace CoffeeCard.Models.DataTransferObjects.Product
         /// <value>Product name</value>
         /// <example>Coffee clip card</example>
         [Required]
-        public string Name { get; set; }
-        
+        public string Name { get; set; } = string.Empty;
+
         /// <summary>
         /// Description of products
         /// </summary>
         /// <value>Product Description</value>
         /// <example>Coffee clip card of 10 clips</example>
         [Required]
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
     }
 }

@@ -19,13 +19,13 @@ namespace CoffeeCard.Models.Entities
         /// Url which webhook is registered for
         /// </summary>
         [Required]
-        public string Url { get; set; }
-        
+        public string Url { get; set; } = string.Empty;
+
         /// <summary>
         /// Signature Key
         /// </summary>
         [Required]
-        public string SignatureKey { get; set; }
+        public string SignatureKey { get; set; } = string.Empty;
 
         /// <summary>
         /// Webhook Status
