@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
@@ -10,11 +10,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="5.0.13" />
-      <PackageReference Include="NJsonSchema" Version="10.6.6" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="6.0.11" />
+      <PackageReference Include="NJsonSchema" Version="10.8.0" />
       <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" PrivateAssets="all" />
       <PackageReference Include="System.Text.Encoding.Extensions" Version="4.3.0" PrivateAssets="all" />
-      <PackageReference Include="Microsoft.NETCore.Targets" Version="3.1.0" ExcludeAssets="all" PrivateAssets="all" />
+      <PackageReference Include="Microsoft.NETCore.Targets" Version="5.0.0" ExcludeAssets="all" PrivateAssets="all" />
     </ItemGroup>
 
 </Project>
