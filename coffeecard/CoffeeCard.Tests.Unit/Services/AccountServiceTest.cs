@@ -549,11 +549,8 @@ namespace CoffeeCard.Tests.Unit.Services
                 new Mock<IEmailService>().Object, new Mock<IHashService>().Object, httpContextAccessor.Object,
                 new LoginLimiter(loginLimiterSettings), loginLimiterSettings);
             
-            //Act
-            var result = await accountService.VerifyRegistration(token);
-            
-            //Assert
-            Assert.False(result);
+            //Act & Assert
+            await Assert.ThrowsAsync<ApiException>(() => accountService.VerifyRegistration(token));
         }
         
         [Fact (DisplayName = "VerifyRegistration returns true given valid token")]

@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
+using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 
@@ -51,7 +54,7 @@ namespace CoffeeCard.Library.Services
         /// </summary>
         /// <param name="tokenString"></param>
         /// <returns>bool</returns>
-        public async Task<bool> ValidateTokenAsync(string tokenString)
+        public bool ValidateToken(string tokenString)
         {
             var securityKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(_identitySettings.TokenKey));
@@ -98,13 +101,38 @@ namespace CoffeeCard.Library.Services
 
                 if (user.Tokens.Contains(new Token(tokenString))) tokenIsUnused = true; // Tokens are removed from the user on account recovery
 
-                return await ValidateTokenAsync(tokenString) && tokenIsUnused;
+                return ValidateToken(tokenString) && tokenIsUnused;
             }
             catch (ArgumentException e)
             {
-                Log.Error("Unable to read token. Exception thrown = {}", e);
+                Log.Error(e, "Unable to read token. Exception thrown");
                 return false;
             }
+        }
+        
+        public string ValidateTokenAndGetEmail(string token)
+        {
+            if (!ValidateToken(token))
+            {
+                Log.Information("Token validation failed. DId not pass validation parameters");
+                throw new ApiException("The token is invalid!", StatusCodes.Status401Unauthorized);
+            }
+            
+            var jwtToken = ReadToken(token);
+            if (jwtToken.Claims.Any(x => x.Type == ClaimTypes.Role && x.Value != "verification_token"))
+            {
+                Log.Information("Token validation failed. Not a verification token");
+                throw new ApiException("The token is invalid!", StatusCodes.Status401Unauthorized);
+            }
+            
+            var emailClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
+            if (emailClaim == null)
+            {
+                Log.Information("Token validation failed. No email found in token");
+                throw new ApiException("The token is invalid!", StatusCodes.Status401Unauthorized);
+            }
+
+            return emailClaim.Value;
         }
     }
 }

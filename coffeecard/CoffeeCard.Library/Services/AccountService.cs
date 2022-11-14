@@ -140,18 +140,10 @@ namespace CoffeeCard.Library.Services
 
         public async Task<bool> VerifyRegistration(string token)
         {
-            Log.Information($"Trying to verify registration with token: {token}");
+            Log.Information($"Trying to verify registration with token: {token}", token);
 
-            User user;
-            try
-            {
-                user = await VerifyTokenClaimAndUserAsync(token);
-            }
-            catch (ApiException e)
-            {
-                // No log, since the ApiException should have been logged on throwing
-                return false;
-            }
+            var email = _tokenService.ValidateTokenAndGetEmail(token);
+            var user = GetAccountByEmail(email);
 
             user.IsVerified = true;
             return await _context.SaveChangesAsync() > 0;
@@ -279,16 +271,8 @@ namespace CoffeeCard.Library.Services
         {
             Log.Information("Trying to verify deletion with token: {token}", token);
 
-            User user;
-            try
-            {
-                user = await VerifyTokenClaimAndUserAsync(token);
-            }
-            catch (ApiException e)
-            {
-                // No log, since the ApiException should have been logged on throwing
-                return;
-            }
+            var email = _tokenService.ValidateTokenAndGetEmail(token);
+            var user = GetAccountByEmail(email);
             
             await AnonymizeUser(user);
         }
@@ -308,38 +292,6 @@ namespace CoffeeCard.Library.Services
             user.PrivacyActivated = true;
             user.UserState = UserState.Deleted;
             await _context.SaveChangesAsync();
-        }
-
-        private async Task<User> VerifyTokenClaimAndUserAsync(string token)
-        {
-            if (!await _tokenService.ValidateTokenAsync(token))
-            {
-                Log.Information("Token validation failed. DId not pass validation parameters");
-                throw new ApiException("The token is invalid!", StatusCodes.Status401Unauthorized);
-            }
-            
-            var jwtToken = _tokenService.ReadToken(token);
-            if (jwtToken.Claims.Any(x => x.Type == ClaimTypes.Role && x.Value != "verification_token"))
-            {
-                Log.Information("Token validation failed. Not a verification token");
-                throw new ApiException("The token is invalid!", StatusCodes.Status401Unauthorized);
-            }
-            
-            var emailClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
-            if (emailClaim == null)
-            {
-                Log.Information("Token validation failed. No email found in token");
-                throw new ApiException("The token is invalid!", StatusCodes.Status401Unauthorized);
-            }
-            
-            var user = _context.Users.FirstOrDefault(x => x.Email == emailClaim.Value);
-            if (user == null)
-            {
-                Log.Information("Token validation failed. No user associated with email");
-                throw new ApiException("The token is invalid!", StatusCodes.Status401Unauthorized);
-            }
-            
-            return user;
         }
 
         private User GetAccountByEmail(string email)

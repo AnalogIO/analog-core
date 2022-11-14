@@ -128,7 +128,7 @@ namespace CoffeeCard.Tests.Unit.Services
             var tokenService = new TokenService(_identity, claimsUtility);
 
             // Act
-            var result = await tokenService.ValidateTokenAsync(token);
+            var result = tokenService.ValidateToken(token);
 
             // Assert
             Assert.False(result);
