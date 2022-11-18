@@ -155,8 +155,8 @@ namespace CoffeeCard.Tests.Unit.Services
                 var jwt = new JwtSecurityToken("AnalogIO",
                     "Everyone",
                     claims,
-                    DateTime.UtcNow.Subtract(new TimeSpan(120)),
-                    DateTime.UtcNow.Subtract(new TimeSpan(60)),
+                    DateTime.UtcNow.Subtract(new TimeSpan(1200)),
+                    DateTime.UtcNow.Subtract(new TimeSpan(600)),
                     new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
                 );
 
