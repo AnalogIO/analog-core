@@ -11,6 +11,6 @@ namespace CoffeeCard.Library.Services
         JwtSecurityToken ReadToken(string token);
         bool ValidateToken(string tokenString);
         Task<bool> ValidateTokenIsUnusedAsync(string tokenString);
-        string ValidateTokenAndGetEmail(string token);
+        string ValidateVerificationTokenAndGetEmail(string token);
     }
 }

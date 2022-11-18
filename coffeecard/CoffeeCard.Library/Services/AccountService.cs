@@ -140,9 +140,9 @@ namespace CoffeeCard.Library.Services
 
         public async Task<bool> VerifyRegistration(string token)
         {
-            Log.Information($"Trying to verify registration with token: {token}", token);
+            Log.Information("Trying to verify registration with token: {token}", token);
 
-            var email = _tokenService.ValidateTokenAndGetEmail(token);
+            var email = _tokenService.ValidateVerificationTokenAndGetEmail(token);
             var user = GetAccountByEmail(email);
 
             user.IsVerified = true;
@@ -271,7 +271,7 @@ namespace CoffeeCard.Library.Services
         {
             Log.Information("Trying to verify deletion with token: {token}", token);
 
-            var email = _tokenService.ValidateTokenAndGetEmail(token);
+            var email = _tokenService.ValidateVerificationTokenAndGetEmail(token);
             var user = GetAccountByEmail(email);
             
             await AnonymizeUser(user);

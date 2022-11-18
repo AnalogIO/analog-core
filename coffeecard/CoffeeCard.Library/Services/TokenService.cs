@@ -110,7 +110,7 @@ namespace CoffeeCard.Library.Services
             }
         }
         
-        public string ValidateTokenAndGetEmail(string token)
+        public string ValidateVerificationTokenAndGetEmail(string token)
         {
             if (!ValidateToken(token))
             {
