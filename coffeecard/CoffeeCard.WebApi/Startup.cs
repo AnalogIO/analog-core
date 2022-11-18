@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
@@ -70,7 +70,8 @@ namespace CoffeeCard.WebApi
             services.AddScoped<IMapperService, MapperService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IProgrammeService, ProgrammeService>();
-            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<Library.Services.IProductService, Library.Services.ProductService>();
+            services.AddScoped<Library.Services.v2.IProductService, Library.Services.v2.ProductService>();
             services.AddScoped<ITicketService, TicketService>();
             services.AddScoped<IMobilePayService, MobilePayService>();
             services.AddScoped<Library.Services.ILeaderboardService, Library.Services.LeaderboardService>();

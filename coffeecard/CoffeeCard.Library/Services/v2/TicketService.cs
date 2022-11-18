@@ -1,10 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
-using CoffeeCard.Models.DataTransferObjects.Ticket;
 using CoffeeCard.Models.DataTransferObjects.v2.Ticket;
 using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
@@ -56,17 +55,17 @@ namespace CoffeeCard.Library.Services.v2
                 }).ToListAsync();
         }
         
-        public async Task<UsedTicketResponse> UseTicketAsync(int userId, int productId)
+        public async Task<UsedTicketResponse> UseTicketAsync(User user, int productId)
         {
             Log.Information("Using ticket with id, {productId}", productId);
-            var ticket = await GetFirstTicketFromProductAsync(productId, userId);
+            var ticket = await GetFirstTicketFromProductAsync(productId, user.Id);
 
             ticket.IsUsed = true;
             ticket.DateUsed = DateTime.UtcNow;
             
             if (ticket.Purchase.Price > 0) //Paid products increases your rank on the leaderboard
             {
-                await _statisticService.IncreaseStatisticsBy(userId, 1);
+                await _statisticService.IncreaseStatisticsBy(user.Id, 1);
             }
 
             await _context.SaveChangesAsync();

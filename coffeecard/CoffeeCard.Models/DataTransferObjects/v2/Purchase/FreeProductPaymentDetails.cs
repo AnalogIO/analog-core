@@ -1,4 +1,3 @@
-﻿using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 using NJsonSchema.Converters;
@@ -14,7 +13,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
     ///     "orderId": "f5cb3e0f-3b9b-4f50-8c4f-a7450f300a5c",
     /// }
     /// </example>
-    [KnownType(typeof(MobilePayPaymentDetails))]
+    [KnownType(typeof(FreeProductPaymentDetails))]
     [JsonConverter(typeof(JsonInheritanceConverter))]
     public class FreeProductPaymentDetails : PaymentDetails
     {
@@ -24,9 +23,8 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <param name="orderId"></param>
         public FreeProductPaymentDetails(string orderId)
         {
-            PaymentType = PaymentType.Free;
+            PaymentType = PaymentType.FreePurchase;
             OrderId = orderId;
-            PurchaseStatus = PurchaseStatus.Completed;
             PaymentId = "Free product - App";
         }
     }

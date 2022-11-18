@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using CoffeeCard.Models.DataTransferObjects.Ticket;
 using CoffeeCard.Models.DataTransferObjects.v2.Ticket;
 using CoffeeCard.Models.Entities;
 
@@ -12,6 +11,6 @@ namespace CoffeeCard.Library.Services.v2
 
         Task<List<TicketResponse>> GetTickets(User user, bool includeUsed);
 
-        public Task<UsedTicketResponse> UseTicketAsync(int userId, int productId);
+        public Task<UsedTicketResponse> UseTicketAsync(User user, int productId);
     }
 }

@@ -11,8 +11,8 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         MobilePay,
         
         /// <summary>
-        /// Free product
+        /// Free purchase
         /// </summary>
-        Free
+        FreePurchase
     }
 }

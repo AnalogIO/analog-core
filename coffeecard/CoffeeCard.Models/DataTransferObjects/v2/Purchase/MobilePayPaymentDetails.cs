@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
 {
@@ -38,7 +38,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
             OrderId = orderId;
             MobilePayAppRedirectUri = mobilePayAppRedirectUri;
             PaymentId = paymentId;
-            PurchaseStatus = PurchaseStatus.PendingPayment;
             State = state;
         }
     }

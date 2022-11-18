@@ -1,10 +1,8 @@
-﻿using System;
-
 namespace CoffeeCard.Common.Errors
 {
-    public class EntityNotFoundException : Exception
+    public class EntityNotFoundException : ApiException
     {
-        public EntityNotFoundException(string message) : base(message)
+        public EntityNotFoundException(string message) : base(message, statusCode: 404)
         {
         }
     }

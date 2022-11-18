@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
-using CoffeeCard.Library.Services;
+using CoffeeCard.Library.Services.v2;
 using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 using CoffeeCard.Models.Entities;
@@ -21,7 +21,6 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         [Theory(DisplayName = "IssueFreeProduct throws error given bad ids")]
         [InlineData(1,1)] // Paid product
         [InlineData(2,1)] // Bad UserId
-        [InlineData(1,2)] // Bad ProductId
         [InlineData(1,3)] // Not matching UserGroups
         public async Task UserMayIssueFreeProductThrowsApiErrorGivenUnknownId(int userId, int productId)
         {
@@ -83,12 +82,13 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             await context.SaveChangesAsync();
 
             var mobilePayService = new Mock<IMobilePayPaymentsService>();
-            var ticketService = new Mock<ITicketService>();
-            var mailService = new Mock<IEmailService>();
-            var purchaseService = new PurchaseService(context, mobilePayService.Object, ticketService.Object, mailService.Object);
+            var mailService = new Mock<Library.Services.IEmailService>();
+            var productService = new ProductService(context);
+            var ticketService = new TicketService(context, new Mock<IStatisticService>().Object);
+            var purchaseService = new PurchaseService(context, mobilePayService.Object, ticketService, mailService.Object, productService);
 
             var request = new InitiatePurchaseRequest{
-                PaymentType = PaymentType.Free,
+                PaymentType = PaymentType.FreePurchase,
                 ProductId = productId
             };
             // Act
@@ -101,7 +101,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         {
             // Arrange
             var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(nameof(UserMayIssueFreeProductThrowsApiErrorGivenUnknownId) +
+                .UseInMemoryDatabase(nameof(InitiatePurchaseAddsTicketsToUserWhenFree) +
                                      product.Name);
 
             var databaseSettings = new DatabaseSettings
@@ -132,13 +132,13 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             await context.SaveChangesAsync();
 
             var mobilePayService = new Mock<IMobilePayPaymentsService>();
-            var ticketService = new Mock<ITicketService>();
-            var mailService = new Mock<IEmailService>();
-            var purchaseService = new PurchaseService(context, mobilePayService.Object, ticketService.Object,
-                mailService.Object);
+            var mailService = new Mock<Library.Services.IEmailService>();
+            var productService = new ProductService(context);
+            var ticketService = new TicketService(context, new Mock<IStatisticService>().Object);
+            var purchaseService = new PurchaseService(context, mobilePayService.Object, ticketService, mailService.Object, productService);
 
             var request = new InitiatePurchaseRequest{
-                PaymentType = PaymentType.Free,
+                PaymentType = PaymentType.FreePurchase,
                 ProductId = product.Id
             };
 
@@ -148,8 +148,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             // Assert
             var userUpdated = await context.Users.FindAsync(user.Id);
             
-            Assert.True(userUpdated.Purchases.Count == 1);
-            Assert.True(userUpdated.Tickets.Count == product.NumberOfTickets);
+            Assert.Equal(1, userUpdated.Purchases.Count);
+            Assert.Equal(product.NumberOfTickets, userUpdated.Tickets.Count);
         }
         
         public static IEnumerable<object[]> ProductGenerator()

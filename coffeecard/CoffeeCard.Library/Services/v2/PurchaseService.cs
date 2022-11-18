@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
@@ -22,21 +21,24 @@ namespace CoffeeCard.Library.Services.v2
         private readonly IEmailService _emailService;
         private readonly IMobilePayPaymentsService _mobilePayPaymentsService;
         private readonly ITicketService _ticketService;
+        private readonly IProductService _productService;
 
         public PurchaseService(CoffeeCardContext context, IMobilePayPaymentsService mobilePayPaymentsService,
-            ITicketService ticketService, IEmailService emailService)
+            ITicketService ticketService, IEmailService emailService, IProductService productService)
         {
             _context = context;
             _mobilePayPaymentsService = mobilePayPaymentsService;
             _ticketService = ticketService;
             _emailService = emailService;
+            _productService = productService;
         }
 
         public async Task<InitiatePurchaseResponse> InitiatePurchase(InitiatePurchaseRequest initiateRequest, User user)
         {
-            var product = await UserMayPurchaseProduct(user, initiateRequest);
-            
-            var paymentDetails = await GetPaymentDetails(initiateRequest, product);
+            var product = await _productService.GetProductAsync(initiateRequest.ProductId);
+            UserMayPurchaseProduct(user, initiateRequest, product);           
+
+            var (paymentDetails, purchaseStatus)= await InitiatePayment(initiateRequest, product);
 
             // FIXME State management, PaymentType
             var purchase = new Purchase
@@ -50,20 +52,15 @@ namespace CoffeeCard.Library.Services.v2
                 OrderId = paymentDetails.OrderId,
                 TransactionId = paymentDetails.PaymentId,
                 PurchasedBy = user,
-                Status = paymentDetails.PurchaseStatus
+                Status = purchaseStatus
             };
 
-            if (paymentDetails.PurchaseStatus == PurchaseStatus.Completed)
-            {
-                for (var i = 0; i < product.NumberOfTickets; i++)
-                {
-                    var ticket = new Ticket { ProductId = product.Id, Purchase = purchase, Owner = user};
-                    await _context.Tickets.AddAsync(ticket);
-                }
-            }
-            
             await _context.Purchases.AddAsync(purchase);
             await _context.SaveChangesAsync();
+            if (purchaseStatus == PurchaseStatus.Completed)
+            {
+                await _ticketService.IssueTickets(purchase);
+            }
 
             return new InitiatePurchaseResponse
             {
@@ -167,19 +164,19 @@ namespace CoffeeCard.Library.Services.v2
             }
         }
 
-        private async Task<PaymentDetails> GetPaymentDetails(InitiatePurchaseRequest purchaseRequest, Product product)
+        private async Task<Tuple<PaymentDetails, PurchaseStatus>> InitiatePayment(InitiatePurchaseRequest purchaseRequest, Product product)
         {
             var orderId = await GenerateUniqueOrderId();
             return purchaseRequest.PaymentType switch
             {
-                PaymentType.MobilePay => await _mobilePayPaymentsService.InitiatePayment(new MobilePayPaymentRequest
+                PaymentType.MobilePay => new Tuple<PaymentDetails, PurchaseStatus>(await _mobilePayPaymentsService.InitiatePayment(new MobilePayPaymentRequest
                 {
                     Amount = product.Price,
                     OrderId = orderId,
                     Description = product.Name
-                }),
-                PaymentType.Free => new FreeProductPaymentDetails(orderId.ToString()),
-                _ => throw new ApiException("Not such payment type defined", StatusCodes.Status400BadRequest)
+                }), PurchaseStatus.PendingPayment),
+                PaymentType.FreePurchase => new Tuple<PaymentDetails, PurchaseStatus>(new FreeProductPaymentDetails(orderId.ToString()), PurchaseStatus.Completed),
+                _ => throw new ApiException("No such payment type defined", StatusCodes.Status400BadRequest)
             };
         }
 
@@ -214,19 +211,8 @@ namespace CoffeeCard.Library.Services.v2
         /// <param name="initiateRequest"></param>
         /// <returns>A tuple containing the User and Product of the given Ids</returns>
         /// <exception cref="ApiException"></exception>
-        private async Task<Product> UserMayPurchaseProduct(User user, InitiatePurchaseRequest initiateRequest)
+        private void UserMayPurchaseProduct(User user, InitiatePurchaseRequest initiateRequest, Product product)
         {
-            var product = await _context.Products
-                .Include(p => p.ProductUserGroup)
-                .FirstOrDefaultAsync(x => x.Id == initiateRequest.ProductId);
-
-            if (product == null)
-            {
-                Log.Error("No product was found by Product Id: {Id}", initiateRequest.ProductId);
-                throw new ApiException($"No product was found by Product Id: {initiateRequest.ProductId}",
-                    StatusCodes.Status404NotFound);
-            }
-
             if (!product.ProductUserGroup.Any(pug => pug.UserGroup == user.UserGroup))
                 //Product does not belong to same userGroup as user
             {
@@ -237,7 +223,7 @@ namespace CoffeeCard.Library.Services.v2
                     StatusCodes.Status403Forbidden);
             }
 
-            if (initiateRequest.PaymentType == PaymentType.Free && product.Price != 0)
+            if (initiateRequest.PaymentType == PaymentType.FreePurchase && product.Price != 0)
             {
                 Log.Warning(
                     "User tried to issue paid product to themselves, User {UserId}, Product {ProductId}",
@@ -245,8 +231,6 @@ namespace CoffeeCard.Library.Services.v2
                 throw new ApiException($"Product is not free",
                     StatusCodes.Status403Forbidden);
             }
-            
-            return product;
         }
 
         private async Task<Guid> GenerateUniqueOrderId()
