@@ -16,13 +16,13 @@ namespace CoffeeCard.Library.Services
         /// <param name="programme">Programme Id of ITU Study programme. Default value is 1 (for SWU) for backwards compability</param>
         Task<User> RegisterAccountAsync(string name, string email, string password, int programme = 1);
         string Login(string email, string password, string version);
-        bool VerifyRegistration(string token);
+        Task<bool> VerifyRegistration(string token);
         User UpdateAccount(IEnumerable<Claim> claims, UpdateUserDto userDto);
         void UpdateExperience(int userId, int exp);
         Task ForgotPasswordAsync(string email);
         Task<bool> RecoverUserAsync(string token, string newPassword);
         Task RequestAnonymization(User user);
-        void AnonymizeAccount(string token);
+        Task AnonymizeAccountAsync(string token);
         Task<bool> EmailExists(string email);
     }
 }
