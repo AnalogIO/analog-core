@@ -94,37 +94,34 @@ namespace CoffeeCard.Library.Services
                 StatusCodes.Status401Unauthorized);
         }
 
-        public async Task<User> RegisterAccountAsync(RegisterDto registerDto)
+        public async Task<User> RegisterAccountAsync(string name, string email, string password, int programme = 1)
         {
-            Log.Information($"Trying to register new user. Name: {registerDto.Name} Email: {registerDto.Email}");
+            Log.Information("Trying to register new user. Name: {name} Email: {email}", name, email);
 
-            if (_context.Users.Any(x => x.Email == registerDto.Email))
+            if (_context.Users.Any(x => x.Email == email))
             {
-                Log.Information(
-                    $"Could not register user Name: {registerDto.Name}. Email:{registerDto.Email} already exists");
-                throw new ApiException($"The email {registerDto.Email} is already being used by another user", StatusCodes.Status409Conflict);
+                Log.Information("Could not register user Name: {name}. Email:{email} already exists", name, email);
+                throw new ApiException($"The email {email} is already being used by another user", StatusCodes.Status409Conflict);
             }
 
             var salt = _hashService.GenerateSalt();
-            var hashedPassword = _hashService.Hash(registerDto.Password + salt);
+            var hashedPassword = _hashService.Hash(password + salt);
 
-            //This can potentially be implemented again, but is just sat to 1 for now
-            var programme = _context.Programmes.FirstOrDefault(x => x.Id == 1);
-            if (programme == null) throw new ApiException("No programme found with the id: 0", StatusCodes.Status400BadRequest);
+            var chosenProgramme = _context.Programmes.FirstOrDefault(x => x.Id == programme);
+            if (chosenProgramme == null) throw new ApiException($"No programme found with the id: {programme}", StatusCodes.Status400BadRequest);
 
             var user = new User
             {
-                Name = EscapeName(registerDto.Name),
-                Email = registerDto.Email,
+                Name = EscapeName(name),
+                Email = email,
                 Password = hashedPassword,
                 Salt = salt,
-                Programme = programme,
+                Programme = chosenProgramme,
                 UserGroup = UserGroup.Customer
             };
 
             _context.Users.Add(user);
-            if (_context.SaveChanges() == 0)
-                throw new ApiException("The user could not be created - try again in a minute");
+            await _context.SaveChangesAsync();
 
             var claims = new[]
             {
