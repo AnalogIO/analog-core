@@ -1,5 +1,7 @@
-﻿using System;
+using System;
+using System.Threading.Tasks;
 using CoffeeCard.Library.Services;
+using CoffeeCard.WebApi.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -16,26 +18,25 @@ namespace CoffeeCard.WebApi.Pages
 
         [BindProperty(SupportsGet = true)] public string Token { get; set; }
 
-        public IActionResult OnGet()
+        public async Task<IActionResult> OnGet()
         {
-            try
+
+            Func<Task<IActionResult>> func = async delegate ()
             {
-                var emailVerified = _accountService.VerifyRegistration(Token);
+                var emailVerified = await _accountService.VerifyRegistration(Token);
                 if (emailVerified)
                 {
                     TempData["resultHeader"] = "Success";
                     TempData["result"] = @"Your email has been successfully verified";
-                    return RedirectToPage("result");
                 }
-            }
-            catch (Exception)
-            {
-                TempData["resultHeader"] = "Error";
-                TempData["result"] =
-                    @"Looks like the link you used has expired or already been used. Request a new password in the app to verify your email.";
-            }
-            
-            return RedirectToPage("result");
+                else
+                {
+                    PageUtils.setMessage("Error", "Looks like the link you used has expired or already been used. Request a new password in the app to verify your email.", this);
+                }
+                return RedirectToPage("result");
+
+            };
+            return await PageUtils.SafeExecuteFunc(func, this);
         }
     }
 }

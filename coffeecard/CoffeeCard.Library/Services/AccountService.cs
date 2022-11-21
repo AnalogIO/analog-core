@@ -94,37 +94,34 @@ namespace CoffeeCard.Library.Services
                 StatusCodes.Status401Unauthorized);
         }
 
-        public async Task<User> RegisterAccountAsync(RegisterDto registerDto)
+        public async Task<User> RegisterAccountAsync(string name, string email, string password, int programme = 1)
         {
-            Log.Information($"Trying to register new user. Name: {registerDto.Name} Email: {registerDto.Email}");
+            Log.Information("Trying to register new user. Name: {name} Email: {email}", name, email);
 
-            if (_context.Users.Any(x => x.Email == registerDto.Email))
+            if (_context.Users.Any(x => x.Email == email))
             {
-                Log.Information(
-                    $"Could not register user Name: {registerDto.Name}. Email:{registerDto.Email} already exists");
-                throw new ApiException($"The email {registerDto.Email} is already being used by another user", StatusCodes.Status409Conflict);
+                Log.Information("Could not register user Name: {name}. Email:{email} already exists", name, email);
+                throw new ApiException($"The email {email} is already being used by another user", StatusCodes.Status409Conflict);
             }
 
             var salt = _hashService.GenerateSalt();
-            var hashedPassword = _hashService.Hash(registerDto.Password + salt);
+            var hashedPassword = _hashService.Hash(password + salt);
 
-            //This can potentially be implemented again, but is just sat to 1 for now
-            var programme = _context.Programmes.FirstOrDefault(x => x.Id == 1);
-            if (programme == null) throw new ApiException("No programme found with the id: 0", StatusCodes.Status400BadRequest);
+            var chosenProgramme = _context.Programmes.FirstOrDefault(x => x.Id == programme);
+            if (chosenProgramme == null) throw new ApiException($"No programme found with the id: {programme}", StatusCodes.Status400BadRequest);
 
             var user = new User
             {
-                Name = EscapeName(registerDto.Name),
-                Email = registerDto.Email,
+                Name = EscapeName(name),
+                Email = email,
                 Password = hashedPassword,
                 Salt = salt,
-                Programme = programme,
+                Programme = chosenProgramme,
                 UserGroup = UserGroup.Customer
             };
 
             _context.Users.Add(user);
-            if (_context.SaveChanges() == 0)
-                throw new ApiException("The user could not be created - try again in a minute");
+            await _context.SaveChangesAsync();
 
             var claims = new[]
             {
@@ -138,14 +135,15 @@ namespace CoffeeCard.Library.Services
             return user;
         }
 
-        public bool VerifyRegistration(string token)
+        public async Task<bool> VerifyRegistration(string token)
         {
-            Log.Information($"Trying to verify registration with token: {token}");
+            Log.Information("Trying to verify registration with token: {token}", token);
 
-            var user = VerifyTokenClaimAndUser(token);
+            var email = _tokenService.ValidateVerificationTokenAndGetEmail(token);
+            var user = GetAccountByEmail(email);
 
             user.IsVerified = true;
-            return _context.SaveChanges() > 0;
+            return await _context.SaveChangesAsync() > 0;
         }
         public User UpdateAccount(IEnumerable<Claim> claims, UpdateUserDto userDto)
         {
@@ -238,7 +236,7 @@ namespace CoffeeCard.Library.Services
             if (tokenObj == null) return false;
 
             Log.Information($"User tried to recover with token {token}");
-            if (!await _tokenService.ValidateToken(token)) return false;
+            if (!await _tokenService.ValidateTokenIsUnusedAsync(token)) return false;
 
             var user = GetAccountByClaims(tokenObj.Claims);
             if (user == null) return false;
@@ -265,13 +263,14 @@ namespace CoffeeCard.Library.Services
             
             await _emailService.SendVerificationEmailForDeleteAccount(user, verificationToken);
         }
-        
-        public async void AnonymizeAccount(string token)
+
+        public async Task AnonymizeAccountAsync(string token)
         {
-            Log.Information($"Trying to verify deletion with token: {token}");
+            Log.Information("Trying to verify deletion with token: {token}", token);
 
-            var user = VerifyTokenClaimAndUser(token);
-
+            var email = _tokenService.ValidateVerificationTokenAndGetEmail(token);
+            var user = GetAccountByEmail(email);
+            
             await AnonymizeUser(user);
         }
 
@@ -289,22 +288,7 @@ namespace CoffeeCard.Library.Services
             user.DateUpdated = DateTime.Now;
             user.PrivacyActivated = true;
             user.UserState = UserState.Deleted;
-            await _context.SaveChangesAsync();            
-        }
-        
-        private User VerifyTokenClaimAndUser(string token)
-        {
-            var jwtToken = _tokenService.ReadToken(token);
-            if (!jwtToken.Claims.Any(x => x.Type == ClaimTypes.Role && x.Value == "verification_token"))
-                throw new ApiException("The token is invalid!", 400);
-
-            var emailClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
-            if (emailClaim == null) throw new ApiException("The token is invalid!", 400);
-
-            var user = _context.Users.FirstOrDefault(x => x.Email == emailClaim.Value);
-            if (user == null) throw new ApiException("The token is invalid!", 400);
-
-            return user;
+            await _context.SaveChangesAsync();
         }
 
         private User GetAccountByEmail(string email)

@@ -1,8 +1,11 @@
-﻿using System.Threading.Tasks;
+using System;
+using System.Threading.Tasks;
 using CoffeeCard.Library.Services;
 using CoffeeCard.Models.PagesModels;
+using CoffeeCard.WebApi.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Serilog;
 
 namespace CoffeeCard.WebApi.Pages
 {
@@ -25,33 +28,42 @@ namespace CoffeeCard.WebApi.Pages
 
         public async Task<IActionResult> OnGet()
         {
-            IsTokenValid = await _tokenService.ValidateToken(Token);
+            Func<Task<IActionResult>> func = async delegate()
+            {
+                IsTokenValid = await _tokenService.ValidateTokenIsUnusedAsync(Token);
 
-            if (IsTokenValid) return Page();
+                if (IsTokenValid) return Page();
+                else
+                {
+                    PageUtils.setMessage("Error",
+                        "Looks like the link you used has expired or already been used. Request a new password in the app to verify your email.",
+                        this);
+                    return RedirectToPage("result");
+                }
+            };
 
-            TempData["resultHeader"] = "Error";
-            TempData["result"] =
-                @"Looks like the link you used has expired or already been used. Request a new one from the app.";
-            return RedirectToPage("result");
+            return await PageUtils.SafeExecuteFunc(func, this);
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid) return Page();
 
-            if (await _accountService.RecoverUserAsync(Token, PinCode.NewPinCode))
-            {
-                TempData["resultHeader"] = "Success";
-                TempData["result"] = "Your password has now been reset";
-            }
-            else
-            {
-                TempData["resultHeader"] = "Something went wrong";
-                TempData["result"] =
-                    "An error occured while updating your pin code. Please try again later or contact us at support@analogio.dk for further support";
-            }
 
-            return RedirectToPage("result");
+            Func<Task<IActionResult>> func = async delegate ()
+            {
+                if (await _accountService.RecoverUserAsync(Token, PinCode.NewPinCode))
+                {
+                    PageUtils.setMessage("Success", "Your password has now been reset", this);
+                }
+                else
+                {
+                    PageUtils.setMessage("Error", "An error occured while updating your pin code. Please try again later or contact us at support@analogio.dk for further support", this);
+                }
+                return RedirectToPage("result");
+            };
+
+            return await PageUtils.SafeExecuteFunc(func, this);
         }
     }
 }
