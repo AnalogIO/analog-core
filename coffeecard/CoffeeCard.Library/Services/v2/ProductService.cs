@@ -29,11 +29,6 @@ namespace CoffeeCard.Library.Services.v2
             return await GetProductsAsync(user.UserGroup);
         }
 
-        public void Dispose()
-        {
-            _context.Dispose();
-        }
-
         private async Task<IEnumerable<Product>> GetProductsAsync(UserGroup userGroup)
         {
             return await
@@ -58,7 +53,13 @@ namespace CoffeeCard.Library.Services.v2
                 Log.Error("No product was found by Product Id: {Id}", productId);
                 throw new EntityNotFoundException($"No product was found by Product Id: {productId}");
             }
+            
             return product;
+        }
+        
+        public void Dispose()
+        {
+            _context?.Dispose();
         }
     }
 }

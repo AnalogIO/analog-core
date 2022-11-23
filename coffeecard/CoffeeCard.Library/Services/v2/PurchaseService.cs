@@ -8,7 +8,6 @@ using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 using CoffeeCard.Models.Entities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Purchase = CoffeeCard.Models.Entities.Purchase;
@@ -36,12 +35,14 @@ namespace CoffeeCard.Library.Services.v2
         public async Task<InitiatePurchaseResponse> InitiatePurchase(InitiatePurchaseRequest initiateRequest, User user)
         {
             var product = await _productService.GetProductAsync(initiateRequest.ProductId);
-            UserMayPurchaseProduct(user, initiateRequest, product);           
+            
+            CheckUserIsAllowedToPurchaseProduct(user, initiateRequest, product);           
 
-            var (purchase, paymentDetails) = await InitiatePayment(initiateRequest, product, user);
+            var (purchase, paymentDetails) = await InitiatePaymentAsync(initiateRequest, product, user);
             
             await _context.Purchases.AddAsync(purchase);
             await _context.SaveChangesAsync();
+            
             if (purchase.Status == PurchaseStatus.Completed)
             {
                 await _ticketService.IssueTickets(purchase);
@@ -57,6 +58,84 @@ namespace CoffeeCard.Library.Services.v2
                 PurchaseStatus = purchase.Status,
                 PaymentDetails = paymentDetails
             };
+        }
+        
+        /// <summary>
+        /// Checks if a user is eligible to purchase a product
+        /// Throws an ApiException if it does not pass the checks
+        /// </summary>
+        /// <param name="user">User</param>
+        /// <param name="initiateRequest">Purchase Request</param>
+        /// <param name="product">Product</param>
+        /// <exception cref="IllegalUserOperationException">User is not entitled to purchase product</exception>
+        /// <exception cref="ArgumentException">PaymentType FreePurchase used for a non-free product</exception>
+        private static void CheckUserIsAllowedToPurchaseProduct(User user, InitiatePurchaseRequest initiateRequest, Product product)
+        {
+            //Product does not belong to same userGroup as user
+            if (!product.ProductUserGroup.Any(pug => pug.UserGroup == user.UserGroup))
+            {
+                Log.Warning(
+                    "User {UserId} is not authorized to purchase Product Id: {ProductId} as user is not in Product User Group",
+                    user.Id, product.Id);
+                throw new IllegalUserOperationException($"User is not entitled to purchase product '{product.Name}'");
+            }
+
+            if (initiateRequest.PaymentType == PaymentType.FreePurchase && product.Price != 0)
+            {
+                Log.Warning(
+                    "User tried to issue paid product to themselves, User {UserId}, Product {ProductId}",
+                    user.Id, product.Id);
+                throw new ArgumentException($"Product '{product.Name}' is not free");
+            }
+        }
+        
+        private async Task<(Purchase purchase, PaymentDetails paymentDetails)> InitiatePaymentAsync(InitiatePurchaseRequest purchaseRequest, Product product, User user){
+            var orderId = await GenerateUniqueOrderId();
+            PaymentDetails paymentDetails;
+            PurchaseStatus purchaseStatus;
+            string transactionId;
+
+            switch (purchaseRequest.PaymentType)
+            {
+                case PaymentType.MobilePay:
+                    paymentDetails = await _mobilePayPaymentsService.InitiatePayment(new MobilePayPaymentRequest
+                    {
+                        Amount = product.Price,
+                        OrderId = orderId,
+                        Description = product.Name
+                    });
+                    
+                    purchaseStatus = PurchaseStatus.PendingPayment;
+                    transactionId = (paymentDetails as MobilePayPaymentDetails).PaymentId;
+                    
+                    break;
+                case PaymentType.FreePurchase:
+                    paymentDetails = new FreePurchasePaymentDetails(orderId.ToString());
+                    purchaseStatus = PurchaseStatus.Completed;
+                    transactionId = Guid.Empty.ToString();
+                    
+                    break;
+                default:
+                    Log.Error("Payment Type {PaymentType} is not handled in PurchaseService", purchaseRequest.PaymentType);
+                    throw new ArgumentException($"Payment Type '{purchaseRequest.PaymentType}' is not handled");
+            }
+            
+            var purchase = new Purchase
+            {
+                ProductName = product.Name,
+                ProductId = product.Id,
+                Price = product.Price,
+                NumberOfTickets = product.NumberOfTickets,
+                DateCreated = DateTime.UtcNow,
+                Completed = false,
+                OrderId = paymentDetails.OrderId,
+                TransactionId = transactionId,
+                PurchasedBy = user,
+                Status = purchaseStatus
+                // FIXME State management, PaymentType
+            };
+            
+            return (purchase, paymentDetails);
         }
 
         public async Task<SinglePurchaseResponse> GetPurchase(int purchaseId, User user)
@@ -114,9 +193,8 @@ namespace CoffeeCard.Library.Services.v2
                     $"No purchase was found by Transaction Id: {webhook.Data.Id} from webhook request");
             }
 
-            if (purchase.Completed || purchase.Completed)
+            if (purchase.Completed)
             {
-                // FIXME Check purchase is not already completed. Should we throw an error? Conflict?
                 Log.Warning(
                     "Purchase from Webhook request is already completed. Purchase Id: {PurchaseId}, Transaction Id: {TransactionId}",
                     purchase.Id, webhook.Data.Id);
@@ -149,50 +227,6 @@ namespace CoffeeCard.Library.Services.v2
             }
         }
 
-        private async Task<Tuple<Purchase, PaymentDetails>> InitiatePayment(InitiatePurchaseRequest purchaseRequest, Product product, User user){
-            var orderId = await GenerateUniqueOrderId();
-            PaymentDetails paymentDetails;
-            PurchaseStatus purchaseStatus;
-            string transactionId;
-
-            switch (purchaseRequest.PaymentType)
-            {
-                case PaymentType.MobilePay:
-                    paymentDetails = await _mobilePayPaymentsService.InitiatePayment(new MobilePayPaymentRequest
-                    {
-                        Amount = product.Price,
-                        OrderId = orderId,
-                        Description = product.Name
-                    });
-                    purchaseStatus = PurchaseStatus.PendingPayment;
-                    transactionId = (paymentDetails as MobilePayPaymentDetails).PaymentId;
-                    break;
-                case PaymentType.FreePurchase:
-                    paymentDetails = new FreePurchasePaymentDetails(orderId.ToString());
-                    purchaseStatus = PurchaseStatus.Completed;
-                    transactionId = Guid.Empty.ToString();
-                    break;
-                default:
-                    throw new ApiException("No such payment type defined", StatusCodes.Status400BadRequest);
-            }
-            
-            var purchase = new Purchase
-            {
-                ProductName = product.Name,
-                ProductId = product.Id,
-                Price = product.Price,
-                NumberOfTickets = product.NumberOfTickets,
-                DateCreated = DateTime.UtcNow,
-                Completed = false,
-                OrderId = paymentDetails.OrderId,
-                TransactionId = transactionId,
-                PurchasedBy = user,
-                Status = purchaseStatus
-                // FIXME State management, PaymentType
-            };
-            return new Tuple<Purchase, PaymentDetails>(purchase, paymentDetails);
-        }
-        
         private async Task CompletePurchase(Purchase purchase)
         {
             await _mobilePayPaymentsService.CapturePayment(Guid.Parse(purchase.TransactionId), purchase.Price);
@@ -216,36 +250,6 @@ namespace CoffeeCard.Library.Services.v2
                 purchase.Id, purchase.TransactionId);
         }
 
-        /// <summary>
-        /// Checks if a user with the given Id may issue a free product of that Id
-        /// Throws an ApiException if it does not pass the checks
-        /// </summary>
-        /// <param name="user"></param>
-        /// <param name="initiateRequest"></param>
-        /// <returns>A tuple containing the User and Product of the given Ids</returns>
-        /// <exception cref="ApiException"></exception>
-        private void UserMayPurchaseProduct(User user, InitiatePurchaseRequest initiateRequest, Product product)
-        {
-            if (!product.ProductUserGroup.Any(pug => pug.UserGroup == user.UserGroup))
-                //Product does not belong to same userGroup as user
-            {
-                Log.Warning(
-                    "User {UserId} is not authorized to purchase Product Id: {ProductId} as user is not in Product User Group",
-                    user.Id, product.Id);
-                throw new ApiException($"You do not have access to this product",
-                    StatusCodes.Status403Forbidden);
-            }
-
-            if (initiateRequest.PaymentType == PaymentType.FreePurchase && product.Price != 0)
-            {
-                Log.Warning(
-                    "User tried to issue paid product to themselves, User {UserId}, Product {ProductId}",
-                    user.Id, product.Id);
-                throw new ApiException($"Product is not free",
-                    StatusCodes.Status403Forbidden);
-            }
-        }
-
         private async Task<Guid> GenerateUniqueOrderId()
         {
             while (true)
@@ -258,6 +262,13 @@ namespace CoffeeCard.Library.Services.v2
 
                 return newOrderId;
             }
+        }
+
+        public void Dispose()
+        {
+            _context?.Dispose();
+            _ticketService?.Dispose();
+            _productService?.Dispose();
         }
     }
 }

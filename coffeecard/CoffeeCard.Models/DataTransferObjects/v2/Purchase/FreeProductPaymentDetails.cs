@@ -10,7 +10,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
     /// <example>
     /// {
     ///     "paymentType": "FreeProduct",
-    ///     "orderId": "f5cb3e0f-3b9b-4f50-8c4f-a7450f300a5c",
+    ///     "orderId": "f5cb3e0f-3b9b-4f50-8c4f-a7450f300a5c"
     /// }
     /// </example>
     [KnownType(typeof(FreePurchasePaymentDetails))]
@@ -20,7 +20,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <summary>
         /// Creates a new instance of <see cref="FreePurchasePaymentDetails"/>
         /// </summary>
-        /// <param name="orderId"></param>
         public FreePurchasePaymentDetails(string orderId)
         {
             PaymentType = PaymentType.FreePurchase;

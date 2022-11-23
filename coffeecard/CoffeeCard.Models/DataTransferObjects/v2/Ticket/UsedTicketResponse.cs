@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 namespace CoffeeCard.Models.DataTransferObjects.v2.Ticket
 {
     /// <summary>
-    /// Representing a ticket for a product
+    /// Representing a used ticket for a product
     /// </summary>
     /// <example>
     /// {

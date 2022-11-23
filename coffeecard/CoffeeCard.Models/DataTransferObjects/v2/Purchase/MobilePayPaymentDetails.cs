@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
 {
@@ -23,18 +23,18 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         public string MobilePayAppRedirectUri { get; }
         
         /// <summary>
+        /// MobilePay Id for a payment
+        /// </summary>
+        /// <example>186d2b31-ff25-4414-9fd1-bfe9807fa8b7</example>
+        [Required]
+        public string PaymentId { get; }
+        
+        /// <summary>
         /// MobilePay state
         /// </summary>
         /// <example>Initiated</example>
         [Required]
         public string? State { get; }
-
-        /// <summary>
-        /// Id for a payment
-        /// </summary>
-        /// <example>186d2b31-ff25-4414-9fd1-bfe9807fa8b7</example>
-        [Required]
-        public string PaymentId { get; set; }
 
         /// <summary>
         /// Creates a new instance of <see cref="MobilePayPaymentDetails"/>

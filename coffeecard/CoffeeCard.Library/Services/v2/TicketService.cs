@@ -92,5 +92,10 @@ namespace CoffeeCard.Library.Services.v2
             }
             return ticket;
         }
+
+        public void Dispose()
+        {
+            _context?.Dispose();
+        }
     }
 }
