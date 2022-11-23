@@ -30,6 +30,13 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         public string? State { get; }
 
         /// <summary>
+        /// Id for a payment
+        /// </summary>
+        /// <example>186d2b31-ff25-4414-9fd1-bfe9807fa8b7</example>
+        [Required]
+        public string PaymentId { get; set; }
+
+        /// <summary>
         /// Creates a new instance of <see cref="MobilePayPaymentDetails"/>
         /// </summary>
         public MobilePayPaymentDetails(string orderId, string mobilePayAppRedirectUri, string paymentId, string state)

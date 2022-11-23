@@ -38,26 +38,11 @@ namespace CoffeeCard.Library.Services.v2
             var product = await _productService.GetProductAsync(initiateRequest.ProductId);
             UserMayPurchaseProduct(user, initiateRequest, product);           
 
-            var (paymentDetails, purchaseStatus)= await InitiatePayment(initiateRequest, product);
-
-            // FIXME State management, PaymentType
-            var purchase = new Purchase
-            {
-                ProductName = product.Name,
-                ProductId = product.Id,
-                Price = product.Price,
-                NumberOfTickets = product.NumberOfTickets,
-                DateCreated = DateTime.UtcNow,
-                Completed = false,
-                OrderId = paymentDetails.OrderId,
-                TransactionId = paymentDetails.PaymentId,
-                PurchasedBy = user,
-                Status = purchaseStatus
-            };
-
+            var (purchase, paymentDetails) = await InitiatePayment(initiateRequest, product, user);
+            
             await _context.Purchases.AddAsync(purchase);
             await _context.SaveChangesAsync();
-            if (purchaseStatus == PurchaseStatus.Completed)
+            if (purchase.Status == PurchaseStatus.Completed)
             {
                 await _ticketService.IssueTickets(purchase);
             }
@@ -164,22 +149,50 @@ namespace CoffeeCard.Library.Services.v2
             }
         }
 
-        private async Task<Tuple<PaymentDetails, PurchaseStatus>> InitiatePayment(InitiatePurchaseRequest purchaseRequest, Product product)
-        {
+        private async Task<Tuple<Purchase, PaymentDetails>> InitiatePayment(InitiatePurchaseRequest purchaseRequest, Product product, User user){
             var orderId = await GenerateUniqueOrderId();
-            return purchaseRequest.PaymentType switch
-            {
-                PaymentType.MobilePay => new Tuple<PaymentDetails, PurchaseStatus>(await _mobilePayPaymentsService.InitiatePayment(new MobilePayPaymentRequest
-                {
-                    Amount = product.Price,
-                    OrderId = orderId,
-                    Description = product.Name
-                }), PurchaseStatus.PendingPayment),
-                PaymentType.FreePurchase => new Tuple<PaymentDetails, PurchaseStatus>(new FreeProductPaymentDetails(orderId.ToString()), PurchaseStatus.Completed),
-                _ => throw new ApiException("No such payment type defined", StatusCodes.Status400BadRequest)
-            };
-        }
+            PaymentDetails paymentDetails;
+            PurchaseStatus purchaseStatus;
+            string transactionId;
 
+            switch (purchaseRequest.PaymentType)
+            {
+                case PaymentType.MobilePay:
+                    paymentDetails = await _mobilePayPaymentsService.InitiatePayment(new MobilePayPaymentRequest
+                    {
+                        Amount = product.Price,
+                        OrderId = orderId,
+                        Description = product.Name
+                    });
+                    purchaseStatus = PurchaseStatus.PendingPayment;
+                    transactionId = (paymentDetails as MobilePayPaymentDetails).PaymentId;
+                    break;
+                case PaymentType.FreePurchase:
+                    paymentDetails = new FreePurchasePaymentDetails(orderId.ToString());
+                    purchaseStatus = PurchaseStatus.Completed;
+                    transactionId = Guid.Empty.ToString();
+                    break;
+                default:
+                    throw new ApiException("No such payment type defined", StatusCodes.Status400BadRequest);
+            }
+            
+            var purchase = new Purchase
+            {
+                ProductName = product.Name,
+                ProductId = product.Id,
+                Price = product.Price,
+                NumberOfTickets = product.NumberOfTickets,
+                DateCreated = DateTime.UtcNow,
+                Completed = false,
+                OrderId = paymentDetails.OrderId,
+                TransactionId = transactionId,
+                PurchasedBy = user,
+                Status = purchaseStatus
+                // FIXME State management, PaymentType
+            };
+            return new Tuple<Purchase, PaymentDetails>(purchase, paymentDetails);
+        }
+        
         private async Task CompletePurchase(Purchase purchase)
         {
             await _mobilePayPaymentsService.CapturePayment(Guid.Parse(purchase.TransactionId), purchase.Price);

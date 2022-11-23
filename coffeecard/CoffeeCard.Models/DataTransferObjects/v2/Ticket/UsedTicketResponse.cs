@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.Ticket
@@ -38,7 +38,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Ticket
         /// <value>Used date time</value>
         /// <example>2022-01-09T21:03:52.2283208Z</example>
         [Required]
-        public DateTime? DateUsed { get; set; }
+        public DateTime DateUsed { get; set; }
         
         /// <summary>
         /// Name of product a ticket is for

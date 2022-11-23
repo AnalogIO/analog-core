@@ -61,7 +61,8 @@ namespace CoffeeCard.Library.Services.v2
             var ticket = await GetFirstTicketFromProductAsync(productId, user.Id);
 
             ticket.IsUsed = true;
-            ticket.DateUsed = DateTime.UtcNow;
+            var timeUsed = DateTime.UtcNow;
+            ticket.DateUsed = timeUsed;
             
             if (ticket.Purchase.Price > 0) //Paid products increases your rank on the leaderboard
             {
@@ -74,7 +75,7 @@ namespace CoffeeCard.Library.Services.v2
             {
                 Id = ticket.Id,
                 DateCreated = ticket.DateCreated,
-                DateUsed = ticket.DateUsed,
+                DateUsed = timeUsed,
                 ProductName = ticket.Purchase.ProductName
             };
         }
@@ -87,7 +88,7 @@ namespace CoffeeCard.Library.Services.v2
             
             if (ticket == null)
             {
-                throw new ApiException("No tickets found for the given product with this user", StatusCodes.Status404NotFound);
+                throw new EntityNotFoundException("No tickets found for the given product with this user");
             }
             return ticket;
         }
