@@ -3,9 +3,13 @@
     public enum UserGroup
     {
         // Switching the order of enums is a breaking change since the index value is store in the database
-        Customer, // Normal user for customers
-        Barista, // Active Barista in Analog
-        Manager, // Active Manager in Analog
-        Board // Active board member in Analog
+        /// Normal user for customers
+        Customer,
+        /// Active Barista in Analog
+        Barista, 
+        /// Active Manager in Analog
+        Manager,
+        /// Active board member in Analog
+        Board 
     }
 }

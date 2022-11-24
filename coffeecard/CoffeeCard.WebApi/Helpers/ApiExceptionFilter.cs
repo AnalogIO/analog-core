@@ -1,5 +1,6 @@
 ﻿using System;
 using CoffeeCard.Common.Errors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Serilog;
@@ -11,36 +12,36 @@ namespace CoffeeCard.WebApi.Helpers
         public override void OnException(ExceptionContext context)
         {
             ApiError apiError;
-            if (context.Exception is ApiException)
+            switch (context.Exception)
             {
-                // handle explicit 'known' API errors
-                var ex = context.Exception as ApiException;
-                context.Exception = null;
-                apiError = new ApiError(ex.Message);
-
-                context.HttpContext.Response.StatusCode = ex.StatusCode;
-            }
-            else if (context.Exception is UnauthorizedAccessException)
-            {
-                apiError = new ApiError("Unauthorized Access");
-                context.HttpContext.Response.StatusCode = 401;
-
-                // handle logging here
-            }
-            else
-            {
-                // Unhandled errors
+                case ApiException exception:
+                {
+                    apiError = new ApiError(exception.Message);
+                    context.HttpContext.Response.StatusCode = exception.StatusCode;
+                    break;
+                }
+                case UnauthorizedAccessException _:
+                    apiError = new ApiError("Unauthorized Access");
+                    context.HttpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    break;
+                case ArgumentException exception:
+                    apiError = new ApiError(exception.Message);
+                    context.HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                    break;
+                default:
+                {
+                    Log.Error(context.Exception, "Unhandled exception caught");
+                    
 #if !DEBUG
-                                var msg = "An unhandled error occurred.";
+                    var msg = "An unhandled error occurred.";
 #else
-                var msg = context.Exception.GetBaseException().Message;
+                    var msg = context.Exception.GetBaseException().Message;
 #endif
 
-                apiError = new ApiError(msg);
-
-                context.HttpContext.Response.StatusCode = 500;
-
-                Log.Error("Unhandled exception caught. Exception={exception}", context.Exception);
+                    apiError = new ApiError(msg);
+                    context.HttpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                    break;
+                }
             }
 
             // always return a JSON result

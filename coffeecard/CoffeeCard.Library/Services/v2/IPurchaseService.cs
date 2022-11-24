@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
@@ -6,7 +7,7 @@ using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Library.Services.v2
 {
-    public interface IPurchaseService
+    public interface IPurchaseService : IDisposable
     {
         /// <summary>
         /// Initiate a new purchase. Depending on the PaymentType, the purchase might be completed in the future

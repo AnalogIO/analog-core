@@ -1,4 +1,5 @@
 using System.Threading;
+using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Library.Services;
 using CoffeeCard.Models.Entities;
@@ -10,7 +11,7 @@ namespace CoffeeCard.Tests.Unit.Services
     {
         
         [Fact(DisplayName = "LoginLimiter allows logins after timeout expired")]
-        public void LoginAllowsLoginsAfterTimeout()
+        public async Task LoginAllowsLoginsAfterTimeout()
         {
             // Arrange
             var loginLimiterSettings = new LoginLimiterSettings()
@@ -37,7 +38,7 @@ namespace CoffeeCard.Tests.Unit.Services
             loginLimiter.LoginAllowed(user);
             
             var lockedOutActual = loginLimiter.LoginAllowed(user); //Checks that you are actually locked after the initial attempts
-            Thread.Sleep(61000);
+            await Task.Delay(61000);
             var loginAllowedAgainActual = loginLimiter.LoginAllowed(user); //Checks that you are allowed to login again after the timeout period
             
             Assert.Equal(lockedOutExpected, lockedOutActual);

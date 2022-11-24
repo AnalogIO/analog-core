@@ -6,6 +6,7 @@ using CoffeeCard.Common;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Models.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoffeeCard.Library.Utils
@@ -26,7 +27,7 @@ namespace CoffeeCard.Library.Utils
 
             var user = await _context.Users.Include(x => x.Purchases)
                 .FirstOrDefaultAsync(x => x.Id == int.Parse(userId.Value));
-            if (user == null) throw new ApiException("The user could not be found");
+            if (user == null) throw new ApiException("The user could not be found", StatusCodes.Status404NotFound);
 
             return user;
         }
@@ -38,7 +39,7 @@ namespace CoffeeCard.Library.Utils
             var email = emailClaim.Value;
 
             var user = await _context.Users.Include(x => x.Tokens).FirstOrDefaultAsync(x => x.Email == email);
-            if (user == null) throw new ApiException("The user could not be found");
+            if (user == null) throw new ApiException("The user could not be found", StatusCodes.Status404NotFound);
 
             return user;
         }

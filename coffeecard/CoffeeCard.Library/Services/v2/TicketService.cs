@@ -1,21 +1,26 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Models.DataTransferObjects.v2.Ticket;
 using CoffeeCard.Models.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace CoffeeCard.Library.Services.v2
 {
-    public class TicketService : ITicketService
+    public sealed class TicketService : ITicketService
     {
         private readonly CoffeeCardContext _context;
+        private readonly IStatisticService _statisticService;
 
-        public TicketService(CoffeeCardContext context)
+        public TicketService(CoffeeCardContext context, IStatisticService statisticService)
         {
             _context = context;
+            _statisticService = statisticService;
         }
 
         public async Task IssueTickets(Purchase purchase)
@@ -48,6 +53,49 @@ namespace CoffeeCard.Library.Services.v2
                     ProductId = t.ProductId,
                     ProductName = t.Purchase.ProductName
                 }).ToListAsync();
+        }
+        
+        public async Task<UsedTicketResponse> UseTicketAsync(User user, int productId)
+        {
+            Log.Information("Using ticket with id, {productId}", productId);
+            var ticket = await GetFirstTicketFromProductAsync(productId, user.Id);
+
+            ticket.IsUsed = true;
+            var timeUsed = DateTime.UtcNow;
+            ticket.DateUsed = timeUsed;
+            
+            if (ticket.Purchase.Price > 0) //Paid products increases your rank on the leaderboard
+            {
+                await _statisticService.IncreaseStatisticsBy(user.Id, 1);
+            }
+
+            await _context.SaveChangesAsync();
+
+            return new UsedTicketResponse
+            {
+                Id = ticket.Id,
+                DateCreated = ticket.DateCreated,
+                DateUsed = timeUsed,
+                ProductName = ticket.Purchase.ProductName
+            };
+        }
+        
+        private async Task<Ticket> GetFirstTicketFromProductAsync(int productId, int userId)
+        {
+            var ticket = await _context.Tickets
+                .Include(t => t.Purchase)
+                .FirstOrDefaultAsync(t => t.Owner.Id == userId && t.ProductId == productId && !t.IsUsed);
+            
+            if (ticket == null)
+            {
+                throw new EntityNotFoundException("No tickets found for the given product with this user");
+            }
+            return ticket;
+        }
+
+        public void Dispose()
+        {
+            _context?.Dispose();
         }
     }
 }
