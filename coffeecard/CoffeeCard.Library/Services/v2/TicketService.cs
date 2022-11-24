@@ -12,7 +12,7 @@ using Serilog;
 
 namespace CoffeeCard.Library.Services.v2
 {
-    public class TicketService : ITicketService
+    public sealed class TicketService : ITicketService
     {
         private readonly CoffeeCardContext _context;
         private readonly IStatisticService _statisticService;

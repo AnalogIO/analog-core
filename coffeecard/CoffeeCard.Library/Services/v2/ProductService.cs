@@ -10,7 +10,7 @@ using Serilog;
 
 namespace CoffeeCard.Library.Services.v2
 {
-    public class ProductService : IProductService
+    public sealed class ProductService : IProductService
     {
         private readonly CoffeeCardContext _context;
 

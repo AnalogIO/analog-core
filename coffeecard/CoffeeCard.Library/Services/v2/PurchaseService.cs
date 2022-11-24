@@ -14,7 +14,7 @@ using Purchase = CoffeeCard.Models.Entities.Purchase;
 
 namespace CoffeeCard.Library.Services.v2
 {
-    public class PurchaseService : IPurchaseService
+    public sealed class PurchaseService : IPurchaseService
     {
         private readonly CoffeeCardContext _context;
         private readonly IEmailService _emailService;
