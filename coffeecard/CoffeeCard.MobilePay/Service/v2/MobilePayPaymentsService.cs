@@ -42,7 +42,7 @@ namespace CoffeeCard.MobilePay.Service.v2
             catch (ApiException<ErrorResponse> e)
             {
                 var errorResponse = e.Result;
-                Log.Error(
+                Log.Error(e, 
                     "MobilePay InitiatePayment failed with HTTP {StatusCode}. ErrorCode: {ErrorCode} Message: {Message} CorrelationId: {CorrelationId}",
                     e.StatusCode, errorResponse.Code, errorResponse.Message, errorResponse.CorrelationId);
 
@@ -69,7 +69,7 @@ namespace CoffeeCard.MobilePay.Service.v2
             catch (ApiException<ErrorResponse> e)
             {
                 var errorResponse = e.Result;
-                Log.Error(
+                Log.Error(e, 
                     "MobilePay GetPayment failed with HTTP {StatusCode}. ErrorCode: {ErrorCode} Message: {Message} CorrelationId: {CorrelationId}",
                     e.StatusCode, errorResponse.Code, errorResponse.Message, errorResponse.CorrelationId);
 
@@ -96,7 +96,7 @@ namespace CoffeeCard.MobilePay.Service.v2
             catch (ApiException<ErrorResponse> e)
             {
                 var errorResponse = e.Result;
-                Log.Error(
+                Log.Error(e, 
                     "MobilePay CapturePayment failed with HTTP {StatusCode}. ErrorCode: {ErrorCode} Message: {Message} CorrelationId: {CorrelationId}",
                     e.StatusCode, errorResponse.Code, errorResponse.Message, errorResponse.CorrelationId);
 
@@ -120,7 +120,7 @@ namespace CoffeeCard.MobilePay.Service.v2
             catch (ApiException<ErrorResponse> e)
             {
                 var errorResponse = e.Result;
-                Log.Error(
+                Log.Error(e, 
                     "MobilePay CancelPayment failed with HTTP {StatusCode}. ErrorCode: {ErrorCode} Message: {Message} CorrelationId: {CorrelationId}",
                     e.StatusCode, errorResponse.Code, errorResponse.Message, errorResponse.CorrelationId);
 
@@ -144,7 +144,7 @@ namespace CoffeeCard.MobilePay.Service.v2
 
         private void LogMobilePayException(ApiException apiException)
         {
-            Log.Error(
+            Log.Error(apiException, 
                 "MobilePay InitiatePayment failed with HTTP {StatusCode}. Message: {Message}",
                 apiException.StatusCode, apiException.Message);
         }
