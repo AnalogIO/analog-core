@@ -64,7 +64,7 @@ namespace CoffeeCard.MobilePay.Service.v2
             }
             catch (ApiException e)
             {
-                Log.Error(e, "Error calling Get Webhook with Id: {Id}. Http {StatusCode} {Message}", webhookId, e.StatusCode, e.Message);
+                Log.Error(e, "Error calling Delete Webhook with Id: {Id}. Http {StatusCode} {Message}", webhookId, e.StatusCode, e.Message);
                 throw new MobilePayApiException(e.StatusCode, e.Message);
 
             }
@@ -84,7 +84,7 @@ namespace CoffeeCard.MobilePay.Service.v2
             }
             catch (ApiException e)
             {
-                Log.Error(e, "Error calling Get Webhook with Id: {Id}. Http {StatusCode} {Message}", webhookId, e.StatusCode, e.Message);
+                Log.Error(e, "Error calling Update Webhook with Id: {Id}. Http {StatusCode} {Message}", webhookId, e.StatusCode, e.Message);
                 throw new MobilePayApiException(e.StatusCode, e.Message);
 
             }
