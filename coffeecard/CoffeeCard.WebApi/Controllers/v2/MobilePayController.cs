@@ -38,7 +38,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// Webhook to be invoked by MobilePay backend
         /// </summary>
         /// <param name="request">Webhook request</param>
-        /// <param name="mpSignatureHeader">Webhook mpSignatureHeader</param>
+        /// <param name="mpSignatureHeader">Webhook signature</param>
         /// <response code="204">Webhook processed</response>
         /// <response code="400">Signature is not valid</response>
         [HttpPost("webhook")]

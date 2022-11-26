@@ -13,7 +13,7 @@ namespace CoffeeCard.MobilePay.Service.v2
         /// <param name="url"></param>
         /// <param name="events"></param>
         /// <returns>Response with Webhook Id</returns>
-        Task<SingleWebhookResponse> RegisterWebhook(string url, ICollection<string> events);
+        Task<SingleWebhookResponse> RegisterWebhook(string url, ICollection<Events> events);
 
         /// <summary>
         /// Get Webhook information from MobilePay

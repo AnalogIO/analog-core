@@ -11,6 +11,8 @@ namespace CoffeeCard.MobilePay.Service.v2
 {
     public class MobilePayPaymentsService : IMobilePayPaymentsService
     {
+        private const string CoffeeCardAppRedirectUrl = "analogcoffeecard://mobilepay_purchase";
+        
         private readonly MobilePaySettingsV2 _mobilePaySettings;
         private readonly PaymentsApi _paymentsApi;
 
@@ -24,15 +26,15 @@ namespace CoffeeCard.MobilePay.Service.v2
         {
             try
             {
-                var response = await _paymentsApi.PaymentsPOSTAsync(null, new InitiatePaymentRequest
+                var response = await _paymentsApi.InitiatePaymentAsync(new InitiatePaymentRequest
                 {
                     Amount = ConvertAmountToOrer(paymentRequest.Amount),
                     IdempotencyKey = paymentRequest.OrderId,
                     PaymentPointId = _mobilePaySettings.PaymentPointId,
-                    RedirectUri = "analogcoffeecard://mobilepay_purchase", // FIXME
+                    RedirectUri = CoffeeCardAppRedirectUrl,
                     Reference = paymentRequest.OrderId.ToString(),
                     Description = paymentRequest.Description
-                });
+                }, null);
 
                 return new MobilePayPaymentDetails(paymentRequest.OrderId.ToString(), response.MobilePayAppRedirectUri,
                     response.PaymentId.ToString(), null);
@@ -59,7 +61,7 @@ namespace CoffeeCard.MobilePay.Service.v2
         {
             try
             {
-                var response = await _paymentsApi.PaymentsGET2Async(paymentId, null);
+                var response = await _paymentsApi.GetSinglePaymentAsync(paymentId, null);
 
                 return new MobilePayPaymentDetails(response.Reference, response.RedirectUri,
                     response.PaymentId.ToString(), response.State.ToString());
@@ -86,10 +88,10 @@ namespace CoffeeCard.MobilePay.Service.v2
         {
             try
             {
-                await _paymentsApi.CaptureAsync(paymentId, null, new CapturePaymentRequest
+                await _paymentsApi.CapturePaymentAsync(paymentId, new CapturePaymentRequest
                 {
                     Amount = ConvertAmountToOrer(amountInDanishKroner)
-                });
+                }, null);
             }
             catch (ApiException<ErrorResponse> e)
             {
@@ -113,7 +115,7 @@ namespace CoffeeCard.MobilePay.Service.v2
         {
             try
             {
-                await _paymentsApi.CancelAsync(paymentId, null);
+                await _paymentsApi.CancelPaymentAsync(paymentId, null);
             }
             catch (ApiException<ErrorResponse> e)
             {
@@ -139,8 +141,8 @@ namespace CoffeeCard.MobilePay.Service.v2
         /// <param name="amountInKroner">Amount in Danish kroner</param>
         /// <returns>Amount in Danish ører</returns>
         private static int ConvertAmountToOrer(int amountInKroner) => amountInKroner * 100;
-        
-        private void LogMobilePayException(ApiException apiException) 
+
+        private void LogMobilePayException(ApiException apiException)
         {
             Log.Error(
                 "MobilePay InitiatePayment failed with HTTP {StatusCode}. Message: {Message}",

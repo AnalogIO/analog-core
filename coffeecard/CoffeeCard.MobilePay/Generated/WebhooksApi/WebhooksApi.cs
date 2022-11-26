@@ -44,29 +44,25 @@ namespace CoffeeCard.MobilePay.Generated.Api.WebhooksApi
         partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
 
         /// <summary>
-        /// Publish test notification to a specified webhook.
+        /// fetch all webhooks
         /// </summary>
-        /// <param name="correlationId">CorrelationId used for logging</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task PublishtestnotificationAsync(System.Guid webhookid, string correlationId)
+        public virtual System.Threading.Tasks.Task<GetMultipleWebhooksResponse> GetWebhooksListAsync()
         {
-            return PublishtestnotificationAsync(webhookid, correlationId, System.Threading.CancellationToken.None);
+            return GetWebhooksListAsync(System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Publish test notification to a specified webhook.
+        /// fetch all webhooks
         /// </summary>
-        /// <param name="correlationId">CorrelationId used for logging</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task PublishtestnotificationAsync(System.Guid webhookid, string correlationId, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<GetMultipleWebhooksResponse> GetWebhooksListAsync(System.Threading.CancellationToken cancellationToken)
         {
-            if (webhookid == null)
-                throw new System.ArgumentNullException("webhookid");
-
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append("v1/webhooks/{webhookid}/publishtestnotification");
-            urlBuilder_.Replace("{webhookid}", System.Uri.EscapeDataString(ConvertToString(webhookid, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Append("v1/webhooks");
 
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -74,11 +70,8 @@ namespace CoffeeCard.MobilePay.Generated.Api.WebhooksApi
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-
-                    if (correlationId != null)
-                        request_.Headers.TryAddWithoutValidation("CorrelationId", ConvertToString(correlationId, System.Globalization.CultureInfo.InvariantCulture));
-                    request_.Content = new System.Net.Http.StringContent(string.Empty, System.Text.Encoding.UTF8, "application/json");
-                    request_.Method = new System.Net.Http.HttpMethod("POST");
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -103,7 +96,12 @@ namespace CoffeeCard.MobilePay.Generated.Api.WebhooksApi
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            return;
+                            var objectResponse_ = await ReadObjectResponseAsync<GetMultipleWebhooksResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
                         }
                         else
                         if (status_ == 401)
@@ -112,26 +110,10 @@ namespace CoffeeCard.MobilePay.Generated.Api.WebhooksApi
                             throw new ApiException("Unauthorized", status_, responseText_, headers_, null);
                         }
                         else
-                        if (status_ == 403)
-                        {
-                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new ApiException("Forbidden", status_, responseText_, headers_, null);
-                        }
-                        else
-                        if (status_ == 404)
-                        {
-                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new ApiException("Not Found", status_, responseText_, headers_, null);
-                        }
-                        else
                         if (status_ == 409)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<ErrorResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
-                            if (objectResponse_.Object == null)
-                            {
-                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-                            }
-                            throw new ApiException<ErrorResponse>("There was an error sending the test notification to webhook", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new ApiException("Conflict", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -154,22 +136,123 @@ namespace CoffeeCard.MobilePay.Generated.Api.WebhooksApi
         }
 
         /// <summary>
-        /// Update a webhook.
+        /// create webhook
         /// </summary>
-        /// <param name="correlationId">CorrelationId used for logging</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<SingleWebhookResponse> WebhooksPUTAsync(System.Guid webhookid, string correlationId, UpdateWebhookRequest body)
+        public virtual System.Threading.Tasks.Task<SingleWebhookResponse> CreateWebhookAsync(CreateWebhookRequest body)
         {
-            return WebhooksPUTAsync(webhookid, correlationId, body, System.Threading.CancellationToken.None);
+            return CreateWebhookAsync(body, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Update a webhook.
+        /// create webhook
         /// </summary>
-        /// <param name="correlationId">CorrelationId used for logging</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<SingleWebhookResponse> WebhooksPUTAsync(System.Guid webhookid, string correlationId, UpdateWebhookRequest body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<SingleWebhookResponse> CreateWebhookAsync(CreateWebhookRequest body, System.Threading.CancellationToken cancellationToken)
+        {
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append("v1/webhooks");
+
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(body, _settings.Value));
+                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request_.Content = content_;
+                    request_.Method = new System.Net.Http.HttpMethod("POST");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<SingleWebhookResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        if (status_ == 400)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new ApiException("Bad Request", status_, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ == 401)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new ApiException("Unauthorized", status_, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ == 409)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new ApiException("Conflict", status_, responseText_, headers_, null);
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// update webhook
+        /// </summary>
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual System.Threading.Tasks.Task<SingleWebhookResponse> UpdateWebhookAsync(System.Guid webhookid, UpdateWebhookRequest body)
+        {
+            return UpdateWebhookAsync(webhookid, body, System.Threading.CancellationToken.None);
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// update webhook
+        /// </summary>
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<SingleWebhookResponse> UpdateWebhookAsync(System.Guid webhookid, UpdateWebhookRequest body, System.Threading.CancellationToken cancellationToken)
         {
             if (webhookid == null)
                 throw new System.ArgumentNullException("webhookid");
@@ -184,9 +267,6 @@ namespace CoffeeCard.MobilePay.Generated.Api.WebhooksApi
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-
-                    if (correlationId != null)
-                        request_.Headers.TryAddWithoutValidation("CorrelationId", ConvertToString(correlationId, System.Globalization.CultureInfo.InvariantCulture));
                     var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(body, _settings.Value));
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
@@ -251,7 +331,7 @@ namespace CoffeeCard.MobilePay.Generated.Api.WebhooksApi
                         if (status_ == 409)
                         {
                             string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new ApiException("Domain error response", status_, responseText_, headers_, null);
+                            throw new ApiException("Conflict", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -274,22 +354,22 @@ namespace CoffeeCard.MobilePay.Generated.Api.WebhooksApi
         }
 
         /// <summary>
-        /// Gets a single webhook by its ID.
+        /// fetch single webhook
         /// </summary>
-        /// <param name="correlationId">CorrelationId used for logging</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<SingleWebhookResponse> WebhooksGETAsync(System.Guid webhookid, string correlationId)
+        public virtual System.Threading.Tasks.Task<SingleWebhookResponse> GetWebhookAsync(System.Guid webhookid)
         {
-            return WebhooksGETAsync(webhookid, correlationId, System.Threading.CancellationToken.None);
+            return GetWebhookAsync(webhookid, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Gets a single webhook by its ID.
+        /// fetch single webhook
         /// </summary>
-        /// <param name="correlationId">CorrelationId used for logging</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<SingleWebhookResponse> WebhooksGETAsync(System.Guid webhookid, string correlationId, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<SingleWebhookResponse> GetWebhookAsync(System.Guid webhookid, System.Threading.CancellationToken cancellationToken)
         {
             if (webhookid == null)
                 throw new System.ArgumentNullException("webhookid");
@@ -304,9 +384,6 @@ namespace CoffeeCard.MobilePay.Generated.Api.WebhooksApi
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-
-                    if (correlationId != null)
-                        request_.Headers.TryAddWithoutValidation("CorrelationId", ConvertToString(correlationId, System.Globalization.CultureInfo.InvariantCulture));
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -362,7 +439,7 @@ namespace CoffeeCard.MobilePay.Generated.Api.WebhooksApi
                         if (status_ == 409)
                         {
                             string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new ApiException("Domain error response", status_, responseText_, headers_, null);
+                            throw new ApiException("Conflict", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -385,24 +462,22 @@ namespace CoffeeCard.MobilePay.Generated.Api.WebhooksApi
         }
 
         /// <summary>
-        /// Delete a webhook.
+        /// delete webhook
         /// </summary>
-        /// <param name="correlationId">CorrelationId used for logging</param>
-        /// <returns>Success</returns>
+        /// <returns>No Content</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task WebhooksDELETEAsync(System.Guid webhookid, string correlationId)
+        public virtual System.Threading.Tasks.Task DeleteWebhookAsync(System.Guid webhookid)
         {
-            return WebhooksDELETEAsync(webhookid, correlationId, System.Threading.CancellationToken.None);
+            return DeleteWebhookAsync(webhookid, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Delete a webhook.
+        /// delete webhook
         /// </summary>
-        /// <param name="correlationId">CorrelationId used for logging</param>
-        /// <returns>Success</returns>
+        /// <returns>No Content</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task WebhooksDELETEAsync(System.Guid webhookid, string correlationId, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task DeleteWebhookAsync(System.Guid webhookid, System.Threading.CancellationToken cancellationToken)
         {
             if (webhookid == null)
                 throw new System.ArgumentNullException("webhookid");
@@ -417,9 +492,6 @@ namespace CoffeeCard.MobilePay.Generated.Api.WebhooksApi
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-
-                    if (correlationId != null)
-                        request_.Headers.TryAddWithoutValidation("CorrelationId", ConvertToString(correlationId, System.Globalization.CultureInfo.InvariantCulture));
                     request_.Method = new System.Net.Http.HttpMethod("DELETE");
 
                     PrepareRequest(client_, request_, urlBuilder_);
@@ -463,7 +535,7 @@ namespace CoffeeCard.MobilePay.Generated.Api.WebhooksApi
                         if (status_ == 409)
                         {
                             string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new ApiException("Domain error response", status_, responseText_, headers_, null);
+                            throw new ApiException("Conflict", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -486,25 +558,29 @@ namespace CoffeeCard.MobilePay.Generated.Api.WebhooksApi
         }
 
         /// <summary>
-        /// Gets all merchant's webhooks
+        /// publish test notification to a specified webhook
         /// </summary>
-        /// <param name="correlationId">CorrelationId used for logging</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<GetMultipleWebhooksResponse> WebhooksGET2Async(string correlationId)
+        public virtual System.Threading.Tasks.Task PublishTestNotificationAsync(System.Guid webhookid)
         {
-            return WebhooksGET2Async(correlationId, System.Threading.CancellationToken.None);
+            return PublishTestNotificationAsync(webhookid, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Gets all merchant's webhooks
+        /// publish test notification to a specified webhook
         /// </summary>
-        /// <param name="correlationId">CorrelationId used for logging</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<GetMultipleWebhooksResponse> WebhooksGET2Async(string correlationId, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task PublishTestNotificationAsync(System.Guid webhookid, System.Threading.CancellationToken cancellationToken)
         {
+            if (webhookid == null)
+                throw new System.ArgumentNullException("webhookid");
+
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append("v1/webhooks");
+            urlBuilder_.Append("v1/webhooks/{webhookid}/publishtestnotification");
+            urlBuilder_.Replace("{webhookid}", System.Uri.EscapeDataString(ConvertToString(webhookid, System.Globalization.CultureInfo.InvariantCulture)));
 
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -512,109 +588,8 @@ namespace CoffeeCard.MobilePay.Generated.Api.WebhooksApi
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-
-                    if (correlationId != null)
-                        request_.Headers.TryAddWithoutValidation("CorrelationId", ConvertToString(correlationId, System.Globalization.CultureInfo.InvariantCulture));
-                    request_.Method = new System.Net.Http.HttpMethod("GET");
-                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
-
-                    PrepareRequest(client_, request_, urlBuilder_);
-
-                    var url_ = urlBuilder_.ToString();
-                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
-
-                    PrepareRequest(client_, request_, url_);
-
-                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-                    var disposeResponse_ = true;
-                    try
-                    {
-                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
-                        if (response_.Content != null && response_.Content.Headers != null)
-                        {
-                            foreach (var item_ in response_.Content.Headers)
-                                headers_[item_.Key] = item_.Value;
-                        }
-
-                        ProcessResponse(client_, response_);
-
-                        var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
-                        {
-                            var objectResponse_ = await ReadObjectResponseAsync<GetMultipleWebhooksResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
-                            if (objectResponse_.Object == null)
-                            {
-                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-                            }
-                            return objectResponse_.Object;
-                        }
-                        else
-                        if (status_ == 401)
-                        {
-                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new ApiException("Unauthorized", status_, responseText_, headers_, null);
-                        }
-                        else
-                        if (status_ == 409)
-                        {
-                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new ApiException("Domain error response", status_, responseText_, headers_, null);
-                        }
-                        else
-                        {
-                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
-                        }
-                    }
-                    finally
-                    {
-                        if (disposeResponse_)
-                            response_.Dispose();
-                    }
-                }
-            }
-            finally
-            {
-                if (disposeClient_)
-                    client_.Dispose();
-            }
-        }
-
-        /// <summary>
-        /// Create a webhook.
-        /// </summary>
-        /// <param name="correlationId">CorrelationId used for logging</param>
-        /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<SingleWebhookResponse> WebhooksPOSTAsync(string correlationId, CreateWebhookRequest body)
-        {
-            return WebhooksPOSTAsync(correlationId, body, System.Threading.CancellationToken.None);
-        }
-
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>
-        /// Create a webhook.
-        /// </summary>
-        /// <param name="correlationId">CorrelationId used for logging</param>
-        /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<SingleWebhookResponse> WebhooksPOSTAsync(string correlationId, CreateWebhookRequest body, System.Threading.CancellationToken cancellationToken)
-        {
-            var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append("v1/webhooks");
-
-            var client_ = _httpClient;
-            var disposeClient_ = false;
-            try
-            {
-                using (var request_ = new System.Net.Http.HttpRequestMessage())
-                {
-
-                    if (correlationId != null)
-                        request_.Headers.TryAddWithoutValidation("CorrelationId", ConvertToString(correlationId, System.Globalization.CultureInfo.InvariantCulture));
-                    var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(body, _settings.Value));
-                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
-                    request_.Content = content_;
+                    request_.Content = new System.Net.Http.StringContent(string.Empty, System.Text.Encoding.UTF8, "application/json");
                     request_.Method = new System.Net.Http.HttpMethod("POST");
-                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -639,18 +614,7 @@ namespace CoffeeCard.MobilePay.Generated.Api.WebhooksApi
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<SingleWebhookResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
-                            if (objectResponse_.Object == null)
-                            {
-                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-                            }
-                            return objectResponse_.Object;
-                        }
-                        else
-                        if (status_ == 400)
-                        {
-                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new ApiException("Bad Request", status_, responseText_, headers_, null);
+                            return;
                         }
                         else
                         if (status_ == 401)
@@ -659,10 +623,26 @@ namespace CoffeeCard.MobilePay.Generated.Api.WebhooksApi
                             throw new ApiException("Unauthorized", status_, responseText_, headers_, null);
                         }
                         else
-                        if (status_ == 409)
+                        if (status_ == 403)
                         {
                             string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new ApiException("Domain error response", status_, responseText_, headers_, null);
+                            throw new ApiException("Forbidden", status_, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new ApiException("Not Found", status_, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ == 409)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ErrorResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new ApiException<ErrorResponse>("There was an error sending the test notification to webhook.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         {
@@ -787,23 +767,11 @@ namespace CoffeeCard.MobilePay.Generated.Api.WebhooksApi
         }
     }
 
-    /// <summary>
-    /// &lt;table style="table-layout: auto"&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Usage&lt;/th&gt;&lt;th&gt;Type&lt;/th&gt;&lt;th&gt;Description&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;events&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;array of string&lt;/td&gt;&lt;td&gt;List of subscribed events.
-    /// <br/>
-    /// <br/> Allowed event types:
-    /// <br/>* `payment.reserved`
-    /// <br/>* `payment.expired`
-    /// <br/>* `paymentpoint.activated`
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;url&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;URL to where webhook requests will be sent. Must be HTTPS. Scheme and host will be converted to lower case. Result can be seen in the response.&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
-    /// <br/>
-    /// <br/>
-    /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.5.0 (NJsonSchema v10.6.6.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class CreateWebhookRequest
     {
         /// <summary>
-        /// URL to where webhook requests will be sent. Must be HTTPS. Scheme
-        /// <br/>and host will be converted to lower case. Result can be seen in the response.
+        /// URL to where webhook requests will be sent. Must be HTTPS. Scheme and host will be converted to lower case. Result can be seen in the response.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
@@ -812,23 +780,28 @@ namespace CoffeeCard.MobilePay.Generated.Api.WebhooksApi
         /// <summary>
         /// List of subscribed events.
         /// <br/>
-        /// <br/> Allowed event types:
-        /// <br/>* `payment.reserved`
-        /// <br/>* `payment.expired`
-        /// <br/>* `paymentpoint.activated`
-        /// <br/>
         /// </summary>
-        [Newtonsoft.Json.JsonProperty("events", Required = Newtonsoft.Json.Required.Always)]
+        [Newtonsoft.Json.JsonProperty("events", Required = Newtonsoft.Json.Required.Always, ItemConverterType = typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         [System.ComponentModel.DataAnnotations.Required]
-        public System.Collections.Generic.ICollection<string> Events { get; set; } = new System.Collections.ObjectModel.Collection<string>();
+        public System.Collections.Generic.ICollection<Events> Events { get; set; } = new System.Collections.ObjectModel.Collection<Events>();
+
+        /// <summary>
+        /// Optional. Webhook will receive notifications only coming from specified payment point.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("paymentPointId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid? PaymentPointId { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
 
     }
 
-    /// <summary>
-    /// &lt;table style="table-layout: auto"&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Usage&lt;/th&gt;&lt;th&gt;Type&lt;/th&gt;&lt;th&gt;Description&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;code&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Optional&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;correlationId&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Optional&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;message&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Optional&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;origin&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Optional&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
-    /// <br/>
-    /// <br/>
-    /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.5.0 (NJsonSchema v10.6.6.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class ErrorResponse
     {
@@ -844,49 +817,43 @@ namespace CoffeeCard.MobilePay.Generated.Api.WebhooksApi
         [Newtonsoft.Json.JsonProperty("origin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Origin { get; set; }
 
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
+
     }
 
-    /// <summary>
-    /// &lt;table style="table-layout: auto"&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Usage&lt;/th&gt;&lt;th&gt;Type&lt;/th&gt;&lt;th&gt;Description&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;webhooks&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;array of &lt;code&gt;SingleWebhookResponse&lt;/code&gt;&lt;/td&gt;&lt;td&gt;The requested list of webhooks.
-    /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
-    /// <br/>
-    /// <br/>
-    /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.5.0 (NJsonSchema v10.6.6.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class GetMultipleWebhooksResponse
     {
         /// <summary>
         /// The requested list of webhooks.
-        /// <br/>
-        /// <br/>
         /// </summary>
         [Newtonsoft.Json.JsonProperty("webhooks", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required]
         public System.Collections.Generic.ICollection<SingleWebhookResponse> Webhooks { get; set; } = new System.Collections.ObjectModel.Collection<SingleWebhookResponse>();
 
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
+
     }
 
-    /// <summary>
-    /// &lt;table style="table-layout: auto"&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Usage&lt;/th&gt;&lt;th&gt;Type&lt;/th&gt;&lt;th&gt;Description&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;events&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;array of string&lt;/td&gt;&lt;td&gt;List of subscribed events.
-    /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;signatureKey&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;The webhook's secret is used to generate webhook signatures.
-    /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;url&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;The URL of the webhook endpoint.
-    /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;webhookId&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string (uuid)&lt;/td&gt;&lt;td&gt;Unique identifier for the object.
-    /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
-    /// <br/>
-    /// <br/>
-    /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.5.0 (NJsonSchema v10.6.6.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class SingleWebhookResponse
     {
         /// <summary>
         /// Unique identifier for the object.
-        /// <br/>
-        /// <br/>
         /// </summary>
         [Newtonsoft.Json.JsonProperty("webhookId", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
@@ -894,8 +861,6 @@ namespace CoffeeCard.MobilePay.Generated.Api.WebhooksApi
 
         /// <summary>
         /// The URL of the webhook endpoint.
-        /// <br/>
-        /// <br/>
         /// </summary>
         [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
@@ -903,41 +868,40 @@ namespace CoffeeCard.MobilePay.Generated.Api.WebhooksApi
 
         /// <summary>
         /// List of subscribed events.
-        /// <br/>
-        /// <br/>
         /// </summary>
-        [Newtonsoft.Json.JsonProperty("events", Required = Newtonsoft.Json.Required.Always)]
+        [Newtonsoft.Json.JsonProperty("events", Required = Newtonsoft.Json.Required.Always, ItemConverterType = typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         [System.ComponentModel.DataAnnotations.Required]
-        public System.Collections.Generic.ICollection<string> Events { get; set; } = new System.Collections.ObjectModel.Collection<string>();
+        public System.Collections.Generic.ICollection<Events2> Events { get; set; } = new System.Collections.ObjectModel.Collection<Events2>();
 
         /// <summary>
         /// The webhook's secret is used to generate webhook signatures.
-        /// <br/>
-        /// <br/>
         /// </summary>
         [Newtonsoft.Json.JsonProperty("signatureKey", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string SignatureKey { get; set; }
 
+        /// <summary>
+        /// Payment point for which the webhook received notifications.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("paymentPointId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid? PaymentPointId { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
+
     }
 
-    /// <summary>
-    /// &lt;table style="table-layout: auto"&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Usage&lt;/th&gt;&lt;th&gt;Type&lt;/th&gt;&lt;th&gt;Description&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;events&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;array of string&lt;/td&gt;&lt;td&gt;List of subscribed events.
-    /// <br/>
-    /// <br/> Allowed event types:
-    /// <br/>* `payment.reserved`
-    /// <br/>* `payment.expired`
-    /// <br/>* `paymentpoint.activated`
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;url&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;URL to where webhook requests will be sent. Must be HTTPS. Scheme and host will be converted to lower case. Result can be seen in the response.&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
-    /// <br/>
-    /// <br/>
-    /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.5.0 (NJsonSchema v10.6.6.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class UpdateWebhookRequest
     {
         /// <summary>
-        /// URL to where webhook requests will be sent. Must be HTTPS. Scheme
-        /// <br/>and host will be converted to lower case. Result can be seen in the response.
+        /// URL to where webhook requests will be sent. Must be HTTPS. Scheme and host will be converted to lower case. Result can be seen in the response.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
@@ -946,15 +910,88 @@ namespace CoffeeCard.MobilePay.Generated.Api.WebhooksApi
         /// <summary>
         /// List of subscribed events.
         /// <br/>
-        /// <br/> Allowed event types:
-        /// <br/>* `payment.reserved`
-        /// <br/>* `payment.expired`
-        /// <br/>* `paymentpoint.activated`
-        /// <br/>
         /// </summary>
-        [Newtonsoft.Json.JsonProperty("events", Required = Newtonsoft.Json.Required.Always)]
+        [Newtonsoft.Json.JsonProperty("events", Required = Newtonsoft.Json.Required.Always, ItemConverterType = typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         [System.ComponentModel.DataAnnotations.Required]
-        public System.Collections.Generic.ICollection<string> Events { get; set; } = new System.Collections.ObjectModel.Collection<string>();
+        public System.Collections.Generic.ICollection<Events3> Events { get; set; } = new System.Collections.ObjectModel.Collection<Events3>();
+
+        /// <summary>
+        /// Optional. Webhook will receive notifications only coming from specified payment point.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("paymentPointId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid? PaymentPointId { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.5.0 (NJsonSchema v10.6.6.0 (Newtonsoft.Json v9.0.0.0))")]
+    public enum Events
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"payment.reserved")]
+        Payment_reserved = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"payment.expired")]
+        Payment_expired = 1,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"paymentpoint.activated")]
+        Paymentpoint_activated = 2,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"payment.cancelled_by_user")]
+        Payment_cancelled_by_user = 3,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"transfer.succeeded")]
+        Transfer_succeeded = 4,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.5.0 (NJsonSchema v10.6.6.0 (Newtonsoft.Json v9.0.0.0))")]
+    public enum Events2
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"payment.reserved")]
+        Payment_reserved = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"payment.expired")]
+        Payment_expired = 1,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"paymentpoint.activated")]
+        Paymentpoint_activated = 2,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"payment.cancelled_by_user")]
+        Payment_cancelled_by_user = 3,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"transfer.succeeded")]
+        Transfer_succeeded = 4,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.5.0 (NJsonSchema v10.6.6.0 (Newtonsoft.Json v9.0.0.0))")]
+    public enum Events3
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"payment.reserved")]
+        Payment_reserved = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"payment.expired")]
+        Payment_expired = 1,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"paymentpoint.activated")]
+        Paymentpoint_activated = 2,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"payment.cancelled_by_user")]
+        Payment_cancelled_by_user = 3,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"transfer.succeeded")]
+        Transfer_succeeded = 4,
 
     }
 

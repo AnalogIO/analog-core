@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
+using CoffeeCard.MobilePay.Generated.Api.WebhooksApi;
 using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +15,7 @@ namespace CoffeeCard.Library.Services.v2
 {
     public class WebhookService : IWebhookService
     {
-        private static readonly ICollection<string> DefaultEvents = new List<string> {"payment.reserved", "payment.expired"}.AsReadOnly(); 
+        private static readonly ICollection<Events> DefaultEvents = new List<Events> {Events.Payment_reserved, Events.Payment_expired, Events.Payment_cancelled_by_user}.AsReadOnly(); 
         
         private readonly CoffeeCardContext _context;
         private readonly IMobilePayWebhooksService _mobilePayWebhooksService;

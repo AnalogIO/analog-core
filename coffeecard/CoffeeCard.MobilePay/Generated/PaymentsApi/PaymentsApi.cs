@@ -44,22 +44,24 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
         partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
 
         /// <summary>
-        /// Initiates a new payment.
+        /// initiate new payment
         /// </summary>
-        /// <param name="correlationId">CorrelationId used for logging</param>
+        /// <param name="correlationId">Correlation id used for logging (if you don't pass any value, we'll generate it)</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<InitiatePaymentResponse> PaymentsPOSTAsync(string correlationId, InitiatePaymentRequest body)
+        public virtual System.Threading.Tasks.Task<InitiatePaymentResponse> InitiatePaymentAsync(InitiatePaymentRequest body, System.Guid? correlationId)
         {
-            return PaymentsPOSTAsync(correlationId, body, System.Threading.CancellationToken.None);
+            return InitiatePaymentAsync(body, correlationId, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Initiates a new payment.
+        /// initiate new payment
         /// </summary>
-        /// <param name="correlationId">CorrelationId used for logging</param>
+        /// <param name="correlationId">Correlation id used for logging (if you don't pass any value, we'll generate it)</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<InitiatePaymentResponse> PaymentsPOSTAsync(string correlationId, InitiatePaymentRequest body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<InitiatePaymentResponse> InitiatePaymentAsync(InitiatePaymentRequest body, System.Guid? correlationId, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("v1/payments");
@@ -117,7 +119,7 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
                             {
                                 throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new ApiException<ErrorResponse>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new ApiException<ErrorResponse>("Bad Request", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 401)
@@ -162,34 +164,34 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
         }
 
         /// <summary>
-        /// Gets a list of all merchant payments if no filters(e.g. stateFilter, startDate, endDate, paymentPointId) are provided. Can also return only payments of specific payment point if paymentPointId is provided.
+        /// fetch a list of payments
         /// </summary>
-        /// <param name="paymentPointId">Filter specific payment point payments</param>
-        /// <param name="pageNumber">Default and minimum value is 1. Values that are less than 1 will be replaced by 1.</param>
-        /// <param name="pageSize">Number of payments to be returned. Between 1 and 1000.</param>
-        /// <param name="stateFilter">Filter payments by state. Allowed values: "initiated", "reserved", "captured", "cancelledByMerchant", "cancelledByUser.</param>
-        /// <param name="startDate">Filter payments by InitiatedOn property.</param>
-        /// <param name="endDate">Filter payments by InitiatedOn property.</param>
-        /// <param name="correlationId">CorrelationId used for logging</param>
+        /// <param name="paymentPointId">Filter payments of a specific payment point</param>
+        /// <param name="pageSize">Number of payments to be returned.</param>
+        /// <param name="stateFilter">Filter payments by state.</param>
+        /// <param name="startDate">Filter payments by `InitiatedOn` property.</param>
+        /// <param name="endDate">Filter payments by `InitiatedOn` property.</param>
+        /// <param name="correlationId">Correlation id used for logging (if you don't pass any value, we'll generate it)</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<GetPaymentsResponse> PaymentsGETAsync(System.Guid? paymentPointId, int? pageNumber, int? pageSize, System.Collections.Generic.IEnumerable<Anonymous> stateFilter, System.DateTimeOffset? startDate, System.DateTimeOffset? endDate, string correlationId)
+        public virtual System.Threading.Tasks.Task<GetPaymentsResponse> GetPaymentsListAsync(System.Guid? paymentPointId, int? pageNumber, int? pageSize, System.Collections.Generic.IEnumerable<Anonymous> stateFilter, System.DateTimeOffset? startDate, System.DateTimeOffset? endDate, System.Guid? correlationId)
         {
-            return PaymentsGETAsync(paymentPointId, pageNumber, pageSize, stateFilter, startDate, endDate, correlationId, System.Threading.CancellationToken.None);
+            return GetPaymentsListAsync(paymentPointId, pageNumber, pageSize, stateFilter, startDate, endDate, correlationId, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Gets a list of all merchant payments if no filters(e.g. stateFilter, startDate, endDate, paymentPointId) are provided. Can also return only payments of specific payment point if paymentPointId is provided.
+        /// fetch a list of payments
         /// </summary>
-        /// <param name="paymentPointId">Filter specific payment point payments</param>
-        /// <param name="pageNumber">Default and minimum value is 1. Values that are less than 1 will be replaced by 1.</param>
-        /// <param name="pageSize">Number of payments to be returned. Between 1 and 1000.</param>
-        /// <param name="stateFilter">Filter payments by state. Allowed values: "initiated", "reserved", "captured", "cancelledByMerchant", "cancelledByUser.</param>
-        /// <param name="startDate">Filter payments by InitiatedOn property.</param>
-        /// <param name="endDate">Filter payments by InitiatedOn property.</param>
-        /// <param name="correlationId">CorrelationId used for logging</param>
+        /// <param name="paymentPointId">Filter payments of a specific payment point</param>
+        /// <param name="pageSize">Number of payments to be returned.</param>
+        /// <param name="stateFilter">Filter payments by state.</param>
+        /// <param name="startDate">Filter payments by `InitiatedOn` property.</param>
+        /// <param name="endDate">Filter payments by `InitiatedOn` property.</param>
+        /// <param name="correlationId">Correlation id used for logging (if you don't pass any value, we'll generate it)</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<GetPaymentsResponse> PaymentsGETAsync(System.Guid? paymentPointId, int? pageNumber, int? pageSize, System.Collections.Generic.IEnumerable<Anonymous> stateFilter, System.DateTimeOffset? startDate, System.DateTimeOffset? endDate, string correlationId, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<GetPaymentsResponse> GetPaymentsListAsync(System.Guid? paymentPointId, int? pageNumber, int? pageSize, System.Collections.Generic.IEnumerable<Anonymous> stateFilter, System.DateTimeOffset? startDate, System.DateTimeOffset? endDate, System.Guid? correlationId, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("v1/payments?");
@@ -269,7 +271,7 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
                             {
                                 throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new ApiException<ErrorResponse>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new ApiException<ErrorResponse>("Bad Request", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 401)
@@ -281,7 +283,7 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
                         if (status_ == 409)
                         {
                             string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new ApiException("PaymentPoint does not exists", status_, responseText_, headers_, null);
+                            throw new ApiException("Conflict", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -304,22 +306,24 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
         }
 
         /// <summary>
-        /// Gets a single payment by its ID.
+        /// fetch single payment
         /// </summary>
-        /// <param name="correlationId">CorrelationId used for logging</param>
+        /// <param name="correlationId">Correlation id used for logging (if you don't pass any value, we'll generate it)</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<GetSinglePaymentResponse> PaymentsGET2Async(System.Guid paymentid, string correlationId)
+        public virtual System.Threading.Tasks.Task<GetSinglePaymentResponse> GetSinglePaymentAsync(System.Guid paymentid, System.Guid? correlationId)
         {
-            return PaymentsGET2Async(paymentid, correlationId, System.Threading.CancellationToken.None);
+            return GetSinglePaymentAsync(paymentid, correlationId, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Gets a single payment by its ID.
+        /// fetch single payment
         /// </summary>
-        /// <param name="correlationId">CorrelationId used for logging</param>
+        /// <param name="correlationId">Correlation id used for logging (if you don't pass any value, we'll generate it)</param>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<GetSinglePaymentResponse> PaymentsGET2Async(System.Guid paymentid, string correlationId, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<GetSinglePaymentResponse> GetSinglePaymentAsync(System.Guid paymentid, System.Guid? correlationId, System.Threading.CancellationToken cancellationToken)
         {
             if (paymentid == null)
                 throw new System.ArgumentNullException("paymentid");
@@ -386,7 +390,7 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
                         if (status_ == 409)
                         {
                             string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new ApiException("Domain error response", status_, responseText_, headers_, null);
+                            throw new ApiException("Conflict", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -409,24 +413,24 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
         }
 
         /// <summary>
-        /// Capture specific payment
+        /// capture payment
         /// </summary>
-        /// <param name="correlationId">CorrelationId used for logging</param>
-        /// <returns>Success</returns>
+        /// <param name="correlationId">Correlation id used for logging (if you don't pass any value, we'll generate it)</param>
+        /// <returns>No Content</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task CaptureAsync(System.Guid paymentid, string correlationId, CapturePaymentRequest body)
+        public virtual System.Threading.Tasks.Task CapturePaymentAsync(System.Guid paymentid, CapturePaymentRequest body, System.Guid? correlationId)
         {
-            return CaptureAsync(paymentid, correlationId, body, System.Threading.CancellationToken.None);
+            return CapturePaymentAsync(paymentid, body, correlationId, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Capture specific payment
+        /// capture payment
         /// </summary>
-        /// <param name="correlationId">CorrelationId used for logging</param>
-        /// <returns>Success</returns>
+        /// <param name="correlationId">Correlation id used for logging (if you don't pass any value, we'll generate it)</param>
+        /// <returns>No Content</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task CaptureAsync(System.Guid paymentid, string correlationId, CapturePaymentRequest body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task CapturePaymentAsync(System.Guid paymentid, CapturePaymentRequest body, System.Guid? correlationId, System.Threading.CancellationToken cancellationToken)
         {
             if (paymentid == null)
                 throw new System.ArgumentNullException("paymentid");
@@ -507,12 +511,6 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
                             throw new ApiException<ErrorResponse>("Conflict", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
-                        if (status_ == 500)
-                        {
-                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new ApiException("Server Error", status_, responseText_, headers_, null);
-                        }
-                        else
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
                             throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
@@ -533,24 +531,24 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
         }
 
         /// <summary>
-        /// Cancel specific payment
+        /// cancel payment
         /// </summary>
-        /// <param name="correlationId">CorrelationId used for logging</param>
-        /// <returns>Success</returns>
+        /// <param name="correlationId">Correlation id used for logging (if you don't pass any value, we'll generate it)</param>
+        /// <returns>No Content</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task CancelAsync(System.Guid paymentid, string correlationId)
+        public virtual System.Threading.Tasks.Task CancelPaymentAsync(System.Guid paymentid, System.Guid? correlationId)
         {
-            return CancelAsync(paymentid, correlationId, System.Threading.CancellationToken.None);
+            return CancelPaymentAsync(paymentid, correlationId, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Cancel specific payment
+        /// cancel payment
         /// </summary>
-        /// <param name="correlationId">CorrelationId used for logging</param>
-        /// <returns>Success</returns>
+        /// <param name="correlationId">Correlation id used for logging (if you don't pass any value, we'll generate it)</param>
+        /// <returns>No Content</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task CancelAsync(System.Guid paymentid, string correlationId, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task CancelPaymentAsync(System.Guid paymentid, System.Guid? correlationId, System.Threading.CancellationToken cancellationToken)
         {
             if (paymentid == null)
                 throw new System.ArgumentNullException("paymentid");
@@ -649,24 +647,24 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
         }
 
         /// <summary>
-        /// Cancel specific payment using idempotency key
+        /// cancel payment using idempotency key
         /// </summary>
-        /// <param name="correlationId">CorrelationId used for logging</param>
-        /// <returns>Success</returns>
+        /// <param name="correlationId">Correlation id used for logging (if you don't pass any value, we'll generate it)</param>
+        /// <returns>No Content</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task Cancel2Async(string correlationId, CancelPaymentRequest body)
+        public virtual System.Threading.Tasks.Task CancelPaymentIdempotencyAsync(CancelPaymentRequest body, System.Guid? correlationId)
         {
-            return Cancel2Async(correlationId, body, System.Threading.CancellationToken.None);
+            return CancelPaymentIdempotencyAsync(body, correlationId, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Cancel specific payment using idempotency key
+        /// cancel payment using idempotency key
         /// </summary>
-        /// <param name="correlationId">CorrelationId used for logging</param>
-        /// <returns>Success</returns>
+        /// <param name="correlationId">Correlation id used for logging (if you don't pass any value, we'll generate it)</param>
+        /// <returns>No Content</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task Cancel2Async(string correlationId, CancelPaymentRequest body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task CancelPaymentIdempotencyAsync(CancelPaymentRequest body, System.Guid? correlationId, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("v1/payments/cancel");
@@ -741,6 +739,568 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
                                 throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new ApiException<ErrorResponse>("Conflict", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// simulates payment confirmation
+        /// </summary>
+        /// <param name="correlationId">Correlation id used for logging (if you don't pass any value, we'll generate it)</param>
+        /// <returns>No Content</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual System.Threading.Tasks.Task SimulateConfirmationAsync(ReserveFundsRequest body, System.Guid? correlationId)
+        {
+            return SimulateConfirmationAsync(body, correlationId, System.Threading.CancellationToken.None);
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// simulates payment confirmation
+        /// </summary>
+        /// <param name="correlationId">Correlation id used for logging (if you don't pass any value, we'll generate it)</param>
+        /// <returns>No Content</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task SimulateConfirmationAsync(ReserveFundsRequest body, System.Guid? correlationId, System.Threading.CancellationToken cancellationToken)
+        {
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append("v1/integration-test/payments/{paymentid}/reserve");
+
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+
+                    if (correlationId != null)
+                        request_.Headers.TryAddWithoutValidation("CorrelationId", ConvertToString(correlationId, System.Globalization.CultureInfo.InvariantCulture));
+                    var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(body, _settings.Value));
+                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request_.Content = content_;
+                    request_.Method = new System.Net.Http.HttpMethod("POST");
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
+                        if (status_ == 400)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ErrorResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new ApiException<ErrorResponse>("Bad Request", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 401)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new ApiException("Unauthorized", status_, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ == 403)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new ApiException("Forbidden", status_, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ == 409)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ErrorResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new ApiException<ErrorResponse>("Conflict", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// fetch a list of payment points
+        /// </summary>
+        /// <param name="pageNumber">Values that are less than 1 will be replaced by 1.</param>
+        /// <param name="pageSize">Number of payment points to be returned.</param>
+        /// <param name="correlationId">Correlation id used for logging (if you don't pass any value, we'll generate it)</param>
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual System.Threading.Tasks.Task<PaymentPointsList> GetPaymentPointsAsync(int? pageNumber, int? pageSize, System.Guid? correlationId)
+        {
+            return GetPaymentPointsAsync(pageNumber, pageSize, correlationId, System.Threading.CancellationToken.None);
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// fetch a list of payment points
+        /// </summary>
+        /// <param name="pageNumber">Values that are less than 1 will be replaced by 1.</param>
+        /// <param name="pageSize">Number of payment points to be returned.</param>
+        /// <param name="correlationId">Correlation id used for logging (if you don't pass any value, we'll generate it)</param>
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<PaymentPointsList> GetPaymentPointsAsync(int? pageNumber, int? pageSize, System.Guid? correlationId, System.Threading.CancellationToken cancellationToken)
+        {
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append("v1/paymentpoints?");
+            if (pageNumber != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("pageNumber") + "=").Append(System.Uri.EscapeDataString(ConvertToString(pageNumber, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (pageSize != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("pageSize") + "=").Append(System.Uri.EscapeDataString(ConvertToString(pageSize, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            urlBuilder_.Length--;
+
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+
+                    if (correlationId != null)
+                        request_.Headers.TryAddWithoutValidation("CorrelationId", ConvertToString(correlationId, System.Globalization.CultureInfo.InvariantCulture));
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<PaymentPointsList>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        if (status_ == 400)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ErrorResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new ApiException<ErrorResponse>("Bad Request", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 401)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new ApiException("Unauthorized", status_, responseText_, headers_, null);
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// issue new refund
+        /// </summary>
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual System.Threading.Tasks.Task<IssueRefundResponse> IssueRefundAsync(IssueRefundRequest body)
+        {
+            return IssueRefundAsync(body, System.Threading.CancellationToken.None);
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// issue new refund
+        /// </summary>
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<IssueRefundResponse> IssueRefundAsync(IssueRefundRequest body, System.Threading.CancellationToken cancellationToken)
+        {
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append("v1/refunds");
+
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(body, _settings.Value));
+                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request_.Content = content_;
+                    request_.Method = new System.Net.Http.HttpMethod("POST");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<IssueRefundResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        if (status_ == 401)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new ApiException("Unauthorized", status_, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ == 403)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new ApiException("Forbidden", status_, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ == 409)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ErrorResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new ApiException<ErrorResponse>("Conflict", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// fetch a list of refunds
+        /// </summary>
+        /// <param name="paymentId">Filter refunds of specific payment</param>
+        /// <param name="paymentPointId">Filter refunds of specific payment point</param>
+        /// <param name="pageNumber">Values that are less than 1 will be replaced by 1.</param>
+        /// <param name="pageSize">Number of refunds to be returned.</param>
+        /// <param name="createdBefore">Filter refunds by CreatedOn property.</param>
+        /// <param name="createdAfter">Filter refunds by CreatedOn property.</param>
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual System.Threading.Tasks.Task<GetRefundsResponse> GetRefundsListAsync(System.Guid? paymentId, System.Guid? paymentPointId, int? pageNumber, int? pageSize, System.DateTimeOffset? createdBefore, System.DateTimeOffset? createdAfter)
+        {
+            return GetRefundsListAsync(paymentId, paymentPointId, pageNumber, pageSize, createdBefore, createdAfter, System.Threading.CancellationToken.None);
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// fetch a list of refunds
+        /// </summary>
+        /// <param name="paymentId">Filter refunds of specific payment</param>
+        /// <param name="paymentPointId">Filter refunds of specific payment point</param>
+        /// <param name="pageNumber">Values that are less than 1 will be replaced by 1.</param>
+        /// <param name="pageSize">Number of refunds to be returned.</param>
+        /// <param name="createdBefore">Filter refunds by CreatedOn property.</param>
+        /// <param name="createdAfter">Filter refunds by CreatedOn property.</param>
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<GetRefundsResponse> GetRefundsListAsync(System.Guid? paymentId, System.Guid? paymentPointId, int? pageNumber, int? pageSize, System.DateTimeOffset? createdBefore, System.DateTimeOffset? createdAfter, System.Threading.CancellationToken cancellationToken)
+        {
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append("v1/refunds?");
+            if (paymentId != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("paymentId") + "=").Append(System.Uri.EscapeDataString(ConvertToString(paymentId, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (paymentPointId != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("paymentPointId") + "=").Append(System.Uri.EscapeDataString(ConvertToString(paymentPointId, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (pageNumber != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("pageNumber") + "=").Append(System.Uri.EscapeDataString(ConvertToString(pageNumber, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (pageSize != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("pageSize") + "=").Append(System.Uri.EscapeDataString(ConvertToString(pageSize, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (createdBefore != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("createdBefore") + "=").Append(System.Uri.EscapeDataString(createdBefore.Value.ToString("s", System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (createdAfter != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("createdAfter") + "=").Append(System.Uri.EscapeDataString(createdAfter.Value.ToString("s", System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            urlBuilder_.Length--;
+
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<GetRefundsResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        if (status_ == 400)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ErrorResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new ApiException<ErrorResponse>("Bad Request", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 401)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new ApiException("Unauthorized", status_, responseText_, headers_, null);
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// fetch single refund
+        /// </summary>
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual System.Threading.Tasks.Task<GetSingleRefundResponse> GetRefundAsync(System.Guid refundid)
+        {
+            return GetRefundAsync(refundid, System.Threading.CancellationToken.None);
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// fetch single refund
+        /// </summary>
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<GetSingleRefundResponse> GetRefundAsync(System.Guid refundid, System.Threading.CancellationToken cancellationToken)
+        {
+            if (refundid == null)
+                throw new System.ArgumentNullException("refundid");
+
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append("v1/refunds/{refundid}");
+            urlBuilder_.Replace("{refundid}", System.Uri.EscapeDataString(ConvertToString(refundid, System.Globalization.CultureInfo.InvariantCulture)));
+
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<GetSingleRefundResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        if (status_ == 401)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new ApiException("Unauthorized", status_, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new ApiException("Not Found", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -865,48 +1425,48 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
         }
     }
 
-    /// <summary>
-    /// &lt;table style="table-layout: auto"&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Usage&lt;/th&gt;&lt;th&gt;Type&lt;/th&gt;&lt;th&gt;Description&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;idempotencyKey&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string (uuid)&lt;/td&gt;&lt;td&gt;The idempotency key identifying the payment to be canceled. Only payments in the initiated state can be canceled using the idempotency key.
-    /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
-    /// <br/>
-    /// <br/>
-    /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.5.0 (NJsonSchema v10.6.6.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class CancelPaymentRequest
     {
         /// <summary>
-        /// The idempotency key identifying the payment to be canceled. Only payments in the initiated state can be canceled using the idempotency key.
-        /// <br/>
-        /// <br/>
+        /// The idempotency key identifying the payment to be canceled. Only payments in the `initiated` state can be canceled using the idempotency key.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("idempotencyKey", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.Guid IdempotencyKey { get; set; }
 
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
+
     }
 
-    /// <summary>
-    /// &lt;table style="table-layout: auto"&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Usage&lt;/th&gt;&lt;th&gt;Type&lt;/th&gt;&lt;th&gt;Description&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;amount&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;number (integer)&lt;/td&gt;&lt;td&gt;The amount to be captured. A positive integer representing how much to capture in the smallest currency unit (e.g., 100 cents to capture €1.00). The minimum amount is 1.&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
-    /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.5.0 (NJsonSchema v10.6.6.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class CapturePaymentRequest
     {
         /// <summary>
-        /// The amount to be captured. A positive integer representing how much to capture in the smallest currency unit (e.g., 100 cents to capture €1.00). The minimum amount is 1.
-        /// <br/>
-        /// <br/>
+        /// The amount to be captured. A positive integer representing how much to capture in the smallest currency unit (e.g.,
+        /// <br/>100 cents to capture €1.00). The minimum amount is 1.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("amount", Required = Newtonsoft.Json.Required.Always)]
         public int Amount { get; set; }
 
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
+
     }
 
-    /// <summary>
-    /// &lt;table style="table-layout: auto"&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Usage&lt;/th&gt;&lt;th&gt;Type&lt;/th&gt;&lt;th&gt;Description&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;code&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Optional&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;correlationId&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Optional&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;message&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Optional&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;origin&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Optional&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
-    /// <br/>
-    /// <br/>
-    /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.5.0 (NJsonSchema v10.6.6.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class ErrorResponse
     {
@@ -916,119 +1476,85 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
         [Newtonsoft.Json.JsonProperty("message", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Message { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("correlationId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("correlationId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string CorrelationId { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("origin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("origin", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Origin { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
 
     }
 
-    /// <summary>
-    /// &lt;table style="table-layout: auto"&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Usage&lt;/th&gt;&lt;th&gt;Type&lt;/th&gt;&lt;th&gt;Description&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;pageSize&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;number (integer)&lt;/td&gt;&lt;td&gt;The number of payments per page. The range is 1 to 1000.
-    /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;payments&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;array of &lt;code&gt;GetSinglePaymentResponse&lt;/code&gt;&lt;/td&gt;&lt;td&gt;The requested list of payments.
-    /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;nextPageNumber&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Optional&lt;/td&gt;&lt;td&gt;number (integer)&lt;/td&gt;&lt;td&gt;A number of the next page. The null value indicates that the response has the last page.
-    /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
-    /// <br/>
-    /// <br/>
-    /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.5.0 (NJsonSchema v10.6.6.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class GetPaymentsResponse
     {
         /// <summary>
         /// The number of payments per page. The range is 1 to 1000.
-        /// <br/>
-        /// <br/>
         /// </summary>
         [Newtonsoft.Json.JsonProperty("pageSize", Required = Newtonsoft.Json.Required.Always)]
         public int PageSize { get; set; }
 
         /// <summary>
         /// A number of the next page. The null value indicates that the response has the last page.
-        /// <br/>
-        /// <br/>
         /// </summary>
         [Newtonsoft.Json.JsonProperty("nextPageNumber", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? NextPageNumber { get; set; }
 
         /// <summary>
         /// The requested list of payments.
-        /// <br/>
-        /// <br/>
         /// </summary>
         [Newtonsoft.Json.JsonProperty("payments", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required]
         public System.Collections.Generic.ICollection<GetSinglePaymentResponse> Payments { get; set; } = new System.Collections.ObjectModel.Collection<GetSinglePaymentResponse>();
 
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
+
     }
 
-    /// <summary>
-    /// &lt;table style="table-layout: auto"&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Usage&lt;/th&gt;&lt;th&gt;Type&lt;/th&gt;&lt;th&gt;Description&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;amount&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;number (integer)&lt;/td&gt;&lt;td&gt;The amount of money to be collected by this payment.&lt;br&gt;A positive integer representing how much to charge in the smallest currency unit (e.g., 100 cents to charge €1.00). The minimum amount is 1. The maximum amount is defined by user's daily/yearly limits.
-    /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;initiatedOn&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string (date-time)&lt;/td&gt;&lt;td&gt;The timestamp of when the payment was created, in ISO 8601-1:2019 format.&lt;br /&gt;
-    /// <br/>Examples for July 19th, 2021 12:42:38am Pacific Standard Time:&lt;br /&gt;
-    /// <br/>UTC: 2021-07-19T12:42:38Z
-    /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;isoCurrencyCode&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;Three-letter &lt;a href="https://www.iso.org/iso-4217-currency-codes.html"&gt;ISO currency code&lt;/a&gt;, in uppercase.&lt;br /&gt;
-    /// <br/>Possible values:&lt;br /&gt;
-    /// <br/>"DKK",&lt;br /&gt;
-    /// <br/>"EUR"
-    /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;lastUpdatedOn&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string (date-time)&lt;/td&gt;&lt;td&gt;The timestamp of when the payment was created, in ISO 8601-1:2019 format.
-    /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;merchantId&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string (uuid)&lt;/td&gt;&lt;td&gt;Merchant ID associated with the payment.
-    /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;redirectUri&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;Deeplink is used to redirect MobilePay users back to the merchant's app.
-    /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;paymentId&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string (uuid)&lt;/td&gt;&lt;td&gt;The ID of the payment.
-    /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;paymentPointId&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string (uuid)&lt;/td&gt;&lt;td&gt;The payment point on which payment was initiated.
-    /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;paymentPointName&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;Payment point name displayed to the user in MobilePay app.
-    /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;state&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;Indicates whether the payment is "initiated", "reserved", "captured", "cancelledByMerchant", "cancelledBySystem", "cancelledByUser".
-    /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;description&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Optional&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;Optional payment information to be displayed in MobilePay app to the customer. This can be, for example, an invoice number, ticket number, or short description that uniquely identifies the purchase.
-    /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;reference&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Optional&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;Payment's reference provided by you.
-    /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
-    /// <br/>
-    /// <br/>
-    /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.5.0 (NJsonSchema v10.6.6.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class GetSinglePaymentResponse
     {
         /// <summary>
         /// The ID of the payment.
-        /// <br/>
-        /// <br/>
         /// </summary>
         [Newtonsoft.Json.JsonProperty("paymentId", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.Guid PaymentId { get; set; }
 
         /// <summary>
-        /// The amount of money to be collected by this payment.&lt;br&gt;A positive integer representing how much to charge in the smallest currency unit (e.g., 100 cents to charge €1.00). The minimum amount is 1. The maximum amount is defined by user's daily/yearly limits.
+        /// The amount of money to be collected by this payment.
         /// <br/>
+        /// <br/>A positive integer representing how much to charge in the smallest currency unit (e.g., 100 cents to charge €1.00). The minimum amount is 1. The maximum amount is defined by user's daily/yearly limits.
         /// <br/>
         /// </summary>
         [Newtonsoft.Json.JsonProperty("amount", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Range(1, int.MaxValue)]
         public int Amount { get; set; }
 
         /// <summary>
-        /// Optional payment information to be displayed in MobilePay app to the customer. This can be, for example, an invoice number, ticket number, or short description that uniquely identifies the purchase.
+        /// Optional payment information to be displayed in MobilePay app to the customer. This can be, for example, an invoice
+        /// <br/>number, ticket number, or short description that uniquely identifies the purchase.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Description { get; set; }
 
         /// <summary>
         /// The payment point on which payment was initiated.
-        /// <br/>
-        /// <br/>
         /// </summary>
         [Newtonsoft.Json.JsonProperty("paymentPointId", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
@@ -1036,24 +1562,19 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
 
         /// <summary>
         /// Payment's reference provided by you.
-        /// <br/>
-        /// <br/>
         /// </summary>
         [Newtonsoft.Json.JsonProperty("reference", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Reference { get; set; }
 
         /// <summary>
         /// Deeplink is used to redirect MobilePay users back to the merchant's app.
-        /// <br/>
-        /// <br/>
         /// </summary>
         [Newtonsoft.Json.JsonProperty("redirectUri", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string RedirectUri { get; set; }
 
         /// <summary>
-        /// Indicates whether the payment is "initiated", "reserved", "captured", "cancelledByMerchant", "cancelledBySystem", "cancelledByUser".
-        /// <br/>
+        /// Indicates payment's current state.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("state", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
@@ -1064,8 +1585,6 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
         /// The timestamp of when the payment was created, in ISO 8601-1:2019 format.&lt;br /&gt;
         /// <br/>Examples for July 19th, 2021 12:42:38am Pacific Standard Time:&lt;br /&gt;
         /// <br/>UTC: 2021-07-19T12:42:38Z
-        /// <br/>
-        /// <br/>
         /// </summary>
         [Newtonsoft.Json.JsonProperty("initiatedOn", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
@@ -1073,8 +1592,6 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
 
         /// <summary>
         /// The timestamp of when the payment was created, in ISO 8601-1:2019 format.
-        /// <br/>
-        /// <br/>
         /// </summary>
         [Newtonsoft.Json.JsonProperty("lastUpdatedOn", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
@@ -1082,20 +1599,16 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
 
         /// <summary>
         /// Merchant ID associated with the payment.
-        /// <br/>
-        /// <br/>
         /// </summary>
         [Newtonsoft.Json.JsonProperty("merchantId", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.Guid MerchantId { get; set; }
 
         /// <summary>
-        /// Three-letter ISO currency code in uppercase.&lt;br /&gt;
+        /// Three-letter &lt;a href="https://www.iso.org/iso-4217-currency-codes.html"&gt;ISO currency code&lt;/a&gt;, in uppercase.&lt;br /&gt;
         /// <br/>Possible values:&lt;br /&gt;
         /// <br/>"DKK",&lt;br /&gt;
         /// <br/>"EUR"
-        /// <br/>
-        /// <br/>
         /// </summary>
         [Newtonsoft.Json.JsonProperty("isoCurrencyCode", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
@@ -1103,44 +1616,37 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
 
         /// <summary>
         /// Payment point name displayed to the user in MobilePay app.
-        /// <br/>
-        /// <br/>
         /// </summary>
         [Newtonsoft.Json.JsonProperty("paymentPointName", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string PaymentPointName { get; set; }
 
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
+
     }
 
-    /// <summary>
-    /// &lt;table style="table-layout: auto"&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Usage&lt;/th&gt;&lt;th&gt;Type&lt;/th&gt;&lt;th&gt;Description&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;amount&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;number (integer)&lt;/td&gt;&lt;td&gt;The amount of money to be collected by this payment.&lt;br&gt;A positive integer representing how much to charge in the smallest currency unit (e.g., 100 cents to charge €1.00). The minimum amount is 1. The maximum amount is defined by user's daily/yearly limits.
-    /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;idempotencyKey&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string (uuid)&lt;/td&gt;&lt;td&gt;A unique value that identifies this InitiatePayment request. Must be a valid GUID, and is used to protect against accidental duplicate calls. Multiple requests with the same idempotency key have the same result.
-    /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;paymentPointId&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string (uuid)&lt;/td&gt;&lt;td&gt;The Payment Point ID to associate with a payment.
-    /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;redirectUri&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;MobilePay will use the redirectUri URL to redirect the MobilePay user to the merchant's confirmation page once user action is completed in MobilePay app. Must be a valid URI.&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;reference&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;An ID to associate with the payment. Max length: 64 characters.&lt;br /&gt;
-    /// <br/>You can use this field to associate the payment to an entity in an external system (for example, you might specify an order ID that is generated by your system). It is recommended to use a unique value for each payment.
-    /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;description&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Optional&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;Optional payment information to be displayed in MobilePay app to the customer. Max length: 200 characters.&lt;br /&gt; This can be, for example, an invoice number, ticket number, or short description that uniquely identifies the purchase.
-    /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
-    /// <br/>
-    /// <br/>
-    /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.5.0 (NJsonSchema v10.6.6.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class InitiatePaymentRequest
     {
         /// <summary>
-        /// The amount of money to be collected by this payment.&lt;br&gt;A positive integer representing how much to charge in the smallest currency unit (e.g., 100 cents to charge €1.00). The minimum amount is 1. The maximum amount is defined by user's daily/yearly limits.
-        /// <br/>
-        /// <br/>
+        /// The amount of money to be collected by this payment.
+        /// <br/>A positive integer representing how much to charge in the smallest currency unit (e.g., 100 cents to charge
+        /// <br/>€1.00). The minimum amount is 1. The maximum amount is defined by user's daily/yearly limits.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("amount", Required = Newtonsoft.Json.Required.Always)]
         public int Amount { get; set; }
 
         /// <summary>
-        /// Optional payment information to be displayed in MobilePay app to the customer. Max length: 200 characters.&lt;br /&gt;This can be, for example, an invoice number, ticket number, or short description that uniquely identifies the purchase.
+        /// Optional payment information to be displayed in MobilePay app to the customer. Max length: 200 characters.&lt;br /&gt;
+        /// <br/>This can be, for example, an invoice number, ticket number, or short description that uniquely identifies the
+        /// <br/>purchase.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.StringLength(200)]
@@ -1148,8 +1654,6 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
 
         /// <summary>
         /// The Payment Point ID to associate with a payment.
-        /// <br/>
-        /// <br/>
         /// </summary>
         [Newtonsoft.Json.JsonProperty("paymentPointId", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
@@ -1157,9 +1661,8 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
 
         /// <summary>
         /// An ID to associate with the payment. Max length: 64 characters.&lt;br /&gt;
-        /// <br/>You can use this field to associate the payment to an entity in an external system (for example, you might specify an order ID that is generated by your system). It is recommended to use a unique value for each payment.
-        /// <br/>
-        /// <br/>
+        /// <br/>You can use this field to associate the payment to an entity in an external system (for example, you might specify
+        /// <br/>an order ID that is generated by your system). It is recommended to use a unique value for each payment.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("reference", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
@@ -1167,40 +1670,38 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
         public string Reference { get; set; }
 
         /// <summary>
-        /// A unique value that identifies this InitiatePayment request. Must be a valid GUID, and is used to protect against accidental duplicate calls. Multiple requests with the same idempotency key have the same result.
-        /// <br/>
-        /// <br/>
+        /// A unique value that identifies this InitiatePayment request. Must be a valid GUID, and is used to protect against
+        /// <br/>accidental duplicate calls. Multiple requests with the same idempotency key have the same result.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("idempotencyKey", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.Guid IdempotencyKey { get; set; }
 
         /// <summary>
-        /// MobilePay will use the redirectUri URL to redirect the MobilePay user to the merchant's confirmation page once user action is completed in MobilePay app. Must be a valid URI.
+        /// MobilePay will use the redirectUri URL to redirect the MobilePay user to the merchant's confirmation page once user
+        /// <br/>action is completed in MobilePay app. Must be a valid URI.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("redirectUri", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         [System.ComponentModel.DataAnnotations.StringLength(2000)]
         public string RedirectUri { get; set; }
 
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
+
     }
 
-    /// <summary>
-    /// &lt;table style="table-layout: auto"&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Usage&lt;/th&gt;&lt;th&gt;Type&lt;/th&gt;&lt;th&gt;Description&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;mobilePayAppRedirectUri&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string&lt;/td&gt;&lt;td&gt;Deeplink to MobilePay app.
-    /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;paymentId&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Required&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;string (uuid)&lt;/td&gt;&lt;td&gt;A unique ID for the payment.
-    /// <br/>
-    /// <br/>&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
-    /// <br/>
-    /// <br/>
-    /// </summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.5.0 (NJsonSchema v10.6.6.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class InitiatePaymentResponse
     {
         /// <summary>
         /// A unique ID for the payment.
-        /// <br/>
-        /// <br/>
         /// </summary>
         [Newtonsoft.Json.JsonProperty("paymentId", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
@@ -1208,12 +1709,343 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
 
         /// <summary>
         /// Deeplink to MobilePay app.
-        /// <br/>
-        /// <br/>
         /// </summary>
         [Newtonsoft.Json.JsonProperty("mobilePayAppRedirectUri", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string MobilePayAppRedirectUri { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.5.0 (NJsonSchema v10.6.6.0 (Newtonsoft.Json v9.0.0.0))")]
+    public partial class ReserveFundsRequest
+    {
+        /// <summary>
+        /// The id of payment source which should be used to obtain funds.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("paymentSourceId", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public System.Guid PaymentSourceId { get; set; }
+
+        /// <summary>
+        /// The id of the user on whose behalf funds will be reserved.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("userId", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public System.Guid UserId { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.5.0 (NJsonSchema v10.6.6.0 (Newtonsoft.Json v9.0.0.0))")]
+    public partial class IssueRefundRequest
+    {
+        /// <summary>
+        /// The ID of payment for which refund will be issued.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("paymentId", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public System.Guid PaymentId { get; set; }
+
+        /// <summary>
+        /// The amount of money to refund. A positive integer representing how much to refund in the
+        /// <br/>smallest currency unit (e.g., 100 cents to charge €1.00). The minimum amount is 1. The maximum amount is equal to
+        /// <br/>full payment's amount.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("amount", Required = Newtonsoft.Json.Required.Always)]
+        public int Amount { get; set; }
+
+        /// <summary>
+        /// Optional refund information to be displayed in MobilePay app to the customer. Max length: 200 characters.&lt;br /&gt;
+        /// <br/>This can be, for example, an invoice number, ticket number, or short description of the refund.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.StringLength(200)]
+        public string Description { get; set; }
+
+        /// <summary>
+        /// An ID to associate with the refund. Max length: 64 characters.&lt;br /&gt;
+        /// <br/>You can use this field to associate the refund to an entity in an external system (for example, you might specify
+        /// <br/>an order ID that is generated by your system). It is recommended to use a unique value for each refund.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("reference", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        [System.ComponentModel.DataAnnotations.StringLength(64)]
+        public string Reference { get; set; }
+
+        /// <summary>
+        /// A unique value that identifies this request. Must be a valid GUID, and is used to protect against accidental
+        /// <br/>duplicate calls. Multiple requests with the same idempotency key have the same result.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("idempotencyKey", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public System.Guid IdempotencyKey { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.5.0 (NJsonSchema v10.6.6.0 (Newtonsoft.Json v9.0.0.0))")]
+    public partial class IssueRefundResponse
+    {
+        /// <summary>
+        /// The ID of the refund.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("refundId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid? RefundId { get; set; }
+
+        /// <summary>
+        /// The ID of payment for which refund was issued.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("paymentId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid? PaymentId { get; set; }
+
+        /// <summary>
+        /// The amount of money refunded.&lt;br /&gt;
+        /// <br/>A positive integer representing how much was refunded in the smallest currency unit (e.g., 100 cents to charge
+        /// <br/>€1.00).
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("amount", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int? Amount { get; set; }
+
+        /// <summary>
+        /// Optional refund information to be displayed in MobilePay app to the customer. Max length: 200 characters.&lt;br /&gt;
+        /// <br/>This can be, for example, an invoice number, ticket number, or short description of the refund.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Description { get; set; }
+
+        /// <summary>
+        /// Refund's reference provided by you. Max length: 64 characters.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("reference", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Reference { get; set; }
+
+        /// <summary>
+        /// The timestamp of when the refund was created, in ISO 8601-1:2019 format.&lt;br /&gt;
+        /// <br/>Example for July 19th, 2021 14:42:38 Central European Summer Time:&lt;br /&gt;
+        /// <br/>UTC: 2021-07-19T12:42:38Z
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("createdOn", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTimeOffset CreatedOn { get; set; }
+
+        /// <summary>
+        /// How much of the payment can still be refunded.&lt;br /&gt;
+        /// <br/>A positive integer representing how much can still be refunded in the smallest currency unit (e.g., 100 cents to
+        /// <br/>charge €1.00).
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("remainingAmount", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int RemainingAmount { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.5.0 (NJsonSchema v10.6.6.0 (Newtonsoft.Json v9.0.0.0))")]
+    public partial class GetSingleRefundResponse
+    {
+        /// <summary>
+        /// The ID of the refund.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("refundId", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public System.Guid RefundId { get; set; }
+
+        /// <summary>
+        /// The ID of payment for which refund was issued.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("paymentId", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public System.Guid PaymentId { get; set; }
+
+        /// <summary>
+        /// The amount of money refunded. A positive integer representing how much was refunded in the
+        /// <br/>smallest currency unit (e.g., 100 cents to charge €1.00).
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("amount", Required = Newtonsoft.Json.Required.Always)]
+        public int Amount { get; set; }
+
+        /// <summary>
+        /// Optional refund information to be displayed in MobilePay app to the customer. This can be, for example,
+        /// <br/>an invoice number, ticket number, or short description of the refund.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Description { get; set; }
+
+        /// <summary>
+        /// Refund's reference provided by you.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("reference", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public string Reference { get; set; }
+
+        /// <summary>
+        /// The timestamp of when the refund was created, in ISO 8601-1:2019 format.&lt;br /&gt;
+        /// <br/>Example for July 19th, 2021 14:42:38 Central European Summer Time:&lt;br /&gt;
+        /// <br/>UTC: 2021-07-19T12:42:38Z
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("createdOn", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public System.DateTimeOffset CreatedOn { get; set; }
+
+        /// <summary>
+        /// The payment point on which refunded payment was initiated.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("paymentPointId", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public System.Guid PaymentPointId { get; set; }
+
+        /// <summary>
+        /// Merchant id associated with the refund.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("merchantId", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public System.Guid MerchantId { get; set; }
+
+        /// <summary>
+        /// Three-letter &lt;a href="https://www.iso.org/iso-4217-currency-codes.html"&gt;ISO currency code&lt;/a&gt;, in uppercase.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("isoCurrencyCode", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public GetSingleRefundResponseIsoCurrencyCode IsoCurrencyCode { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.5.0 (NJsonSchema v10.6.6.0 (Newtonsoft.Json v9.0.0.0))")]
+    public partial class GetRefundsResponse
+    {
+        /// <summary>
+        /// The number of refunds per page. The range is 1 to 1000.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("pageSize", Required = Newtonsoft.Json.Required.Always)]
+        public int PageSize { get; set; }
+
+        /// <summary>
+        /// A number of the next page. The null value indicates that the response has the last page.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("nextPageNumber", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int? NextPageNumber { get; set; }
+
+        /// <summary>
+        /// The requested list of refunds.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("refunds", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.ICollection<GetSingleRefundResponse> Refunds { get; set; } = new System.Collections.ObjectModel.Collection<GetSingleRefundResponse>();
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.5.0 (NJsonSchema v10.6.6.0 (Newtonsoft.Json v9.0.0.0))")]
+    public partial class PaymentPointsList
+    {
+        /// <summary>
+        /// Max number of payments that could have been returned. Only last page will contain fewer than max number of payments.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("pageSize", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int PageSize { get; set; }
+
+        /// <summary>
+        /// Number of the next page. This value should be sent as `pageNumber` value in next request. If last page is returned `nextPageNumber` value will be `null`.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("nextPageNumber", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int? NextPageNumber { get; set; }
+
+        /// <summary>
+        /// List of payment points.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("paymentPoints", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<PaymentPoint> PaymentPoints { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.5.0 (NJsonSchema v10.6.6.0 (Newtonsoft.Json v9.0.0.0))")]
+    public partial class PaymentPoint
+    {
+        /// <summary>
+        /// Id of the payment point.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("paymentPointId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid PaymentPointId { get; set; }
+
+        /// <summary>
+        /// Merchant-defined Payment Point name.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("paymentPointName", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string PaymentPointName { get; set; }
+
+        /// <summary>
+        /// The current state of the payment point.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("state", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public PaymentPointState State { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
 
     }
 
@@ -1227,17 +2059,20 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
         [System.Runtime.Serialization.EnumMember(Value = @"reserved")]
         Reserved = 1,
 
+        [System.Runtime.Serialization.EnumMember(Value = @"captureStarted")]
+        CaptureStarted = 2,
+
         [System.Runtime.Serialization.EnumMember(Value = @"captured")]
-        Captured = 2,
+        Captured = 3,
 
         [System.Runtime.Serialization.EnumMember(Value = @"cancelledByMerchant")]
-        CancelledByMerchant = 3,
+        CancelledByMerchant = 4,
 
         [System.Runtime.Serialization.EnumMember(Value = @"cancelledByUser")]
-        CancelledByUser = 4,
+        CancelledByUser = 5,
 
         [System.Runtime.Serialization.EnumMember(Value = @"cancelledBySystem")]
-        CancelledBySystem = 5,
+        CancelledBySystem = 6,
 
     }
 
@@ -1251,17 +2086,44 @@ namespace CoffeeCard.MobilePay.Generated.Api.PaymentsApi
         [System.Runtime.Serialization.EnumMember(Value = @"reserved")]
         Reserved = 1,
 
+        [System.Runtime.Serialization.EnumMember(Value = @"captureStarted")]
+        CaptureStarted = 2,
+
         [System.Runtime.Serialization.EnumMember(Value = @"captured")]
-        Captured = 2,
+        Captured = 3,
 
         [System.Runtime.Serialization.EnumMember(Value = @"cancelledByMerchant")]
-        CancelledByMerchant = 3,
+        CancelledByMerchant = 4,
 
         [System.Runtime.Serialization.EnumMember(Value = @"cancelledByUser")]
-        CancelledByUser = 4,
+        CancelledByUser = 5,
 
         [System.Runtime.Serialization.EnumMember(Value = @"cancelledBySystem")]
-        CancelledBySystem = 5,
+        CancelledBySystem = 6,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.5.0 (NJsonSchema v10.6.6.0 (Newtonsoft.Json v9.0.0.0))")]
+    public enum GetSingleRefundResponseIsoCurrencyCode
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"DKK")]
+        DKK = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"EUR")]
+        EUR = 1,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.15.5.0 (NJsonSchema v10.6.6.0 (Newtonsoft.Json v9.0.0.0))")]
+    public enum PaymentPointState
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"created")]
+        Created = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"active")]
+        Active = 1,
 
     }
 

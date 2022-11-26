@@ -18,11 +18,11 @@ namespace CoffeeCard.MobilePay.Service.v2
             _webhooksApi = webhooksApi;
         }
         
-        public async Task<SingleWebhookResponse> RegisterWebhook(string url, ICollection<string> events)
+        public async Task<SingleWebhookResponse> RegisterWebhook(string url, ICollection<Events> events)
         {
             try
             {
-                return await _webhooksApi.WebhooksPOSTAsync(null, new CreateWebhookRequest
+                return await _webhooksApi.CreateWebhookAsync( new CreateWebhookRequest
                 {
                     Events = events,
                     Url = url
@@ -30,7 +30,7 @@ namespace CoffeeCard.MobilePay.Service.v2
             }
             catch (ApiException e)
             {
-                Log.Error("Error calling Post Webhook with Url: {url} and Events: {events}. Http {StatusCode} {Message}", url, events, e.StatusCode, e.Message);
+                Log.Error("Error calling Post Webhook with Url: {Url} and Events: {Events}. Http {StatusCode} {Message}", url, events, e.StatusCode, e.Message);
                 throw new MobilePayApiException(e.StatusCode, e.Message);
             }
         }
@@ -39,7 +39,7 @@ namespace CoffeeCard.MobilePay.Service.v2
         {
             try
             {
-                return await _webhooksApi.WebhooksGETAsync(webhookId, null);
+                return await _webhooksApi.GetWebhookAsync(webhookId);
             }
             catch (ApiException e)
             {
@@ -59,7 +59,7 @@ namespace CoffeeCard.MobilePay.Service.v2
         {
             try
             {
-                await _webhooksApi.WebhooksDELETEAsync(webhookId, null);
+                await _webhooksApi.DeleteWebhookAsync(webhookId);
             }
             catch (ApiException e)
             {
