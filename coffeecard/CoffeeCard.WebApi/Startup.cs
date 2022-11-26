@@ -59,6 +59,9 @@ namespace CoffeeCard.WebApi
                 opt.UseSqlServer(databaseSettings.ConnectionString,
                     c => c.MigrationsHistoryTable("__EFMigrationsHistory", databaseSettings.SchemaName)));
 
+            // Setup cache
+            services.AddMemoryCache();
+            
             // Setup Dependency Injection
             services.AddSingleton(_environment);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
