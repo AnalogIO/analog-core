@@ -22,8 +22,6 @@ namespace CoffeeCard.Library.Services.v2
         private readonly IMobilePayWebhooksService _mobilePayWebhooksService;
         private readonly MobilePaySettingsV2 _mobilePaySettings;
 
-        private string _signatureKey;
-
         public WebhookService(CoffeeCardContext context, IMobilePayWebhooksService mobilePayWebhooksService,
             MobilePaySettingsV2 mobilePaySettings)
         {
@@ -32,14 +30,10 @@ namespace CoffeeCard.Library.Services.v2
             _mobilePaySettings = mobilePaySettings;
         }
 
-        public async Task<string> SignatureKey()
+        public async Task<string> GetSignatureKey()
         {
-            if (_signatureKey == null)
-            {
-                await EnsureWebhookIsRegistered();
-            }
-
-            return _signatureKey;
+            return await _context.WebhookConfigurations.Where(w => w.Status == WebhookStatus.Active)
+                .Select(w => w.SignatureKey).FirstAsync();
         }
 
         public async Task EnsureWebhookIsRegistered()
@@ -78,8 +72,6 @@ namespace CoffeeCard.Library.Services.v2
                 webhook.LastUpdated = DateTime.UtcNow;
 
                 await _context.SaveChangesAsync();
-
-                _signatureKey = mobilePayWebhook.SignatureKey;
             }
             catch (EntityNotFoundException)
             {
@@ -111,8 +103,6 @@ namespace CoffeeCard.Library.Services.v2
 
             await _context.WebhookConfigurations.AddAsync(webhook);
             await _context.SaveChangesAsync();
-
-            _signatureKey = mobilePayWebhook.SignatureKey;
         }
     }
 }

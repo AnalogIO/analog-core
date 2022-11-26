@@ -8,6 +8,7 @@ using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Serilog;
 
 namespace CoffeeCard.WebApi.Controllers.v2
@@ -20,18 +21,22 @@ namespace CoffeeCard.WebApi.Controllers.v2
     [Route("api/v{version:apiVersion}/mobilepay")]
     public class MobilePayController : ControllerBase
     {
+        private const string MpSignatureKeyCacheKey = "MpSignatureKey";
+
         private readonly IPurchaseService _purchaseService;
         private readonly MobilePaySettingsV2 _mobilePaySettings;
         private readonly IWebhookService _webhookService;
+        private readonly IMemoryCache _memoryCache;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MobilePayController"/> class.
         /// </summary>
-        public MobilePayController(IPurchaseService purchaseService, IWebhookService webhookService, MobilePaySettingsV2 mobilePaySettings)
+        public MobilePayController(IPurchaseService purchaseService, IWebhookService webhookService, MobilePaySettingsV2 mobilePaySettings, IMemoryCache memoryCache)
         {
             _purchaseService = purchaseService;
             _webhookService = webhookService;
             _mobilePaySettings = mobilePaySettings;
+            _memoryCache = memoryCache;
         }
 
         /// <summary>
@@ -62,6 +67,22 @@ namespace CoffeeCard.WebApi.Controllers.v2
 
         private async Task<bool> VerifySignature(string mpSignatureHeader)
         {
+            var endpointUrl = _mobilePaySettings.WebhookUrl;
+
+            if (!_memoryCache.TryGetValue(MpSignatureKeyCacheKey, out string signatureKey))
+            {
+                signatureKey = await _webhookService.GetSignatureKey();
+                
+                var cacheExpiryOptions = new MemoryCacheEntryOptions
+                {
+                    AbsoluteExpiration = DateTime.UtcNow.AddHours(24),
+                    SlidingExpiration = TimeSpan.FromHours(2)
+                };
+                
+                Log.Information("Set {SignatureKey} in Cache", MpSignatureKeyCacheKey);
+                _memoryCache.Set(MpSignatureKeyCacheKey, signatureKey, cacheExpiryOptions);
+            }
+            
             if (!Request.Body.CanSeek)
             {
                 Request.EnableBuffering();
@@ -74,15 +95,11 @@ namespace CoffeeCard.WebApi.Controllers.v2
             {
                 rawRequestBody = await stream.ReadToEndAsync();
             }
-            
             Log.Debug("Body: '{Body}'", rawRequestBody);
             
-            var endpointUrl = _mobilePaySettings.WebhookUrl;
-            var signatureKey = await _webhookService.SignatureKey();
             var hash = new HMACSHA1(Encoding.UTF8.GetBytes(signatureKey))
                 .ComputeHash(Encoding.UTF8.GetBytes(endpointUrl + rawRequestBody.Trim()));
             var computedSignature = Convert.ToBase64String(hash);
-
             Log.Debug("ComputedSignature: {Signature}", computedSignature);
             
             return mpSignatureHeader.Equals(computedSignature);
