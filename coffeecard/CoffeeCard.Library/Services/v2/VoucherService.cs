@@ -29,13 +29,15 @@ namespace CoffeeCard.Library.Services.v2
                 throw new ApiException("No product was found with given Id", StatusCodes.Status404NotFound);
             }
 
-            var codes = new HashSet<string>();
-            while (codes.Count < request.Amount)
+            var newCodes = new HashSet<string>();
+            var existingVouchers = _context.Vouchers.Where(v => v.Code.StartsWith(request.VoucherPrefix)).Select(v => v.Code).ToHashSet();
+            while (newCodes.Count < request.Amount)
             {
-                codes.Add(await GenerateUniqueVoucherCode(6)); // 6 character length gives 36^6 combos
+                var code = GenerateUniqueVoucherCode(6, request.VoucherPrefix, existingVouchers); // 6 character length gives 36^6 combos
+                newCodes.Add(code); 
             }
             
-            var vouchers = codes
+            var vouchers = newCodes
                 .Select( code => new Voucher
                 {
                     Code = code,
@@ -47,29 +49,32 @@ namespace CoffeeCard.Library.Services.v2
             await _context.SaveChangesAsync();
 
             var responses = vouchers.
-                Select(v => new IssueVoucherResponse { VoucherCode = v.Code });
+                Select(v => new IssueVoucherResponse { VoucherCode = v.Code, IssuedAt = v.DateCreated, ProductId = v.Product.Id, ProductName = v.Product.Name });
             return responses;
         }
 
         /// <summary>
         /// Generates a unique voucher code, that is not currently in the database
         /// </summary>
-        /// <param name="codeLength"></param>
+        /// <param name="codeLength">The length of the generated code</param>
+        /// <param name="voucherPrefix">The user defined prefix of the generated code</param>
+        /// <param name="existingCodes">A set of existing voucher codes</param>
         /// <returns>A string representing a voucher code</returns>
-        private async Task<string> GenerateUniqueVoucherCode(int codeLength)
+        private string GenerateUniqueVoucherCode(int codeLength, string voucherPrefix, HashSet<string> existingCodes)
         {
-            while (true)
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            string code = String.Empty;
+
+            while( String.IsNullOrEmpty(code) || existingCodes.Contains(code))
             {
-                const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-                var code = new string(Enumerable.Repeat(chars, codeLength)
-                    .Select(s => s[_random.Next(s.Length)])
-                    .ToArray());
-
-                var exits = await _context.Vouchers.AnyAsync(v => v.Code == code);
-
-                if (!exits) return code;
-            }
+                code = $"{voucherPrefix}-"; // Ensure code starts with prefix
+                
+                for( var i = 0; i < codeLength; i++)
+                {
+                    code += chars[_random.Next(chars.Length)];
+                }
+            } 
+            return code;
         }
     }
 }

@@ -1,8 +1,10 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace CoffeeCard.Models.Entities
 {
+    [Index(nameof(Code), IsUnique = true)]
     public class Voucher
     {
         public Voucher()
