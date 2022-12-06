@@ -34,7 +34,6 @@ namespace CoffeeCard.Tests.Integration.WebApplication
                     Configuration.GetSection("EnvironmentSettings"));
                 services.ConfigureValidatableSetting<IdentitySettings>(Configuration.GetSection("IdentitySettings"));
                 services.ConfigureValidatableSetting<MailgunSettings>(Configuration.GetSection("MailgunSettings"));
-                services.ConfigureValidatableSetting<MobilePaySettings>(Configuration.GetSection("MobilePaySettings"));
 
                 // Remove the app's ApplicationDbContext registration.
                 var descriptor = services.SingleOrDefault(

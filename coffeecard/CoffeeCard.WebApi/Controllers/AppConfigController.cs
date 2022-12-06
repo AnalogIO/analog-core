@@ -1,4 +1,5 @@
-﻿using CoffeeCard.Library.Services;
+﻿using System;
+using CoffeeCard.Library.Services;
 using CoffeeCard.Models.DataTransferObjects.AppConfig;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -12,17 +13,15 @@ namespace CoffeeCard.WebApi.Controllers
     [ApiController]
     [ApiVersion("1")]
     [Route("api/v{version:apiVersion}/[controller]")]
+    [Obsolete(message: "Replaced by AppConfig v2")]
     [Authorize]
     public class AppConfigController : ControllerBase
     {
-        private readonly IAppConfigService _appConfigService;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="AppConfigController"/> class.
         /// </summary>
-        public AppConfigController(IAppConfigService appConfigService)
+        public AppConfigController()
         {
-            _appConfigService = appConfigService;
         }
 
         /// <summary>
@@ -36,8 +35,7 @@ namespace CoffeeCard.WebApi.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         public ActionResult<AppConfigDto> Get()
         {
-            var appConfig = _appConfigService.RetreiveConfiguration();
-            return Ok(appConfig);
+            return StatusCode(StatusCodes.Status410Gone);
         }
     }
 }

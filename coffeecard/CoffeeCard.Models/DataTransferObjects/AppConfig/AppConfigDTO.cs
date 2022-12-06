@@ -8,8 +8,7 @@ namespace CoffeeCard.Models.DataTransferObjects.AppConfig
     /// </summary>
     /// <example>
     /// {
-    ///     "environmentType": "Production",
-    ///     "merchantId": "APP1234"
+    ///     "environmentType": "Production"
     /// }
     /// </example>
     public class AppConfigDto
@@ -21,13 +20,5 @@ namespace CoffeeCard.Models.DataTransferObjects.AppConfig
         /// <example>Production</example>
         [Required]
         public EnvironmentType EnvironmentType { get; set; }
-        
-        /// <summary>
-        /// MobilePay MerchantId
-        /// </summary>
-        /// <value>Merchant Id</value>
-        /// <example>APP1234</example>
-        [Required]
-        public string MerchantId { get; set; }
     }
 }
