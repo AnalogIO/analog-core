@@ -51,7 +51,7 @@ namespace CoffeeCard.Library.Services
         public bool LoginAllowed(User user)
         {
             var (firstFailedLogin, loginAttemptsMade) = UpdateAndGetLoginAttemptCount(user.Email);
-            var timeOutPeriod = new TimeSpan(0, _loginLimiterSettings.TimeOutPeriodInMinutes, 0);
+            var timeOutPeriod = new TimeSpan(0, 0, _loginLimiterSettings.TimeOutPeriodInSeconds);
             var timeSinceFirstFailedLogin = DateTime.UtcNow.Subtract(firstFailedLogin);
 
             var maximumLoginAttemptsWithinTimeOut = _loginLimiterSettings.MaximumLoginAttemptsWithinTimeOut;

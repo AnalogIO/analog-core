@@ -72,7 +72,7 @@ namespace CoffeeCard.Library.Services
                         email,
                         _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
                     throw new ApiException(
-                        $"Amount of failed login attempts exceeds the allowed amount, please wait for {_loginLimiterSettings.TimeOutPeriodInMinutes} minutes before trying again",
+                        $"Amount of failed login attempts exceeds the allowed amount, please wait for {_loginLimiterSettings.TimeOutPeriodInSeconds / 60} minutes before trying again",
                         StatusCodes.Status429TooManyRequests);
                 }
 

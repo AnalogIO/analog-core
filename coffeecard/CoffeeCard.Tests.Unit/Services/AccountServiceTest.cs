@@ -38,7 +38,7 @@ namespace CoffeeCard.Tests.Unit.Services
             };
             var loginLimiterSettings = new LoginLimiterSettings()
             {
-                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 5, TimeOutPeriodInMinutes = 5
+                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 5, TimeOutPeriodInSeconds = 5
             };
 
             var expectedResult = false;
@@ -74,7 +74,7 @@ namespace CoffeeCard.Tests.Unit.Services
             };
             var loginLimiterSettings = new LoginLimiterSettings()
             {
-                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 5, TimeOutPeriodInMinutes = 5
+                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 5, TimeOutPeriodInSeconds = 5
             };
 
             var expectedResult = true;
@@ -126,7 +126,7 @@ namespace CoffeeCard.Tests.Unit.Services
             };
             var loginLimiterSettings = new LoginLimiterSettings()
             {
-                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 5, TimeOutPeriodInMinutes = 5
+                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 5, TimeOutPeriodInSeconds = 5
             };
 
             var claim = new Claim(ClaimTypes.Email, "test@email.dk");
@@ -185,7 +185,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 {DeploymentUrl = "test", EnvironmentType = EnvironmentType.Test, MinAppVersion = "2.1.0"};
             var loginLimiterSettings = new LoginLimiterSettings()
             {
-                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 5, TimeOutPeriodInMinutes = 5
+                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 5, TimeOutPeriodInSeconds = 5
             };
 
             var userTokens = new List<Token>();
@@ -236,7 +236,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 {DeploymentUrl = "test", EnvironmentType = EnvironmentType.Test, MinAppVersion = "2.1.0"};
             var loginLimiterSettings = new LoginLimiterSettings()
             {
-                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 5, TimeOutPeriodInMinutes = 5
+                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 5, TimeOutPeriodInSeconds = 5
             };
 
             var userTokens = new List<Token>();
@@ -288,7 +288,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 {DeploymentUrl = "test", EnvironmentType = EnvironmentType.Test, MinAppVersion = "2.1.0"};
             var loginLimiterSettings = new LoginLimiterSettings()
             {
-                IsEnabled = false, MaximumLoginAttemptsWithinTimeOut = 5, TimeOutPeriodInMinutes = 5
+                IsEnabled = false, MaximumLoginAttemptsWithinTimeOut = 5, TimeOutPeriodInSeconds = 5
             };
 
             var userTokens = new List<Token>();
@@ -339,7 +339,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 {DeploymentUrl = "test", EnvironmentType = EnvironmentType.Test, MinAppVersion = "2.1.0"};
             var loginLimiterSettings = new LoginLimiterSettings()
             {
-                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 1, TimeOutPeriodInMinutes = 1
+                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 1, TimeOutPeriodInSeconds = 1
             };
 
             var userTokens = new List<Token>();
@@ -373,7 +373,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 // Assert
                 var expectedException =
                     new ApiException(
-                        $"Amount of failed login attempts exceeds the allowed amount, please wait for {loginLimiterSettings.TimeOutPeriodInMinutes} minutes before trying again",
+                        $"Amount of failed login attempts exceeds the allowed amount, please wait for {loginLimiterSettings.TimeOutPeriodInSeconds / 60} minutes before trying again",
                         429);
                 Assert.Equal(tooManyLoginsException.StatusCode, expectedException.StatusCode);
                 Assert.Equal(tooManyLoginsException.Message, expectedException.Message);
@@ -395,7 +395,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 {DeploymentUrl = "test", EnvironmentType = EnvironmentType.Test, MinAppVersion = "2.1.0"};
             var loginLimiterSettings = new LoginLimiterSettings()
             {
-                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 1, TimeOutPeriodInMinutes = 1
+                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 1, TimeOutPeriodInSeconds = 1
             };
 
             var userTokens = new List<Token>();
@@ -442,7 +442,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 {DeploymentUrl = "test", EnvironmentType = EnvironmentType.Test, MinAppVersion = "2.1.0"};
             var loginLimiterSettings = new LoginLimiterSettings()
             {
-                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 1, TimeOutPeriodInMinutes = 1
+                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 1, TimeOutPeriodInSeconds = 1
             };
 
             var userTokens = new List<Token>();
@@ -489,7 +489,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 {DeploymentUrl = "test", EnvironmentType = EnvironmentType.Test, MinAppVersion = "2.1.0"};
             var loginLimiterSettings = new LoginLimiterSettings()
             {
-                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 1, TimeOutPeriodInMinutes = 1
+                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 1, TimeOutPeriodInSeconds = 1
             };
 
             
@@ -536,7 +536,7 @@ namespace CoffeeCard.Tests.Unit.Services
             var httpContextAccessor = new Mock<IHttpContextAccessor>();
             var loginLimiterSettings = new LoginLimiterSettings()
             {
-                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 1, TimeOutPeriodInMinutes = 1
+                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 1, TimeOutPeriodInSeconds = 1
             };
             var identitySettings = new IdentitySettings
             {
@@ -574,7 +574,7 @@ namespace CoffeeCard.Tests.Unit.Services
             var httpContextAccessor = new Mock<IHttpContextAccessor>();
             var loginLimiterSettings = new LoginLimiterSettings
             {
-                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 1, TimeOutPeriodInMinutes = 1
+                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 1, TimeOutPeriodInSeconds = 1
             };
             var identitySettings = new IdentitySettings
             {
