@@ -33,7 +33,7 @@ namespace CoffeeCard.Library.Services.v2
             var existingVouchers = _context.Vouchers.Where(v => v.Code.StartsWith(request.VoucherPrefix)).Select(v => v.Code).ToHashSet();
             while (newCodes.Count < request.Amount)
             {
-                var code = GenerateUniqueVoucherCode(6, request.VoucherPrefix, existingVouchers); // 6 character length gives 36^6 combos
+                var code = GenerateUniqueVoucherCode(8, request.VoucherPrefix, existingVouchers); // 8 character length gives 36^8 combos
                 newCodes.Add(code); 
             }
             
@@ -43,6 +43,8 @@ namespace CoffeeCard.Library.Services.v2
                     Code = code,
                     DateCreated = DateTime.Now,
                     Product = product,
+                    Description = request.Description,
+                    Requester = request.Requester
                 }).ToList();
 
             await _context.Vouchers.AddRangeAsync(vouchers);
