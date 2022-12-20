@@ -16,9 +16,10 @@ namespace CoffeeCard.Models.Entities
         public string Code { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime? DateUsed { get; set; }
-
+        //Description and Requester are nullable for migration purposes
+        public string? Description { get; set; }
+        [ForeignKey("Requester_Id")] public virtual User? Requester {get; set; }
         [ForeignKey("Product_Id")] public virtual Product Product { get; set; }
-
         [ForeignKey("User_Id")] public virtual User User { get; set; }
     }
 }
