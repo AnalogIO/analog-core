@@ -138,7 +138,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         {
             // Arrange
             var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(nameof(CreateVouchersSavesToDatabase));
+                .UseInMemoryDatabase(nameof(CreateVouchersCreatesVouchersWithPrefix));
             var databaseSettings = new DatabaseSettings
             {
                 SchemaName = "test"
