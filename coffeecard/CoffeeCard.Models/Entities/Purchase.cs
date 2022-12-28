@@ -56,8 +56,15 @@ namespace CoffeeCard.Models.Entities
         /// </summary>
         /// <value>Purchase DateCreated</value>
         /// <example>???</example>
-        public DateTime DateCreated { get; set; } = DateTime.UtcNow;
-
+        public DateTime DateCreated { get; set; }  = DateTime.UtcNow;
+        
+        /// <summary>
+        /// Purchase completed
+        /// </summary>
+        /// <value>Purchase Completed</value>
+        /// <example>true</example>
+        public bool Completed { get; set; }
+        
         /// <summary>
         /// Order Id. Unique identifier used to represent the order at a external provider
         /// </summary>
@@ -79,7 +86,15 @@ namespace CoffeeCard.Models.Entities
         /// </summary>
         /// <value>Status</value>
         /// <example>Completed</example>
-        public PurchaseStatus Status { get; set; }
+        public PurchaseStatus? Status { get; set; }
+        
+        // PaymentType is nullable for migration purposes
+        /// <summary>
+        /// Payment Type
+        /// </summary>
+        /// <value>Payment Type</value>
+        /// <example>MobilePay</example>
+        public PaymentType? PaymentType { get; set; }
 
         /// The type of purchase e.g. MobilePayV1, Free
         public PurchaseType Type { get; set; }

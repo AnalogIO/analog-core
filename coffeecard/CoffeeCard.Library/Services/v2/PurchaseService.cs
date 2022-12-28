@@ -136,7 +136,8 @@ namespace CoffeeCard.Library.Services.v2
                 ExternalTransactionId = transactionId,
                 PurchasedBy = user,
                 Status = purchaseStatus,
-                Type = purchaseRequest.PaymentType.toPurchaseType()
+                PaymentType = purchaseRequest.PaymentType
+                // FIXME State management
             };
 
             return (purchase, paymentDetails);
@@ -156,7 +157,26 @@ namespace CoffeeCard.Library.Services.v2
                     $"No purchase was found by Purchase Id: {purchaseId} and User Id: {user.Id}");
             }
 
-            var paymentDetails = await _mobilePayPaymentsService.GetPayment(Guid.Parse(purchase.ExternalTransactionId));
+            PaymentDetails paymentDetails;
+            if (purchase.PaymentType == null)
+            {
+                paymentDetails = await _mobilePayPaymentsService.GetPayment(Guid.Parse(purchase.TransactionId));
+            }
+            else
+            {
+                switch (purchase.PaymentType)
+                {
+                    case PaymentType.MobilePay:
+                        paymentDetails = await _mobilePayPaymentsService.GetPayment(Guid.Parse(purchase.TransactionId));
+                        break;
+                    case PaymentType.FreePurchase:
+                        paymentDetails = new FreePurchasePaymentDetails(purchase.OrderId);
+                        break;
+                    default:
+                        Log.Error("Payment Type {PaymentType} is not handled in PurchaseService", purchase.PaymentType);
+                        throw new ArgumentException($"Payment Type '{purchase.PaymentType}' is not handled");
+                }
+            }
 
             return new SinglePurchaseResponse
             {
@@ -181,7 +201,8 @@ namespace CoffeeCard.Library.Services.v2
                     ProductName = p.ProductName,
                     NumberOfTickets = p.NumberOfTickets,
                     TotalAmount = p.Price,
-                    PurchaseStatus = p.Status
+                    PurchaseStatus = p.Status,
+                    PaymentType = p.PaymentType
                 })
                 .ToListAsync();
         }

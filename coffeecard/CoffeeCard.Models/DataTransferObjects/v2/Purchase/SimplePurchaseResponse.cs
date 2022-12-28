@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
 {
@@ -13,7 +14,8 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
     ///     "productId": 1,
     ///     "productName": "Filter coffee",
     ///     "totalAmount": 300,
-    ///     "purchaseStatus": "Completed"
+    ///     "purchaseStatus": "Completed",
+    ///     "paymentType": "MobilePay"
     /// }
     /// </example>
     public class SimplePurchaseResponse
@@ -72,6 +74,15 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <value>Purchase status</value>
         /// <example>Completed</example>
         [Required]
-        public PurchaseStatus PurchaseStatus { get; set; }
+        public PurchaseStatus? PurchaseStatus { get; set; }
+        
+        /// <summary>
+        /// Payment Type
+        /// </summary>
+        /// <value>Payment Type</value>
+        /// <example>MobilePay</example>
+        [Required]
+        [JsonProperty(Required = Required.AllowNull)]
+        public PaymentType? PaymentType { get; set; }
     }
 }
