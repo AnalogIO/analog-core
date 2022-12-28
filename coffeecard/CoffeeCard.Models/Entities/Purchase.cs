@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CoffeeCard.Models.Entities
 {
-    // TODO Should me marked as unique
-    [Index(nameof(OrderId), IsUnique = true)]
+    // FIXME Should me marked as unique
+    [Index(nameof(OrderId))]
     [Index(nameof(ExternalTransactionId))]
     public class Purchase
     {
@@ -28,15 +28,16 @@ namespace CoffeeCard.Models.Entities
         /// <summary>
         /// Id of Product purchased
         /// </summary>
-        /// <value></value>
+        /// <value>Product Id</value>
         /// <example>2</example>
         public int ProductId { get; set; }
-
+        
         /// <summary>
-        /// Product purchases
+        /// Product purchased
         /// </summary>
+        /// <value>Product</value>
         public Product Product { get; set; }
-
+        
         /// <summary>
         /// Price for purchase in Danish kroner (kr)
         /// </summary>
