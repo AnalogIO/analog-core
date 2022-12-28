@@ -165,7 +165,7 @@ namespace CoffeeCard.Library.Services.v2
             };
         }
 
-        public async Task<List<SimplePurchaseResponse>> GetPurchases(User user)
+        public async Task<IEnumerable<SimplePurchaseResponse>> GetPurchases(User user)
         {
             return await _context.Purchases
                 .Where(p => p.PurchasedBy.Equals(user))
@@ -174,6 +174,7 @@ namespace CoffeeCard.Library.Services.v2
                     Id = p.Id,
                     DateCreated = p.DateCreated,
                     ProductId = p.ProductId,
+                    ProductName = p.ProductName,
                     TotalAmount = p.Price,
                     PurchaseStatus = p.Status
                 })

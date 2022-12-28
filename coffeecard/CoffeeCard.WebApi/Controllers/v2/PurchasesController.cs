@@ -44,7 +44,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<List<SimplePurchaseResponse>>> GetAllPurchases()
+        public async Task<ActionResult<IEnumerable<SimplePurchaseResponse>>> GetAllPurchases()
         {
             var purchases = await _purchaseService.GetPurchases(await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims));
 

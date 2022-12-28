@@ -11,6 +11,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
     ///     "id": 22,
     ///     "dateCreated": "2022-01-09T21:03:52.2283208Z",
     ///     "productId": 1,
+    ///     "productName": "Coffee",
     ///     "totalAmount": 300,
     ///     "purchaseStatus": "Completed"
     /// }
@@ -40,6 +41,14 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <example>1</example>
         [Required]
         public int ProductId { get; set; }
+        
+        /// <summary>
+        /// Name of purchased product
+        /// </summary>
+        /// <value>Product Name</value>
+        /// <example>Coffee</example>
+        [Required]
+        public string ProductName { get; set; }
         
         /// <summary>
         /// Total purchase price in Danish Kroner (kr)
