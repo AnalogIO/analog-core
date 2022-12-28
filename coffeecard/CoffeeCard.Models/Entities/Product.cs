@@ -22,6 +22,8 @@ namespace CoffeeCard.Models.Entities
         [Required] [DefaultValue(true)] public bool Visible { get; set; }
 
         public ICollection<ProductUserGroup> ProductUserGroup { get; set; }
+        
+        public ICollection<Purchase> Purchases { get; set; }
 
         public bool Equals(Product other)
         {
