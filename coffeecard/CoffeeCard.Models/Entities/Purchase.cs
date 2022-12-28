@@ -65,8 +65,6 @@ namespace CoffeeCard.Models.Entities
         /// </summary>
         /// <value>Purchase Completed</value>
         /// <example>true</example>
-        
-        // FIXME More detailed state management?
         public bool Completed { get; set; }
         
         /// <summary>
@@ -90,6 +88,14 @@ namespace CoffeeCard.Models.Entities
         /// <value>Status</value>
         /// <example>Completed</example>
         public PurchaseStatus? Status { get; set; }
+        
+        // PaymentType is nullable for migration purposes
+        /// <summary>
+        /// Payment Type
+        /// </summary>
+        /// <value>Payment Type</value>
+        /// <example>MobilePay</example>
+        public PaymentType? PaymentType { get; set; }
 
         [ForeignKey("PurchasedBy_Id")]
         public virtual User PurchasedBy { get; set; }
