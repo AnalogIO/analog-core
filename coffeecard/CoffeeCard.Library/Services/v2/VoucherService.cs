@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
@@ -26,7 +27,7 @@ namespace CoffeeCard.Library.Services.v2
             var product = await _context.Products.FindAsync(request.ProductId);
             if (product == null)
             {
-                throw new ApiException("No product was found with given Id", StatusCodes.Status404NotFound);
+                throw new EntityNotFoundException("No product was found with given Id");
             }
 
             var newCodes = new HashSet<string>();
@@ -51,7 +52,14 @@ namespace CoffeeCard.Library.Services.v2
             await _context.SaveChangesAsync();
 
             var responses = vouchers.
-                Select(v => new IssueVoucherResponse { VoucherCode = v.Code, IssuedAt = v.DateCreated, ProductId = v.Product.Id, ProductName = v.Product.Name });
+                Select(v => 
+                    new IssueVoucherResponse 
+                    { 
+                        VoucherCode = v.Code, 
+                        IssuedAt = v.DateCreated, 
+                        ProductId = v.Product.Id, 
+                        ProductName = v.Product.Name 
+                    });
             return responses;
         }
 
@@ -65,18 +73,18 @@ namespace CoffeeCard.Library.Services.v2
         private string GenerateUniqueVoucherCode(int codeLength, string voucherPrefix, HashSet<string> existingCodes)
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            string code = String.Empty;
+            StringBuilder code = new StringBuilder();
 
-            while( String.IsNullOrEmpty(code) || existingCodes.Contains(code))
+            while( String.IsNullOrEmpty(code.ToString()) || existingCodes.Contains(code.ToString()))
             {
-                code = $"{voucherPrefix}-"; // Ensure code starts with prefix
+                code.Append($"{voucherPrefix}-"); // Ensure code starts with prefix
                 
                 for( var i = 0; i < codeLength; i++)
                 {
-                    code += chars[_random.Next(chars.Length)];
+                    code.Append(chars[_random.Next(chars.Length)]);
                 }
             } 
-            return code;
+            return code.ToString();
         }
     }
 }

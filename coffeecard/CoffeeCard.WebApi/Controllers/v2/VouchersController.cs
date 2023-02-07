@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Library.Utils;
+using CoffeeCard.Models.DataTransferObjects;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 using CoffeeCard.Models.DataTransferObjects.v2.Voucher;
 using CoffeeCard.Models.Entities;
@@ -17,6 +19,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
     /// <summary>
     /// Controller for issuing, and redeeming vouchers
     /// </summary>
+    [Authorize]
     [ApiController]
     [ApiVersion("2")]
     [Route("api/v{version:apiVersion}/vouchers")]
@@ -25,6 +28,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         private readonly IVoucherService _voucherService;
         private readonly IPurchaseService _purchaseService;
         private readonly ClaimsUtilities _claimUtilities;
+
         public VouchersController(IVoucherService voucherService, IPurchaseService purchaseService, ClaimsUtilities claimUtilities)
         {
             _voucherService = voucherService;
@@ -45,7 +49,6 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(ApiException), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
-        [Authorize]
         [AuthorizeRoles(UserGroup.Board)]
         [HttpPost("issueVouchers")]
         public async Task<ActionResult<IEnumerable<IssueVoucherResponse>>> IssueVouchers([FromBody] IssueVoucherRequest request)
@@ -61,16 +64,15 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <response code="400">Voucher code already used</response>
         /// <response code="401">Invalid credentials</response>
         /// <response code="404">Voucher code not found</response>
-        [HttpPost("redeemvoucher")]
+        [HttpPost("{voucherCode}/redeem")]
         [ProducesResponseType(typeof(SimplePurchaseResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ArgumentException), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiException), StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<SimplePurchaseResponse>> RedeemVoucher([FromQuery] string voucherCode)
+        [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<SimplePurchaseResponse>> RedeemVoucher([FromRoute] string voucherCode)
         {
             var user = await _claimUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
-            var userId = user.Id;
-            return Ok(await _purchaseService.RedeemVoucher(voucherCode, userId));
+            return Ok(await _purchaseService.RedeemVoucher(voucherCode, user));
         }
     }
 }

@@ -37,16 +37,16 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
             
             var product = new Product { Id = 1, };
-            context.Products.Add(product);
+            await context.Products.AddAsync(product);
+            await context.SaveChangesAsync();
             var voucherService = new VoucherService(context);
 
             // Act
             var request = new IssueVoucherRequest { Amount = amount, ProductId = productId };
-            await voucherService.CreateVouchers(request);
             var responses = (await voucherService.CreateVouchers(request)).ToList();
             
             // Assert
-            Assert.True(responses.Count == amount);
+            Assert.Equal(responses.Count, amount);
             Assert.Distinct(responses.Select(v => v.VoucherCode));
         }
         
@@ -93,7 +93,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
             
             var product = new Product { Id = 1, };
-            context.Products.Add(product);
+            await context.Products.AddAsync(product);
+            await context.SaveChangesAsync();
             var voucherService = new VoucherService(context);
             
             // Act
@@ -123,7 +124,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
             
             var product = new Product { Id = 1, };
-            context.Products.Add(product);
+            await context.Products.AddAsync(product);
+            await context.SaveChangesAsync();
             var voucherService = new VoucherService(context);
             
             // Act
@@ -151,7 +153,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
             
             var product = new Product { Id = 1, };
-            context.Products.Add(product);
+            await context.Products.AddAsync(product);
+            await context.SaveChangesAsync();
             var voucherService = new VoucherService(context);
             
             //Act

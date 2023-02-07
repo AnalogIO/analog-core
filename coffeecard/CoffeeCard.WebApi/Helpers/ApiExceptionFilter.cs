@@ -14,6 +14,10 @@ namespace CoffeeCard.WebApi.Helpers
             ApiError apiError;
             switch (context.Exception)
             {
+                case ConflictException exception:
+                    apiError = new ApiError(exception.Message);
+                    context.HttpContext.Response.StatusCode = StatusCodes.Status409Conflict;
+                    break;
                 case ApiException exception:
                 {
                     apiError = new ApiError(exception.Message);

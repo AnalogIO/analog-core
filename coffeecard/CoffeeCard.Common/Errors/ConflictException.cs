@@ -5,13 +5,13 @@ using Microsoft.AspNetCore.Http;
 namespace CoffeeCard.Common.Errors
 {
     [Serializable]
-    public class ConflictExceptiion : ApiException
+    public class ConflictException : ApiException
     {
-        public ConflictExceptiion(string message) : base(message, statusCode: StatusCodes.Status409Conflict)
+        public ConflictException(string message) : base(message, statusCode: StatusCodes.Status409Conflict)
         {
         }
 
-        protected ConflictExceptiion(SerializationInfo info, StreamingContext context)
+        protected ConflictException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
         }

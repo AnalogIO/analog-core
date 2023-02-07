@@ -43,7 +43,7 @@ namespace CoffeeCard.Library.Services.v2
         /// Redeem af voucher code for a purchase
         /// </summary>
         /// <param name="voucherCode">Voucher code</param>
-        /// <param name="userId">Id of user redeeming the voucher</param>
-        Task<SimplePurchaseResponse> RedeemVoucher(string voucherCode, int userId);
+        /// <param name="user">user redeeming the voucher</param>
+        Task<SimplePurchaseResponse> RedeemVoucher(string voucherCode, User user);
     }
 }

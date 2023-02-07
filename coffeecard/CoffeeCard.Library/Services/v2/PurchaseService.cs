@@ -265,15 +265,17 @@ namespace CoffeeCard.Library.Services.v2
             }
         }
 
-        public async Task<SimplePurchaseResponse> RedeemVoucher(string voucherCode, int userId)
+        public async Task<SimplePurchaseResponse> RedeemVoucher(string voucherCode, User user)
         {
-
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId);
             if (user == null) throw new ApiException("The user could not be found");
 
             var voucher = await _context.Vouchers.Include(x => x.Product).FirstOrDefaultAsync(x => x.Code.Equals(voucherCode));
             if (voucher == null) throw new EntityNotFoundException($"Voucher '{voucherCode}' does not exist!");
-            if (voucher.User != null) throw new ConflictExceptiion("Voucher has already been redeemed!");
+            if (voucher.User != null) throw new ConflictException("Voucher has already been redeemed!");
+
+            var product = await _context.Products.FirstOrDefaultAsync(x => x.Id == voucher.Product.Id);
+            if (product == null)
+                throw new EntityNotFoundException($"The product with id {voucher.Product.Id} could not be found!");
 
             var purchase = new Purchase
             {
@@ -287,10 +289,6 @@ namespace CoffeeCard.Library.Services.v2
             };
 
             user.Purchases.Add(purchase);
-
-            var product = await _context.Products.FirstOrDefaultAsync(x => x.Id == purchase.ProductId);
-            if (product == null)
-                throw new EntityNotFoundException($"The product with id {purchase.ProductId} could not be found!");
 
             await _ticketService.IssueTickets(purchase);
 
@@ -311,7 +309,6 @@ namespace CoffeeCard.Library.Services.v2
                 ProductId = purchase.ProductId,
                 TotalAmount = purchase.Price,
                 PurchaseStatus = purchase.Status
-
             };
         }
 
