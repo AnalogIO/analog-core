@@ -72,7 +72,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             // Act
             var request = new IssueVoucherRequest { ProductId = 1, Amount = 10 };
 
-            await Assert.ThrowsAsync<ApiException>(() => voucherService.CreateVouchers(request));
+            await Assert.ThrowsAsync<EntityNotFoundException>(() => voucherService.CreateVouchers(request));
         }
 
         [Fact (DisplayName = "CreateVouchers have length of 8 + 4 from userPrefix")]
