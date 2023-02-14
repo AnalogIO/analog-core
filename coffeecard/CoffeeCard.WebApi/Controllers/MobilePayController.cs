@@ -1,5 +1,5 @@
-using System;
 using System.Threading.Tasks;
+using CoffeeCard.Library.Services;
 using CoffeeCard.Models.DataTransferObjects;
 using CoffeeCard.Models.DataTransferObjects.MobilePay;
 using Microsoft.AspNetCore.Authorization;
@@ -17,11 +17,14 @@ namespace CoffeeCard.WebApi.Controllers
     [Authorize]
     public class MobilePayController : ControllerBase
     {
+        private readonly IPurchaseService _purchaseService;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MobilePayController"/> class.
         /// </summary>
-        public MobilePayController()
+        public MobilePayController(IPurchaseService purchaseService)
         {
+            _purchaseService = purchaseService;
         }
 
         /// <summary>
@@ -32,12 +35,12 @@ namespace CoffeeCard.WebApi.Controllers
         /// <response code="200">Successful request</response>
         /// <response code="401">Invalid credentials</response>
         [HttpPost("initiate")]
-        [Obsolete(message: "Replaced by Purchases API v2")]
         [ProducesResponseType(typeof(InitiatePurchaseResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         public ActionResult<InitiatePurchaseResponseDto> InitiatePurchase([FromBody] InitiatePurchaseDto initiatePurchaseDto)
         {
-            return StatusCode(StatusCodes.Status410Gone);
+            var orderId = _purchaseService.InitiatePurchase(initiatePurchaseDto.ProductId, User.Claims);
+            return Ok(new InitiatePurchaseResponseDto {OrderId = orderId});
         }
 
         /// <summary>
@@ -47,12 +50,15 @@ namespace CoffeeCard.WebApi.Controllers
         /// <response code="200">Purchase successfully fulfilled</response>
         /// <response code="401">Invalid credentials</response>
         [HttpPost("complete")]
-        [Obsolete(message: "Replaced by Purchases API v2")]
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<MessageResponseDto>> CompletePurchase([FromBody] CompletePurchaseDto dto)
         {
-            return StatusCode(StatusCodes.Status410Gone);
+            await _purchaseService.CompletePurchase(dto, User.Claims);
+            return Ok(new MessageResponseDto()
+            {
+                Message = "The purchase was completed with success!"
+            });
         }
     }
 }
