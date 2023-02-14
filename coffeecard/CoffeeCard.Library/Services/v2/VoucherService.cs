@@ -27,7 +27,7 @@ namespace CoffeeCard.Library.Services.v2
             var product = await _context.Products.FindAsync(request.ProductId);
             if (product == null)
             {
-                throw new EntityNotFoundException("No product was found with given Id");
+                throw new EntityNotFoundException("No product was found by Id " + request.ProductId);
             }
 
             var newCodes = new HashSet<string>();

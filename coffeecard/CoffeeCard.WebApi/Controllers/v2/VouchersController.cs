@@ -46,11 +46,11 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <response code="401">Invalid credentials</response>
         /// <response code="403">Invalid role in credentials</response>
         [ProducesResponseType(typeof(IEnumerable<IssueVoucherResponse>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
         [AuthorizeRoles(UserGroup.Board)]
-        [HttpPost("issueVouchers")]
+        [HttpPost("issue-vouchers")]
         public async Task<ActionResult<IEnumerable<IssueVoucherResponse>>> IssueVouchers([FromBody] IssueVoucherRequest request)
         {
             return Ok(await _voucherService.CreateVouchers(request));
@@ -64,12 +64,12 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <response code="400">Voucher code already used</response>
         /// <response code="401">Invalid credentials</response>
         /// <response code="404">Voucher code not found</response>
-        [HttpPost("{voucherCode}/redeem")]
+        [HttpPost("{voucher-code}/redeem")]
         [ProducesResponseType(typeof(SimplePurchaseResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ArgumentException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<SimplePurchaseResponse>> RedeemVoucher([FromRoute] string voucherCode)
+        public async Task<ActionResult<SimplePurchaseResponse>> RedeemVoucher([FromRoute (Name = "voucher-code")] string voucherCode)
         {
             var user = await _claimUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
             return Ok(await _purchaseService.RedeemVoucher(voucherCode, user));

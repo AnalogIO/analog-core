@@ -41,14 +41,14 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Voucher
         /// <summary>
         /// Description of the purpose for the creation of vouchers
         /// </summary>
-        /// <example>"Voucher codes for intro week"</example>
+        /// <example>Voucher codes for intro week   </example>
         [Required]
         public string Description { get; set; }
 
         /// <summary>
         /// The requester of the voucher codes
         /// </summary>
-        /// <example>"John Doe"</example>
+        /// <example>John Doe</example>
         [Required]
         public string Requester { get; set; }
     }
