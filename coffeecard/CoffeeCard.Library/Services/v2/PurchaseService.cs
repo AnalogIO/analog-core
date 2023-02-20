@@ -8,6 +8,7 @@ using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 using CoffeeCard.Models.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Purchase = CoffeeCard.Models.Entities.Purchase;
@@ -262,6 +263,49 @@ namespace CoffeeCard.Library.Services.v2
 
                 return newOrderId;
             }
+        }
+
+        public async Task<SimplePurchaseResponse> RedeemVoucher(string voucherCode, User user)
+        {
+            var voucher = await _context.Vouchers.Include(x => x.Product).FirstOrDefaultAsync(x => x.Code.Equals(voucherCode));
+            if (voucher == null) throw new EntityNotFoundException($"Voucher '{voucherCode}' does not exist!");
+            if (voucher.User != null) throw new ConflictException("Voucher has already been redeemed!");
+
+            var product = await _context.Products.FirstOrDefaultAsync(x => x.Id == voucher.Product.Id);
+
+            var purchase = new Purchase
+            {
+                DateCreated = DateTime.UtcNow,
+                NumberOfTickets = voucher.Product.NumberOfTickets,
+                OrderId = voucherCode,
+                Price = 0,
+                ProductId = voucher.Product.Id,
+                ProductName = voucher.Product.Name,
+                PurchasedBy = user
+            };
+
+            user.Purchases.Add(purchase);
+
+            await _ticketService.IssueTickets(purchase);
+
+            purchase.TransactionId = $"VOUCHER: {voucher.Id}";
+            purchase.Completed = true;
+            purchase.Status = PurchaseStatus.Completed;
+
+            voucher.DateUsed = DateTime.UtcNow;
+            voucher.User = user;
+
+            _context.Vouchers.Attach(voucher);
+            _context.Entry(voucher).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return new SimplePurchaseResponse{
+                Id = purchase.Id,
+                DateCreated = purchase.DateCreated,
+                ProductId = purchase.ProductId,
+                TotalAmount = purchase.Price,
+                PurchaseStatus = purchase.Status
+            };
         }
 
         public void Dispose()

@@ -38,5 +38,12 @@ namespace CoffeeCard.Library.Services.v2
         /// <param name="webhook">Webhook data object</param>
         /// <returns></returns>
         Task HandleMobilePayPaymentUpdate(MobilePayWebhook webhook);
+
+        /// <summary>
+        /// Redeem af voucher code for a purchase
+        /// </summary>
+        /// <param name="voucherCode">Voucher code</param>
+        /// <param name="user">user redeeming the voucher</param>
+        Task<SimplePurchaseResponse> RedeemVoucher(string voucherCode, User user);
     }
 }

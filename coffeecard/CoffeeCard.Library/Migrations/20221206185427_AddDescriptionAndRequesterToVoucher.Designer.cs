@@ -4,14 +4,16 @@ using CoffeeCard.Library.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CoffeeCard.Library.Migrations
 {
     [DbContext(typeof(CoffeeCardContext))]
-    partial class CoffeeCardContextModelSnapshot : ModelSnapshot
+    [Migration("20221206185427_AddDescriptionAndRequesterToVoucher")]
+    partial class AddDescriptionAndRequesterToVoucher
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -440,8 +442,8 @@ namespace CoffeeCard.Library.Migrations
                     b.Property<int?>("Product_Id")
                         .HasColumnType("int");
 
-                    b.Property<string>("Requester")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("Requester_Id")
+                        .HasColumnType("int");
 
                     b.Property<int?>("User_Id")
                         .HasColumnType("int");
@@ -453,6 +455,8 @@ namespace CoffeeCard.Library.Migrations
                         .HasFilter("[Code] IS NOT NULL");
 
                     b.HasIndex("Product_Id");
+
+                    b.HasIndex("Requester_Id");
 
                     b.HasIndex("User_Id");
 
@@ -562,11 +566,17 @@ namespace CoffeeCard.Library.Migrations
                         .WithMany()
                         .HasForeignKey("Product_Id");
 
+                    b.HasOne("CoffeeCard.Models.Entities.User", "Requester")
+                        .WithMany()
+                        .HasForeignKey("Requester_Id");
+
                     b.HasOne("CoffeeCard.Models.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("User_Id");
 
                     b.Navigation("Product");
+
+                    b.Navigation("Requester");
 
                     b.Navigation("User");
                 });

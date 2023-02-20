@@ -69,6 +69,7 @@ namespace CoffeeCard.WebApi
             services.AddScoped<IPurchaseService, PurchaseService>();
             services.AddScoped<IMapperService, MapperService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IVoucherService, VoucherService>();
             services.AddScoped<IProgrammeService, ProgrammeService>();
             services.AddScoped<Library.Services.IProductService, Library.Services.ProductService>();
             services.AddScoped<Library.Services.v2.IProductService, Library.Services.v2.ProductService>();
