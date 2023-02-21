@@ -366,7 +366,7 @@ namespace CoffeeCard.Tests.Unit.Services
             // Assert
             var expectedException =
                 new ApiException(
-                    $"Amount of failed login attempts exceeds the allowed amount, please wait for {loginLimiterSettings.TimeOutPeriodInMinutes} minutes before trying again",
+                    $"Amount of failed login attempts exceeds the allowed amount, please wait for {loginLimiterSettings.TimeOutPeriodInSeconds / 60} minutes before trying again",
                     429);
             Assert.Equal(tooManyLoginsException?.StatusCode, expectedException.StatusCode);
             Assert.Equal(tooManyLoginsException?.Message, expectedException.Message);
