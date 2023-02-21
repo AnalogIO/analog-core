@@ -65,7 +65,7 @@ namespace CoffeeCard.Tests.Unit.Services
         {
             // Arrange
             var claim = new Claim(ClaimTypes.Email, "test@email.dk");
-            var claims = new List<Claim> {claim};
+            var claims = new List<Claim> { claim };
 
             bool result;
 
@@ -76,7 +76,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 var tokenService = new TokenService(_identity, claimsUtility);
 
                 var token = tokenService.GenerateToken(claims);
-                var userTokens = new List<Token> {new Token(token)};
+                var userTokens = new List<Token> { new Token(token) };
                 var user = GenerateTestUser(tokens: userTokens);
                 await _context.AddAsync(user);
                 await _context.SaveChangesAsync();
@@ -94,7 +94,7 @@ namespace CoffeeCard.Tests.Unit.Services
         {
             // Arrange
             var claim = new Claim(ClaimTypes.Email, "test@email.dk");
-            var claims = new List<Claim> {claim};
+            var claims = new List<Claim> { claim };
 
             var context = GenerateCoffeeCardContext(nameof(ValidateTokenGivenInvalidSignedTokenReturnsFalse));
             ;
@@ -128,7 +128,7 @@ namespace CoffeeCard.Tests.Unit.Services
         {
             // Arrange
             var claim = new Claim(ClaimTypes.Email, "test@email.dk");
-            var claims = new List<Claim> {claim};
+            var claims = new List<Claim> { claim };
 
             bool result;
 
@@ -153,10 +153,10 @@ namespace CoffeeCard.Tests.Unit.Services
 
                     var token = new JwtSecurityTokenHandler().WriteToken(jwt);
 
-                var userTokens = new List<Token> {new Token(token)};
-                var user = GenerateTestUser(tokens: userTokens);
-                await _context.AddAsync(user);
-                await _context.SaveChangesAsync();
+                    var userTokens = new List<Token> { new Token(token) };
+                    var user = GenerateTestUser(tokens: userTokens);
+                    await _context.AddAsync(user);
+                    await _context.SaveChangesAsync();
 
                     // Act
                     result = await tokenService.ValidateTokenIsUnusedAsync(token);
@@ -172,7 +172,7 @@ namespace CoffeeCard.Tests.Unit.Services
         {
             // Arrange
             var claim = new Claim(ClaimTypes.Email, "test@email.dk");
-            var claims = new List<Claim> {claim};
+            var claims = new List<Claim> { claim };
 
             bool result;
 
