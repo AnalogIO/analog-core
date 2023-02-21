@@ -587,11 +587,17 @@ namespace CoffeeCard.Tests.Unit.Services
                 new Claim(ClaimTypes.Email, "test@test.test")
             });
 
+            var programme = new Programme { FullName = "fullName", ShortName = "shortName" };
             var user = new User
             {
-                Email = "test@test.test"
+                Email = "test@test.test",
+                Name = "test",
+                Password = "pass",
+                Salt = "salt",
+                Programme = programme
+                
             };
-            context.Users.Add(user);
+            await context.Users.AddAsync(user);
             await context.SaveChangesAsync();
             
             //Act
