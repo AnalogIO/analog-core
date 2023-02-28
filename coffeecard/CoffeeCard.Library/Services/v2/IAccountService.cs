@@ -15,11 +15,7 @@ namespace CoffeeCard.Library.Services.v2
         /// </summary>
         /// <param name="programme">Programme Id of ITU Study programme.
         Task<UserResponse> RegisterAccountAsync(string name, string email, string password, int programme);
-        Task<bool> VerifyRegistration(string token);
         User UpdateAccount(IEnumerable<Claim> claims, UpdateUserRequest userDto);
-        void UpdateExperience(int userId, int exp);
-        Task ForgotPasswordAsync(string email);
-        Task<bool> RecoverUserAsync(string token, string newPassword);
         Task RequestAnonymization(User user);
         Task AnonymizeAccountAsync(string token);
         Task<bool> EmailExists(string email);

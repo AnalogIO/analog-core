@@ -96,17 +96,6 @@ namespace CoffeeCard.Library.Services.v2
             };
         }
 
-        public async Task<bool> VerifyRegistration(string token)
-        {
-            Log.Information("Trying to verify registration with token: {token}", token);
-
-            var email = _tokenService.ValidateVerificationTokenAndGetEmail(token);
-            var user = GetAccountByEmail(email);
-
-            user.IsVerified = true;
-            return await _context.SaveChangesAsync() > 0;
-        }
-
         public User UpdateAccount(IEnumerable<Claim> claims, UpdateUserRequest userDto)
         {
             var user = GetAccountByClaims(claims);
@@ -165,57 +154,6 @@ namespace CoffeeCard.Library.Services.v2
             return user;
         }
 
-        public void UpdateExperience(int userId, int exp)
-        {
-            var user = _context.Users.FirstOrDefault(x => x.Id == userId);
-
-            if (user == null) throw new ApiException("Could not update user");
-
-            user.Experience += exp;
-
-            _context.SaveChanges();
-        }
-
-        public async Task ForgotPasswordAsync(string email)
-        {
-            var user = GetAccountWithTokensByEmail(email);
-            if (user == null)
-                throw new ApiException($"The user could not be found {email}", StatusCodes.Status404NotFound);
-
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.Email, user.Email), new Claim(ClaimTypes.Name, user.Name),
-                new Claim(ClaimTypes.Role, "verification_token")
-            };
-            var verificationToken = _tokenService.GenerateToken(claims);
-            user.Tokens.Add(new Token(verificationToken));
-            _context.SaveChanges();
-            await _emailService.SendVerificationEmailForLostPwAsync(user, verificationToken);
-        }
-
-        public async Task<bool> RecoverUserAsync(string token, string newPassword)
-        {
-            var tokenObj = _tokenService.ReadToken(token);
-            if (tokenObj == null) return false;
-
-            Log.Information($"User tried to recover with token {token}");
-            if (!await _tokenService.ValidateTokenIsUnusedAsync(token)) return false;
-
-            var user = GetAccountByClaims(tokenObj.Claims);
-            if (user == null) return false;
-
-            Log.Information($"{user.Email} tried to recover user");
-            var sha256Pw = _hashService.Hash(newPassword);
-            var salt = _hashService.GenerateSalt();
-            var hashedPassword = _hashService.Hash(sha256Pw + salt);
-            user.Salt = salt;
-            user.Password = hashedPassword;
-            user.IsVerified = true;
-            user.Tokens.Clear();
-            await _context.SaveChangesAsync();
-            return true;
-        }
-
         public async Task RequestAnonymization(User user)
         {
             var claims = new[]
@@ -266,36 +204,9 @@ namespace CoffeeCard.Library.Services.v2
             return user;
         }
 
-        private User GetAccountWithTokensByEmail(string email)
-        {
-            var user = _context.Users.Include(x => x.Tokens).FirstOrDefault(x => x.Email == email);
-
-            if (user == null) throw new ApiException("No user found with the given email", 401);
-            return user;
-        }
-
         private static string EscapeName(string name)
         {
             return name.Trim('<', '>', '{', '}');
-        }
-
-        private void ValidateVersion(string version)
-        {
-            var regex = new Regex(@"(\d+.)(\d+.)(\d+)");
-            var match = regex.Match(version);
-
-            if (!match.Success || match.Groups.Count != 4)
-                throw new ApiException("Malformed version number", 400);
-
-            var major = int.Parse(match.Groups[1].Value.TrimEnd('.'));
-            var minor = int.Parse(match.Groups[2].Value.TrimEnd('.'));
-
-            var requiredMatch = regex.Match(_environmentSettings.MinAppVersion);
-            var requiredMajor = int.Parse(requiredMatch.Groups[1].Value.TrimEnd('.'));
-            var requiredMinor = int.Parse(requiredMatch.Groups[2].Value.TrimEnd('.'));
-
-            if (requiredMajor > major || requiredMinor > minor)
-                throw new ApiException("Your App is out of date - please update!", 409);
         }
     }
 }
