@@ -264,16 +264,6 @@ namespace CoffeeCard.Library.Services
       return true;
     }
 
-    public async Task AnonymizeAccountAsync(string token)
-    {
-      Log.Information("Trying to verify deletion with token: {token}", token);
-
-      var email = _tokenService.ValidateVerificationTokenAndGetEmail(token);
-      var user = GetAccountByEmail(email);
-
-      await AnonymizeUser(user);
-    }
-
     private async Task AnonymizeUser(User user)
     {
       user.Email = string.Empty;
