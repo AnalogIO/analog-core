@@ -1,0 +1,30 @@
+name: Deploy to Azure
+
+on:
+  push:
+    branches: [ develop, production, feature/azure-deploy ]
+
+jobs:
+  build:
+    uses: .github/workflows/build.yml
+    with:
+      push_image: true
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: 
+      name: dev
+      url: ${{ job.webapp-deploy.outputs.webapp-url }}
+    steps:
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Deploy to Azure
+        id: webapp-deploy
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
+          images: 'ghcr.io/analogio/coffeecard-api:${{ github.sha }}'
