@@ -19,32 +19,35 @@ namespace CoffeeCard.MobilePay.RefundConsoleApp
 {
     internal class Program
     {
-        private static ILogger _log;
+        private ILogger _log;
 
-        private static IContainer _container;
+        private IContainer _container;
 
-        protected Program()
+        protected Program(IContainer container)
         {
+            _container = container;
+            _log = _container.Resolve<ILogger<Program>>();
+            _log.LogInformation("Dependency Injection and configuration setup");
         }
 
         private static async Task Main()
         {
+            var program = Startup();
             try
             {
-                Startup();
-                await RefundPayments("input.txt");
+                await program.RefundPayments("input.txt");
 
-                _log.LogInformation("Finished processing refunds");
+                program._log.LogInformation("Finished processing refunds");
                 Environment.Exit(0);
             }
             catch (System.Exception ex)
             {
-                _log.LogError("Error while processing refunds. Error={ex}", ex);
+                program._log.LogError("Error while processing refunds. Error={ex}", ex);
                 Environment.Exit(1);
             }
         }
 
-        private static void Startup()
+        private static Program Startup()
         {
             // Load Configuration File
             var configuration = new ConfigurationBuilder()
@@ -70,14 +73,10 @@ namespace CoffeeCard.MobilePay.RefundConsoleApp
             builder.Register(l => LoggerFactory.Create(c => c.AddConsole())).As<ILoggerFactory>().SingleInstance();
             builder.RegisterGeneric(typeof(Logger<>)).As(typeof(ILogger<>)).SingleInstance();
 
-            _container = builder.Build();
-
-            _log = _container.Resolve<ILogger<Program>>();
-
-            _log.LogInformation("Dependency Injection and configuration setup");
+            return new Program(builder.Build());
         }
 
-        private static async Task RefundPayments(string path)
+        private async Task RefundPayments(string path)
         {
             var mpInputReader = _container.Resolve<IInputReader<CompletedOrder>>();
             var completedOrders = await mpInputReader.ReadFromCommaSeparatedFile(path);

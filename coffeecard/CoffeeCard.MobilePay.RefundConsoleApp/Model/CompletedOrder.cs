@@ -2,6 +2,11 @@
 {
     public class CompletedOrder
     {
-        public string OrderId { get; set; }
+        public string OrderId { get; }
+
+        public CompletedOrder(string orderId)
+        {
+            OrderId = orderId;
+        }
     }
 }

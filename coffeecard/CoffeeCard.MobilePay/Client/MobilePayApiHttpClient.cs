@@ -93,12 +93,17 @@ namespace CoffeeCard.MobilePay.Client
             }
         }
 
-        private X509Certificate2 LoadCertificate(IFileProvider fileProvider)
+        private X509Certificate2? LoadCertificate(IFileProvider fileProvider)
         {
             var certName = _mobilePaySettings.CertificateName;
 
             var contents = fileProvider.GetDirectoryContents(string.Empty);
-            var certPath = contents.FirstOrDefault(file => file.Name.Equals(certName)).PhysicalPath;
+            var certPath = contents.FirstOrDefault(file => file.Name.Equals(certName))?.PhysicalPath;
+            
+            if (certPath == null) 
+            {
+                return null;
+            }
 
             return new X509Certificate2(certPath, _mobilePaySettings.CertificatePassword,
                 X509KeyStorageFlags.MachineKeySet);
@@ -109,11 +114,13 @@ namespace CoffeeCard.MobilePay.Client
             var combinedRequest = requestUri + requestBody;
 
 #pragma warning disable CA5350 // SHA1 is used per Mobile Pay documentation but considered weak. Ignore compiler warning
-            var sha1 = new SHA1Managed();
+            var sha1 = SHA1.Create();
 #pragma warning restore CA5350
             var hash = Convert.ToBase64String(sha1.ComputeHash(Encoding.UTF8.GetBytes(combinedRequest)));
+            var loadedCert = LoadCertificate(_fileProvider);
+            ArgumentNullException.ThrowIfNull(loadedCert);
 
-            using var rsa = LoadCertificate(_fileProvider).GetRSAPrivateKey();
+            using var rsa = loadedCert.GetRSAPrivateKey();
             
             var signature = JWT.Encode(hash, rsa, JwsAlgorithm.RS256);
             return signature;

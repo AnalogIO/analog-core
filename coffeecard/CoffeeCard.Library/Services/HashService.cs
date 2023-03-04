@@ -6,19 +6,11 @@ namespace CoffeeCard.Library.Services
 {
     public class HashService : IHashService
     {
-        private readonly SHA256Managed _hasher;
-        private readonly RNGCryptoServiceProvider _rngCsp;
-
-        public HashService()
-        {
-            _rngCsp = new RNGCryptoServiceProvider();
-            _hasher = new SHA256Managed();
-        }
-
         public string GenerateSalt()
         {
+            using var rng = RandomNumberGenerator.Create();
             var byteArr = new byte[256];
-            _rngCsp.GetBytes(byteArr);
+            rng.GetBytes(byteArr);
             var salt = BitConverter.ToString(byteArr);
             return salt;
         }
@@ -26,7 +18,8 @@ namespace CoffeeCard.Library.Services
         public string Hash(string password)
         {
             var byteArr = Encoding.UTF8.GetBytes(password);
-            var hashBytes = _hasher.ComputeHash(byteArr);
+            using var hasher = SHA256.Create();
+            var hashBytes = hasher.ComputeHash(byteArr);
             return Convert.ToBase64String(hashBytes);
         }
     }

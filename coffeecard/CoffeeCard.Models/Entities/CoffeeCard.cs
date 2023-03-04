@@ -60,7 +60,7 @@ namespace CoffeeCard.Models.Entities
         /// <summary>
         /// CoffeeCards are equal if their product id is equal
         /// </summary>
-        public bool Equals(CoffeeCard x, CoffeeCard y)
+        public bool Equals(CoffeeCard? x, CoffeeCard? y)
         {
             //Check whether the compared objects reference the same data.
             if (ReferenceEquals(x, y)) return true;

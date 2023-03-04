@@ -80,10 +80,7 @@ namespace CoffeeCard.MobilePay.Service.v1
 
                 var paymentStatus = await GetPaymentStatus(orderId);
                 if (paymentStatus.LatestPaymentStatus.Equals(PaymentStatus.Captured))
-                    return new CaptureAmountResponse
-                    {
-                        TransactionId = paymentStatus.TransactionId
-                    };
+                    return new CaptureAmountResponse(paymentStatus.TransactionId);
 
                 _log.LogError(
                     $"Error capturing payment reservation. TransactionId = {paymentStatus.TransactionId} has status {paymentStatus.LatestPaymentStatus} at MobilePay");
@@ -109,10 +106,9 @@ namespace CoffeeCard.MobilePay.Service.v1
 
                 var paymentStatus = await GetPaymentStatus(orderId);
                 if (paymentStatus.LatestPaymentStatus.Equals(PaymentStatus.Cancelled))
-                    return new CancelReservationResponse
-                    {
-                        TransactionId = paymentStatus.TransactionId
-                    };
+                {
+                   return new CancelReservationResponse(paymentStatus.TransactionId);
+                }
 
                 _log.LogError(
                     $"Error cancelling payment reservation. TransactionId = {paymentStatus.TransactionId} has status {paymentStatus.LatestPaymentStatus} at MobilePay");
@@ -138,10 +134,7 @@ namespace CoffeeCard.MobilePay.Service.v1
 
                 var paymentStatus = await GetPaymentStatus(orderId);
                 if (paymentStatus.LatestPaymentStatus.Equals(PaymentStatus.TotalRefund))
-                    return new RefundPaymentResponse
-                    {
-                        OriginalTransactionId = paymentStatus.TransactionId
-                    };
+                    return new RefundPaymentResponse(paymentStatus.TransactionId);
 
                 _log.LogError(
                     $"Error refunding payment. TransactionId = {paymentStatus.TransactionId} has status {paymentStatus.LatestPaymentStatus} at MobilePay");

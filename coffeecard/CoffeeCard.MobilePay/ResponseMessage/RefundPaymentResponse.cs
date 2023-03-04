@@ -1,15 +1,3 @@
-﻿namespace CoffeeCard.MobilePay.ResponseMessage
-{
-    public sealed class RefundPaymentResponse : IMobilePayApiResponse
-    {
-        public string TransactionId { get; set; }
-        public string OriginalTransactionId { get; set; }
-        public double Remainder { get; set; }
+﻿namespace CoffeeCard.MobilePay.ResponseMessage;
 
-        public override string ToString()
-        {
-            return
-                $"{nameof(TransactionId)}: {TransactionId}, {nameof(OriginalTransactionId)}: {OriginalTransactionId}, {nameof(Remainder)}: {Remainder}";
-        }
-    }
-}
+public record RefundPaymentResponse(string OriginalTransactionId, string? TransactionId = default, double? Remainder = default) : IMobilePayApiResponse;
