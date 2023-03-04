@@ -64,6 +64,6 @@ jobs:
           file: coffeecard/CoffeeCard.WebApi/Dockerfile
           platforms: linux/amd64
           push: ${{ inputs.push_image }}
-          tags: 
+          tags: |
             ghcr.io/analogio/coffeecard-api:${{ steps.vars.outputs.branchName }}
             ghcr.io/analogio/coffeecard-api:${{ github.sha }}
