@@ -16,7 +16,7 @@
         /// </summary>
         /// <value>Account name</value>
         /// <example>John Doe</example>
-        public string Name { get; set; }
+        public string? Name { get; set; }
         
         /// <summary>
         /// Account score

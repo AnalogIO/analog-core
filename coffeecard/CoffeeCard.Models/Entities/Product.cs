@@ -23,14 +23,14 @@ namespace CoffeeCard.Models.Entities
 
         public ICollection<ProductUserGroup> ProductUserGroup { get; set; }
 
-        public bool Equals(Product other)
+        public bool Equals(Product? other)
         {
-            return Id == other.Id && Price == other.Price && NumberOfTickets == other.NumberOfTickets &&
+            return other != null && Id == other.Id && Price == other.Price && NumberOfTickets == other.NumberOfTickets &&
                    Name == other.Name && Description == other.Description && ExperienceWorth == other.ExperienceWorth &&
                    Visible == other.Visible;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;

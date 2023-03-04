@@ -35,16 +35,16 @@ namespace CoffeeCard.Models.DataTransferObjects.User
         /// <value>Full Name</value>
         /// <example>John Doe</example>
         [Required]
-        public string Name { get; set; }
-        
+        public string Name { get; set; } = string.Empty;
+
         /// <summary>
         /// Email of user
         /// </summary>
         /// <value>Email</value>
         /// <example>john@doe.com</example>
         [Required]
-        public string Email { get; set; }
-        
+        public string Email { get; set; } = string.Empty;
+
         /// <summary>
         /// Privacy Activated
         /// </summary>

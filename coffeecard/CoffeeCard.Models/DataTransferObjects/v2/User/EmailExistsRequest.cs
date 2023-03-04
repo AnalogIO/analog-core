@@ -19,6 +19,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
         /// <example>johndoe@mail.com</example>
         [EmailAddress]
         [Required]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
     }
 }

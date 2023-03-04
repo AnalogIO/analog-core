@@ -15,7 +15,7 @@ namespace CoffeeCard.Models.Entities
 
         [ForeignKey("User_Id")] public virtual User User { get; set; }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is Token newToken) return TokenHash.Equals(newToken.TokenHash);
             return false;

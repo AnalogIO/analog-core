@@ -61,8 +61,8 @@ namespace CoffeeCard.WebApi
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                    webBuilder.UseSerilog();
-                });
+                })
+                .UseSerilog();
         }
         
         private static async Task PreStartupTasks(IHost webhost)

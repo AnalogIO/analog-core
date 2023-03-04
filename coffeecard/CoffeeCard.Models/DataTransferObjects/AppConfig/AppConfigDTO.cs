@@ -28,6 +28,6 @@ namespace CoffeeCard.Models.DataTransferObjects.AppConfig
         /// <value>Merchant Id</value>
         /// <example>APP1234</example>
         [Required]
-        public string MerchantId { get; set; }
+        public string MerchantId { get; set; } = string.Empty;
     }
 }
