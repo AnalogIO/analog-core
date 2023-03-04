@@ -33,4 +33,4 @@ jobs:
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az rest --method post --uri ${{ secrets.AZURE_APPSERVICE_WEBHOOK_URL }}
+            az rest --method post --url ${{ secrets.AZURE_APPSERVICE_WEBHOOK_URL }}
