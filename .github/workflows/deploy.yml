@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: dev
-      url: ${{ job.webapp-deploy.outputs.webapp-url }}
+      url: ${{ steps.webapp-deploy.outputs.webapp-url }}
     steps:
       - name: Login to Azure
         uses: azure/login@v1
