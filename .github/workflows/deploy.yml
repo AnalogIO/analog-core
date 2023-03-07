@@ -31,6 +31,5 @@ jobs:
           images: "ghcr.io/analogio/coffeecard-api:${{ github.sha }}"
       - name: Invoke App Service CD Webhook
         uses: azure/CLI@v1
-        with:
-          inlineScript: |
-            az rest --method post --url ${{ secrets.AZURE_APPSERVICE_WEBHOOK_URL }}
+        run: |
+          curl --location --request POST ${{ env.AZURE_APPSERVICE_WEBHOOK_URL }} --header 'Authorization: Basic ${{ secrets.AZURE_APPSERVICE_WEBHOOK_AUTH }}'
