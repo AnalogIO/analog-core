@@ -30,6 +30,5 @@ jobs:
           publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
           images: "ghcr.io/analogio/coffeecard-api:${{ github.sha }}"
       - name: Invoke App Service CD Webhook
-        uses: azure/CLI@v1
         run: |
           curl --location --request POST ${{ env.AZURE_APPSERVICE_WEBHOOK_URL }} --header 'Authorization: Basic ${{ secrets.AZURE_APPSERVICE_WEBHOOK_AUTH }}'
