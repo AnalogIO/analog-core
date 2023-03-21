@@ -24,7 +24,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         private readonly ClaimsUtilities _claimsUtilities;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PurchaseController"/> class.
+        /// Initializes a new instance of the <see cref="PurchasesController"/> class.
         /// </summary>
         public PurchasesController(IPurchaseService purchaseService, ClaimsUtilities claimsUtilities)
         {
@@ -82,12 +82,15 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <returns>Purchase with payment details</returns>
         /// <response code="200">Purchased initiated</response>
         /// <response code="401">Invalid credentials</response>
+        /// <response code="403">User not allowed to purchase given product</response>
         [HttpPost]
         [ProducesResponseType(typeof(InitiatePurchaseResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<InitiatePurchaseResponse>> InitiatePurchase([FromBody] InitiatePurchaseRequest initiateRequest)
         {
-            var purchaseResponse = await _purchaseService.InitiatePurchase(initiateRequest, await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims));
+            var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
+            var purchaseResponse = await _purchaseService.InitiatePurchase(initiateRequest, user);
 
             // Return CreatedAtAction
             return Ok(purchaseResponse);

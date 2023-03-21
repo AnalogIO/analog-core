@@ -426,7 +426,7 @@ namespace CoffeeCard.Library.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Code")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
@@ -434,13 +434,23 @@ namespace CoffeeCard.Library.Migrations
                     b.Property<DateTime?>("DateUsed")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("Product_Id")
                         .HasColumnType("int");
+
+                    b.Property<string>("Requester")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("User_Id")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasFilter("[Code] IS NOT NULL");
 
                     b.HasIndex("Product_Id");
 

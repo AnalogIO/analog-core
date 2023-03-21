@@ -69,28 +69,6 @@ namespace CoffeeCard.WebApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Products");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Used for filter coffee brewed with fresh ground coffee",
-                            ExperienceWorth = 10,
-                            Name = "Filter Coffee",
-                            NumberOfTickets = 10,
-                            Price = 80,
-                            Visible = true
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Used for specialities like espresso, cappuccino, caffe latte, cortado, americano and chai latte",
-                            ExperienceWorth = 150,
-                            Name = "Espresso Based",
-                            NumberOfTickets = 10,
-                            Price = 150,
-                            Visible = true
-                        });
                 });
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.ProductUserGroup", b =>
@@ -104,18 +82,6 @@ namespace CoffeeCard.WebApi.Migrations
                     b.HasKey("ProductId", "UserGroup");
 
                     b.ToTable("ProductUserGroups");
-
-                    b.HasData(
-                        new
-                        {
-                            ProductId = 1,
-                            UserGroup = 0
-                        },
-                        new
-                        {
-                            ProductId = 2,
-                            UserGroup = 0
-                        });
                 });
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.Programme", b =>
@@ -137,99 +103,6 @@ namespace CoffeeCard.WebApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Programmes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            FullName = "BSc Software Development",
-                            ShortName = "SWU",
-                            SortPriority = 0
-                        },
-                        new
-                        {
-                            Id = 2,
-                            FullName = "BSc Global Business Informatics",
-                            ShortName = "GBI",
-                            SortPriority = 0
-                        },
-                        new
-                        {
-                            Id = 3,
-                            FullName = "BSc Digital Design and Interactive Technologies",
-                            ShortName = "BDDIT",
-                            SortPriority = 0
-                        },
-                        new
-                        {
-                            Id = 4,
-                            FullName = "MSc Digital Design and Interactive Technologies",
-                            ShortName = "KDDIT",
-                            SortPriority = 0
-                        },
-                        new
-                        {
-                            Id = 5,
-                            FullName = "MSc Digital Innovation and Management",
-                            ShortName = "DIM",
-                            SortPriority = 0
-                        },
-                        new
-                        {
-                            Id = 6,
-                            FullName = "MSc E-Business",
-                            ShortName = "E-BUSS",
-                            SortPriority = 0
-                        },
-                        new
-                        {
-                            Id = 7,
-                            FullName = "MSc Games - Design and Theory",
-                            ShortName = "GAMES/DT",
-                            SortPriority = 0
-                        },
-                        new
-                        {
-                            Id = 8,
-                            FullName = "MSc Games - Technology",
-                            ShortName = "GAMES/Tech",
-                            SortPriority = 0
-                        },
-                        new
-                        {
-                            Id = 9,
-                            FullName = "MSc Computer Science",
-                            ShortName = "CS",
-                            SortPriority = 0
-                        },
-                        new
-                        {
-                            Id = 10,
-                            FullName = "MSc Software Development (Design)",
-                            ShortName = "SDT",
-                            SortPriority = 0
-                        },
-                        new
-                        {
-                            Id = 11,
-                            FullName = "Employee",
-                            ShortName = "Employee",
-                            SortPriority = 0
-                        },
-                        new
-                        {
-                            Id = 12,
-                            FullName = "Other",
-                            ShortName = "Other",
-                            SortPriority = 0
-                        },
-                        new
-                        {
-                            Id = 13,
-                            FullName = "BSc Data Science",
-                            ShortName = "DS",
-                            SortPriority = 0
-                        });
                 });
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.Purchase", b =>

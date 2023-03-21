@@ -1,8 +1,10 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace CoffeeCard.Models.Entities
 {
+    [Index(nameof(Code), IsUnique = true)]
     public class Voucher
     {
         public Voucher()
@@ -13,10 +15,13 @@ namespace CoffeeCard.Models.Entities
         public int Id { get; set; }
         public string Code { get; set; }
         public DateTime DateCreated { get; set; }
+        #nullable enable
         public DateTime? DateUsed { get; set; }
-
+        //Description and Requester are nullable for migration purposes
+        public string? Description { get; set; }
+        public string? Requester {get; set; }
+        #nullable disable
         [ForeignKey("Product_Id")] public virtual Product Product { get; set; }
-
         [ForeignKey("User_Id")] public virtual User User { get; set; }
     }
 }

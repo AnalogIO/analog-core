@@ -4,14 +4,16 @@ using CoffeeCard.Library.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace CoffeeCard.WebApi.Migrations.Prod
+namespace CoffeeCard.Library.Migrations
 {
     [DbContext(typeof(CoffeeCardContext))]
-    partial class CoffeeCardContextModelSnapshot : ModelSnapshot
+    [Migration("20221206185427_AddDescriptionAndRequesterToVoucher")]
+    partial class AddDescriptionAndRequesterToVoucher
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -69,6 +71,28 @@ namespace CoffeeCard.WebApi.Migrations.Prod
                     b.HasKey("Id");
 
                     b.ToTable("Products");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Used for filter coffee brewed with fresh ground coffee",
+                            ExperienceWorth = 10,
+                            Name = "Filter Coffee",
+                            NumberOfTickets = 10,
+                            Price = 80,
+                            Visible = true
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Used for specialities like espresso, cappuccino, caffe latte, cortado, americano and chai latte",
+                            ExperienceWorth = 150,
+                            Name = "Espresso Based",
+                            NumberOfTickets = 10,
+                            Price = 150,
+                            Visible = true
+                        });
                 });
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.ProductUserGroup", b =>
@@ -82,6 +106,18 @@ namespace CoffeeCard.WebApi.Migrations.Prod
                     b.HasKey("ProductId", "UserGroup");
 
                     b.ToTable("ProductUserGroups");
+
+                    b.HasData(
+                        new
+                        {
+                            ProductId = 1,
+                            UserGroup = 0
+                        },
+                        new
+                        {
+                            ProductId = 2,
+                            UserGroup = 0
+                        });
                 });
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.Programme", b =>
@@ -103,6 +139,99 @@ namespace CoffeeCard.WebApi.Migrations.Prod
                     b.HasKey("Id");
 
                     b.ToTable("Programmes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            FullName = "BSc Software Development",
+                            ShortName = "SWU",
+                            SortPriority = 0
+                        },
+                        new
+                        {
+                            Id = 2,
+                            FullName = "BSc Global Business Informatics",
+                            ShortName = "GBI",
+                            SortPriority = 0
+                        },
+                        new
+                        {
+                            Id = 3,
+                            FullName = "BSc Digital Design and Interactive Technologies",
+                            ShortName = "BDDIT",
+                            SortPriority = 0
+                        },
+                        new
+                        {
+                            Id = 4,
+                            FullName = "MSc Digital Design and Interactive Technologies",
+                            ShortName = "KDDIT",
+                            SortPriority = 0
+                        },
+                        new
+                        {
+                            Id = 5,
+                            FullName = "MSc Digital Innovation and Management",
+                            ShortName = "DIM",
+                            SortPriority = 0
+                        },
+                        new
+                        {
+                            Id = 6,
+                            FullName = "MSc E-Business",
+                            ShortName = "E-BUSS",
+                            SortPriority = 0
+                        },
+                        new
+                        {
+                            Id = 7,
+                            FullName = "MSc Games - Design and Theory",
+                            ShortName = "GAMES/DT",
+                            SortPriority = 0
+                        },
+                        new
+                        {
+                            Id = 8,
+                            FullName = "MSc Games - Technology",
+                            ShortName = "GAMES/Tech",
+                            SortPriority = 0
+                        },
+                        new
+                        {
+                            Id = 9,
+                            FullName = "MSc Computer Science",
+                            ShortName = "CS",
+                            SortPriority = 0
+                        },
+                        new
+                        {
+                            Id = 10,
+                            FullName = "MSc Software Development (Design)",
+                            ShortName = "SDT",
+                            SortPriority = 0
+                        },
+                        new
+                        {
+                            Id = 11,
+                            FullName = "Employee",
+                            ShortName = "Employee",
+                            SortPriority = 0
+                        },
+                        new
+                        {
+                            Id = 12,
+                            FullName = "Other",
+                            ShortName = "Other",
+                            SortPriority = 0
+                        },
+                        new
+                        {
+                            Id = 13,
+                            FullName = "BSc Data Science",
+                            ShortName = "DS",
+                            SortPriority = 0
+                        });
                 });
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.Purchase", b =>
@@ -313,8 +442,8 @@ namespace CoffeeCard.WebApi.Migrations.Prod
                     b.Property<int?>("Product_Id")
                         .HasColumnType("int");
 
-                    b.Property<string>("Requester")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("Requester_Id")
+                        .HasColumnType("int");
 
                     b.Property<int?>("User_Id")
                         .HasColumnType("int");
@@ -326,6 +455,8 @@ namespace CoffeeCard.WebApi.Migrations.Prod
                         .HasFilter("[Code] IS NOT NULL");
 
                     b.HasIndex("Product_Id");
+
+                    b.HasIndex("Requester_Id");
 
                     b.HasIndex("User_Id");
 
@@ -435,11 +566,17 @@ namespace CoffeeCard.WebApi.Migrations.Prod
                         .WithMany()
                         .HasForeignKey("Product_Id");
 
+                    b.HasOne("CoffeeCard.Models.Entities.User", "Requester")
+                        .WithMany()
+                        .HasForeignKey("Requester_Id");
+
                     b.HasOne("CoffeeCard.Models.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("User_Id");
 
                     b.Navigation("Product");
+
+                    b.Navigation("Requester");
 
                     b.Navigation("User");
                 });

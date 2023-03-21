@@ -80,7 +80,7 @@ namespace CoffeeCard.WebApi.Controllers
                 return Unauthorized();
             }
 
-            return Ok(new TokenDto {Token = token});
+            return Ok(new TokenDto { Token = token });
         }
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace CoffeeCard.WebApi.Controllers
         /// Updates the account and returns the updated values.
         /// Only properties which are present in the <see cref="UpdateUserDto"/> will be updated
         /// </summary>
-        /// <param name="userDto">Update account information request. All properties are optional as the server only
+        /// <param name="updateUserDto">Update account information request. All properties are optional as the server only
         /// updates the values of the properties which are present</param>
         /// <returns>Account information</returns>
         /// <response code="200">Successful request</response>
@@ -115,10 +115,15 @@ namespace CoffeeCard.WebApi.Controllers
         [HttpPut]
         [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-        public ActionResult<UserDto> Update([FromBody] UpdateUserDto userDto)
+        public ActionResult<UserDto> Update([FromBody] UpdateUserDto updateUserDto)
         {
-            var user = _accountService.UpdateAccount(User.Claims, userDto);
-            return Ok(_mapperService.Map(user));
+            var user = _accountService.UpdateAccount(User.Claims, updateUserDto);
+            var leaderBoardPlacement = _leaderboardService.GetLeaderboardPlacement(user);
+            var userDto = _mapperService.Map(user);
+            userDto.RankAllTime = leaderBoardPlacement.Total;
+            userDto.RankSemester = leaderBoardPlacement.Semester;
+            userDto.RankMonth = leaderBoardPlacement.Month;
+            return Ok(userDto);
         }
 
         /// <summary>

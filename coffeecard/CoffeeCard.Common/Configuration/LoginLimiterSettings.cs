@@ -10,7 +10,7 @@ namespace CoffeeCard.Common.Configuration
         [Required]
         public int MaximumLoginAttemptsWithinTimeOut { get; set; }
         [Required]
-        public int TimeOutPeriodInMinutes { get; set; }
+        public int TimeOutPeriodInSeconds { get; set; }
 
         public void Validate()
         {

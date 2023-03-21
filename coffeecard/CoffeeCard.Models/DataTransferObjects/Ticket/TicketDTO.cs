@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace CoffeeCard.Models.DataTransferObjects.Ticket
 {
@@ -37,7 +38,7 @@ namespace CoffeeCard.Models.DataTransferObjects.Ticket
         /// </summary>
         /// <value>Used date time</value>
         /// <example>2022-01-09T21:03:52.2283208Z</example>
-        [Required]
+        [JsonProperty(Required = Required.AllowNull)]
         public DateTime? DateUsed { get; set; }
         
         /// <summary>
