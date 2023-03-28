@@ -4,14 +4,16 @@ using CoffeeCard.Library.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CoffeeCard.Library.Migrations
 {
     [DbContext(typeof(CoffeeCardContext))]
-    partial class CoffeeCardContextModelSnapshot : ModelSnapshot
+    [Migration("20221228170637_Purchase-Product ForeignKey reference")]
+    partial class PurchaseProductForeignKeyreference
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -431,7 +433,7 @@ namespace CoffeeCard.Library.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Code")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
@@ -439,23 +441,13 @@ namespace CoffeeCard.Library.Migrations
                     b.Property<DateTime?>("DateUsed")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("Product_Id")
                         .HasColumnType("int");
-
-                    b.Property<string>("Requester")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("User_Id")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Code")
-                        .IsUnique()
-                        .HasFilter("[Code] IS NOT NULL");
 
                     b.HasIndex("Product_Id");
 

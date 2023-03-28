@@ -132,8 +132,9 @@ namespace CoffeeCard.Library.Services.v2
                 OrderId = paymentDetails.OrderId,
                 TransactionId = transactionId,
                 PurchasedBy = user,
-                Status = purchaseStatus
-                // FIXME State management, PaymentType
+                Status = purchaseStatus,
+                PaymentType = purchaseRequest.PaymentType
+                // FIXME State management
             };
             
             return (purchase, paymentDetails);
@@ -153,7 +154,26 @@ namespace CoffeeCard.Library.Services.v2
                     $"No purchase was found by Purchase Id: {purchaseId} and User Id: {user.Id}");
             }
 
-            var paymentDetails = await _mobilePayPaymentsService.GetPayment(Guid.Parse(purchase.TransactionId));
+            PaymentDetails paymentDetails;
+            if (purchase.PaymentType == null)
+            {
+                paymentDetails = await _mobilePayPaymentsService.GetPayment(Guid.Parse(purchase.TransactionId));
+            }
+            else
+            {
+                switch (purchase.PaymentType)
+                {
+                    case PaymentType.MobilePay:
+                        paymentDetails = await _mobilePayPaymentsService.GetPayment(Guid.Parse(purchase.TransactionId));
+                        break;
+                    case PaymentType.FreePurchase:
+                        paymentDetails = new FreePurchasePaymentDetails(purchase.OrderId);
+                        break;
+                    default:
+                        Log.Error("Payment Type {PaymentType} is not handled in PurchaseService", purchase.PaymentType);
+                        throw new ArgumentException($"Payment Type '{purchase.PaymentType}' is not handled");
+                }
+            }
 
             return new SinglePurchaseResponse
             {
@@ -166,7 +186,7 @@ namespace CoffeeCard.Library.Services.v2
             };
         }
 
-        public async Task<List<SimplePurchaseResponse>> GetPurchases(User user)
+        public async Task<IEnumerable<SimplePurchaseResponse>> GetPurchases(User user)
         {
             return await _context.Purchases
                 .Where(p => p.PurchasedBy.Equals(user))
@@ -175,8 +195,10 @@ namespace CoffeeCard.Library.Services.v2
                     Id = p.Id,
                     DateCreated = p.DateCreated,
                     ProductId = p.ProductId,
+                    ProductName = p.ProductName,
                     TotalAmount = p.Price,
-                    PurchaseStatus = p.Status
+                    PurchaseStatus = p.Status,
+                    PaymentType = p.PaymentType
                 })
                 .ToListAsync();
         }

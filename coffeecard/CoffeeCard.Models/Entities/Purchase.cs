@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CoffeeCard.Models.Entities
 {
-    // TODO Should me marked as unique
+    // FIXME Should me marked as unique
     [Index(nameof(OrderId))]
     [Index(nameof(TransactionId))]
     public class Purchase
@@ -33,11 +33,15 @@ namespace CoffeeCard.Models.Entities
         /// <summary>
         /// Id of Product purchased
         /// </summary>
-        /// <value></value>
+        /// <value>Product Id</value>
         /// <example>2</example>
-        
-        // FIXME: Foreign reference?
         public int ProductId { get; set; }
+        
+        /// <summary>
+        /// Product purchased
+        /// </summary>
+        /// <value>Product</value>
+        public Product Product { get; set; }
         
         /// <summary>
         /// Price for purchase in Danish kroner (kr)
@@ -65,8 +69,6 @@ namespace CoffeeCard.Models.Entities
         /// </summary>
         /// <value>Purchase Completed</value>
         /// <example>true</example>
-        
-        // FIXME More detailed state management?
         public bool Completed { get; set; }
         
         /// <summary>
@@ -90,6 +92,14 @@ namespace CoffeeCard.Models.Entities
         /// <value>Status</value>
         /// <example>Completed</example>
         public PurchaseStatus? Status { get; set; }
+        
+        // PaymentType is nullable for migration purposes
+        /// <summary>
+        /// Payment Type
+        /// </summary>
+        /// <value>Payment Type</value>
+        /// <example>MobilePay</example>
+        public PaymentType? PaymentType { get; set; }
 
         [ForeignKey("PurchasedBy_Id")]
         public virtual User PurchasedBy { get; set; }
