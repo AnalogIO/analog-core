@@ -51,6 +51,14 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         public String ProductName { get; set; }
         
         /// <summary>
+        /// Number of tickets issued in purchase
+        /// </summary>
+        /// <value>Amount of tickets granted by the purchase</value>
+        /// <example>10</example>
+        [Required]
+        public int NumberOfTickets { get; set; }
+        
+        /// <summary>
         /// Total purchase price in Danish Kroner (kr)
         /// </summary>
         /// <value>Total purchase price</value>
