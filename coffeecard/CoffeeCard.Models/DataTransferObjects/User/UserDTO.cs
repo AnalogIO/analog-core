@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Models.DataTransferObjects.User
 {
@@ -16,7 +17,8 @@ namespace CoffeeCard.Models.DataTransferObjects.User
     ///     "requiredExp": 12,
     ///     "rankAllTime": 15,
     ///     "rankSemester": 4,
-    ///     "rankMonth": 5
+    ///     "rankMonth": 5,
+    ///     "role": "Barista"
     /// }
     /// </example>
     public class UserDto
@@ -100,5 +102,13 @@ namespace CoffeeCard.Models.DataTransferObjects.User
         /// <example>5</example>
         [Required]
         public int RankMonth { get; set; }
+
+        /// <summary>
+        /// User's role
+        /// </summary>
+        /// <value>Role</value>
+        /// <example>Barista</example>
+        [Required]
+        public UserGroup Role { get; set; } = UserGroup.Customer;
     }
 }
