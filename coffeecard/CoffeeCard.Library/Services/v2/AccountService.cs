@@ -2,9 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using CoffeeCard.Common.Configuration;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Models.DataTransferObjects.v2.Programme;
@@ -18,27 +16,20 @@ namespace CoffeeCard.Library.Services.v2
 {
     public class AccountService : IAccountService
     {
-        private readonly EnvironmentSettings _environmentSettings;
         private readonly CoffeeCardContext _context;
         private readonly IEmailService _emailService;
         private readonly IHashService _hashService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ITokenService _tokenService;
 
-        public AccountService(CoffeeCardContext context, EnvironmentSettings environmentSettings,
-        ITokenService tokenService,
-            IEmailService emailService, IHashService hashService, IHttpContextAccessor httpContextAccessor,
-            ILoginLimiter loginLimiter, LoginLimiterSettings loginLimiterSettings)
+        public AccountService(CoffeeCardContext context, ITokenService tokenService, IEmailService emailService, IHashService hashService)
         {
             _context = context;
-            _environmentSettings = environmentSettings;
             _tokenService = tokenService;
             _emailService = emailService;
             _hashService = hashService;
-            _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<UserResponse> RegisterAccountAsync(string name, string email, string password, int programme = 1)
+        public async Task<User> RegisterAccountAsync(string name, string email, string password, int programme)
         {
             Log.Information("Trying to register new user. Name: {name} Email: {email}", name, email);
 
@@ -78,28 +69,11 @@ namespace CoffeeCard.Library.Services.v2
 
             await _emailService.SendRegistrationVerificationEmailAsync(user, verificationToken);
 
-            return new UserResponse()
-            {
-                Id = user.Id,
-                Name = user.Name,
-                Email = user.Email,
-                PrivacyActivated = user.PrivacyActivated,
-                Programme = new ProgrammeResponse()
-                {
-                    Id = user.Programme.Id,
-                    ShortName = user.Programme.ShortName,
-                    FullName = user.Programme.FullName
-                },
-                RankAllTime = 0, //All ranks are zero due to newly created user
-                RankMonth = 0,
-                RankSemester = 0,
-            };
+            return user;
         }
 
-        public User UpdateAccount(IEnumerable<Claim> claims, UpdateUserRequest userDto)
+        public async Task<User> UpdateAccountAsync(User user, UpdateUserRequest userDto)
         {
-            var user = GetAccountByClaims(claims);
-
             if (userDto.Email != null)
             {
                 if (_context.Users.Any(x => x.Email == userDto.Email))
@@ -139,22 +113,22 @@ namespace CoffeeCard.Library.Services.v2
                 Log.Information("User changed password");
             }
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return user;
         }
 
-        public User GetAccountByClaims(IEnumerable<Claim> claims)
+        public async Task<User> GetAccountByClaimsAsync(IEnumerable<Claim> claims)
         {
             var emailClaim = claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
             if (emailClaim == null) throw new ApiException("The token is invalid!", 401);
 
-            var user = GetAccountByEmail(emailClaim.Value);
+            var user = await GetAccountByEmailAync(emailClaim.Value);
             if (user == null) throw new ApiException("The user could not be found", 400);
 
             return user;
         }
 
-        public async Task RequestAnonymization(User user)
+        public async Task RequestAnonymizationAsync(User user)
         {
             var claims = new[]
             {
@@ -171,17 +145,17 @@ namespace CoffeeCard.Library.Services.v2
             Log.Information("Trying to verify deletion with token: {token}", token);
 
             var email = _tokenService.ValidateVerificationTokenAndGetEmail(token);
-            var user = GetAccountByEmail(email);
+            var user = await GetAccountByEmailAync(email);
 
-            await AnonymizeUser(user);
+            await AnonymizeUserAsync(user);
         }
 
-        public Task<bool> EmailExists(string email)
+        public Task<bool> EmailExistsAsync(string email)
         {
             return _context.Users.AnyAsync(x => x.Email == email);
         }
 
-        private async Task AnonymizeUser(User user)
+        private async Task AnonymizeUserAsync(User user)
         {
             user.Email = string.Empty;
             user.Name = string.Empty;
@@ -193,12 +167,12 @@ namespace CoffeeCard.Library.Services.v2
             await _context.SaveChangesAsync();
         }
 
-        private User GetAccountByEmail(string email)
+        private async Task<User> GetAccountByEmailAync(string email)
         {
-            var user = _context.Users
+            var user = await _context.Users
                 .Include(x => x.Programme)
                 //.Include(x => x.Statistics)
-                .FirstOrDefault(x => x.Email == email);
+                .FirstOrDefaultAsync(x => x.Email == email);
             if (user == null) throw new ApiException("No user found with the given email", 401);
 
             return user;

@@ -23,7 +23,10 @@ namespace CoffeeCard.Library.Services.v2
         /// <returns>Leaderboard entry for user</returns>
         Task<LeaderboardEntry> GetLeaderboardEntry(User user, LeaderboardPreset preset);
 
-        //Todo add desciption
+        /// <summary>
+        /// Retruns a triple representing the users current placement on the leaderboard
+        /// </summary>
+        /// <param name="user">User</param>
         Task<(int Total, int Semester, int Month)> GetLeaderboardPlacement(User user);
     }
 }

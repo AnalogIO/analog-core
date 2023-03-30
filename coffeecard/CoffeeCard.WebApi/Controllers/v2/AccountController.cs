@@ -70,7 +70,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         {
             var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
 
-            await _accountService.RequestAnonymization(user);
+            await _accountService.RequestAnonymizationAsync(user);
             return NoContent();
         }
 
@@ -86,7 +86,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<UserResponse>> Get()
         {
-            var user = _accountService.GetAccountByClaims(User.Claims);
+            var user = await _accountService.GetAccountByClaimsAsync(User.Claims);
 
             return Ok(await UserWithRanking(user));
         }
@@ -105,9 +105,10 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<UserResponse>> Update([FromBody] UpdateUserRequest updateUserRequest)
         {
-            var user = _accountService.UpdateAccount(User.Claims, updateUserRequest);
+            var user = await _accountService.GetAccountByClaimsAsync(User.Claims);
+            var updatedUser = await _accountService.UpdateAccountAsync(user, updateUserRequest);
 
-            return Ok(await UserWithRanking(user));
+            return Ok(await UserWithRanking(updatedUser));
         }
 
 
@@ -125,7 +126,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [Route("email-exists")]
         public async Task<ActionResult<EmailExistsResponse>> EmailExists([FromBody] EmailExistsRequest request)
         {
-            var emailInUse = await _accountService.EmailExists(request.Email);
+            var emailInUse = await _accountService.EmailExistsAsync(request.Email);
             return Ok(new EmailExistsResponse()
             {
                 EmailExists = emailInUse
