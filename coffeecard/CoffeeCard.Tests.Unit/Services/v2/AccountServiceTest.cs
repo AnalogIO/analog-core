@@ -218,6 +218,113 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             emailServiceMock.Verify(e => e.SendRegistrationVerificationEmailAsync(It.IsAny<User>(), It.IsAny<String>()), Times.Exactly(1));
         }
 
+        [Theory(DisplayName = "UpdateAccount updates all non null properties")]
+        [InlineData("test1", "test@test.com", "password", false, 1)]
+        [InlineData("test2", "test@test.com", "", false, null)]
+        [InlineData("test3", "test@test.com", "pas", null, 1)]
+        [InlineData("test4", "test@test.com", null, true, 1)]
+        [InlineData("test5", "test@test.com", null, null, null)]
+        public async Task UpdateAccountUpdatesAllNonNullProperties(String name, String email, String? password, bool? privacyActivated, int? programmeId)
+        {
+            // Arrange
+            var programme = new Programme()
+            {
+                Id = 1,
+                FullName = "test",
+                ShortName = "t",
+                Users = new List<User>()
+            };
+            var updateUserRequest = new UpdateUserRequest()
+            {
+                Name = name,
+                Email = email,
+                Password = password,
+                PrivacyActivated = privacyActivated,
+                ProgrammeId = programmeId
+            };
+            var user = new User(){
+                Name = "name",
+                Password = "pass",
+                PrivacyActivated = false,
+                Email = "test@test.test",
+                Programme = programme
+            };
+            var expected = new User()
+            {
+                Name = name,
+                Email = email,
+                Password = password ?? user.Password,
+                PrivacyActivated = privacyActivated ?? user.PrivacyActivated,
+                Programme = programme ?? user.Programme
+            };
+
+            // Using same context across all valid users to test creation of multiple users
+            using var context = CreateTestCoffeeCardContextWithName(nameof(UpdateAccountUpdatesAllNonNullProperties) + name);
+            context.Users.Add(user);
+
+            context.Programmes.Add(programme);
+            await context.SaveChangesAsync();
+
+            var hashServiceMock = new Mock<IHashService>();
+            hashServiceMock.Setup(h => h.Hash(It.IsAny<String>())).Returns(password);
+            var hashService = hashServiceMock.Object;
+            
+            // Act
+            var accountService = new Library.Services.v2.AccountService(context, new Mock<ITokenService>().Object,
+                new Mock<IEmailService>().Object, hashService);
+            var result = await accountService.UpdateAccountAsync(user, updateUserRequest);
+
+            // Assert
+            Assert.Equal(expected.Name, result.Name);
+            Assert.Equal(expected.Programme.Id, result.Programme.Id);
+            Assert.Equal(expected.PrivacyActivated, result.PrivacyActivated);
+            Assert.Equal(expected.Email, result.Email);
+            Assert.Equal(expected.Password, result.Password);
+        }
+
+        [Fact(DisplayName = "UpdateAccount throws ApiException on invalid programme id")]
+        public async Task UpdateAccountThrowsApiExceptionOnInvalidProgrammeId()
+        {
+            // Arrange
+            var programme = new Programme()
+            {
+                Id = 1,
+                FullName = "test",
+                ShortName = "t",
+                Users = new List<User>()
+            };
+            var updateUserRequest = new UpdateUserRequest()
+            {
+                Name = "name",
+                Email = "email",
+                Password = "password",
+                PrivacyActivated = false,
+                ProgrammeId = 2 // No prgramme with Id
+            };
+            var user = new User(){
+                Name = "name",
+                Password = "pass",
+                PrivacyActivated = false,
+                Email = "test@test.test",
+                Programme = programme
+            };
+
+            // Using same context across all valid users to test creation of multiple users
+            using var context = CreateTestCoffeeCardContextWithName(nameof(UpdateAccountThrowsApiExceptionOnInvalidProgrammeId));
+            context.Users.Add(user);
+
+            context.Programmes.Add(programme);
+            await context.SaveChangesAsync();
+
+            // Act
+            var accountService = new Library.Services.v2.AccountService(context, new Mock<ITokenService>().Object,
+                new Mock<IEmailService>().Object, new Mock<IHashService>().Object);
+
+            // Assert
+            var exception = await Assert.ThrowsAsync<ApiException>(async () => await accountService.UpdateAccountAsync(user, updateUserRequest));
+            Assert.Equal(StatusCodes.Status400BadRequest, exception.StatusCode);
+        }
+        
         public static IEnumerable<object[]> ClaimGenerator()
         {
             yield return new object[] {
