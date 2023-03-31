@@ -191,7 +191,6 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             };
             User result;
 
-            // Using same context across all valid users to test creation of multiple users
             using var context = CreateTestCoffeeCardContextWithName(nameof(RegisterAccountSendsVerificationEmailOnlyValidInput));
             var emailServiceMock = new Mock<IEmailService>();
             emailServiceMock.Setup(e => e.SendRegistrationVerificationEmailAsync(It.IsAny<User>(), It.IsAny<String>())).Returns(Task.CompletedTask);
@@ -258,7 +257,6 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 Programme = programme ?? user.Programme
             };
 
-            // Using same context across all valid users to test creation of multiple users
             using var context = CreateTestCoffeeCardContextWithName(nameof(UpdateAccountUpdatesAllNonNullProperties) + name);
             context.Users.Add(user);
 
@@ -309,7 +307,6 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 Programme = programme
             };
 
-            // Using same context across all valid users to test creation of multiple users
             using var context = CreateTestCoffeeCardContextWithName(nameof(UpdateAccountThrowsApiExceptionOnInvalidProgrammeId));
             context.Users.Add(user);
 
@@ -323,6 +320,82 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             // Assert
             var exception = await Assert.ThrowsAsync<ApiException>(async () => await accountService.UpdateAccountAsync(user, updateUserRequest));
             Assert.Equal(StatusCodes.Status400BadRequest, exception.StatusCode);
+        }
+        
+        [Fact(DisplayName = "RequestAnonymization sends email")]
+        public async Task RequestAnonymizationSendsEmail()
+        {
+            // Arrange
+            var user = new User(){
+                Name = "name",
+                Password = "pass",
+                PrivacyActivated = false,
+                Email = "test@test.test",
+            };
+
+            using var context = CreateTestCoffeeCardContextWithName(nameof(RequestAnonymizationSendsEmail));
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
+
+            var emailServiceMock = new Mock<IEmailService>();
+            emailServiceMock.Setup(e => e.SendVerificationEmailForDeleteAccount(It.IsAny<User>(), It.IsAny<String>())).Returns(Task.CompletedTask);
+            var emailService = emailServiceMock.Object;
+
+            // Act
+            var accountService = new Library.Services.v2.AccountService(context, new Mock<ITokenService>().Object,
+                emailService, new Mock<IHashService>().Object);
+
+            await accountService.RequestAnonymizationAsync(user);
+            // Assert
+            emailServiceMock.Verify(e => e.SendVerificationEmailForDeleteAccount(It.IsAny<User>(), It.IsAny<String>()));
+        }
+        
+        [Fact(DisplayName = "AnonymizeAccount removes identifyable information from user")]
+        public async Task AnonymizeAccountRemovesIdentifyableInformationFromUser()
+        {
+            // Arrange
+            var userEmail = "test@test.test";
+            var user = new User(){
+                Id = 1,
+                Name = "name",
+                Password = "pass",
+                Salt = "salt",
+                UserState = UserState.Active,
+                PrivacyActivated = false,
+                Email = userEmail ,
+            };
+            var expected = new User(){
+                Id = 1,
+                Name = "",
+                Password = "",
+                Salt = "",
+                UserState = UserState.Deleted,
+                PrivacyActivated = true,
+                Email = "",
+            };
+
+            using var context = CreateTestCoffeeCardContextWithName(nameof(AnonymizeAccountRemovesIdentifyableInformationFromUser));
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
+
+            var tokenServiceMock = new Mock<ITokenService>();
+            tokenServiceMock.Setup(e => e.ValidateVerificationTokenAndGetEmail(It.IsAny<String>())).Returns(userEmail);
+            var tokenService = tokenServiceMock.Object;
+
+            // Act
+            var accountService = new Library.Services.v2.AccountService(context, tokenService,
+                new Mock<IEmailService>().Object, new Mock<IHashService>().Object);
+
+            await accountService.AnonymizeAccountAsync("test");
+            var result = await context.Users.FindAsync(1);
+            // Assert
+            // Comparing specific properties instead of object since DateCreated would not be equals
+            Assert.Equal(expected.Name, result.Name);
+            Assert.Equal(expected.Salt, result.Salt);
+            Assert.Equal(expected.PrivacyActivated, result.PrivacyActivated);
+            Assert.Equal(expected.Email, result.Email);
+            Assert.Equal(expected.Password, result.Password);
+            Assert.Equal(expected.UserState, result.UserState);
         }
         
         public static IEnumerable<object[]> ClaimGenerator()
