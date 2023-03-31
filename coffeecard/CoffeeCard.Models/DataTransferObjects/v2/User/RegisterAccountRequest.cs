@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace CoffeeCard.Models.DataTransferObjects.V2.User
+namespace CoffeeCard.Models.DataTransferObjects.v2.User
 {
     /// <summary>
     /// Register a new user

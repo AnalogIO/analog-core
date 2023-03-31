@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CoffeeCard.Models.DataTransferObjects.v2.Leaderboard;
 using CoffeeCard.Models.Entities;
@@ -22,5 +22,11 @@ namespace CoffeeCard.Library.Services.v2
         /// <param name="preset">Preset to filter</param>
         /// <returns>Leaderboard entry for user</returns>
         Task<LeaderboardEntry> GetLeaderboardEntry(User user, LeaderboardPreset preset);
+
+        /// <summary>
+        /// Retruns a triple representing the users current placement on the leaderboard
+        /// </summary>
+        /// <param name="user">User</param>
+        Task<(int Total, int Semester, int Month)> GetLeaderboardPlacement(User user);
     }
 }

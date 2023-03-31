@@ -264,33 +264,6 @@ namespace CoffeeCard.Library.Services
       return true;
     }
 
-    public async Task RequestAnonymization(User user)
-    {
-      var claims = new[]
-      {
-                new Claim(ClaimTypes.Email, user.Email), new Claim(ClaimTypes.Name, user.Name),
-                new Claim(ClaimTypes.Role, "verification_token")
-            };
-      var verificationToken = _tokenService.GenerateToken(claims);
-
-      await _emailService.SendVerificationEmailForDeleteAccount(user, verificationToken);
-    }
-
-    public async Task AnonymizeAccountAsync(string token)
-    {
-      Log.Information("Trying to verify deletion with token: {token}", token);
-
-      var email = _tokenService.ValidateVerificationTokenAndGetEmail(token);
-      var user = GetAccountByEmail(email);
-
-      await AnonymizeUser(user);
-    }
-
-    public Task<bool> EmailExists(string email)
-    {
-      return _context.Users.AnyAsync(x => x.Email == email);
-    }
-
     private async Task AnonymizeUser(User user)
     {
       user.Email = string.Empty;

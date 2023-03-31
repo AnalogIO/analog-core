@@ -1,13 +1,14 @@
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
-using CoffeeCard.Library.Services;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.DataTransferObjects;
 using CoffeeCard.Models.DataTransferObjects.v2.User;
-using CoffeeCard.Models.DataTransferObjects.V2.User;
+using CoffeeCard.Models.DataTransferObjects.v2.Programme;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using CoffeeCard.Library.Services.v2;
+using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.WebApi.Controllers.v2
 {
@@ -22,14 +23,16 @@ namespace CoffeeCard.WebApi.Controllers.v2
     {
         private readonly IAccountService _accountService;
         private readonly ClaimsUtilities _claimsUtilities;
-        
+        private readonly ILeaderboardService _leaderboardService;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
         /// </summary>
-        public AccountController(IAccountService accountService, ClaimsUtilities claimsUtilities)
+        public AccountController(IAccountService accountService, ClaimsUtilities claimsUtilities, ILeaderboardService leaderboardService)
         {
             _accountService = accountService;
             _claimsUtilities = claimsUtilities;
+            _leaderboardService = leaderboardService;
         }
 
         /// <summary>
@@ -66,11 +69,49 @@ namespace CoffeeCard.WebApi.Controllers.v2
         public async Task<ActionResult> Delete()
         {
             var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
-            
-            await _accountService.RequestAnonymization(user);
+
+            await _accountService.RequestAnonymizationAsync(user);
             return NoContent();
         }
-        
+
+
+        /// <summary>
+        /// Returns basic data about the account
+        /// </summary>
+        /// <returns>Account information</returns>
+        /// <response code="200">Successful request</response>
+        /// <response code="401">Invalid credentials</response>
+        [HttpGet]
+        [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<UserResponse>> Get()
+        {
+            var user = await _accountService.GetAccountByClaimsAsync(User.Claims);
+
+            return Ok(await UserWithRanking(user));
+        }
+
+        /// <summary>
+        /// Updates the account and returns the updated values.
+        /// Only properties which are present in the <see cref="UpdateUserRequest"/> will be updated
+        /// </summary>
+        /// <param name="updateUserRequest">Update account information request. All properties are optional as the server only
+        /// updates the values of the properties which are present</param>
+        /// <returns>Account information</returns>
+        /// <response code="200">Successful request</response>
+        /// <response code="401">Invalid credentials</response>
+        [HttpPut]
+        [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<UserResponse>> Update([FromBody] UpdateUserRequest updateUserRequest)
+        {
+            var user = await _accountService.GetAccountByClaimsAsync(User.Claims);
+            var updatedUser = await _accountService.UpdateAccountAsync(user, updateUserRequest);
+
+            return Ok(await UserWithRanking(updatedUser));
+        }
+
+
         /// <summary>
         /// Check if a given email is in use
         /// </summary>
@@ -85,11 +126,31 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [Route("email-exists")]
         public async Task<ActionResult<EmailExistsResponse>> EmailExists([FromBody] EmailExistsRequest request)
         {
-            var emailInUse = await _accountService.EmailExists(request.Email);
+            var emailInUse = await _accountService.EmailExistsAsync(request.Email);
             return Ok(new EmailExistsResponse()
             {
                 EmailExists = emailInUse
             });
+        }
+
+        private async Task<UserResponse> UserWithRanking(User user){
+            var leaderBoardPlacement = await _leaderboardService.GetLeaderboardPlacement(user);
+
+            return new UserResponse
+            {
+                RankAllTime = leaderBoardPlacement.Total,
+                RankMonth = leaderBoardPlacement.Month,
+                RankSemester = leaderBoardPlacement.Semester,
+                Name = user.Name,
+                Programme = new ProgrammeResponse()
+                {
+                    Id = user.Programme.Id,
+                    ShortName = user.Programme.ShortName,
+                    FullName = user.Programme.FullName
+                },
+                PrivacyActivated = user.PrivacyActivated,
+            };
+            
         }
     }
 }

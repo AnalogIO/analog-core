@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CoffeeCard.Library.Persistence;
@@ -74,6 +74,25 @@ namespace CoffeeCard.Library.Services.v2
                 Score = swipeCount
             };
         }
+
+
+        public async Task<(int Total, int Semester, int Month)> GetLeaderboardPlacement(User user)
+        {
+            var leaderBoardPlacement = (Total: 0, Semester: 0, Month: 0);
+
+            var totalSwipe = await GetLeaderboardEntry(user, LeaderboardPreset.Total);
+
+            var semesterSwipe = await GetLeaderboardEntry(user, LeaderboardPreset.Semester);
+
+            var monthSwipe = await GetLeaderboardEntry(user, LeaderboardPreset.Month);
+
+            leaderBoardPlacement.Total = totalSwipe.Rank;
+            leaderBoardPlacement.Semester = semesterSwipe.Rank;
+            leaderBoardPlacement.Month = monthSwipe.Rank;
+
+            return leaderBoardPlacement;
+        }
+        
 
         private bool IsSwipeValid(Statistic s)
         {
