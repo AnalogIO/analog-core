@@ -1,4 +1,6 @@
-﻿namespace CoffeeCard.Models.Entities
+using CoffeeCard.Models.DataTransferObjects.v2.User;
+
+namespace CoffeeCard.Models.Entities
 {
     public enum UserGroup
     {
@@ -12,4 +14,16 @@
         /// Active board member in Analog
         Board 
     }
+
+	public static class UserGroupExtention {
+		public static UserRole toUserRole(this UserGroup userGroup){
+            return userGroup switch {
+                UserGroup.Customer => UserRole.Customer,
+                UserGroup.Barista => UserRole.Barista,
+                UserGroup.Board => UserRole.Board,
+                UserGroup.Manager => UserRole.Manager,
+                _ => UserRole.Customer,
+            };
+        }
+	}
 }
