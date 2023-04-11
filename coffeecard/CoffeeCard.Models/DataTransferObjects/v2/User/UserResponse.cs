@@ -15,7 +15,8 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
     ///     "programme": 1,
     ///     "rankAllTime": 15,
     ///     "rankSemester": 4,
-    ///     "rankMonth": 5
+    ///     "rankMonth": 5,
+    ///     "role": "Barista"
     /// }
     /// </example>
     public class UserResponse
@@ -52,6 +53,14 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
         [Required]
         public bool PrivacyActivated { get; set; }
         
+        /// <summary>
+        /// User's role
+        /// </summary>
+        /// <value>Role</value>
+        /// <example>Barista</example>
+        [Required]
+        public UserRole Role { get; set; } = UserRole.Customer;
+
         /// <summary>
         /// Study Programme Id of user
         /// </summary>

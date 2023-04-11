@@ -138,10 +138,13 @@ namespace CoffeeCard.WebApi.Controllers.v2
 
             return new UserResponse
             {
+                Id = user.Id,
+                Email = user.Email,
                 RankAllTime = leaderBoardPlacement.Total,
                 RankMonth = leaderBoardPlacement.Month,
                 RankSemester = leaderBoardPlacement.Semester,
                 Name = user.Name,
+                Role = user.UserGroup.toUserRole(),
                 Programme = new ProgrammeResponse()
                 {
                     Id = user.Programme.Id,
