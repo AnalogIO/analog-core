@@ -66,6 +66,7 @@ namespace CoffeeCard.WebApi
             services.AddTransient<ITokenService, TokenService>();
             services.AddSingleton<ILoginLimiter, LoginLimiter>();
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<Library.Services.v2.IAccountService, Library.Services.v2.AccountService>();
             services.AddScoped<IPurchaseService, PurchaseService>();
             services.AddScoped<IMapperService, MapperService>();
             services.AddScoped<IEmailService, EmailService>();

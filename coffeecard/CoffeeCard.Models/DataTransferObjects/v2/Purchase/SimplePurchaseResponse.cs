@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
@@ -11,6 +11,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
     ///     "id": 22,
     ///     "dateCreated": "2022-01-09T21:03:52.2283208Z",
     ///     "productId": 1,
+    ///     "productName": "Filter coffee",
     ///     "totalAmount": 300,
     ///     "purchaseStatus": "Completed"
     /// }
@@ -40,6 +41,22 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <example>1</example>
         [Required]
         public int ProductId { get; set; }
+
+        /// <summary>
+        /// Name of purchased product
+        /// </summary>
+        /// <value>Product Name</value>
+        /// <example>1</example>
+        [Required]
+        public String ProductName { get; set; }
+        
+        /// <summary>
+        /// Number of tickets issued in purchase
+        /// </summary>
+        /// <value>Amount of tickets granted by the purchase</value>
+        /// <example>10</example>
+        [Required]
+        public int NumberOfTickets { get; set; }
         
         /// <summary>
         /// Total purchase price in Danish Kroner (kr)

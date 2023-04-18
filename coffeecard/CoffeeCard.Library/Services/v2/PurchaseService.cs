@@ -175,6 +175,8 @@ namespace CoffeeCard.Library.Services.v2
                     Id = p.Id,
                     DateCreated = p.DateCreated,
                     ProductId = p.ProductId,
+                    ProductName = p.ProductName,
+                    NumberOfTickets = p.NumberOfTickets,
                     TotalAmount = p.Price,
                     PurchaseStatus = p.Status
                 })
@@ -303,6 +305,8 @@ namespace CoffeeCard.Library.Services.v2
                 Id = purchase.Id,
                 DateCreated = purchase.DateCreated,
                 ProductId = purchase.ProductId,
+                ProductName = purchase.ProductName,
+                NumberOfTickets = purchase.NumberOfTickets,
                 TotalAmount = purchase.Price,
                 PurchaseStatus = purchase.Status
             };
