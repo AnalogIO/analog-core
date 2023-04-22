@@ -10,6 +10,9 @@ namespace CoffeeCard.Common.Configuration
         [Required]
         public string AdminToken { get; set; }
 
+        [Required]
+        public string ApiKey { get; set; }
+
         public void Validate()
         {
             Validator.ValidateObject(this, new ValidationContext(this), validateAllProperties: true);

@@ -65,7 +65,19 @@ namespace CoffeeCard.MobilePay.Service.v2
             {
                 Log.Error("Error calling Get Webhook with Id: {Id}. Http {StatusCode} {Message}", webhookId, e.StatusCode, e.Message);
                 throw new MobilePayApiException(e.StatusCode, e.Message);
+            }
+        }
 
+        public async Task<GetMultipleWebhooksResponse> GetAllWebhooks()
+        {
+            try
+            {
+                return await _webhooksApi.WebhooksGET2Async(null);
+            }
+            catch (ApiException e)
+            {
+                Log.Error("Error calling GetAllWebhooks. Http {StatusCode} {Message}", e.StatusCode, e.Message);
+                throw new MobilePayApiException(e.StatusCode, e.Message);
             }
         }
     }

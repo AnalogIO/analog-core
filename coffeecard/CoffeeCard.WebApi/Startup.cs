@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using AspNetCore.Authentication.ApiKey;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services;
@@ -54,7 +55,7 @@ namespace CoffeeCard.WebApi
             services.AddConfigurationSettings(_configuration);
             
             // Setup database connection
-            var databaseSettings = _configuration.GetSection("DatabaseSettings").Get<DatabaseSettings>();
+            var databaseSettings = _configuration.GetSection(nameof(DatabaseSettings)).Get<DatabaseSettings>();
             services.AddDbContext<CoffeeCardContext>(opt =>
                 opt.UseSqlServer(databaseSettings.ConnectionString,
                     c => c.MigrationsHistoryTable("__EFMigrationsHistory", databaseSettings.SchemaName)));
@@ -129,34 +130,55 @@ namespace CoffeeCard.WebApi
             // Setup Authentication
             var identitySettings = _configuration.GetSection("IdentitySettings").Get<IdentitySettings>();
             services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = "bearer";
-                options.DefaultChallengeScheme = "bearer";
-            }).AddJwtBearer("bearer", options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateAudience = false,
-                    ValidateIssuer = false,
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(identitySettings.TokenKey)),
-                    ValidateLifetime = true,
-                    ClockSkew = TimeSpan.Zero //the default for this setting is 5 minutes
-                };
-                options.Events = new JwtBearerEvents
+                    options.DefaultAuthenticateScheme = "jwt";
+                    options.DefaultChallengeScheme = "jwt";
+                }).AddJwtBearer("jwt", options =>
                 {
-                    OnAuthenticationFailed = context =>
+                    options.TokenValidationParameters = new TokenValidationParameters
                     {
-                        if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
-                            context.Response.Headers.Add("Token-Expired", "true");
+                        ValidateAudience = false,
+                        ValidateIssuer = false,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(identitySettings.TokenKey)),
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero //the default for this setting is 5 minutes
+                    };
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnAuthenticationFailed = context =>
+                        {
+                            if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+                                context.Response.Headers.Add("Token-Expired", "true");
 
-                        return Task.CompletedTask;
-                    }
-                };
-            });
+                            return Task.CompletedTask;
+                        }
+                    };
+                })
+                .AddApiKeyInHeader("apikey", options =>
+                {
+                    options.Realm = "Analog Core";
+                    options.KeyName = "x-api-key";
+                    options.Events = new ApiKeyEvents
+                    {
+                        OnValidateKey = async context =>
+                        {
+                            var identitySettings = _configuration.GetSection(nameof(IdentitySettings)).Get<IdentitySettings>();
+                            var apiKey = identitySettings.ApiKey;
+                            if (apiKey == context.ApiKey)
+                                
+                            {
+                                context.ValidationSucceeded();
+                            }
+                            else
+                            {
+                                context.ValidationFailed();
+                            }
+                        }
+                    };
+                });
         }
 
-        
         /// <summary>
         /// Generate Open Api Document for each API Version
         /// </summary>
@@ -190,18 +212,25 @@ namespace CoffeeCard.WebApi
                         };
                     };
 
-                    // Configure OpenApi Security scheme
-                    // Allows using the Swagger UI with a Bearer token
-                    config.AddSecurity("Bearer", new OpenApiSecurityScheme()
+                    config.DocumentProcessors.Add(new SecurityDefinitionAppender("jwt", new OpenApiSecurityScheme
                     {
-                        Description = "Insert a JWT Bearer token: Bearer {token}",
+                        Description = "JWT Bearer token",
                         Name = "Authorization",
                         Scheme = "bearer",
                         BearerFormat = "JWT",
                         In = OpenApiSecurityApiKeyLocation.Header,
                         Type = OpenApiSecuritySchemeType.Http
-                    });
-                    config.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("Bearer"));
+                    }));
+                    config.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("jwt"));
+                    
+                    config.DocumentProcessors.Add(new SecurityDefinitionAppender("apikey", new OpenApiSecurityScheme
+                    {
+                        Description = "Api Key used for health endpoints",
+                        Name = "x-api-key",
+                        In = OpenApiSecurityApiKeyLocation.Header,
+                        Type = OpenApiSecuritySchemeType.ApiKey
+                    }));
+                    config.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("apikey"));
 
                     // Assume not null as default unless parameter is marked as nullable
                     config.DefaultReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull;
