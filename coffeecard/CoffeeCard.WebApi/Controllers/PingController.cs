@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,10 +18,11 @@ namespace CoffeeCard.WebApi.Controllers
         /// <returns>pong</returns>
         /// <response code="200">Successful request</response>
         [HttpGet]
+        [Obsolete(message: "Replaced by Purchases API v2")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public IActionResult Ping()
         {
-            return Ok("pong");
+            throw new NotImplementedException();
         }
     }
 }
