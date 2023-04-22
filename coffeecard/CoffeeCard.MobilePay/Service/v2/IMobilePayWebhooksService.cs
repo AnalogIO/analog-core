@@ -36,5 +36,11 @@ namespace CoffeeCard.MobilePay.Service.v2
         /// <param name="events">Events which webhook should registered for</param>
         /// <returns></returns>
         Task<SingleWebhookResponse> UpdateWebhook(Guid webhookId, string url, ICollection<Events> events);
+
+        /// <summary>
+        /// Get all webhooks
+        /// </summary>
+        /// <returns>List of Webhooks</returns>
+        public Task<GetMultipleWebhooksResponse> GetAllWebhooks();
     }
 }

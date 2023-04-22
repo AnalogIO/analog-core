@@ -12,6 +12,7 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="6.0.11" />
         <PackageReference Include="MimeKit" Version="3.4.2" />
         <PackageReference Include="NetEscapades.Configuration.Validation" Version="2.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.11" />
@@ -34,6 +35,12 @@
       <ProjectReference Include="..\CoffeeCard.Common\CoffeeCard.Common.csproj" />
       <ProjectReference Include="..\CoffeeCard.MobilePay\CoffeeCard.MobilePay.csproj" />
       <ProjectReference Include="..\CoffeeCard.Models\CoffeeCard.Models.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <Compile Remove="Migrations\20220519210629_RestApiV2Changes.cs" />
+      <Compile Remove="Migrations\20220519210629_RestApiV2Changes.Designer.cs" />
+      <Compile Remove="Migrations\20191012125617_Initial - test.cs" />
+      <Compile Remove="Migrations\20191012125617_Initial - test.Designer.cs" />
     </ItemGroup>
 
 </Project>
