@@ -39,4 +39,7 @@
       <Link>appsettings.json</Link>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+  </ItemGroup>
 </Project>
