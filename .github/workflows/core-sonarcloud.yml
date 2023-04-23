@@ -2,10 +2,6 @@ name: Static Analysis using SonarCloud
 
 on:
   workflow_call:
-  push:
-    branches: [ develop, production ]
-  pull_request:
-    branches: [ develop, production ]
 
   workflow_dispatch:
 

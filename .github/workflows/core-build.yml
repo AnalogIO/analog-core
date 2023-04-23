@@ -4,8 +4,6 @@ env:
   DOTNET_VERSION: 6
 
 on:
-  pull_request:
-    branches: [ develop, production ]
   workflow_call:
     inputs:
       push_image:
@@ -13,6 +11,8 @@ on:
         required: false
         default: false
         type: boolean
+  
+  workflow_dispatch:
   
 jobs:
   build:
