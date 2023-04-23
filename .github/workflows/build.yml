@@ -14,11 +14,18 @@ on:
 
 jobs:
   core-build:
-      uses: ./.github/workflows/core-build.yml
-      with:
-        push_image: ${{ inputs.push_image }}
-      secrets: inherit
+    name: Build analog-core
+    uses: ./.github/workflows/core-build.yml
+    with:
+      push_image: ${{ inputs.push_image }}
+    secrets: inherit
 
   infra-build:
-      uses: ./.github/workflows/infra-build.yml
-      secrets: inherit
+    name: Build infrastructure
+    uses: ./.github/workflows/infra-build.yml
+    secrets: inherit
+
+  sonarcloud:
+    name: Static code analysis
+    uses: ./.github/workflows/core-sonarcloud.yml
+    secrets: inherit

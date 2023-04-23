@@ -16,6 +16,7 @@ on:
   
 jobs:
   build:
+    name: Build and test analog-core
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -35,6 +36,7 @@ jobs:
         files: coffeecard/CoffeeCard.Tests.Integration/coverage.opencover.xml,coffeecard/CoffeeCard.Tests.Unit/coverage.opencover.xml
 
   docker:
+    name: Build and push docker image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

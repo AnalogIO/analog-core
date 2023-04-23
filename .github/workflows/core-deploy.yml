@@ -7,6 +7,7 @@ on:
 
 jobs:
   core-deploy:
+    name: Deploy analog-core to Azure
     runs-on: ubuntu-22.04
     environment:
       name: dev

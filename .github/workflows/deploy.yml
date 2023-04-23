@@ -6,16 +6,19 @@ on:
 
 jobs:
   build:
+    name: Build
     uses: ./.github/workflows/build.yml
     with:
       push_image: true
 
   infra-deploy:
+    name: Deploy infrastructure
     uses: ./.github/workflows/infra-deploy.yml
     needs: build
     secrets: inherit
 
   core-deploy:
+    name: Deploy analog-core
     uses: ./.github/workflows/core-deploy.yml
     needs: infra-deploy
     secrets: inherit
