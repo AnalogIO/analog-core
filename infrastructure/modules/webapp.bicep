@@ -143,3 +143,16 @@ module certificate 'webappManagedCertificate.bicep' = {
     dns
   ]
 }
+
+module bindCertificate 'bindCustomDomainCertificate.bicep' = {
+  name: '${deployment().name}-core-bind-certificate'
+  params: {
+    webAppName: webapp.name
+    certificateThumbprint: certificate.outputs.certificateThumbprint
+    customDomainFqdn: certificate.outputs.customDomainFqdn
+  }
+
+  dependsOn: [
+    certificate
+  ]
+}

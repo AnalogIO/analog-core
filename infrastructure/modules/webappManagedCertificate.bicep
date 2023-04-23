@@ -39,14 +39,5 @@ resource certificate 'Microsoft.Web/certificates@2022-03-01' = {
   ]
 }
 
-resource bindCertToDomain 'Microsoft.web/sites/hostnameBindings@2019-08-01' = {
-  parent: webapp
-  name: fqdn
-  properties: {
-    siteName: webapp.name
-    hostNameType: 'Verified'
-    customHostNameDnsRecordType: 'CName'
-    sslState: 'SniEnabled'
-    thumbprint: certificate.properties.thumbprint
-  }
-}
+output certificateThumbprint string = certificate.properties.thumbprint
+output customDomainFqdn string = fqdn
