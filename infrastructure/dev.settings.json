@@ -12,7 +12,7 @@
       },
       {
         "name": "EnvironmentSettings__DeploymentUrl",
-        "value": "https://beta.analogio.dk/api/clippy/"
+        "value": "https://core.dev.analogio.dk/"
       },
       {
         "name": "MailgunSettings__Domain",
@@ -20,7 +20,7 @@
       },
       {
         "name": "MailgunSettings__EmailBaseUrl",
-        "value": "https://analogio.dk"
+        "value": "https://core.dev.analogio.dk/"
       },
       {
         "name": "MobilePaySettingsV2__ApiUrl",
@@ -28,7 +28,7 @@
       },
       {
         "name": "MobilePaySettingsV2__WebhookUrl",
-        "value": "https://invalidurl.test/"
+        "value": "https://core.dev.analogio.dk/api/v2/mobilepay/webhook"
       },
       {
         "name": "EnvironmentSettings__MinAppVersion",
