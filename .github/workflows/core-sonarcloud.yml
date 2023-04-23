@@ -1,15 +1,12 @@
 name: Static Analysis using SonarCloud
 
 on:
-  push:
-    branches: [ develop, production ]
-  pull_request:
-    branches: [ develop, production ]
+  workflow_call:
 
   workflow_dispatch:
 
 jobs:
-  sonarcloud:
+  core-sonarcloud:
     name: Configure and scan using SonarCloud
     runs-on: windows-latest
     steps:
