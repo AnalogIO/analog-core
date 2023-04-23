@@ -8,7 +8,7 @@ jobs:
   build:
     uses: ./.github/workflows/build.yml
     with:
-      push-image: true
+      push_image: true
 
   infra-deploy:
     uses: ./.github/workflows/infra-deploy.yml
