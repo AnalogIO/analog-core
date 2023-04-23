@@ -57,6 +57,7 @@ module sqlDb 'modules/sqldatabase.bicep' = {
     applicationPrefix: applicationPrefix
     environment: environment
     location: location
+    sharedResourceGroupName: sharedResourceGroupName
     logAnalyticsWorkspaceName: logAnalyticsWorkspace.name
     skuCapacity: envSettings.sqlServer.skuCapacity
     skuName: envSettings.sqlServer.skuName

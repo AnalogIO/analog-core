@@ -4,6 +4,8 @@ param organizationPrefix string
 param applicationPrefix string
 param environment string
 
+param sharedResourceGroupName string
+
 param logAnalyticsWorkspaceName string
 
 param skuCapacity int
@@ -130,6 +132,7 @@ resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-11-01' = {
 
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06-01' existing = {
   name: logAnalyticsWorkspaceName
+  scope: resourceGroup(sharedResourceGroupName)
 }
 
 resource diagnosticSettingsSqldb 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
