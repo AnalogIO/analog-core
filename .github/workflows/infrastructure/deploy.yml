@@ -27,5 +27,5 @@ jobs:
     uses: ./.github/workflows/infrastructure/templates/deploy.yml
     secrets: inherit
     with:
-      environment: prod
+      environment: prd
       subscriptionId: analogio-prd
