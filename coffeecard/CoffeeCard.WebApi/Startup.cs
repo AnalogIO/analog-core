@@ -12,6 +12,7 @@ using CoffeeCard.MobilePay.Service.v1;
 using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.MobilePay.Utils;
 using CoffeeCard.WebApi.Helpers;
+using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -97,6 +98,10 @@ namespace CoffeeCard.WebApi
             services.AddScoped<IStatisticService, StatisticService>();
             services.AddScoped<IDateTimeProvider, DateTimeProvider>();
 
+            // Azure Application Insights
+            services.AddApplicationInsightsTelemetry();
+            services.AddSingleton<TelemetryClient>();
+            
             // Setup filter to catch outgoing exceptions
             services.AddControllers(options =>
                 {

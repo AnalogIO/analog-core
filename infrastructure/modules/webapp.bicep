@@ -61,7 +61,7 @@ resource webapp 'Microsoft.Web/sites@2022-03-01' = {
             value: reference(applicationInsights.id, '2015-05-01').InstrumentationKey
           }
           {
-            name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+            name: 'APPLICATIONINSIGHTS__CONNECTIONSTRING'
             value: reference(applicationInsights.id, '2015-05-01').ConnectionString
           }
           {

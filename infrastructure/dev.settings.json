@@ -45,6 +45,10 @@
       {
         "name": "LoginLimiterSettings__MaximumLoginAttemptsWithinTimeOut",
         "value": "5"
+      },
+      {
+        "name": "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES",
+        "value": "Microsoft.AspNetCore.ApplicationInsights.HostingStartup"
       }
     ],
     "keyVaultReferences": [
