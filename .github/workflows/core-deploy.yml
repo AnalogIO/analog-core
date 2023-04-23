@@ -15,12 +15,28 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: Deploy to Azure
         id: webapp-deploy
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ vars.AZURE_WEBAPP_NAME }}
           images: "ghcr.io/analogio/coffeecard-api:${{ github.sha }}"
+
       - name: Invoke App Service CD Webhook
         run: |
           curl --location --request POST '${{ vars.AZURE_APPSERVICE_WEBHOOK_URL }}' --header 'Authorization: Basic ${{ secrets.AZURE_APPSERVICE_WEBHOOK_AUTH }}'
+
+      - name: Smoke tests
+        uses: Azure/powershell@v1
+        with:
+          inlineScript: |
+            $apiKey = az keyvault secret show --name IdentitySettings-ApiKey --vault-name kv-aio-core-dev | ConvertFrom-Json | Select -ExpandProperty value
+            $header = @{'x-api-key' = $apiKey}
+
+            Invoke-RestMethod -Method Get -Uri https://core.dev.analogio.dk/api/v2/health/check -Headers $header -MaximumRetryCount 3 -RetryIntervalSec 10
+
+            Invoke-RestMethod -Method Get -Uri https://core.dev.analogio.dk/api/v2/health/ping -Headers $header -MaximumRetryCount 3 -RetryIntervalSec 10
+          failOnStandardError: true
+
+      
