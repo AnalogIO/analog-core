@@ -8,23 +8,23 @@
     "appSettings": [
       {
         "name": "EnvironmentSettings__EnvironmentType",
-        "value": "LocalDevelopment"
+        "value": "Test"
       },
       {
         "name": "EnvironmentSettings__DeploymentUrl",
-        "value": "https://localhost:8080/"
+        "value": "https://beta.analogio.dk/api/clippy/"
       },
       {
         "name": "MailgunSettings__Domain",
-        "value": "localhost"
+        "value": "https://api.mailgun.net/v3"
       },
       {
         "name": "MailgunSettings__EmailBaseUrl",
-        "value": "https://localhost"
+        "value": "https://analogio.dk"
       },
       {
         "name": "MobilePaySettingsV2__ApiUrl",
-        "value": "https://invalidurl.test/"
+        "value": "https://api.sandbox.mobilepay.dk/"
       },
       {
         "name": "MobilePaySettingsV2__WebhookUrl",
