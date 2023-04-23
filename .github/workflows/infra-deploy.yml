@@ -7,14 +7,13 @@ on:
 jobs:
   build:
     name: Build
-    uses: ./.github/workflows/infrastructure/build.yml
+    uses: ./.github/workflows/infra-build.yml
     secrets: inherit
 
   deploy_dev:
     name: Deploy to dev
     needs: [build]
-    if: github.ref_name == 'develop'
-    uses: ./.github/workflows/infrastructure/templates/deploy.yml
+    uses: ./.github/workflows/infra-template-deploy.yml
     secrets: inherit
     with:
       environment: dev
@@ -24,7 +23,7 @@ jobs:
     name: Deploy to prod
     needs: [build]
     if: github.ref_name == 'production'
-    uses: ./.github/workflows/infrastructure/templates/deploy.yml
+    uses: ./.github/workflows/infra-template-deploy.yml
     secrets: inherit
     with:
       environment: prd
