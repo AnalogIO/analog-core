@@ -51,17 +51,6 @@ resource sqlServer 'Microsoft.Sql/servers@2021-11-01' = {
     }
   }
 
-  resource securityAlerts 'securityAlertPolicies@2021-11-01' = {
-    name: 'default'
-    properties: {
-      emailAccountAdmins: true
-      emailAddresses: [
-        'alerts@analogio.dk'
-      ]
-      state: 'Enabled'
-    }
-  }
-
   resource firewallRules 'firewallRules@2021-11-01' = {
     name: 'default'
     properties: {
