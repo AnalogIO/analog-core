@@ -88,10 +88,9 @@ module webappManagedCertificate '../modules/webappManagedCertificate.bicep' = if
   name: '${deployment().name}-${applicationPrefix}-ssl-${fqdn}'
   params: {
     location: location
+    environment: environment
     appservicePlanName: appservicePlan.name
     webAppName: webapp.name
-    sslState: 'Disabled'
-    fqdn: fqdn
     sharedResourceGroupName: sharedResourceGroupName
   }
 }
