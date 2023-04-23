@@ -34,9 +34,14 @@ jobs:
             $apiKey = az keyvault secret show --name IdentitySettings-ApiKey --vault-name kv-aio-core-dev | ConvertFrom-Json | Select -ExpandProperty value
             $header = @{'x-api-key' = $apiKey}
 
+            Write-Host 'Running smoke tests' -ForegroundColor Yellow
+            Write-Host '- GET /api/v2/health/ping'
+            Invoke-RestMethod -Method Get -Uri https://core.dev.analogio.dk/api/v2/health/ping -Headers $header -MaximumRetryCount 3 -RetryIntervalSec 10
+
+            Write-Host '- GET /api/v2/health/check'
             Invoke-RestMethod -Method Get -Uri https://core.dev.analogio.dk/api/v2/health/check -Headers $header -MaximumRetryCount 3 -RetryIntervalSec 10
 
-            Invoke-RestMethod -Method Get -Uri https://core.dev.analogio.dk/api/v2/health/ping -Headers $header -MaximumRetryCount 3 -RetryIntervalSec 10
+            Write-Host 'Smoke tests successful!' -ForegroundColor Green
           failOnStandardError: true
           azPSVersion: "latest"
 
