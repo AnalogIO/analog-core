@@ -24,8 +24,3 @@ jobs:
     name: Build infrastructure
     uses: ./.github/workflows/infra-build.yml
     secrets: inherit
-
-  sonarcloud:
-    name: Static code analysis
-    uses: ./.github/workflows/core-sonarcloud.yml
-    secrets: inherit
