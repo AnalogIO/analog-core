@@ -38,5 +38,6 @@ jobs:
 
             Invoke-RestMethod -Method Get -Uri https://core.dev.analogio.dk/api/v2/health/ping -Headers $header -MaximumRetryCount 3 -RetryIntervalSec 10
           failOnStandardError: true
+          azPSVersion: "latest"
 
       
