@@ -117,17 +117,6 @@ resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-11-01' = {
       isAzureMonitorTargetEnabled: true
     }
   }
-
-  resource securityAlerts 'securityAlertPolicies@2021-11-01' = {
-    name: 'default'
-    properties: {
-      state: 'Enabled'
-      emailAccountAdmins: true
-      emailAddresses: [
-        'alerts@analogio.dk'
-      ]
-    }
-  }
 }
 
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06-01' existing = {
