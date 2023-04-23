@@ -59,7 +59,7 @@
       {
         "name": "IdentitySettings__ApiKey",
         "secretName": "IdentitySettings-ApiKey"
-      }
+      },
       {
         "name": "MailgunSettings__ApiKey",
         "secretName": "MailgunSettings-ApiKey"
