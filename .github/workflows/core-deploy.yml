@@ -1,0 +1,27 @@
+name: Deploy to Azure
+
+on:
+  workflow_call:
+  push:
+    branches: [develop, production, feature/azure-deploy]
+
+jobs:
+  core-deploy:
+    runs-on: ubuntu-22.04
+    environment:
+      name: dev
+      url: ${{ steps.webapp-deploy.outputs.webapp-url }}
+    steps:
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Deploy to Azure
+        id: webapp-deploy
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ vars.AZURE_WEBAPP_NAME }}
+          images: "ghcr.io/analogio/coffeecard-api:${{ github.sha }}"
+      - name: Invoke App Service CD Webhook
+        run: |
+          curl --location --request POST '${{ vars.AZURE_APPSERVICE_WEBHOOK_URL }}' --header 'Authorization: Basic ${{ secrets.AZURE_APPSERVICE_WEBHOOK_AUTH }}'

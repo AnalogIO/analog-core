@@ -1,18 +1,11 @@
 name: Deploy ARM template
 
 on:
-  push:
-    branches: [develop, production, pr/jra/iac]
+  workflow_call:
 
 jobs:
-  build:
-    name: Build
-    uses: ./.github/workflows/infra-build.yml
-    secrets: inherit
-
   deploy_dev:
     name: Deploy to dev
-    needs: [build]
     uses: ./.github/workflows/infra-template-deploy.yml
     secrets: inherit
     with:
@@ -21,7 +14,6 @@ jobs:
 
   deploy_prod:
     name: Deploy to prod
-    needs: [build]
     if: github.ref_name == 'production'
     uses: ./.github/workflows/infra-template-deploy.yml
     secrets: inherit
