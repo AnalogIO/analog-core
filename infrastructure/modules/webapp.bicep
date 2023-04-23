@@ -119,3 +119,24 @@ resource diagnosticSettingsWebApp 'Microsoft.Insights/diagnosticSettings@2021-05
 }
 
 output webappPrincipalId string = webapp.identity.principalId
+
+module dns 'webappDns.bicep' = {
+  name: '${deployment().name}-core-dns'
+  scope: resourceGroup(sharedResourceGroupName)
+  params: {
+    environment: environment
+    webappVerificationIdValue: webapp.properties.customDomainVerificationId
+    webappAzureGeneratedFqdn: webapp.properties.defaultHostName
+  }
+}
+
+module certificate 'webappManagedCertificate.bicep' = {
+  name: '${deployment().name}-core-certificate'
+  params: {
+    location: location
+    environment: environment
+    appservicePlanName: appservicePlan.name
+    webAppName: webapp.name
+    sharedResourceGroupName: sharedResourceGroupName
+  }
+}

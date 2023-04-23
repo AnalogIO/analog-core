@@ -1,14 +1,10 @@
 param location string
+param environment string
 
 param appservicePlanName string
 param webAppName string
 
-@allowed([
-  'SniEnabled'
-  'Disabled'
-])
-param sslState string
-param fqdn string
+var fqdn = 'core.${environment}.analogio.dk'
 
 param sharedResourceGroupName string
 
@@ -40,7 +36,5 @@ resource customDomain 'Microsoft.web/sites/hostnameBindings@2019-08-01' = {
     siteName: webapp.name
     hostNameType: 'Verified'
     customHostNameDnsRecordType: 'CName'
-    sslState: sslState
-    // thumbprint: sslState == 'SniEnabled' ? certificate.properties.thumbprint : null
   }
 }
