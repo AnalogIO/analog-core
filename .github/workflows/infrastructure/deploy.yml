@@ -1,0 +1,31 @@
+name: Deploy ARM template
+
+on:
+  push:
+    branches: [develop, production, pr/jra/iac]
+
+jobs:
+  build:
+    name: Build
+    uses: ./.github/workflows/infrastructure/build.yml
+    secrets: inherit
+
+  deploy_dev:
+    name: Deploy to dev
+    needs: [build]
+    if: github.ref_name == 'develop'
+    uses: ./.github/workflows/infrastructure/templates/deploy.yml
+    secrets: inherit
+    with:
+      environment: dev
+      subscriptionId: analogio-dev
+
+  deploy_prod:
+    name: Deploy to prod
+    needs: [build]
+    if: github.ref_name == 'production'
+    uses: ./.github/workflows/infrastructure/templates/deploy.yml
+    secrets: inherit
+    with:
+      environment: prod
+      subscriptionId: analogio-prd
