@@ -17,6 +17,16 @@ resource webapp 'Microsoft.Web/sites@2022-03-01' existing = {
   name: webAppName
 }
 
+resource customDomain 'Microsoft.web/sites/hostnameBindings@2019-08-01' = {
+  parent: webapp
+  name: fqdn
+  properties: {
+    siteName: webapp.name
+    hostNameType: 'Verified'
+    customHostNameDnsRecordType: 'CName'
+  }
+}
+
 resource certificate 'Microsoft.Web/certificates@2022-03-01' = {
   name: '${webAppName}-${fqdn}'
   location: location
@@ -29,12 +39,14 @@ resource certificate 'Microsoft.Web/certificates@2022-03-01' = {
   ]
 }
 
-resource customDomain 'Microsoft.web/sites/hostnameBindings@2019-08-01' = {
+resource bindCertToDomain 'Microsoft.web/sites/hostnameBindings@2019-08-01' = {
   parent: webapp
   name: fqdn
   properties: {
     siteName: webapp.name
     hostNameType: 'Verified'
     customHostNameDnsRecordType: 'CName'
+    sslState: 'SniEnabled'
+    thumbprint: certificate.properties.thumbprint
   }
 }

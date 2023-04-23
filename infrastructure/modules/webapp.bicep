@@ -139,4 +139,8 @@ module certificate 'webappManagedCertificate.bicep' = {
     webAppName: webapp.name
     sharedResourceGroupName: sharedResourceGroupName
   }
+
+  dependsOn: [
+    dns
+  ]
 }
