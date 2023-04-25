@@ -5,16 +5,22 @@ on:
     branches: [ develop, production ]
 
 jobs:
-  build:
-    name: Build
-    uses: ./.github/workflows/build.yml
+  core-build:
+    name: Build codebase
+    uses: ./.github/workflows/core-build.yml
     with:
       push_image: true
+    secrets: inherit
+  
+  infra-build:
+    name: Build infrastructure
+    uses: ./.github/workflows/infra-build.yml
+    secrets: inherit
 
   infra-deploy:
     name: Deploy infrastructure
     uses: ./.github/workflows/infra-deploy.yml
-    needs: build
+    needs: [core-build, infra-build]
     secrets: inherit
 
   core-deploy:
