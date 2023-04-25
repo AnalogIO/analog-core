@@ -8,8 +8,6 @@ param applicationPrefix string
 
 param sharedResourceGroupName string
 
-param enableCustomDomain bool = false
-
 var isPrd = environment == 'prd'
 
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' existing = {
