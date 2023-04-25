@@ -17,8 +17,12 @@ namespace CoffeeCard.Models.Entities
         public int ProductId { get; set; }
         public bool IsUsed { get; set; }
 
-        [ForeignKey("Owner_Id")] public virtual User Owner { get; set; }
+        [Column("Owner_Id")]
+        public int OwnerId { get; set; }
+        public virtual User Owner { get; set; }
 
-        [ForeignKey("Purchase_Id")] public virtual Purchase Purchase { get; set; }
+        [Column("Purchase_Id")]
+        public int PurchaseId { get; set; }
+        public virtual Purchase Purchase { get; set; }
     }
 }

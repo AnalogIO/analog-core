@@ -1,9 +1,11 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
+#nullable disable
+
 namespace CoffeeCard.Library.Migrations
 {
-    public partial class localdevelopment : Migration
+    public partial class InitialAzureMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -20,7 +22,7 @@ namespace CoffeeCard.Library.Migrations
                     Price = table.Column<int>(type: "int", nullable: false),
                     NumberOfTickets = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ExperienceWorth = table.Column<int>(type: "int", nullable: false),
                     Visible = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -36,8 +38,8 @@ namespace CoffeeCard.Library.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ShortName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ShortName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     SortPriority = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -99,7 +101,7 @@ namespace CoffeeCard.Library.Migrations
                     PrivacyActivated = table.Column<bool>(type: "bit", nullable: false),
                     UserGroup = table.Column<int>(type: "int", nullable: false),
                     UserState = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Programme_Id = table.Column<int>(type: "int", nullable: true)
+                    Programme_Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -110,7 +112,7 @@ namespace CoffeeCard.Library.Migrations
                         principalSchema: "dbo",
                         principalTable: "Programmes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -121,7 +123,7 @@ namespace CoffeeCard.Library.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Time = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    User_Id = table.Column<int>(type: "int", nullable: true)
+                    User_Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -132,7 +134,7 @@ namespace CoffeeCard.Library.Migrations
                         principalSchema: "dbo",
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -142,16 +144,16 @@ namespace CoffeeCard.Library.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ProductName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProductName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ProductId = table.Column<int>(type: "int", nullable: false),
                     Price = table.Column<int>(type: "int", nullable: false),
                     NumberOfTickets = table.Column<int>(type: "int", nullable: false),
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Completed = table.Column<bool>(type: "bit", nullable: false),
-                    OrderId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    TransactionId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    OrderId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TransactionId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PurchasedBy_Id = table.Column<int>(type: "int", nullable: true)
+                    PurchasedBy_Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -162,7 +164,7 @@ namespace CoffeeCard.Library.Migrations
                         principalSchema: "dbo",
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -176,7 +178,7 @@ namespace CoffeeCard.Library.Migrations
                     SwipeCount = table.Column<int>(type: "int", nullable: false),
                     LastSwipe = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ExpiryDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    User_Id = table.Column<int>(type: "int", nullable: true)
+                    User_Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -187,7 +189,7 @@ namespace CoffeeCard.Library.Migrations
                         principalSchema: "dbo",
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -197,8 +199,8 @@ namespace CoffeeCard.Library.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    TokenHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    User_Id = table.Column<int>(type: "int", nullable: true)
+                    TokenHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    User_Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -209,7 +211,7 @@ namespace CoffeeCard.Library.Migrations
                         principalSchema: "dbo",
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -219,9 +221,11 @@ namespace CoffeeCard.Library.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Code = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Code = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DateUsed = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Requester = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Product_Id = table.Column<int>(type: "int", nullable: true),
                     User_Id = table.Column<int>(type: "int", nullable: true)
                 },
@@ -233,15 +237,13 @@ namespace CoffeeCard.Library.Migrations
                         column: x => x.Product_Id,
                         principalSchema: "dbo",
                         principalTable: "Products",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Vouchers_Users_User_Id",
                         column: x => x.User_Id,
                         principalSchema: "dbo",
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -255,70 +257,26 @@ namespace CoffeeCard.Library.Migrations
                     DateUsed = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ProductId = table.Column<int>(type: "int", nullable: false),
                     IsUsed = table.Column<bool>(type: "bit", nullable: false),
-                    Owner_Id = table.Column<int>(type: "int", nullable: true),
-                    Purchase_Id = table.Column<int>(type: "int", nullable: true)
+                    OwnerId = table.Column<int>(type: "int", nullable: false),
+                    PurchaseId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tickets", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Tickets_Purchases_Purchase_Id",
-                        column: x => x.Purchase_Id,
+                        name: "FK_Tickets_Purchases_PurchaseId",
+                        column: x => x.PurchaseId,
                         principalSchema: "dbo",
                         principalTable: "Purchases",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Tickets_Users_Owner_Id",
-                        column: x => x.Owner_Id,
+                        name: "FK_Tickets_Users_OwnerId",
+                        column: x => x.OwnerId,
                         principalSchema: "dbo",
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                 });
-
-            migrationBuilder.InsertData(
-                schema: "dbo",
-                table: "Products",
-                columns: new[] { "Id", "Description", "ExperienceWorth", "Name", "NumberOfTickets", "Price", "Visible" },
-                values: new object[,]
-                {
-                    { 1, "Used for filter coffee brewed with fresh ground coffee", 10, "Filter Coffee", 10, 80, true },
-                    { 2, "Used for specialities like espresso, cappuccino, caffe latte, cortado, americano and chai latte", 150, "Espresso Based", 10, 150, true }
-                });
-
-            migrationBuilder.InsertData(
-                schema: "dbo",
-                table: "Programmes",
-                columns: new[] { "Id", "FullName", "ShortName", "SortPriority" },
-                values: new object[,]
-                {
-                    { 1, "BSc Software Development", "SWU", 0 },
-                    { 2, "BSc Global Business Informatics", "GBI", 0 },
-                    { 3, "BSc Digital Design and Interactive Technologies", "BDDIT", 0 },
-                    { 4, "MSc Digital Design and Interactive Technologies", "KDDIT", 0 },
-                    { 5, "MSc Digital Innovation and Management", "DIM", 0 },
-                    { 6, "MSc E-Business", "E-BUSS", 0 },
-                    { 7, "MSc Games - Design and Theory", "GAMES/DT", 0 },
-                    { 8, "MSc Games - Technology", "GAMES/Tech", 0 },
-                    { 9, "MSc Computer Science", "CS", 0 },
-                    { 10, "MSc Software Development (Design)", "SDT", 0 },
-                    { 11, "Employee", "Employee", 0 },
-                    { 12, "Other", "Other", 0 },
-                    { 13, "BSc Data Science", "DS", 0 }
-                });
-
-            migrationBuilder.InsertData(
-                schema: "dbo",
-                table: "ProductUserGroups",
-                columns: new[] { "ProductId", "UserGroup" },
-                values: new object[] { 1, 0 });
-
-            migrationBuilder.InsertData(
-                schema: "dbo",
-                table: "ProductUserGroups",
-                columns: new[] { "ProductId", "UserGroup" },
-                values: new object[] { 2, 0 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_LoginAttempts_User_Id",
@@ -351,16 +309,16 @@ namespace CoffeeCard.Library.Migrations
                 column: "User_Id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tickets_Owner_Id",
+                name: "IX_Tickets_OwnerId",
                 schema: "dbo",
                 table: "Tickets",
-                column: "Owner_Id");
+                column: "OwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tickets_Purchase_Id",
+                name: "IX_Tickets_PurchaseId",
                 schema: "dbo",
                 table: "Tickets",
-                column: "Purchase_Id");
+                column: "PurchaseId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tokens_User_Id",
@@ -373,6 +331,13 @@ namespace CoffeeCard.Library.Migrations
                 schema: "dbo",
                 table: "Users",
                 column: "Programme_Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Vouchers_Code",
+                schema: "dbo",
+                table: "Vouchers",
+                column: "Code",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Vouchers_Product_Id",

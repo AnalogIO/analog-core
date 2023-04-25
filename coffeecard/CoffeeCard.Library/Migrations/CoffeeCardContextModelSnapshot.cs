@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
+#nullable disable
+
 namespace CoffeeCard.Library.Migrations
 {
     [DbContext(typeof(CoffeeCardContext))]
@@ -16,38 +18,42 @@ namespace CoffeeCard.Library.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("dbo")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.13")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "6.0.11")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.LoginAttempt", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<DateTime>("Time")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("User_Id")
+                    b.Property<int>("User_Id")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("User_Id");
 
-                    b.ToTable("LoginAttempts");
+                    b.ToTable("LoginAttempts", "dbo");
                 });
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.Product", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ExperienceWorth")
@@ -68,29 +74,7 @@ namespace CoffeeCard.Library.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Products");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Used for filter coffee brewed with fresh ground coffee",
-                            ExperienceWorth = 10,
-                            Name = "Filter Coffee",
-                            NumberOfTickets = 10,
-                            Price = 80,
-                            Visible = true
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Used for specialities like espresso, cappuccino, caffe latte, cortado, americano and chai latte",
-                            ExperienceWorth = 150,
-                            Name = "Espresso Based",
-                            NumberOfTickets = 10,
-                            Price = 150,
-                            Visible = true
-                        });
+                    b.ToTable("Products", "dbo");
                 });
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.ProductUserGroup", b =>
@@ -103,32 +87,23 @@ namespace CoffeeCard.Library.Migrations
 
                     b.HasKey("ProductId", "UserGroup");
 
-                    b.ToTable("ProductUserGroups");
-
-                    b.HasData(
-                        new
-                        {
-                            ProductId = 1,
-                            UserGroup = 0
-                        },
-                        new
-                        {
-                            ProductId = 2,
-                            UserGroup = 0
-                        });
+                    b.ToTable("ProductUserGroups", "dbo");
                 });
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.Programme", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("FullName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ShortName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("SortPriority")
@@ -136,108 +111,16 @@ namespace CoffeeCard.Library.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Programmes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            FullName = "BSc Software Development",
-                            ShortName = "SWU",
-                            SortPriority = 0
-                        },
-                        new
-                        {
-                            Id = 2,
-                            FullName = "BSc Global Business Informatics",
-                            ShortName = "GBI",
-                            SortPriority = 0
-                        },
-                        new
-                        {
-                            Id = 3,
-                            FullName = "BSc Digital Design and Interactive Technologies",
-                            ShortName = "BDDIT",
-                            SortPriority = 0
-                        },
-                        new
-                        {
-                            Id = 4,
-                            FullName = "MSc Digital Design and Interactive Technologies",
-                            ShortName = "KDDIT",
-                            SortPriority = 0
-                        },
-                        new
-                        {
-                            Id = 5,
-                            FullName = "MSc Digital Innovation and Management",
-                            ShortName = "DIM",
-                            SortPriority = 0
-                        },
-                        new
-                        {
-                            Id = 6,
-                            FullName = "MSc E-Business",
-                            ShortName = "E-BUSS",
-                            SortPriority = 0
-                        },
-                        new
-                        {
-                            Id = 7,
-                            FullName = "MSc Games - Design and Theory",
-                            ShortName = "GAMES/DT",
-                            SortPriority = 0
-                        },
-                        new
-                        {
-                            Id = 8,
-                            FullName = "MSc Games - Technology",
-                            ShortName = "GAMES/Tech",
-                            SortPriority = 0
-                        },
-                        new
-                        {
-                            Id = 9,
-                            FullName = "MSc Computer Science",
-                            ShortName = "CS",
-                            SortPriority = 0
-                        },
-                        new
-                        {
-                            Id = 10,
-                            FullName = "MSc Software Development (Design)",
-                            ShortName = "SDT",
-                            SortPriority = 0
-                        },
-                        new
-                        {
-                            Id = 11,
-                            FullName = "Employee",
-                            ShortName = "Employee",
-                            SortPriority = 0
-                        },
-                        new
-                        {
-                            Id = 12,
-                            FullName = "Other",
-                            ShortName = "Other",
-                            SortPriority = 0
-                        },
-                        new
-                        {
-                            Id = 13,
-                            FullName = "BSc Data Science",
-                            ShortName = "DS",
-                            SortPriority = 0
-                        });
+                    b.ToTable("Programmes", "dbo");
                 });
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.Purchase", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<bool>("Completed")
                         .HasColumnType("bit");
@@ -249,6 +132,7 @@ namespace CoffeeCard.Library.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("OrderId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Price")
@@ -258,15 +142,17 @@ namespace CoffeeCard.Library.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ProductName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PurchasedBy_Id")
+                    b.Property<int>("PurchasedBy_Id")
                         .HasColumnType("int");
 
                     b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TransactionId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -277,15 +163,16 @@ namespace CoffeeCard.Library.Migrations
 
                     b.HasIndex("TransactionId");
 
-                    b.ToTable("Purchases");
+                    b.ToTable("Purchases", "dbo");
                 });
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.Statistic", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<DateTime>("ExpiryDate")
                         .HasColumnType("datetime2");
@@ -299,22 +186,23 @@ namespace CoffeeCard.Library.Migrations
                     b.Property<int>("SwipeCount")
                         .HasColumnType("int");
 
-                    b.Property<int?>("User_Id")
+                    b.Property<int>("User_Id")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("User_Id");
 
-                    b.ToTable("Statistics");
+                    b.ToTable("Statistics", "dbo");
                 });
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.Ticket", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
@@ -325,50 +213,53 @@ namespace CoffeeCard.Library.Migrations
                     b.Property<bool>("IsUsed")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("Owner_Id")
+                    b.Property<int>("OwnerId")
                         .HasColumnType("int");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("Purchase_Id")
+                    b.Property<int>("PurchaseId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Owner_Id");
+                    b.HasIndex("OwnerId");
 
-                    b.HasIndex("Purchase_Id");
+                    b.HasIndex("PurchaseId");
 
-                    b.ToTable("Tickets");
+                    b.ToTable("Tickets", "dbo");
                 });
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.Token", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("TokenHash")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("User_Id")
+                    b.Property<int>("User_Id")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("User_Id");
 
-                    b.ToTable("Tokens");
+                    b.ToTable("Tokens", "dbo");
                 });
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
@@ -397,7 +288,7 @@ namespace CoffeeCard.Library.Migrations
                     b.Property<bool>("PrivacyActivated")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("Programme_Id")
+                    b.Property<int>("Programme_Id")
                         .HasColumnType("int");
 
                     b.Property<string>("Salt")
@@ -415,17 +306,19 @@ namespace CoffeeCard.Library.Migrations
 
                     b.HasIndex("Programme_Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", "dbo");
                 });
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.Voucher", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Code")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("DateCreated")
@@ -449,14 +342,13 @@ namespace CoffeeCard.Library.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Code")
-                        .IsUnique()
-                        .HasFilter("[Code] IS NOT NULL");
+                        .IsUnique();
 
                     b.HasIndex("Product_Id");
 
                     b.HasIndex("User_Id");
 
-                    b.ToTable("Vouchers");
+                    b.ToTable("Vouchers", "dbo");
                 });
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.WebhookConfiguration", b =>
@@ -482,14 +374,16 @@ namespace CoffeeCard.Library.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("WebhookConfigurations");
+                    b.ToTable("WebhookConfigurations", "dbo");
                 });
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.LoginAttempt", b =>
                 {
                     b.HasOne("CoffeeCard.Models.Entities.User", "User")
                         .WithMany("LoginAttempts")
-                        .HasForeignKey("User_Id");
+                        .HasForeignKey("User_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -509,7 +403,9 @@ namespace CoffeeCard.Library.Migrations
                 {
                     b.HasOne("CoffeeCard.Models.Entities.User", "PurchasedBy")
                         .WithMany("Purchases")
-                        .HasForeignKey("PurchasedBy_Id");
+                        .HasForeignKey("PurchasedBy_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("PurchasedBy");
                 });
@@ -518,7 +414,9 @@ namespace CoffeeCard.Library.Migrations
                 {
                     b.HasOne("CoffeeCard.Models.Entities.User", "User")
                         .WithMany("Statistics")
-                        .HasForeignKey("User_Id");
+                        .HasForeignKey("User_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -527,11 +425,15 @@ namespace CoffeeCard.Library.Migrations
                 {
                     b.HasOne("CoffeeCard.Models.Entities.User", "Owner")
                         .WithMany("Tickets")
-                        .HasForeignKey("Owner_Id");
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("CoffeeCard.Models.Entities.Purchase", "Purchase")
                         .WithMany("Tickets")
-                        .HasForeignKey("Purchase_Id");
+                        .HasForeignKey("PurchaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Owner");
 
@@ -542,7 +444,9 @@ namespace CoffeeCard.Library.Migrations
                 {
                     b.HasOne("CoffeeCard.Models.Entities.User", "User")
                         .WithMany("Tokens")
-                        .HasForeignKey("User_Id");
+                        .HasForeignKey("User_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -551,7 +455,9 @@ namespace CoffeeCard.Library.Migrations
                 {
                     b.HasOne("CoffeeCard.Models.Entities.Programme", "Programme")
                         .WithMany("Users")
-                        .HasForeignKey("Programme_Id");
+                        .HasForeignKey("Programme_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Programme");
                 });
