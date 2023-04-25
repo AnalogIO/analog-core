@@ -9,10 +9,9 @@ on:
         type: boolean
 
   workflow_dispatch:
-    
+
   pull_request:
     branches: [ develop, production ]
-
 
 jobs:
   core-build:
@@ -28,6 +27,6 @@ jobs:
     secrets: inherit
 
   sonarcloud:
-      name: SonarCloud
-      uses: ./.github/workflows/core-sonarcloud.yml
-      secrets: inherit
+    name: SonarCloud
+    uses: ./.github/workflows/core-sonarcloud.yml
+    secrets: inherit

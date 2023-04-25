@@ -9,7 +9,6 @@ on:
       push_image:
         description: 'Push docker image to registry'
         required: false
-        default: false
         type: boolean
   
   workflow_dispatch:
@@ -17,7 +16,7 @@ on:
 jobs:
   build:
     name: Build and test analog-core
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET Core
@@ -37,7 +36,7 @@ jobs:
 
   docker:
     name: Build and push docker image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3
