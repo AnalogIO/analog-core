@@ -5,31 +5,31 @@
     "skuTier": "Standard"
   },
   "webapp": {
-    "dockerRegistry": "ghcr.io/analogio/coffeecard-api:feature-azure-deploy",
+    "dockerRegistry": "ghcr.io/analogio/coffeecard-api:production",
     "appSettings": [
       {
         "name": "EnvironmentSettings__EnvironmentType",
-        "value": "LocalDevelopment"
+        "value": "Production"
       },
       {
         "name": "EnvironmentSettings__DeploymentUrl",
-        "value": "https://localhost:8080/"
+        "value": "https://core.prd.analogio.dk/"
       },
       {
         "name": "MailgunSettings__Domain",
-        "value": "localhost"
+        "value": "https://api.mailgun.net/v3"
       },
       {
         "name": "MailgunSettings__EmailBaseUrl",
-        "value": "https://localhost"
+        "value": "https://core.prd.analogio.dk/"
       },
       {
         "name": "MobilePaySettingsV2__ApiUrl",
-        "value": "https://invalidurl.test/"
+        "value": "https://api.mobilepay.dk/"
       },
       {
         "name": "MobilePaySettingsV2__WebhookUrl",
-        "value": "https://invalidurl.test/"
+        "value": "https://core.prd.analogio.dk/api/v2/mobilepay/webhook"
       },
       {
         "name": "EnvironmentSettings__MinAppVersion",
@@ -46,6 +46,10 @@
       {
         "name": "LoginLimiterSettings__MaximumLoginAttemptsWithinTimeOut",
         "value": "5"
+      },
+      {
+        "name": "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES",
+        "value": "Microsoft.AspNetCore.ApplicationInsights.HostingStartup"
       }
     ],
     "keyVaultReferences": [
@@ -56,6 +60,10 @@
       {
         "name": "IdentitySettings__AdminToken",
         "secretName": "IdentitySettings-AdminToken"
+      },
+      {
+        "name": "IdentitySettings__ApiKey",
+        "secretName": "IdentitySettings-ApiKey"
       },
       {
         "name": "MailgunSettings__ApiKey",

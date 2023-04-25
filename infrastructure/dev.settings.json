@@ -5,7 +5,7 @@
     "skuTier": "Standard"
   },
   "webapp": {
-    "dockerRegistry": "ghcr.io/analogio/coffeecard-api:feature-azure-deploy",
+    "dockerRegistry": "ghcr.io/analogio/coffeecard-api:develop",
     "appSettings": [
       {
         "name": "EnvironmentSettings__EnvironmentType",
