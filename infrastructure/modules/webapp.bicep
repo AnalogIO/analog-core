@@ -16,6 +16,7 @@ param sqlServerConnectionString string
 
 param appSettings array
 param keyVaultReferences array
+param dockerRegistry string
 
 param enableCustomDomain bool = false
 
@@ -50,7 +51,7 @@ resource webapp 'Microsoft.Web/sites@2022-03-01' = {
     siteConfig: {
       numberOfWorkers: 1
       alwaysOn: true
-      linuxFxVersion: 'DOCKER|ghcr.io/analogio/coffeecard-api:feature-azure-deploy'
+      linuxFxVersion: 'DOCKER|${dockerRegistry}'
       http20Enabled: true
       ftpsState: 'Disabled'
       minTlsVersion: '1.2'

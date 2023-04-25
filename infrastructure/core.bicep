@@ -29,6 +29,7 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing
 
 var envSettings = isPrd ? loadJsonContent('prd.settings.json') : loadJsonContent('dev.settings.json')
 var appSettings = array(envSettings.webapp.appSettings)
+var dockerRegistry = envSettings.webapp.dockerRegistry
 var keyVaultReferences = array(envSettings.webapp.keyVaultReferences)
 
 module webapp 'modules/webapp.bicep' = {
@@ -45,6 +46,7 @@ module webapp 'modules/webapp.bicep' = {
     enableCustomDomain: enableCustomDomain
     keyvaultName: keyvaultName
     appSettings: appSettings
+    dockerRegistry: dockerRegistry
     keyVaultReferences: keyVaultReferences
     sqlServerConnectionString: sqlDb.outputs.sqlDatabaseConnectionString
   }
