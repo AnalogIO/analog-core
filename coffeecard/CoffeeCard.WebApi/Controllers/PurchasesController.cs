@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Common.Errors;
@@ -59,9 +59,9 @@ namespace CoffeeCard.WebApi.Controllers
         /// <response code="404">Voucher code not found</response>
         [HttpPost("redeemvoucher")]
         [ProducesResponseType(typeof(PurchaseDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiException), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
         public ActionResult<PurchaseDto> RedeemVoucher([FromQuery] string voucherCode)
         {
             var purchase = _purchaseService.RedeemVoucher(voucherCode, User.Claims);
