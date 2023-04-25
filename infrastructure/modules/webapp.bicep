@@ -18,14 +18,10 @@ param appSettings array
 param keyVaultReferences array
 param dockerRegistry string
 
-param enableCustomDomain bool = false
-
 var keyVaultReferencesFormatted = [for item in keyVaultReferences: {
   name: item.name
   value: '@Microsoft.KeyVault(VaultName=${keyvaultName};SecretName=${item.secretName})'
 }]
-
-var fqdn = '${webapp.name}.analogio.dk'
 
 resource appservicePlan 'Microsoft.Web/serverfarms@2022-03-01' existing = {
   name: appservicePlanName
@@ -82,17 +78,6 @@ resource webapp 'Microsoft.Web/sites@2022-03-01' = {
     httpsOnly: true
     redundancyMode: 'None'
     keyVaultReferenceIdentity: 'SystemAssigned'
-  }
-}
-
-module webappManagedCertificate '../modules/webappManagedCertificate.bicep' = if (enableCustomDomain) {
-  name: '${deployment().name}-${applicationPrefix}-ssl-${fqdn}'
-  params: {
-    location: location
-    environment: environment
-    appservicePlanName: appservicePlan.name
-    webAppName: webapp.name
-    sharedResourceGroupName: sharedResourceGroupName
   }
 }
 

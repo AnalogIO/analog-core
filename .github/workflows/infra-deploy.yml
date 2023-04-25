@@ -6,6 +6,7 @@ on:
 jobs:
   deploy_dev:
     name: Deploy to dev
+    if: github.ref_name == 'develop'
     uses: ./.github/workflows/infra-template-deploy.yml
     secrets: inherit
     with:

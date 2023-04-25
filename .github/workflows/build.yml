@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
     
   pull_request:
-    branches: [ develop, production, feature/azure-deplop ]
+    branches: [ develop, production ]
 
 
 jobs:
