@@ -43,7 +43,6 @@ module webapp 'modules/webapp.bicep' = {
     sharedResourceGroupName: sharedResourceGroupName
     applicationInsightsName: applicationInsights.name
     logAnalyticsWorkspaceId: logAnalyticsWorkspace.id
-    enableCustomDomain: enableCustomDomain
     keyvaultName: keyvaultName
     appSettings: appSettings
     dockerRegistry: dockerRegistry
