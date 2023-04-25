@@ -17,8 +17,6 @@ jobs:
   core-build:
     name: Build codebase
     uses: ./.github/workflows/core-build.yml
-    with:
-      push_image: ${{ inputs.push_image }}
     secrets: inherit
 
   infra-build:
