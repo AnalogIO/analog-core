@@ -81,7 +81,7 @@ namespace CoffeeCard.Models.Entities
         /// </summary>
         /// <value>Transaction Id</value>
         /// <example>186d2b31-ff25-4414-9fd1-bfe9807fa8b7</example>
-        public string TransactionId { get; set; }
+        public string? TransactionId { get; set; }
         
         // Status is nullable for migration purposes
         /// <summary>

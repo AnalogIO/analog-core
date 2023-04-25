@@ -17,11 +17,11 @@ namespace CoffeeCard.Models.Entities
         public int ProductId { get; set; }
         public bool IsUsed { get; set; }
 
-        [Column("Owner_Id")]
+        [Column(name: "Owner_Id")]
         public int OwnerId { get; set; }
         public virtual User Owner { get; set; }
 
-        [Column("Purchase_Id")]
+        [Column(name: "Purchase_Id")]
         public int PurchaseId { get; set; }
         public virtual Purchase Purchase { get; set; }
     }
