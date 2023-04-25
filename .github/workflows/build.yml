@@ -6,7 +6,6 @@ on:
       push_image:
         description: 'Push docker image to registry'
         required: false
-        default: false
         type: boolean
 
   workflow_dispatch:
@@ -27,3 +26,8 @@ jobs:
     name: Build infrastructure
     uses: ./.github/workflows/infra-build.yml
     secrets: inherit
+
+  sonarcloud:
+      name: SonarCloud
+      uses: ./.github/workflows/core-sonarcloud.yml
+      secrets: inherit
