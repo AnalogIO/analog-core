@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoffeeCard.Library.Migrations
 {
     [DbContext(typeof(CoffeeCardContext))]
-    [Migration("20230425181753_Update TransactionId, Change column names")]
-    partial class UpdateTransactionIdChangecolumnnames
+    [Migration("20230503203850_AzureMigration")]
+    partial class AzureMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -147,8 +147,9 @@ namespace CoffeeCard.Library.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PurchasedBy_Id")
-                        .HasColumnType("int");
+                    b.Property<int>("PurchasedById")
+                        .HasColumnType("int")
+                        .HasColumnName("PurchasedBy_Id");
 
                     b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
@@ -160,7 +161,9 @@ namespace CoffeeCard.Library.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.HasIndex("PurchasedBy_Id");
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("PurchasedById");
 
                     b.HasIndex("TransactionId");
 
@@ -187,12 +190,13 @@ namespace CoffeeCard.Library.Migrations
                     b.Property<int>("SwipeCount")
                         .HasColumnType("int");
 
-                    b.Property<int>("User_Id")
-                        .HasColumnType("int");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("User_Id");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("User_Id");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Statistics", "dbo");
                 });
@@ -246,12 +250,13 @@ namespace CoffeeCard.Library.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("User_Id")
-                        .HasColumnType("int");
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("User_Id");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("User_Id");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Tokens", "dbo");
                 });
@@ -291,8 +296,9 @@ namespace CoffeeCard.Library.Migrations
                     b.Property<bool>("PrivacyActivated")
                         .HasColumnType("bit");
 
-                    b.Property<int>("Programme_Id")
-                        .HasColumnType("int");
+                    b.Property<int>("ProgrammeId")
+                        .HasColumnType("int")
+                        .HasColumnName("Programme_Id");
 
                     b.Property<string>("Salt")
                         .IsRequired()
@@ -307,7 +313,7 @@ namespace CoffeeCard.Library.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Programme_Id");
+                    b.HasIndex("ProgrammeId");
 
                     b.ToTable("Users", "dbo");
                 });
@@ -333,23 +339,25 @@ namespace CoffeeCard.Library.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Product_Id")
-                        .HasColumnType("int");
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int")
+                        .HasColumnName("Product_Id");
 
                     b.Property<string>("Requester")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("User_Id")
-                        .HasColumnType("int");
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("User_Id");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.HasIndex("Product_Id");
+                    b.HasIndex("ProductId");
 
-                    b.HasIndex("User_Id");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Vouchers", "dbo");
                 });
@@ -404,11 +412,19 @@ namespace CoffeeCard.Library.Migrations
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.Purchase", b =>
                 {
-                    b.HasOne("CoffeeCard.Models.Entities.User", "PurchasedBy")
-                        .WithMany("Purchases")
-                        .HasForeignKey("PurchasedBy_Id")
+                    b.HasOne("CoffeeCard.Models.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("CoffeeCard.Models.Entities.User", "PurchasedBy")
+                        .WithMany("Purchases")
+                        .HasForeignKey("PurchasedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
 
                     b.Navigation("PurchasedBy");
                 });
@@ -417,7 +433,7 @@ namespace CoffeeCard.Library.Migrations
                 {
                     b.HasOne("CoffeeCard.Models.Entities.User", "User")
                         .WithMany("Statistics")
-                        .HasForeignKey("User_Id")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -447,9 +463,7 @@ namespace CoffeeCard.Library.Migrations
                 {
                     b.HasOne("CoffeeCard.Models.Entities.User", "User")
                         .WithMany("Tokens")
-                        .HasForeignKey("User_Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
@@ -458,7 +472,7 @@ namespace CoffeeCard.Library.Migrations
                 {
                     b.HasOne("CoffeeCard.Models.Entities.Programme", "Programme")
                         .WithMany("Users")
-                        .HasForeignKey("Programme_Id")
+                        .HasForeignKey("ProgrammeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -469,11 +483,13 @@ namespace CoffeeCard.Library.Migrations
                 {
                     b.HasOne("CoffeeCard.Models.Entities.Product", "Product")
                         .WithMany()
-                        .HasForeignKey("Product_Id");
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("CoffeeCard.Models.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("User_Id");
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Product");
 

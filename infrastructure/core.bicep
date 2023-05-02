@@ -41,7 +41,7 @@ module webapp 'modules/webapp.bicep' = {
     sharedResourceGroupName: sharedResourceGroupName
     applicationInsightsName: applicationInsights.name
     logAnalyticsWorkspaceId: logAnalyticsWorkspace.id
-    keyvaultName: keyvaultName
+    keyvaultName: keyvaultModule.outputs.keyvaultName
     appSettings: appSettings
     dockerRegistry: dockerRegistry
     keyVaultReferences: keyVaultReferences
@@ -76,9 +76,7 @@ module keyvaultModule 'modules/keyVault.bicep' = {
   }
 }
 
-var keyvaultName = keyvaultModule.outputs.keyvaultName
-
-@description('Built-in Key Vault Secrets User role. See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#key-vault-secrets-user')
+@description('Built-in Key Vault Secrets User role')
 resource keyvaultSecretUserRole 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
   scope: subscription()
   name: '4633458b-17de-408a-b874-0445c86b69e6'
@@ -90,5 +88,33 @@ module webappKeyvaultRoleAssignment 'modules/keyvaultRoleassignment.bicep' = {
     keyvaultName: keyvaultModule.outputs.keyvaultName
     roleDefinitionId: keyvaultSecretUserRole.id
     principalId: webapp.outputs.webappPrincipalId
+  }
+}
+
+resource keyvault 'Microsoft.KeyVault/vaults@2023-02-01' existing = {
+  name: keyvaultModule.outputs.keyvaultName
+}
+
+module availabilityTestPing 'modules/urlPingTest.bicep' = {
+  name: '${deployment().name}-${applicationPrefix}-pingtest'
+  scope: resourceGroup(sharedResourceGroupName)
+  params: {
+    testName: '${applicationPrefix}-ping'
+    url: 'https://${webapp.outputs.webappCustomDomainNameFqdn}/api/v2/health/ping'
+    apiKeyQueryParam: 'x-api-key'
+    apiKey: keyvault.getSecret('IdentitySettings-ApiKey')
+    applicationInsightsName: applicationInsights.name
+  }
+}
+
+module availabilityTestHealth 'modules/urlPingTest.bicep' = {
+  name: '${deployment().name}-${applicationPrefix}-healthtest'
+  scope: resourceGroup(sharedResourceGroupName)
+  params: {
+    testName: '${applicationPrefix}-healthcheck'
+    url: 'https://${webapp.outputs.webappCustomDomainNameFqdn}/api/v2/health/check'
+    apiKeyQueryParam: 'x-api-key'
+    apiKey: keyvault.getSecret('IdentitySettings-ApiKey')
+    applicationInsightsName: applicationInsights.name
   }
 }

@@ -15,6 +15,11 @@ resource sharedRg 'Microsoft.Resources/resourceGroups@2022-09-01' existing = {
 resource coreRg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
   name: 'rg-${organizationPrefix}-app-core-${environment}'
   location: location
+  tags: {
+    app: 'Analog Core'
+    env: environment
+    git: 'github.com/AnalogIO/analog-core'
+  }
 }
 
 module corewebapp 'core.bicep' = {

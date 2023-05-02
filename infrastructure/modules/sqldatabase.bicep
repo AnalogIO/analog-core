@@ -131,4 +131,13 @@ resource diagnosticSettingsSqldb 'Microsoft.Insights/diagnosticSettings@2021-05-
   }
 }
 
+resource preventDeleteLock 'Microsoft.Authorization/locks@2020-05-01' = {
+  name: 'PreventDeletion'
+  scope: sqlDatabase
+  properties: {
+    level: 'CanNotDelete'
+    notes: 'Prevent Deletion'
+  }
+}
+
 output sqlDatabaseConnectionString string = 'Server=tcp:${sqlServer.name}${az.environment().suffixes.sqlServerHostname};Authentication=Active Directory Default; Database=${sqlDatabase.name};Encrypt=True;TrustServerCertificate=False;'

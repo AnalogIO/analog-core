@@ -30,3 +30,5 @@ resource cname 'Microsoft.Network/dnsZones/CNAME@2018-05-01' = {
     }
   }
 }
+
+output customDomainFqdn string = cname.properties.fqdn

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CoffeeCard.Models.Entities
+namespace CoffeeCard.Models.DataTransferObjects.CoffeeCard
 {
     /// <summary>
     /// A CoffeeCard is a union datatype of a product and unused tickets associated with the product. 

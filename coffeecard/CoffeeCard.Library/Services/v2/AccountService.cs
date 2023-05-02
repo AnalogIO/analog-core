@@ -122,7 +122,7 @@ namespace CoffeeCard.Library.Services.v2
             var emailClaim = claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
             if (emailClaim == null) throw new ApiException("The token is invalid!", 401);
 
-            var user = await GetAccountByEmailAync(emailClaim.Value);
+            var user = await GetAccountByEmailAsync(emailClaim.Value);
             if (user == null) throw new ApiException("The user could not be found", 400);
 
             return user;
@@ -145,7 +145,7 @@ namespace CoffeeCard.Library.Services.v2
             Log.Information("Trying to verify deletion with token: {token}", token);
 
             var email = _tokenService.ValidateVerificationTokenAndGetEmail(token);
-            var user = await GetAccountByEmailAync(email);
+            var user = await GetAccountByEmailAsync(email);
 
             await AnonymizeUserAsync(user);
         }
@@ -167,12 +167,11 @@ namespace CoffeeCard.Library.Services.v2
             await _context.SaveChangesAsync();
         }
 
-        private async Task<User> GetAccountByEmailAync(string email)
+        private async Task<User> GetAccountByEmailAsync(string email)
         {
             var user = await _context.Users
-                .Include(x => x.Programme)
-                //.Include(x => x.Statistics)
-                .FirstOrDefaultAsync(x => x.Email == email);
+                .Where(u => u.Email == email)
+                .FirstOrDefaultAsync();
             if (user == null) throw new ApiException("No user found with the given email", 401);
 
             return user;

@@ -106,7 +106,7 @@ resource diagnosticSettingsWebApp 'Microsoft.Insights/diagnosticSettings@2021-05
 output webappPrincipalId string = webapp.identity.principalId
 
 module dns 'webappDns.bicep' = {
-  name: '${deployment().name}-core-dns'
+  name: '${deployment().name}-${applicationPrefix}-dns'
   scope: resourceGroup(sharedResourceGroupName)
   params: {
     environment: environment
@@ -142,3 +142,17 @@ module bindCertificate 'bindCustomDomainCertificate.bicep' = {
     certificate
   ]
 }
+
+resource preventDeleteLock 'Microsoft.Authorization/locks@2020-05-01' = {
+  name: 'PreventDeletion'
+  scope: webapp
+  properties: {
+    level: 'CanNotDelete'
+    notes: 'Prevent Deletion'
+  }
+}
+
+output webappDefaultHostNameFqdn string = webapp.properties.defaultHostName
+
+// Remove . (dot) from FQDN
+output webappCustomDomainNameFqdn string = take(dns.outputs.customDomainFqdn, length(dns.outputs.customDomainFqdn)-1)

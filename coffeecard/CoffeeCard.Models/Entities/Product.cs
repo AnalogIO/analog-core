@@ -9,17 +9,18 @@ namespace CoffeeCard.Models.Entities
     {
         public int Id { get; set; }
 
-        [Required] public int Price { get; set; }
+        public int Price { get; set; }
 
-        [Required] public int NumberOfTickets { get; set; }
+        public int NumberOfTickets { get; set; }
 
-        [Required] public string Name { get; set; }
+        public string Name { get; set; }
 
         public string Description { get; set; }
 
         public int ExperienceWorth { get; set; }
 
-        [Required] [DefaultValue(true)] public bool Visible { get; set; }
+        [DefaultValue(true)]
+        public bool Visible { get; set; } = true;
 
         public ICollection<ProductUserGroup> ProductUserGroup { get; set; }
 

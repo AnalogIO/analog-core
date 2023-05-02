@@ -35,9 +35,12 @@ namespace CoffeeCard.Models.Entities
         /// </summary>
         /// <value></value>
         /// <example>2</example>
-        
-        // FIXME: Foreign reference?
         public int ProductId { get; set; }
+
+        /// <summary>
+        /// Product purchases
+        /// </summary>
+        public Product Product { get; set; }
         
         /// <summary>
         /// Price for purchase in Danish kroner (kr)
@@ -91,8 +94,10 @@ namespace CoffeeCard.Models.Entities
         /// <example>Completed</example>
         public PurchaseStatus? Status { get; set; }
 
-        [ForeignKey("PurchasedBy_Id")]
-        public virtual User PurchasedBy { get; set; }
+        [Column(name: "PurchasedBy_Id")]
+        public int PurchasedById { get; set; }
+        
+        public User PurchasedBy { get; set; }
 
         public virtual ICollection<Ticket> Tickets { get; set; }
     }

@@ -1,8 +1,8 @@
 {
   "sqlServer": {
-    "skuCapacity": 10,
-    "skuName": "Standard",
-    "skuTier": "Standard"
+    "skuCapacity": 5,
+    "skuName": "Basic",
+    "skuTier": "Basic"
   },
   "webapp": {
     "dockerRegistry": "ghcr.io/analogio/coffeecard-api:develop",

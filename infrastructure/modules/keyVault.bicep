@@ -13,7 +13,7 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06
   scope: resourceGroup(sharedResourceGroupName)
 }
 
-resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
+resource keyvault 'Microsoft.KeyVault/vaults@2023-02-01' = {
   name: 'kv-${organizationPrefix}-${applicationPrefix}-${environment}'
   location: location
   properties: {
@@ -29,12 +29,13 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
     }
     enableSoftDelete: true
     enablePurgeProtection: true
+    enabledForTemplateDeployment: true
   }
 }
 
 resource diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
   name: 'Audit Logs'
-  scope: keyVault
+  scope: keyvault
   properties: {
     workspaceId: logAnalyticsWorkspace.id
     logs: [
@@ -46,4 +47,13 @@ resource diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-pr
   }
 }
 
-output keyvaultName string = keyVault.name
+var apiKeySecretName = 'IdentitySettings-ApiKey'
+resource apiKey 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
+  parent: keyvault
+  name: apiKeySecretName
+  properties: {
+    value: guid(apiKeySecretName)
+  }
+}
+
+output keyvaultName string = keyvault.name

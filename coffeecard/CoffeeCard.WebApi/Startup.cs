@@ -168,7 +168,7 @@ namespace CoffeeCard.WebApi
                         }
                     };
                 })
-                .AddApiKeyInHeader("apikey", options =>
+                .AddApiKeyInHeaderOrQueryParams("apikey", options =>
                 {
                     options.Realm = "Analog Core";
                     options.KeyName = "x-api-key";
