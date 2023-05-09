@@ -68,8 +68,8 @@ namespace CoffeeCard.WebApi.Controllers
         [AllowAnonymous]
         [ProducesResponseType(typeof(TokenDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiException), StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(typeof(ApiException), StatusCodes.Status429TooManyRequests)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status429TooManyRequests)]
         public ActionResult<TokenDto> Login([FromBody] LoginDto loginDto)
         {
             var token = _accountService.Login(loginDto.Email, loginDto.Password, loginDto.Version);
@@ -135,7 +135,7 @@ namespace CoffeeCard.WebApi.Controllers
         [HttpPost("forgotpassword")]
         [AllowAnonymous]
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiException), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> ForgotPasswordAsync([FromBody] EmailDto emailDTO)
         {
             await _accountService.ForgotPasswordAsync(emailDTO.Email);

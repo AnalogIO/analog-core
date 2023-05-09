@@ -65,7 +65,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [HttpDelete]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiException), StatusCodes.Status429TooManyRequests)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status429TooManyRequests)]
         public async Task<ActionResult> Delete()
         {
             var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
