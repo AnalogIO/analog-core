@@ -10,10 +10,10 @@ namespace CoffeeCard.MobilePay.Service.v2
         /// <summary>
         /// Register Webhook at MobilePay
         /// </summary>
-        /// <param name="url"></param>
-        /// <param name="events"></param>
+        /// <param name="url">Url which MobilePay will invoke webhook on</param>
+        /// <param name="events">Events which webhook should registered for</param>
         /// <returns>Response with Webhook Id</returns>
-        Task<SingleWebhookResponse> RegisterWebhook(string url, ICollection<string> events);
+        Task<SingleWebhookResponse> RegisterWebhook(string url, ICollection<Events> events);
 
         /// <summary>
         /// Get Webhook information from MobilePay
@@ -27,5 +27,14 @@ namespace CoffeeCard.MobilePay.Service.v2
         /// </summary>
         /// <param name="webhookId">Existing Webhook Id</param>
         Task DeregisterWebhook(Guid webhookId);
+
+        /// <summary>
+        /// Update Webhook at MobilePay
+        /// </summary>
+        /// <param name="webhookId">Existing Webhook Id</param>
+        /// <param name="url">Url which MobilePay will invoke webhook on</param>
+        /// <param name="events">Events which webhook should registered for</param>
+        /// <returns></returns>
+        Task<SingleWebhookResponse> UpdateWebhook(Guid webhookId, string url, ICollection<Events> events);
     }
 }

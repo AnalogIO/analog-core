@@ -13,9 +13,6 @@ namespace CoffeeCard.Common.Configuration
         public string ApiKey { get; set; }
         
         [Required]
-        public string ClientId { get; set; }
-        
-        [Required]
         public Guid PaymentPointId { get; set; }
         
         [Required]
