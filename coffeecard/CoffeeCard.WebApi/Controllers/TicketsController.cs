@@ -3,7 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Services;
+using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.DataTransferObjects.Ticket;
+using CoffeeCard.Models.DataTransferObjects.v2.Ticket;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,14 +23,18 @@ namespace CoffeeCard.WebApi.Controllers
     {
         private readonly IMapperService _mapperService;
         private readonly ITicketService _ticketService;
+        private readonly Library.Services.v2.ITicketService _ticketServiceV2;
+        private readonly ClaimsUtilities _claimsUtilities;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TicketsController"/> class.
         /// </summary>
-        public TicketsController(ITicketService ticketService, IMapperService mapperService)
+        public TicketsController(ITicketService ticketService, IMapperService mapperService, Library.Services.v2.ITicketService ticketServiceV2, ClaimsUtilities claimsUtilities)
         {
             _ticketService = ticketService;
             _mapperService = mapperService;
+            _ticketServiceV2 = ticketServiceV2;
+            _claimsUtilities = claimsUtilities;
         }
 
         /// <summary>
@@ -73,14 +79,15 @@ namespace CoffeeCard.WebApi.Controllers
         /// <response code="200">Successful request</response>
         /// <response code="400">Bad Request, not enough tickets. See explanation</response>
         /// <response code="401">Invalid credentials</response>
-        [ProducesResponseType(typeof(TicketDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(UsedTicketResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiException), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [HttpPost("use")]
-        public async Task<ActionResult<TicketDto>> Use([FromBody] UseTicketDTO dto)
+        public async Task<ActionResult<UsedTicketResponse>> Use([FromBody] UseTicketDTO dto)
         {
-            var usedTicket = await _ticketService.UseTicket(User.Claims, dto.ProductId);
-            return Ok(_mapperService.Map(usedTicket));
+            var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
+
+            return await _ticketServiceV2.UseTicketAsync(user, dto.ProductId);
         }
     }
 }
