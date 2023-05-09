@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -47,8 +48,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult> Webhook([FromBody] MobilePayWebhook request,
-            [FromHeader(Name = "x-mobilepay-signature")] string mpSignatureHeader)
+        public async Task<ActionResult> Webhook([FromBody]MobilePayWebhook request, [FromHeader(Name = "x-mobilepay-signature")] [Required] string mpSignatureHeader)
         {
             var isSignatureValid = await VerifySignature(mpSignatureHeader);
             if (!isSignatureValid)
