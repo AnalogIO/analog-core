@@ -7,7 +7,7 @@ namespace CoffeeCard.Library.Services.v2
         /// <summary>
         /// Get Webhook Signature Key used for signing all Webhook requests
         /// </summary>
-        Task<string> SignatureKey();
+        Task<string> GetSignatureKey();
         
         /// <summary>
         /// Ensure MobilePay Webhook is registered

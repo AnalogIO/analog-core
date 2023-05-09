@@ -9,6 +9,9 @@ namespace CoffeeCard.MobilePay.GenerateApi
     /// <summary>
     /// Generate MobilePay Api client from OpenApi specification files in the 'OpenApiSpecs' directory
     /// and stores the C# files in 'CoffeeCard.MobilePay\Generated\'
+    ///
+    /// MobilePay OpenApi specs are downloaded as yaml files from MobilePay Github repo https://github.com/MobilePayDev/MobilePayDev.github.io
+    /// and then converted to JSON files as this is the file format NSwag is expecting
     /// </summary>
     public static class Program
     {
