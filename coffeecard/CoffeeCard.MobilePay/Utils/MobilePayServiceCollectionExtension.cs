@@ -21,7 +21,7 @@ namespace CoffeeCard.MobilePay.Utils
         {
             mobilePaySettings.Validate();
             
-            var apiKeyAuthentication = new AuthenticationHeaderValue("bearer", mobilePaySettings.ApiKey);
+            var apiKeyAuthentication = new AuthenticationHeaderValue("Bearer", mobilePaySettings.ApiKey);
 
             services.AddHttpClient<PaymentsApi>(client =>
             {
