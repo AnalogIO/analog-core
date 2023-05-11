@@ -22,6 +22,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using NJsonSchema.Generation;
@@ -59,6 +60,9 @@ namespace CoffeeCard.WebApi
                 opt.UseSqlServer(databaseSettings.ConnectionString,
                     c => c.MigrationsHistoryTable("__EFMigrationsHistory", databaseSettings.SchemaName)));
 
+            // Setup cache
+            services.AddMemoryCache();
+            
             // Setup Dependency Injection
             services.AddSingleton(_environment);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -104,6 +108,9 @@ namespace CoffeeCard.WebApi
                     options.SerializerSettings.Converters.Add(new StringEnumConverter());
                     options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
                 });
+            
+            services.AddCors(options => options.AddDefaultPolicy(builder =>
+                builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
             services.AddApiVersioning(config =>
             {
@@ -231,6 +238,8 @@ namespace CoffeeCard.WebApi
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseCors();
 
             app.UseAuthentication();
             app.UseAuthorization();

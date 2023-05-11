@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
@@ -63,7 +63,7 @@ namespace CoffeeCard.WebApi.Controllers
         /// <response code="401">Invalid credentials</response>
         [HttpPost("useMultiple")]
         [ProducesResponseType(typeof(List<TicketDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<List<TicketDto>>> UseMultipleTickets([FromBody] UseMultipleTicketDto dto)
         {
@@ -80,7 +80,7 @@ namespace CoffeeCard.WebApi.Controllers
         /// <response code="400">Bad Request, not enough tickets. See explanation</response>
         /// <response code="401">Invalid credentials</response>
         [ProducesResponseType(typeof(UsedTicketResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiException), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [HttpPost("use")]
         public async Task<ActionResult<UsedTicketResponse>> Use([FromBody] UseTicketDTO dto)

@@ -5,38 +5,59 @@ using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
+using CoffeeCard.MobilePay.Generated.Api.WebhooksApi;
 using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Serilog;
 
 namespace CoffeeCard.Library.Services.v2
 {
     public class WebhookService : IWebhookService
     {
-        private static readonly ICollection<string> DefaultEvents = new List<string> {"payment.reserved", "payment.expired"}.AsReadOnly(); 
-        
+        private const string MpSignatureKeyCacheKey = "MpSignatureKey";
+
+        private static readonly ISet<Events> DefaultEvents = new HashSet<Events>
+            {Events.Payment_reserved, Events.Payment_expired, Events.Payment_cancelled_by_user};
+
         private readonly CoffeeCardContext _context;
         private readonly IMobilePayWebhooksService _mobilePayWebhooksService;
         private readonly MobilePaySettingsV2 _mobilePaySettings;
+        private readonly IMemoryCache _memoryCache;
 
-        private string _signatureKey;
-
-        public WebhookService(CoffeeCardContext context, IMobilePayWebhooksService mobilePayWebhooksService, MobilePaySettingsV2 mobilePaySettings)
+        public WebhookService(CoffeeCardContext context, IMobilePayWebhooksService mobilePayWebhooksService,
+            MobilePaySettingsV2 mobilePaySettings, IMemoryCache memoryCache)
         {
             _context = context;
             _mobilePayWebhooksService = mobilePayWebhooksService;
             _mobilePaySettings = mobilePaySettings;
+            _memoryCache = memoryCache;
         }
 
-        public async Task<string> SignatureKey()
+        /// <summary>
+        /// Get Mobile Pay Signature Key from Webhook configuration
+        /// Signature Key is cached as value rarely changes and is looked up often. Cache expires every 24 hours or not used for more than 2 hours
+        /// </summary>
+        /// <returns>Signature Key</returns>
+        public async Task<string> GetSignatureKey()
         {
-            if (_signatureKey == null)
+            if (!_memoryCache.TryGetValue(MpSignatureKeyCacheKey, out string signatureKey))
             {
-                await EnsureWebhookIsRegistered();
+                signatureKey = await _context.WebhookConfigurations.Where(w => w.Status == WebhookStatus.Active)
+                    .Select(w => w.SignatureKey).FirstAsync();
+
+                var cacheExpiryOptions = new MemoryCacheEntryOptions
+                {
+                    AbsoluteExpiration = DateTime.UtcNow.AddHours(24),
+                    SlidingExpiration = TimeSpan.FromHours(2)
+                };
+
+                Log.Information("Set {SignatureKey} in Cache", MpSignatureKeyCacheKey);
+                _memoryCache.Set(MpSignatureKeyCacheKey, signatureKey, cacheExpiryOptions);
             }
 
-            return _signatureKey;
+            return signatureKey;
         }
 
         public async Task EnsureWebhookIsRegistered()
@@ -63,16 +84,18 @@ namespace CoffeeCard.Library.Services.v2
                 if (!mobilePayWebhook.Url.Equals(_mobilePaySettings.WebhookUrl, StringComparison.OrdinalIgnoreCase))
                 {
                     await DisableAndRegisterNewWebhook(webhook);
+                    return;
                 }
-                
+
+                mobilePayWebhook = await _mobilePayWebhooksService.UpdateWebhook(mobilePayWebhook.WebhookId,
+                    _mobilePaySettings.WebhookUrl, DefaultEvents);
+
                 webhook.Url = mobilePayWebhook.Url;
                 webhook.SignatureKey = mobilePayWebhook.SignatureKey;
                 webhook.Status = WebhookStatus.Active;
                 webhook.LastUpdated = DateTime.UtcNow;
 
                 await _context.SaveChangesAsync();
-
-                _signatureKey = mobilePayWebhook.SignatureKey;
             }
             catch (EntityNotFoundException)
             {
@@ -90,7 +113,8 @@ namespace CoffeeCard.Library.Services.v2
 
         private async Task RegisterWebhook()
         {
-            var mobilePayWebhook = await _mobilePayWebhooksService.RegisterWebhook(_mobilePaySettings.WebhookUrl, DefaultEvents);
+            var mobilePayWebhook =
+                await _mobilePayWebhooksService.RegisterWebhook(_mobilePaySettings.WebhookUrl, DefaultEvents);
 
             var webhook = new WebhookConfiguration
             {
@@ -103,8 +127,6 @@ namespace CoffeeCard.Library.Services.v2
 
             await _context.WebhookConfigurations.AddAsync(webhook);
             await _context.SaveChangesAsync();
-            
-            _signatureKey = mobilePayWebhook.SignatureKey;
         }
     }
 }
