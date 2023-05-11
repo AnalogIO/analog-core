@@ -23,6 +23,8 @@ namespace CoffeeCard.MobilePay.Service.v2
         {
             try
             {
+                Log.Information("Register new webhook for Url: {url}, Events: {events}", url, events);
+                
                 return await _webhooksApi.CreateWebhookAsync( new CreateWebhookRequest
                 {
                     Events = events,
@@ -74,6 +76,8 @@ namespace CoffeeCard.MobilePay.Service.v2
         {
             var events3 = events.Select(MapEventsToEvents3).ToHashSet();
             
+            Log.Information("Sync webhook subscription. Webhook: {webhookId}, Url: {url}, subscribed webhook events: {events}", webhookId, url, events3);
+            
             try
             {
                 return await _webhooksApi.UpdateWebhookAsync(webhookId, new UpdateWebhookRequest
@@ -96,7 +100,7 @@ namespace CoffeeCard.MobilePay.Service.v2
             {
                 Events.Payment_cancelled_by_user => Events3.Payment_cancelled_by_user,
                 Events.Payment_expired => Events3.Payment_expired,
-                Events.Payment_reserved => Events3.Paymentpoint_activated,
+                Events.Payment_reserved => Events3.Payment_reserved,
                 Events.Paymentpoint_activated => Events3.Paymentpoint_activated,
                 Events.Transfer_succeeded => Events3.Transfer_succeeded,
                 _ => throw new ArgumentException($"Events value {events} not mapped to Events3")
