@@ -13,5 +13,10 @@ namespace CoffeeCard.Models.Entities
         public int SortPriority { get; set; }
         
         public virtual ICollection<User> Users { get; set; }
+
+        public override string ToString()
+        {
+            return $"{nameof(Id)}: {Id}, {nameof(ShortName)}: {ShortName}, {nameof(FullName)}: {FullName}, {nameof(SortPriority)}: {SortPriority}";
+        }
     }
 }

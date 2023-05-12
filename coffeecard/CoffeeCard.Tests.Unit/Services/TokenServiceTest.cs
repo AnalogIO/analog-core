@@ -36,7 +36,7 @@ namespace CoffeeCard.Tests.Unit.Services
             string salt = "salted"
         )
         {
-            return new User { Tokens = tokens, Email = email, Name = name, Password = password, Salt = salt };
+            return new User { Tokens = tokens, Email = email, Name = name, Password = password, Salt = salt, Programme = new Programme{ ShortName = "test", FullName = "tester", SortPriority = 1}};
         }
 
         [Fact(DisplayName = "ValidateToken given invalid token returns false")]

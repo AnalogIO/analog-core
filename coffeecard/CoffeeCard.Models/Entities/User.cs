@@ -47,6 +47,11 @@ namespace CoffeeCard.Models.Entities
         public virtual ICollection<Purchase> Purchases { get; set; } = new List<Purchase>();
         
         public virtual ICollection<Statistic> Statistics { get; set; } = new List<Statistic>();
+
+        public override string ToString()
+        {
+            return $"{nameof(Id)}: {Id}, {nameof(Email)}: {Email}, {nameof(Name)}: {Name}, {nameof(Password)}: {Password}, {nameof(Salt)}: {Salt}, {nameof(Experience)}: {Experience}, {nameof(DateCreated)}: {DateCreated}, {nameof(DateUpdated)}: {DateUpdated}, {nameof(IsVerified)}: {IsVerified}, {nameof(PrivacyActivated)}: {PrivacyActivated}, {nameof(UserGroup)}: {UserGroup}, {nameof(UserState)}: {UserState}, {nameof(ProgrammeId)}: {ProgrammeId}, {nameof(Programme)}: {Programme}";
+        }
     }
 
     public enum UserState
