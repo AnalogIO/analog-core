@@ -17,11 +17,11 @@
       },
       {
         "name": "MailgunSettings__Domain",
-        "value": "https://api.mailgun.net/v3"
+        "value": "mg.cafeanalog.dk"
       },
       {
         "name": "MailgunSettings__EmailBaseUrl",
-        "value": "https://core.dev.analogio.dk/"
+        "value": "https://core.dev.analogio.dk"
       },
       {
         "name": "MobilePaySettingsV2__ApiUrl",
