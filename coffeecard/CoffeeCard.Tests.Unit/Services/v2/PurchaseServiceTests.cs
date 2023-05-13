@@ -61,6 +61,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             {
                 Id = 1,
                 Name = "Product1",
+                Description = "desc",
                 Price = 100
             };
             context.Add(product1);
@@ -76,6 +77,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             {
                 Id = 2,
                 Name = "Product2",
+                Description = "desc",
                 Price = 100
             };
             context.Add(product2);
@@ -128,6 +130,9 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             {
                 Id = 1,
                 Name = "User1",
+                Email = "test@test.test",
+                Password = "pass",
+                Salt = "salt",
                 UserGroup = UserGroup.Customer,
             };
             context.Add(user);
@@ -136,6 +141,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             {
                 Id = 1,
                 Name = "Product1",
+                Description = "desc",
                 Price = 100
             };
             context.Add(product1);

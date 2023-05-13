@@ -25,8 +25,10 @@ namespace CoffeeCard.Library.Utils
             var userId = claims.FirstOrDefault(x => x.Type == Constants.UserId);
             if (userId == null) throw new ApiException("The token is invalid!", 401);
 
-            var user = await _context.Users.Include(x => x.Purchases)
-                .FirstOrDefaultAsync(x => x.Id == int.Parse(userId.Value));
+            var user = await _context.Users
+                .Where(u => u.Id == int.Parse(userId.Value))
+                .Include(x => x.Purchases)
+                .FirstOrDefaultAsync();
             if (user == null) throw new ApiException("The user could not be found", StatusCodes.Status404NotFound);
 
             return user;
@@ -38,7 +40,11 @@ namespace CoffeeCard.Library.Utils
             if (emailClaim == null) throw new ApiException("The token is invalid!", 401);
             var email = emailClaim.Value;
 
-            var user = await _context.Users.Include(x => x.Tokens).FirstOrDefaultAsync(x => x.Email == email);
+            var user = await _context.Users
+                .Where(u => u.Email == email)
+                .Include(u => u.Tokens)
+                .Include(u => u.Programme)
+                .FirstOrDefaultAsync();
             if (user == null) throw new ApiException("The user could not be found", StatusCodes.Status404NotFound);
 
             return user;

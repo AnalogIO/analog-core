@@ -27,14 +27,14 @@ namespace CoffeeCard.Models.DataTransferObjects.Programme
         /// </summary>
         /// <example>SWU</example>
         [Required]
-        public string ShortName { get; set; }
-        
+        public string ShortName { get; set; } = string.Empty;
+
         /// <summary>
         /// Full name of study programme
         /// </summary>
         /// <value>Full name</value>
         /// <example>Software development</example>
         [Required]
-        public string FullName { get; set; }
+        public string FullName { get; set; } = string.Empty;
     }
 }

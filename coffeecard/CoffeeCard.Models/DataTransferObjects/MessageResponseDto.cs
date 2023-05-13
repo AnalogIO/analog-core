@@ -15,6 +15,6 @@
         /// </summary>
         /// <value>Response</value>
         /// <example>Successful completion</example>
-        public string Message { get; set; }
+        public string? Message { get; set; }
     }
 }

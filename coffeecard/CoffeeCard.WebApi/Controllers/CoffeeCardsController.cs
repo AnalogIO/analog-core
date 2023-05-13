@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CoffeeCard.WebApi.Controllers
 {
+    // TODO: Deprecate this controller and clean up subsequents services if no App is using this
+    
     /// <summary>
     /// Controller for retrieving an account's coffee cards
     /// </summary>

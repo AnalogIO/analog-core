@@ -2,8 +2,15 @@
 {
     public class RefundResponse
     {
-        public Status Status { get; set; }
-        public string OrderId { get; set; }
+
+        public RefundResponse(string orderId, Status status)
+        {
+            OrderId = orderId;
+            Status = status;
+        }
+        public Status Status { get; }
+        public string OrderId { get; }
+
         public string? OriginalTransactionId { get; set; }
         public string? RefundTransactionId { get; set; }
         public double? Remainder { get; set; }

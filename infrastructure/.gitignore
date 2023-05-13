@@ -1,0 +1,3 @@
+# Ignore Json files
+azuredeploy.json
+.vscode

@@ -21,7 +21,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
         /// </summary>
         /// <value>Full Name</value>
         /// <example>John Doe</example>
-        public string Name { get; set; }
+        public string? Name { get; set; }
         
         /// <summary>
         /// Email of user
@@ -29,7 +29,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
         /// <value>Email</value>
         /// <example>john@doe.com</example>
         [EmailAddress]
-        public string Email { get; set; }
+        public string? Email { get; set; }
         
         /// <summary>
         /// Privacy Activated
@@ -50,6 +50,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
         /// </summary>
         /// <value>Pin code</value>
         /// <example>[no example provided]</example>
-        public string Password { get; set; }
+        public string? Password { get; set; }
     }
 }

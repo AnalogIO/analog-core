@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Models.Entities;
+using Serilog;
 
 namespace CoffeeCard.WebApi.Controllers.v2
 {
@@ -86,7 +87,9 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<UserResponse>> Get()
         {
-            var user = await _accountService.GetAccountByClaimsAsync(User.Claims);
+            var user = await _claimsUtilities.ValidateAndReturnUserFromEmailClaimAsync(User.Claims);
+
+            Log.Information("Extra logging: User {user}", user);
 
             return Ok(await UserWithRanking(user));
         }
@@ -105,7 +108,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<UserResponse>> Update([FromBody] UpdateUserRequest updateUserRequest)
         {
-            var user = await _accountService.GetAccountByClaimsAsync(User.Claims);
+            var user = await _claimsUtilities.ValidateAndReturnUserFromEmailClaimAsync(User.Claims);
             var updatedUser = await _accountService.UpdateAccountAsync(user, updateUserRequest);
 
             return Ok(await UserWithRanking(updatedUser));
@@ -133,16 +136,16 @@ namespace CoffeeCard.WebApi.Controllers.v2
             });
         }
 
-        private async Task<UserResponse> UserWithRanking(User user){
-            var leaderBoardPlacement = await _leaderboardService.GetLeaderboardPlacement(user);
+        private async Task<UserResponse> UserWithRanking(User user) {
+            var (total, semester, month) = await _leaderboardService.GetLeaderboardPlacement(user);
 
             return new UserResponse
             {
                 Id = user.Id,
                 Email = user.Email,
-                RankAllTime = leaderBoardPlacement.Total,
-                RankMonth = leaderBoardPlacement.Month,
-                RankSemester = leaderBoardPlacement.Semester,
+                RankAllTime = total,
+                RankMonth = month,
+                RankSemester = semester,
                 Name = user.Name,
                 Role = user.UserGroup.toUserRole(),
                 Programme = new ProgrammeResponse()
@@ -153,7 +156,6 @@ namespace CoffeeCard.WebApi.Controllers.v2
                 },
                 PrivacyActivated = user.PrivacyActivated,
             };
-            
         }
     }
 }

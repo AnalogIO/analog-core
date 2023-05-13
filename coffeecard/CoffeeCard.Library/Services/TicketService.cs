@@ -7,6 +7,7 @@ using CoffeeCard.Common;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services.v2;
+using CoffeeCard.Models.DataTransferObjects;
 using CoffeeCard.Models.DataTransferObjects.CoffeeCard;
 using CoffeeCard.Models.DataTransferObjects.Ticket;
 using CoffeeCard.Models.Entities;
@@ -136,7 +137,7 @@ namespace CoffeeCard.Library.Services
                     tp => tp.Product,
                     tp => tp.Ticket,
                     (product, tp) =>
-                        new Models.Entities.CoffeeCard
+                        new Models.DataTransferObjects.CoffeeCard.CoffeeCard
                         {
                             ProductId = product.Id,
                             Name = product.Name,
@@ -145,7 +146,7 @@ namespace CoffeeCard.Library.Services
                             TicketsLeft = tp.Count()
                         }).ToList();
 
-            var products = _productService.GetProductsForUserAsync(user).Result.Select(p => new Models.Entities.CoffeeCard
+            var products = _productService.GetProductsForUserAsync(user).Result.Select(p => new Models.DataTransferObjects.CoffeeCard.CoffeeCard
                 {ProductId = p.Id, Name = p.Name, Price = p.Price, Quantity = p.NumberOfTickets, TicketsLeft = 0}).ToList();
 
             var unionCoffeeCards = coffeeCards.Union(products, new CoffeeCardComparer());

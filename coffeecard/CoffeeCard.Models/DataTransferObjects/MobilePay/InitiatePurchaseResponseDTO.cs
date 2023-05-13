@@ -18,6 +18,6 @@ namespace CoffeeCard.Models.DataTransferObjects.MobilePay
         /// <value>Order id</value>
         /// <example>ae76a5ba-82e8-46d8-8431-6cbb3130b94a</example>
         [Required]
-        public string OrderId { get; set; }
+        public string OrderId { get; set; } = string.Empty;
     }
 }

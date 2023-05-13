@@ -24,7 +24,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 {
     public class AccountServiceTest
     {
-        private CoffeeCardContext CreateTestCoffeeCardContextWithName(String name)
+        private CoffeeCardContext CreateTestCoffeeCardContextWithName(string name)
         {
             var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
                 .UseInMemoryDatabase(name);
@@ -46,7 +46,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         {
             // Arrange
             var claims = new List<Claim>() { new Claim(ClaimTypes.Email, "test@test.test") };
-            var expected = new User() { Email = "test@test.test" };
+            var expected = new User() { Name = "User", Email = "test@test.test" };
             User result;
 
             using var context = CreateTestCoffeeCardContextWithName(nameof(GetAccountByClaimsReturnsUserClaimWithEmail));
@@ -67,7 +67,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         public async Task GetAccountByClaimsThrowsApiExceptionGivenInvalidClaim(IEnumerable<Claim> claims)
         {
             // Arrange
-            var validUser = new User() { Email = "test@test.test" };
+            var validUser = new User() { Name = "User", Email = "test@test.test" };
 
             using var context = CreateTestCoffeeCardContextWithName(nameof(GetAccountByClaimsThrowsApiExceptionGivenInvalidClaim) + claims.ToString());
             context.Users.Add(validUser);
@@ -113,7 +113,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var emailService = emailServiceMock.Object;
 
             var hashServiceMock = new Mock<IHashService>();
-            hashServiceMock.Setup(h => h.Hash(It.IsAny<String>())).Returns(expectedPass);
+            hashServiceMock.Setup(h => h.GenerateSalt()).Returns("");
+            hashServiceMock.Setup(h => h.Hash(password)).Returns(expectedPass);
             var hashService = hashServiceMock.Object;
 
             context.Programmes.Add(programme);
@@ -141,9 +142,14 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             using var context = CreateTestCoffeeCardContextWithName(nameof(RegisterAccountThrowsApiExceptionWithStatus409OnExistingEmail));
             context.Programmes.Add(programme);
             await context.SaveChangesAsync();
+
+            var hashservice = new Mock<IHashService>();
+            hashservice.Setup(h => h.GenerateSalt()).Returns("");
+            hashservice.Setup(h => h.Hash("pass")).Returns("");
+            
             // Act
             var accountService = new Library.Services.v2.AccountService(context, new Mock<ITokenService>().Object,
-                new Mock<IEmailService>().Object, new Mock<IHashService>().Object);
+                new Mock<IEmailService>().Object, hashservice.Object);
 
             // Assert
             // Register the first user
@@ -189,7 +195,6 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 PrivacyActivated = false,
                 Programme = programme
             };
-            User result;
 
             using var context = CreateTestCoffeeCardContextWithName(nameof(RegisterAccountSendsVerificationEmailOnlyValidInput));
             var emailServiceMock = new Mock<IEmailService>();
@@ -197,7 +202,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var emailService = emailServiceMock.Object;
 
             var hashServiceMock = new Mock<IHashService>();
-            hashServiceMock.Setup(h => h.Hash(It.IsAny<String>())).Returns(expectedPass);
+            hashServiceMock.Setup(h => h.GenerateSalt()).Returns("");
+            hashServiceMock.Setup(h => h.Hash("password")).Returns(expectedPass);
             var hashService = hashServiceMock.Object;
 
             context.Programmes.Add(programme);
@@ -205,7 +211,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             // Act
             var accountService = new Library.Services.v2.AccountService(context, new Mock<ITokenService>().Object,
                 emailService, hashService);
-            result = await accountService.RegisterAccountAsync("name", "email", "password", 1);
+            await accountService.RegisterAccountAsync("name", "email", "password", 1);
 
             // Assert
             // Verify an email would have been send for the first registration
@@ -355,7 +361,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         {
             // Arrange
             var userEmail = "test@test.test";
-            var user = new User(){
+            var user = new User{
                 Id = 1,
                 Name = "name",
                 Password = "pass",
@@ -364,7 +370,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 PrivacyActivated = false,
                 Email = userEmail ,
             };
-            var expected = new User(){
+            var expected = new User{
                 Id = 1,
                 Name = "",
                 Password = "",
@@ -374,20 +380,20 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 Email = "",
             };
 
-            using var context = CreateTestCoffeeCardContextWithName(nameof(AnonymizeAccountRemovesIdentifyableInformationFromUser));
+            await using var context = CreateTestCoffeeCardContextWithName(nameof(AnonymizeAccountRemovesIdentifyableInformationFromUser));
             context.Users.Add(user);
             await context.SaveChangesAsync();
 
             var tokenServiceMock = new Mock<ITokenService>();
-            tokenServiceMock.Setup(e => e.ValidateVerificationTokenAndGetEmail(It.IsAny<String>())).Returns(userEmail);
-            var tokenService = tokenServiceMock.Object;
+            tokenServiceMock.Setup(e => e.ValidateVerificationTokenAndGetEmail("test")).Returns(userEmail);
 
             // Act
-            var accountService = new Library.Services.v2.AccountService(context, tokenService,
+            var accountService = new Library.Services.v2.AccountService(context, tokenServiceMock.Object,
                 new Mock<IEmailService>().Object, new Mock<IHashService>().Object);
 
             await accountService.AnonymizeAccountAsync("test");
-            var result = await context.Users.FindAsync(1);
+            var result = await context.Users.Where(u => u.Id == user.Id).FirstAsync();
+            
             // Assert
             // Comparing specific properties instead of object since DateCreated would not be equals
             Assert.Equal(expected.Name, result.Name);

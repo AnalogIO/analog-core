@@ -42,7 +42,7 @@ namespace CoffeeCard.MobilePay.RefundConsoleApp.IO
         {
             var splitLine = lines.Split(",");
 
-            return splitLine.Select(line => new CompletedOrder {OrderId = line.Trim()}).ToList();
+            return splitLine.Select(line => new CompletedOrder(line.Trim())).ToList();
         }
     }
 }

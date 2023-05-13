@@ -35,8 +35,8 @@ namespace CoffeeCard.Models.DataTransferObjects.Purchase
         /// <value>Product name</value>
         /// <example>Coffee</example>
         [Required]
-        public string ProductName { get; set; }
-        
+        public string ProductName { get; set; } = string.Empty;
+
         /// <summary>
         /// Id of purchased product
         /// </summary>
@@ -83,14 +83,14 @@ namespace CoffeeCard.Models.DataTransferObjects.Purchase
         /// <value>Order id</value>
         /// <example>f5cb3e0f-3b9b-4f50-8c4f-a7450f300a5c</example>
         [Required]
-        public string OrderId { get; set; }
-        
+        public string OrderId { get; set; } = string.Empty;
+
         /// <summary>
         /// Transaction id at external payment provider
         /// </summary>
         /// <value>Transaction Id</value>
         /// <example>1482981489</example>
         [Required]
-        public string TransactionId { get; set; }
+        public string TransactionId { get; set; } = string.Empty;
     }
 }

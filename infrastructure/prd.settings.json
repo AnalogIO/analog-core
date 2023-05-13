@@ -1,0 +1,102 @@
+{
+  "sqlServer": {
+    "skuCapacity": 10,
+    "skuName": "Standard",
+    "skuTier": "Standard"
+  },
+  "webapp": {
+    "dockerRegistry": "ghcr.io/analogio/coffeecard-api:production",
+    "appSettings": [
+      {
+        "name": "EnvironmentSettings__EnvironmentType",
+        "value": "Production"
+      },
+      {
+        "name": "EnvironmentSettings__DeploymentUrl",
+        "value": "https://core.prd.analogio.dk/"
+      },
+      {
+        "name": "MailgunSettings__Domain",
+        "value": "mg.cafeanalog.dk"
+      },
+      {
+        "name": "MailgunSettings__EmailBaseUrl",
+        "value": "https://core.prd.analogio.dk"
+      },
+      {
+        "name": "MobilePaySettingsV2__ApiUrl",
+        "value": "https://api.mobilepay.dk/"
+      },
+      {
+        "name": "MobilePaySettingsV2__WebhookUrl",
+        "value": "https://core.prd.analogio.dk/api/v2/mobilepay/webhook"
+      },
+      {
+        "name": "EnvironmentSettings__MinAppVersion",
+        "value": "2.0.0"
+      },
+      {
+        "name": "MailgunSettings__MailgunApiUrl",
+        "value": "https://api.mailgun.net/v3"
+      },
+      {
+        "name": "LoginLimiterSettings__IsEnabled",
+        "value": true
+      },
+      {
+        "name": "LoginLimiterSettings__MaximumLoginAttemptsWithinTimeOut",
+        "value": "5"
+      },
+      {
+        "name": "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES",
+        "value": "Microsoft.AspNetCore.ApplicationInsights.HostingStartup"
+      }
+    ],
+    "keyVaultReferences": [
+      {
+        "name": "IdentityServerSettings__TokenKey",
+        "secretName": "IdentityServerSettings-TokenKey"
+      },
+      {
+        "name": "IdentitySettings__AdminToken",
+        "secretName": "IdentitySettings-AdminToken"
+      },
+      {
+        "name": "IdentitySettings__ApiKey",
+        "secretName": "IdentitySettings-ApiKey"
+      },
+      {
+        "name": "MailgunSettings__ApiKey",
+        "secretName": "MailgunSettings-ApiKey"
+      },
+      {
+        "name": "MobilePaySettings__MerchantId",
+        "secretName": "MobilePaySettings-MerchantId"
+      },
+      {
+        "name": "MobilePaySettings__SubscriptionKey",
+        "secretName": "MobilePaySettings-SubscriptionKey"
+      },
+      {
+        "name": "MobilePaySettings__CertificateName",
+        "secretName": "MobilePaySettings-CertificateName"
+      },
+      {
+        "name": "MobilePaySettings__CertificatePassword",
+        "secretName": "MobilePaySettings-CertificatePassword"
+      },
+      {
+        "name": "MobilePaySettingsV2__ApiKey",
+        "secretName": "MobilePaySettingsV2-ApiKey"
+      },
+      {
+        "name": "MobilePaySettingsV2__ClientId",
+        "secretName": "MobilePaySettingsV2-ClientId"
+      },
+      {
+        "name": "MobilePaySettingsV2__PaymentPointId",
+        "secretName": "MobilePaySettingsV2-PaymentPointId"
+      }
+    ]
+  }
+}

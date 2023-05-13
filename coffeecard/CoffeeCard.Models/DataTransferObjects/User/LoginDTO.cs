@@ -21,7 +21,7 @@ namespace CoffeeCard.Models.DataTransferObjects.User
         /// <example>john@doe.com</example>
         [Required]
         [EmailAddress]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         /// <summary>
         /// Pin Code as first UTF8 encoded, then SHA256 hashed, and then Base64 encoded string
@@ -29,7 +29,7 @@ namespace CoffeeCard.Models.DataTransferObjects.User
         /// <value>Pin code</value>
         /// <example>[no example provided]</example>
         [Required]
-        public string Password { get; set; }
+        public string Password { get; set; } = string.Empty;
 
         /// <summary>
         /// App version of device logging in
@@ -37,6 +37,6 @@ namespace CoffeeCard.Models.DataTransferObjects.User
         /// <value>App version</value>
         /// <example>2.1.0</example>
         [Required]
-        public string Version { get; set; }
+        public string Version { get; set; } = string.Empty;
     }
 }

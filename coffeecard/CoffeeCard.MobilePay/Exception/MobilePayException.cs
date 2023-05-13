@@ -20,8 +20,12 @@ namespace CoffeeCard.MobilePay.Exception
 
         protected MobilePayException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
-            _errorMessage = info.GetValue("ErrorMessage", typeof(IMobilePayErrorMessage)) as IMobilePayErrorMessage;
-            _httpStatusCode = (HttpStatusCode) info.GetValue("HttpStatusCode", typeof(HttpStatusCode));
+            var errorMessage = info.GetValue("ErrorMessage", typeof(IMobilePayErrorMessage)) as IMobilePayErrorMessage;
+            var statusCode =  info.GetValue("HttpStatusCode", typeof(HttpStatusCode));
+            ArgumentNullException.ThrowIfNull(errorMessage);
+            ArgumentNullException.ThrowIfNull(statusCode);
+            _errorMessage = errorMessage;
+            _httpStatusCode = (HttpStatusCode) statusCode;
         }
 
         public HttpStatusCode GetHttpStatusCode()
