@@ -11,11 +11,15 @@ namespace CoffeeCard.Models.Entities
         }
 
         public int Id { get; set; }
+        
         public string TokenHash { get; set; }
 
-        [ForeignKey("User_Id")] public virtual User User { get; set; }
+        [Column(name: "User_Id")]
+        public int? UserId { get; set; }
+        
+        public User? User { get; set; }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is Token newToken) return TokenHash.Equals(newToken.TokenHash);
             return false;

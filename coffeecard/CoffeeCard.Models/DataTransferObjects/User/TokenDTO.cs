@@ -15,6 +15,6 @@ namespace CoffeeCard.Models.DataTransferObjects.User
         /// </summary>
         /// <value>Bearer Token</value>
         /// <example>[no example provided]</example>
-        public string Token { get; set; }
+        public string? Token { get; set; }
     }
 }

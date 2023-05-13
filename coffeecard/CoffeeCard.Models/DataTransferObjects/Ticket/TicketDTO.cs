@@ -47,6 +47,6 @@ namespace CoffeeCard.Models.DataTransferObjects.Ticket
         /// <value>Product name</value>
         /// <example>Coffee</example>
         [Required]
-        public string ProductName { get; set; }
+        public string ProductName { get; set; } = string.Empty;
     }
 }

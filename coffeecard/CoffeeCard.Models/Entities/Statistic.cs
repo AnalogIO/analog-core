@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CoffeeCard.Models.Entities
 {
-
     /**
     * This class will be used to optimize the queries to get statistics.
     * The preset defines the kind of statistic entity and each preset has a corresponding `SwipeCount`, `SwipeRank` and `ExpiryDate`.
@@ -15,12 +14,18 @@ namespace CoffeeCard.Models.Entities
     public class Statistic
     {
         public int Id { get; set; }
+        
         public StatisticPreset Preset { get; set; }
+        
         public int SwipeCount { get; set; }
+        
         public DateTime LastSwipe { get; set; }
+        
         public DateTime ExpiryDate { get; set; }
 
-        [ForeignKey("User_Id")]
+        [Column(name: "User_Id")]
+        public int UserId { get; set; }
+
         public virtual User User { get; set; }
     }
 }

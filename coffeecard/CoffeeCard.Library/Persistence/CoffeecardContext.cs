@@ -62,42 +62,12 @@ namespace CoffeeCard.Library.Persistence
             modelBuilder.Entity<Purchase>()
                 .Property(p => p.Status)
                 .HasConversion<string>();
-            
-            if (_environmentSettings.EnvironmentType == EnvironmentType.LocalDevelopment)
-            {
-                SeedData(modelBuilder);
-            }
-        }
 
-        private void SeedData(ModelBuilder modelBuilder)
-        {
-            // Programmes
-            modelBuilder.Entity<Programme>().HasData(
-                new Programme() {Id = 1, ShortName = "SWU", FullName = "BSc Software Development"},
-                new Programme() {Id = 2, ShortName = "GBI", FullName = "BSc Global Business Informatics"},
-                new Programme() {Id = 3, ShortName = "BDDIT", FullName = "BSc Digital Design and Interactive Technologies"},
-                new Programme() {Id = 4, ShortName = "KDDIT", FullName = "MSc Digital Design and Interactive Technologies"},
-                new Programme() {Id = 5, ShortName = "DIM", FullName = "MSc Digital Innovation and Management"},
-                new Programme() {Id = 6, ShortName = "E-BUSS", FullName = "MSc E-Business"},
-                new Programme() {Id = 7, ShortName = "GAMES/DT", FullName = "MSc Games - Design and Theory"},
-                new Programme() {Id = 8, ShortName = "GAMES/Tech", FullName = "MSc Games - Technology"},
-                new Programme() {Id = 9, ShortName = "CS", FullName = "MSc Computer Science"},
-                new Programme() {Id = 10, ShortName = "SDT", FullName = "MSc Software Development (Design)"},
-                new Programme() {Id = 11, ShortName = "Employee", FullName = "Employee"},
-                new Programme() {Id = 12, ShortName = "Other", FullName = "Other"},
-                new Programme() {Id = 13, ShortName = "DS", FullName = "BSc Data Science"}
-            );
-            
-            // Products
-            modelBuilder.Entity<Product>().HasData(
-                new Product { Id = 1, Price = 80, NumberOfTickets = 10, Name = "Filter Coffee", Description = "Used for filter coffee brewed with fresh ground coffee", ExperienceWorth = 10, Visible = true },
-                new Product { Id = 2, Price = 150, NumberOfTickets = 10, Name = "Espresso Based", Description = "Used for specialities like espresso, cappuccino, caffe latte, cortado, americano and chai latte", ExperienceWorth = 150, Visible = true }
-            );
-
-            modelBuilder.Entity<ProductUserGroup>().HasData(
-                new ProductUserGroup {ProductId = 1, UserGroup = UserGroup.Customer},
-                new ProductUserGroup {ProductId = 2, UserGroup = UserGroup.Customer}
-            );
+            modelBuilder.Entity<Ticket>()
+                .HasOne<User>(t => t.Owner)
+                .WithMany(u => u.Tickets)
+                .HasForeignKey(t => t.OwnerId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

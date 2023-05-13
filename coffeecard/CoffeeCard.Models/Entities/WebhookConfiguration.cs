@@ -12,31 +12,26 @@ namespace CoffeeCard.Models.Entities
         /// Webhook Id at Mobile Pay
         /// </summary>
         [Key]
-        [Required]
         public Guid Id { get; set; }
         
         /// <summary>
         /// Url which webhook is registered for
         /// </summary>
-        [Required]
-        public string Url { get; set; }
-        
+        public string Url { get; set; } = string.Empty;
+
         /// <summary>
         /// Signature Key
         /// </summary>
-        [Required]
-        public string SignatureKey { get; set; }
+        public string SignatureKey { get; set; } = string.Empty;
 
         /// <summary>
         /// Webhook Status
         /// </summary>
-        [Required]
         public WebhookStatus Status { get; set; }
 
         /// <summary>
         /// Date Time Webhook Status was last updated
         /// </summary>
-        [Required]
         public DateTime LastUpdated { get; set; }
     }
     

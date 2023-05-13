@@ -30,8 +30,8 @@ namespace CoffeeCard.Models.DataTransferObjects.CoffeeCard
         /// <value>Product Name</value>
         /// <example>Filter Coffee</example>
         [Required]
-        public string Name { get; set; }
-        
+        public string Name { get; set; } = string.Empty;
+
         /// <summary>
         /// Remaining (if any) unused tickets left for product
         /// </summary>

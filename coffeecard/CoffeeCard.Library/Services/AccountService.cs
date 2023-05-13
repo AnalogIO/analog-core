@@ -264,24 +264,12 @@ namespace CoffeeCard.Library.Services
       return true;
     }
 
-    private async Task AnonymizeUser(User user)
-    {
-      user.Email = string.Empty;
-      user.Name = string.Empty;
-      user.Password = string.Empty;
-      user.Salt = string.Empty;
-      user.DateUpdated = DateTime.Now;
-      user.PrivacyActivated = true;
-      user.UserState = UserState.Deleted;
-      await _context.SaveChangesAsync();
-    }
-
     private User GetAccountByEmail(string email)
     {
       var user = _context.Users
-          .Include(x => x.Programme)
-          //.Include(x => x.Statistics)
-          .FirstOrDefault(x => x.Email == email);
+        .Where(u => u.Email == email)
+        .Include(x => x.Programme)
+        .FirstOrDefault();
       if (user == null) throw new ApiException("No user found with the given email", 401);
 
       return user;

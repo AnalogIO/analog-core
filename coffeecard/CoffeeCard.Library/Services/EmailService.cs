@@ -72,26 +72,6 @@ namespace CoffeeCard.Library.Services
             await SendEmailAsync(message);
         }
 
-        public async Task SendVerificationEmailForChangedEmail(User user, string token, string newEmail)
-        {
-            throw new NotImplementedException();
-            //TODO rethink current flow of updating emails. Currently the email is being updated in the database before an
-
-            //var message = new MimeMessage();
-            //var builder = RetrieveTemplate("email_verify_updatedemail.html");
-            //const string endpoint = ""; //TODO Endpoint does not currently exist, consider removing method
-            
-            //builder = BuildVerifyEmail(builder, token, user.Email, user.Name, endpoint);
-            //builder.HtmlBody = builder.HtmlBody.Replace("{newEmail}", newEmail);
-
-            //message.To.Add(new MailboxAddress(user.Name, user.Email));
-            //message.Subject = "Verify your new email for your Cafe Analog account";
-
-            //message.Body = builder.ToMessageBody();
-
-            //SendEmailAsync(message);
-        }
-
         public async Task SendVerificationEmailForLostPwAsync(User user, string token)
         {
             var message = new MimeMessage();

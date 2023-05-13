@@ -7,6 +7,8 @@ using Serilog;
 using System.Threading.Tasks;
 using CoffeeCard.Models.DataTransferObjects;
 using CoffeeCard.Models.DataTransferObjects.User;
+using System.Linq;
+using System.Security.Claims;
 
 namespace CoffeeCard.WebApi.Controllers
 {
@@ -100,6 +102,7 @@ namespace CoffeeCard.WebApi.Controllers
             userDto.RankAllTime = leaderBoardPlacement.Total;
             userDto.RankSemester = leaderBoardPlacement.Semester;
             userDto.RankMonth = leaderBoardPlacement.Month;
+            userDto.Role = user.UserGroup;
             return Ok(userDto);
         }
 

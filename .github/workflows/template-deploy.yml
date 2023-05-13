@@ -1,0 +1,77 @@
+name: Deployment template
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
+        description: "The environment to deploy to"
+        default: "dev"
+      subscriptionId:
+        type: string
+        required: true
+        description: "The Azure subscription ID to deploy to"
+        default: "analogio-dev"
+
+jobs:
+  deploy:
+    name: Azure Deployment
+    runs-on: ubuntu-22.04
+    environment:
+      name: ${{ inputs.environment }}
+      url: ${{ vars.AZURE_SUBSCRIPTION_URL }}
+    concurrency:
+      group: ${{ inputs.environment }}
+      cancel-in-progress: false
+
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: arm
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy ARM template
+        uses: azure/arm-deploy@v1
+        with:
+          subscriptionId: ${{ inputs.subscriptionId }}
+          scope: subscription
+          region: "West Europe"
+          template: azuredeploy.json
+          parameters: "environment=${{ inputs.environment }}"
+          deploymentName: "azuredeploy-${{github.run_number}}"
+          failOnStdErr: true
+      
+      - name: Deploy analog core
+        id: webapp-deploy
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ vars.AZURE_WEBAPP_NAME }}
+          images: "ghcr.io/analogio/coffeecard-api:${{ github.sha }}"
+  
+      - name: Invoke Web App CD Webhook
+        run: |
+          curl --location --request POST '${{ vars.AZURE_APPSERVICE_WEBHOOK_URL }}' --header 'Authorization: Basic ${{ secrets.AZURE_APPSERVICE_WEBHOOK_AUTH }}'
+  
+      - name: Smoke tests
+        uses: Azure/powershell@v1
+        with:
+          inlineScript: |
+            $apiKey = az keyvault secret show --name IdentitySettings-ApiKey --vault-name ${{ vars.KEY_VAULT_NAME }} | ConvertFrom-Json | Select -ExpandProperty value
+            $header = @{'x-api-key' = $apiKey}
+
+            Write-Host 'Running smoke tests' -ForegroundColor Yellow
+            Write-Host '- GET /api/v2/health/ping'
+            Invoke-RestMethod -Method Get -Uri ${{ steps.webapp-deploy.outputs.webapp-url }}/api/v2/health/ping -Headers $header -MaximumRetryCount 4 -RetryIntervalSec 15
+
+            Write-Host '- GET /api/v2/health/check'
+            Invoke-RestMethod -Method Get -Uri ${{ steps.webapp-deploy.outputs.webapp-url }}/api/v2/health/check -Headers $header -MaximumRetryCount 4 -RetryIntervalSec 15
+
+            Write-Host 'Smoke tests successful!' -ForegroundColor Green
+          failOnStandardError: true
+          azPSVersion: "latest"

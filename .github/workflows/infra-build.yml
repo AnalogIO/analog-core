@@ -1,0 +1,28 @@
+name: Build ARM template
+
+on:
+  workflow_call:
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build ARM template
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build ARM template
+        uses: Azure/bicep-build-action@v1.0.0
+        with:
+          bicepFilePath: infrastructure/azuredeploy.bicep
+          outputFilePath: azuredeploy.json
+
+      - name: Store ARM template
+        uses: actions/upload-artifact@v3
+        with:
+          name: arm
+          path: azuredeploy.json
+          retention-days: 1
+          if-no-files-found: error

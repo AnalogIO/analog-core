@@ -20,8 +20,8 @@ namespace CoffeeCard.Models.DataTransferObjects.Purchase
         /// <value>Name of issuer</value>
         /// <value>dann</value>
         [Required]
-        public string IssuedBy { get; set; }
-        
+        public string IssuedBy { get; set; } = string.Empty;
+
         /// <summary>
         /// User id who should receive the product
         /// </summary>

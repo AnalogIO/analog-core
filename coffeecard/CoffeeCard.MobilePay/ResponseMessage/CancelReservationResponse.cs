@@ -1,7 +1,3 @@
-﻿namespace CoffeeCard.MobilePay.ResponseMessage
-{
-    public sealed class CancelReservationResponse : IMobilePayApiResponse
-    {
-        public string TransactionId { get; set; }
-    }
-}
+﻿namespace CoffeeCard.MobilePay.ResponseMessage;
+
+public record CancelReservationResponse(string TransactionId) : IMobilePayApiResponse;
