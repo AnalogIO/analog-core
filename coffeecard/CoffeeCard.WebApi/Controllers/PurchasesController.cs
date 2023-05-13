@@ -1,16 +1,16 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using CoffeeCard.Common.Configuration;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Services;
 using CoffeeCard.Models.DataTransferObjects.Purchase;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Serilog;
 
 namespace CoffeeCard.WebApi.Controllers
 {
+    // TODO: Remove this Controller after June 2023
+    
     /// <summary>
     /// Controller for retrieving and issuing
     /// </summary>
@@ -20,33 +20,29 @@ namespace CoffeeCard.WebApi.Controllers
     [ApiController]
     public class PurchasesController : ControllerBase
     {
-        private readonly IdentitySettings _identitySettings;
         private readonly IMapperService _mapperService;
         private readonly IPurchaseService _purchaseService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PurchasesController"/> class.
         /// </summary>
-        public PurchasesController(IPurchaseService purchaseService, IMapperService mapper, IdentitySettings identitySettings)
+        public PurchasesController(IPurchaseService purchaseService, IMapperService mapper)
         {
             _purchaseService = purchaseService;
             _mapperService = mapper;
-            _identitySettings = identitySettings;
         }
 
         /// <summary>
         /// Returns a list of purchases for the given user via the supplied token in the header
         /// </summary>
         /// <returns>List of purchases</returns>
-        /// <response code="200">Successful request</response>
-        /// <response code="401">Invalid credentials</response>
+        /// <response code="410">Deprecated</response>
         [HttpGet]
-        [ProducesResponseType(typeof(List<PurchaseDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-        public ActionResult<List<PurchaseDto>> Get()
+        [Obsolete(message: "Replaced by Purchases API v2")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status410Gone)]
+        public ActionResult Get()
         {
-            var purchases = _purchaseService.GetPurchases(User.Claims);
-            return Ok(_mapperService.Map(purchases).OrderBy(p => p.DateCreated).ToList());
+            return StatusCode(StatusCodes.Status410Gone);
         }
 
         /// <summary>
@@ -73,20 +69,14 @@ namespace CoffeeCard.WebApi.Controllers
         /// </summary>
         /// <returns>Purchase description</returns>
         /// <param name="issueProduct"></param>
-        /// <returns></returns>
-        /// <response code="200">Successful request</response>
-        /// <response code="401">Invalid credentials</response>
+        /// <response code="410">Deprecated</response>
         [HttpPost("issueproduct")]
         [AllowAnonymous]
-        [ProducesResponseType(typeof(PurchaseDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-        public ActionResult<PurchaseDto> IssueProduct([FromBody] IssueProductDto issueProduct)
+        [Obsolete(message: "Replaced by Purchases API v2")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status410Gone)]
+        public ActionResult IssueProduct([FromBody] IssueProductDto issueProduct)
         {
-            var adminToken = Request.Headers.FirstOrDefault(x => x.Key == "admintoken").Value.FirstOrDefault();
-            Log.Information(adminToken);
-            if (adminToken != _identitySettings.AdminToken) throw new ApiException("AdminToken was invalid", StatusCodes.Status401Unauthorized);
-            var purchase = _purchaseService.IssueProduct(issueProduct);
-            return Ok(_mapperService.Map(purchase));
+            return StatusCode(StatusCodes.Status410Gone);
         }
     }
 }
