@@ -30,7 +30,7 @@ namespace CoffeeCard.Library.Services.v2
         /// </summary>
         /// <param name="user">User</param>
         /// <returns>Purchase details</returns>
-        Task<List<SimplePurchaseResponse>> GetPurchases(User user);
+        Task<IEnumerable<SimplePurchaseResponse>> GetPurchases(User user);
 
         /// <summary>
         /// Handle MobilePay webhook invocation and update purchase accordingly

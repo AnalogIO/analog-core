@@ -36,24 +36,17 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// Get all purchases
         /// </summary>
         /// <returns>List of purchases</returns>
-        /// <response code="200">All purchases</response>
-        /// <response code="204">No purchases</response>
+        /// <response code="200">Purchases</response>
         /// <response code="401">Invalid credentials</response>
         [HttpGet]
         [ProducesResponseType(typeof(List<SimplePurchaseResponse>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<List<SimplePurchaseResponse>>> GetAllPurchases()
+        public async Task<ActionResult<IEnumerable<SimplePurchaseResponse>>> GetAllPurchases()
         {
             var purchases = await _purchaseService.GetPurchases(await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims));
 
-            if (purchases.Any())
-            {
-                return Ok(purchases);
-            }
-
-            return NoContent();
+            return Ok(purchases);
         }
         
         /// <summary>
