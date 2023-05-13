@@ -21,6 +21,9 @@ jobs:
     environment:
       name: ${{ inputs.environment }}
       url: ${{ vars.AZURE_SUBSCRIPTION_URL }}
+    concurrency:
+      group: ${{ inputs.environment }}
+      cancel-in-progress: false
 
     steps:
       - name: Download Artifact
@@ -64,10 +67,10 @@ jobs:
 
             Write-Host 'Running smoke tests' -ForegroundColor Yellow
             Write-Host '- GET /api/v2/health/ping'
-            Invoke-RestMethod -Method Get -Uri ${{ steps.webapp-deploy.outputs.webapp-url }}/api/v2/health/ping -Headers $header -MaximumRetryCount 3 -RetryIntervalSec 10
+            Invoke-RestMethod -Method Get -Uri ${{ steps.webapp-deploy.outputs.webapp-url }}/api/v2/health/ping -Headers $header -MaximumRetryCount 4 -RetryIntervalSec 15
 
             Write-Host '- GET /api/v2/health/check'
-            Invoke-RestMethod -Method Get -Uri ${{ steps.webapp-deploy.outputs.webapp-url }}/api/v2/health/check -Headers $header -MaximumRetryCount 3 -RetryIntervalSec 10
+            Invoke-RestMethod -Method Get -Uri ${{ steps.webapp-deploy.outputs.webapp-url }}/api/v2/health/check -Headers $header -MaximumRetryCount 4 -RetryIntervalSec 15
 
             Write-Host 'Smoke tests successful!' -ForegroundColor Green
           failOnStandardError: true
