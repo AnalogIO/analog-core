@@ -11,11 +11,6 @@ namespace CoffeeCard.Models.Entities
     [Index(nameof(TransactionId))]
     public class Purchase
     {
-        public Purchase()
-        {
-            DateCreated = DateTime.UtcNow;
-        }
-
         /// <summary>
         /// Purchase Id
         /// </summary>
@@ -61,7 +56,7 @@ namespace CoffeeCard.Models.Entities
         /// </summary>
         /// <value>Purchase DateCreated</value>
         /// <example>???</example>
-        public DateTime DateCreated { get; set; }
+        public DateTime DateCreated { get; set; } = DateTime.UtcNow;
         
         /// <summary>
         /// Purchase completed

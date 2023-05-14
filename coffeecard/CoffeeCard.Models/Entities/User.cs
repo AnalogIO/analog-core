@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace CoffeeCard.Models.Entities
 {
+    [Index(nameof(Email))]
     public class User
     {
         public int Id { get; set; }
