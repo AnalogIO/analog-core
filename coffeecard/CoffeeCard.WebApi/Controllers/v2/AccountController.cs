@@ -60,19 +60,19 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <summary>
         /// Request the deletion of the user coupled to the provided token
         /// </summary>
-        /// <response code="204">Successful initiation of account deletion process</response>
+        /// <response code="202">Successful initiation of account deletion process</response>
         /// <response code="404">Account not found</response>
         /// <response code="401">Invalid credentials</response>
         [HttpDelete]
-        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status429TooManyRequests)]
         public async Task<ActionResult> Delete()
         {
             var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
-
             await _accountService.RequestAnonymizationAsync(user);
-            return NoContent();
+            
+            return StatusCode(StatusCodes.Status202Accepted);
         }
 
 

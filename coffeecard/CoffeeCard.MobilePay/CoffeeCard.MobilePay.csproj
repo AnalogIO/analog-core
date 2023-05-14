@@ -18,4 +18,7 @@
     <ProjectReference Include="..\CoffeeCard.Common\CoffeeCard.Common.csproj" />
     <ProjectReference Include="..\CoffeeCard.Models\CoffeeCard.Models.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ErrorMessage\" />
+  </ItemGroup>
 </Project>

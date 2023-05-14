@@ -7,8 +7,6 @@ using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services;
 using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Library.Utils;
-using CoffeeCard.MobilePay.Client;
-using CoffeeCard.MobilePay.Service.v1;
 using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.MobilePay.Utils;
 using CoffeeCard.WebApi.Helpers;
@@ -81,11 +79,8 @@ namespace CoffeeCard.WebApi
             services.AddScoped<Library.Services.IProductService, Library.Services.ProductService>();
             services.AddScoped<Library.Services.v2.IProductService, Library.Services.v2.ProductService>();
             services.AddScoped<ITicketService, TicketService>();
-            services.AddScoped<IMobilePayService, MobilePayService>();
             services.AddScoped<Library.Services.ILeaderboardService, Library.Services.LeaderboardService>();
-            services.AddScoped<IAppConfigService, AppConfigService>();
             services.AddScoped<ClaimsUtilities>();
-            services.AddHttpClient<IMobilePayApiHttpClient, MobilePayApiHttpClient>();
             services.AddSingleton(_environment.ContentRootFileProvider);
 
             services.AddScoped<Library.Services.v2.IPurchaseService, Library.Services.v2.PurchaseService>();

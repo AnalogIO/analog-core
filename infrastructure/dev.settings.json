@@ -70,28 +70,8 @@
         "secretName": "MailgunSettings-ApiKey"
       },
       {
-        "name": "MobilePaySettings__MerchantId",
-        "secretName": "MobilePaySettings-MerchantId"
-      },
-      {
-        "name": "MobilePaySettings__SubscriptionKey",
-        "secretName": "MobilePaySettings-SubscriptionKey"
-      },
-      {
-        "name": "MobilePaySettings__CertificateName",
-        "secretName": "MobilePaySettings-CertificateName"
-      },
-      {
-        "name": "MobilePaySettings__CertificatePassword",
-        "secretName": "MobilePaySettings-CertificatePassword"
-      },
-      {
         "name": "MobilePaySettingsV2__ApiKey",
         "secretName": "MobilePaySettingsV2-ApiKey"
-      },
-      {
-        "name": "MobilePaySettingsV2__ClientId",
-        "secretName": "MobilePaySettingsV2-ClientId"
       },
       {
         "name": "MobilePaySettingsV2__PaymentPointId",
