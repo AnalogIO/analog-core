@@ -80,7 +80,7 @@ namespace CoffeeCard.Library.Services.v2
 
             return _context.Statistics
                 .Where(s => s.Preset == statPreset)
-                .Where(s => DateTime.UtcNow < s.ExpiryDate)
+                .Where(s => _dateTimeProvider.UtcNow() <= s.ExpiryDate)
                 .OrderByDescending(s => s.SwipeCount)
                 .ThenBy(s => s.LastSwipe);
         }
