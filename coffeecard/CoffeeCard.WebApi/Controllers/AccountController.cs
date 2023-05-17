@@ -7,8 +7,6 @@ using Serilog;
 using System.Threading.Tasks;
 using CoffeeCard.Models.DataTransferObjects;
 using CoffeeCard.Models.DataTransferObjects.User;
-using System.Linq;
-using System.Security.Claims;
 
 namespace CoffeeCard.WebApi.Controllers
 {
@@ -23,17 +21,15 @@ namespace CoffeeCard.WebApi.Controllers
     {
         private readonly IAccountService _accountService;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ILeaderboardService _leaderboardService;
         private readonly IMapperService _mapperService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
         /// </summary>
-        public AccountController(IAccountService accountService, ILeaderboardService leaderboardService,
+        public AccountController(IAccountService accountService,
             IMapperService mapperService, IHttpContextAccessor httpContextAccessor)
         {
             _accountService = accountService;
-            _leaderboardService = leaderboardService;
             _mapperService = mapperService;
             _httpContextAccessor = httpContextAccessor;
         }
@@ -89,21 +85,12 @@ namespace CoffeeCard.WebApi.Controllers
         /// Returns basic data about the account
         /// </summary>
         /// <returns>Account information</returns>
-        /// <response code="200">Successful request</response>
-        /// <response code="401">Invalid credentials</response>
+        /// <response code="410">Deprecated</response>
         [HttpGet]
-        [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status410Gone)]
         public ActionResult<UserDto> Get()
         {
-            var user = _accountService.GetAccountByClaims(User.Claims);
-            var userDto = _mapperService.Map(user);
-            var leaderBoardPlacement = _leaderboardService.GetLeaderboardPlacement(user);
-            userDto.RankAllTime = leaderBoardPlacement.Total;
-            userDto.RankSemester = leaderBoardPlacement.Semester;
-            userDto.RankMonth = leaderBoardPlacement.Month;
-            userDto.Role = user.UserGroup;
-            return Ok(userDto);
+            return StatusCode(StatusCodes.Status410Gone);
         }
 
         /// <summary>
@@ -113,20 +100,12 @@ namespace CoffeeCard.WebApi.Controllers
         /// <param name="updateUserDto">Update account information request. All properties are optional as the server only
         /// updates the values of the properties which are present</param>
         /// <returns>Account information</returns>
-        /// <response code="200">Successful request</response>
-        /// <response code="401">Invalid credentials</response>
+        /// <response code="410">Deprecated</response>
         [HttpPut]
-        [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status410Gone)]
         public ActionResult<UserDto> Update([FromBody] UpdateUserDto updateUserDto)
         {
-            var user = _accountService.UpdateAccount(User.Claims, updateUserDto);
-            var leaderBoardPlacement = _leaderboardService.GetLeaderboardPlacement(user);
-            var userDto = _mapperService.Map(user);
-            userDto.RankAllTime = leaderBoardPlacement.Total;
-            userDto.RankSemester = leaderBoardPlacement.Semester;
-            userDto.RankMonth = leaderBoardPlacement.Month;
-            return Ok(userDto);
+            return StatusCode(StatusCodes.Status410Gone);
         }
 
         /// <summary>
