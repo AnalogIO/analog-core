@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,18 +23,19 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task<IEnumerable<LeaderboardEntry>> GetTopLeaderboardEntries(LeaderboardPreset preset, int top)
         {
-            var allStatisticsByPreset = await _context.Statistics
-                .Where(s => s.Preset == preset.ToStatisticPreset())
-                .Include(s => s.User)
-                .ToListAsync();
+            var statPreset = preset.ToStatisticPreset();
+            var (start, end) = PresetStartAndEnd(statPreset);
 
-            var topStatistics = allStatisticsByPreset
-                .Where(IsSwipeValid)
+            var sortedStatistics = _context.Statistics
+                .Where(s => s.Preset == statPreset)
+                .Where(s => start < s.LastSwipe && s.LastSwipe < end)
                 .OrderByDescending(s => s.SwipeCount)
                 .ThenBy(s => s.LastSwipe)
-                .Take(top);
+                .Take(top)
+                .Include(s => s.User)
+                .AsEnumerable();
 
-            return topStatistics.Select((s, index) => new LeaderboardEntry
+            return sortedStatistics.Select((s, index) => new LeaderboardEntry
             {
                 Id = s.User.Id,
                 Name = s.User.PrivacyActivated ? "Anonymous" : s.User.Name,
@@ -44,27 +46,22 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task<LeaderboardEntry> GetLeaderboardEntry(User user, LeaderboardPreset preset)
         {
-            var allStatisticsByPreset = await _context.Statistics
-                .Where(s => s.Preset == preset.ToStatisticPreset())
-                .Include(s => s.User)
-                .ToListAsync();
+            var statPreset = preset.ToStatisticPreset();
+            var (start, end) = PresetStartAndEnd(statPreset);
 
-            var sortedStatistics = allStatisticsByPreset
-                .Where(IsSwipeValid)
+            var sortedStatistics = await _context.Statistics
+                .Where(s => s.Preset == statPreset)
+                .Where(s => start < s.LastSwipe && s.LastSwipe < end)
                 .OrderByDescending(s => s.SwipeCount)
                 .ThenBy(s => s.LastSwipe)
-                .ToList();
+                .ToListAsync();
 
             var rank = sortedStatistics
-                .FindIndex(s => s.User.Id == user.Id) + 1;
+                .FindIndex(s => s.UserId == user.Id) + 1;
             var userStatistic = sortedStatistics
-                .FirstOrDefault(s => s.User.Id == user.Id);
+                .FirstOrDefault(s => s.UserId == user.Id);
 
-            var swipeCount = 0;
-            if (userStatistic != null)
-            {
-                swipeCount = userStatistic.SwipeCount;
-            }
+            var swipeCount = userStatistic?.SwipeCount ?? 0;
 
             return new LeaderboardEntry
             {
@@ -94,15 +91,15 @@ namespace CoffeeCard.Library.Services.v2
         }
         
 
-        private bool IsSwipeValid(Statistic s)
+        private (DateTime, DateTime) PresetStartAndEnd(StatisticPreset preset)
         {
             var now = _dateTimeProvider.UtcNow();
 
-            return s.Preset switch
+            return preset switch
             {
-                StatisticPreset.Semester => SemesterUtils.IsSwipeValidInSemester(s.LastSwipe, now),
-                StatisticPreset.Monthly => SemesterUtils.IsSwipeValidInMonth(s.LastSwipe, now),
-                _ => true // For StatisticPreset.Total a swipe does not expire
+                StatisticPreset.Semester => SemesterUtils.GetSemesterStartAndEnd(now),
+                StatisticPreset.Monthly => SemesterUtils.GetMonthStartAndEnd(now),
+                _ => (DateTime.UnixEpoch, DateTime.UtcNow.AddDays(1))// For StatisticPreset.Total a swipe does not expire
             };
         }
     }

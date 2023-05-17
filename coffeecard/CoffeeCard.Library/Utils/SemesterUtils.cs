@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace CoffeeCard.Library.Utils
 {
@@ -36,9 +36,11 @@ namespace CoffeeCard.Library.Utils
         /// <param name="lastSwipe">Last swipe</param>
         /// <param name="now">Current DateTime</param>
         /// <returns>Valid if the year and month of lastSwipe is equal to now's year and month, else expired</returns>
-        public static bool IsSwipeValidInMonth(DateTime lastSwipe, DateTime now)
+        public static (DateTime, DateTime) GetMonthStartAndEnd(DateTime now)
         {
-            return lastSwipe.Year == now.Year && lastSwipe.Month == now.Month;
+            var startDate = new DateTime(now.Year, now.Month, 1);
+            var endDate = startDate.AddMonths(1).AddDays(-1);
+            return (startDate, endDate);
         }
 
         /// <summary>
@@ -47,9 +49,9 @@ namespace CoffeeCard.Library.Utils
         /// <param name="lastSwipe">Last swipe</param>
         /// <param name="now">Current DateTime</param>
         /// <returns>Valid if last swipe is equal to or within semester start and end, else expired</returns>
-        public static bool IsSwipeValidInSemester(DateTime lastSwipe, DateTime now)
+        public static (DateTime, DateTime) GetSemesterStartAndEnd(DateTime now)
         {
-            return lastSwipe >= GetSemesterStart(now) && lastSwipe <= GetSemesterEnd(now);
+            return (GetSemesterStart(now), GetSemesterEnd(now));
         }
     }
 }
