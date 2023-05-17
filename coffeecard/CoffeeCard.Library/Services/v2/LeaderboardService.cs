@@ -23,14 +23,7 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task<IEnumerable<LeaderboardEntry>> GetTopLeaderboardEntries(LeaderboardPreset preset, int top)
         {
-            var statPreset = preset.ToStatisticPreset();
-            var (start, end) = PresetStartAndEnd(statPreset);
-
-            var sortedStatistics = _context.Statistics
-                .Where(s => s.Preset == statPreset)
-                .Where(s => start < s.LastSwipe && s.LastSwipe < end)
-                .OrderByDescending(s => s.SwipeCount)
-                .ThenBy(s => s.LastSwipe)
+            var sortedStatistics = GetSortedStatistics(preset)
                 .Take(top)
                 .Include(s => s.User)
                 .AsEnumerable();
@@ -46,15 +39,7 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task<LeaderboardEntry> GetLeaderboardEntry(User user, LeaderboardPreset preset)
         {
-            var statPreset = preset.ToStatisticPreset();
-            var (start, end) = PresetStartAndEnd(statPreset);
-
-            var sortedStatistics = await _context.Statistics
-                .Where(s => s.Preset == statPreset)
-                .Where(s => start < s.LastSwipe && s.LastSwipe < end)
-                .OrderByDescending(s => s.SwipeCount)
-                .ThenBy(s => s.LastSwipe)
-                .ToListAsync();
+            var sortedStatistics = await GetSortedStatistics(preset).ToListAsync();
 
             var rank = sortedStatistics
                 .FindIndex(s => s.UserId == user.Id) + 1;
@@ -89,18 +74,15 @@ namespace CoffeeCard.Library.Services.v2
 
             return leaderBoardPlacement;
         }
-        
 
-        private (DateTime, DateTime) PresetStartAndEnd(StatisticPreset preset)
-        {
-            var now = _dateTimeProvider.UtcNow();
+        private IOrderedQueryable<Statistic> GetSortedStatistics(LeaderboardPreset preset){
+            var statPreset = preset.ToStatisticPreset();
 
-            return preset switch
-            {
-                StatisticPreset.Semester => SemesterUtils.GetSemesterStartAndEnd(now),
-                StatisticPreset.Monthly => SemesterUtils.GetMonthStartAndEnd(now),
-                _ => (DateTime.UnixEpoch, DateTime.UtcNow.AddDays(1))// For StatisticPreset.Total a swipe does not expire
-            };
+            return _context.Statistics
+                .Where(s => s.Preset == statPreset)
+                .Where(s => DateTime.UtcNow < s.ExpiryDate)
+                .OrderByDescending(s => s.SwipeCount)
+                .ThenBy(s => s.LastSwipe);
         }
     }
 }
