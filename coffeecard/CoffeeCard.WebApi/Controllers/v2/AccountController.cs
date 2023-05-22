@@ -18,7 +18,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
     /// </summary>
     [ApiController]
     [ApiVersion("2")]
-    [Route("api/v{version:apiVersion}/account")]
+    [Route("api/v2/account")]
     [Authorize]
     public class AccountController : ControllerBase
     {
@@ -29,7 +29,8 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
         /// </summary>
-        public AccountController(IAccountService accountService, ClaimsUtilities claimsUtilities, ILeaderboardService leaderboardService)
+        public AccountController(IAccountService accountService, ClaimsUtilities claimsUtilities,
+            ILeaderboardService leaderboardService)
         {
             _accountService = accountService;
             _claimsUtilities = claimsUtilities;
@@ -48,9 +49,10 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status409Conflict)]
         public async Task<ActionResult<MessageResponseDto>> Register([FromBody] RegisterAccountRequest registerRequest)
         {
-            await _accountService.RegisterAccountAsync(registerRequest.Name, registerRequest.Email, registerRequest.Password, registerRequest.ProgrammeId);
+            await _accountService.RegisterAccountAsync(registerRequest.Name, registerRequest.Email,
+                registerRequest.Password, registerRequest.ProgrammeId);
 
-            return Created("/api/v1/account/Get", new MessageResponseDto()
+            return Created("/api/v2/account/Get", new MessageResponseDto
             {
                 Message =
                     "Your user has been created! Please check your email to verify your account.\n(Check your spam folder!)"
@@ -130,10 +132,31 @@ namespace CoffeeCard.WebApi.Controllers.v2
         public async Task<ActionResult<EmailExistsResponse>> EmailExists([FromBody] EmailExistsRequest request)
         {
             var emailInUse = await _accountService.EmailExistsAsync(request.Email);
-            return Ok(new EmailExistsResponse()
+            return Ok(new EmailExistsResponse
             {
                 EmailExists = emailInUse
             });
+        }
+
+        /// <summary>
+        /// Resend account verification email if account is not already verified
+        /// </summary>
+        /// <param name="request">Email to be verified</param>
+        /// <response code="200">Email has been sent</response>
+        /// <response code="404">Email not found</response>
+        /// <response code="409">Account already verified</response>
+        [HttpPost]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status409Conflict)]
+        [Route("resend-verification-email")]
+        public async Task<ActionResult> ResendVerificationEmail(
+            [FromBody] ResendAccountVerificationEmailRequest request)
+        {
+            await _accountService.ResendAccountVerificationEmail(request);
+
+            return Ok();
         }
 
         private async Task<UserResponse> UserWithRanking(User user)
