@@ -14,7 +14,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
     /// Controller for health checks
     /// </summary>
     [ApiVersion("2")]
-    [Route("api/v{version:apiVersion}/health")]
+    [Route("api/v2/health")]
     [ApiController]
     [Authorize(AuthenticationSchemes = "apikey")]
     public class HealthController : ControllerBase

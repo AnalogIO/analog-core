@@ -36,8 +36,9 @@ namespace CoffeeCard.Library.Services.v2
         public async Task<InitiatePurchaseResponse> InitiatePurchase(InitiatePurchaseRequest initiateRequest, User user)
         {
             var product = await _productService.GetProductAsync(initiateRequest.ProductId);
+            CheckUserIsAllowedToPurchaseProduct(user, initiateRequest, product);        
             
-            CheckUserIsAllowedToPurchaseProduct(user, initiateRequest, product);           
+            Log.Information("Initiating purchase of ProductId {ProductId}, PaymentType {PurchaseType} by UserId {UserId}", initiateRequest.ProductId, initiateRequest.PaymentType, user.Id);
 
             var (purchase, paymentDetails) = await InitiatePaymentAsync(initiateRequest, product, user);
             
@@ -46,6 +47,7 @@ namespace CoffeeCard.Library.Services.v2
             
             if (purchase.Status == PurchaseStatus.Completed)
             {
+                Log.Information("Purchase {PurchaseId} has state Completed. Issues tickets", purchase.Id);
                 await _ticketService.IssueTickets(purchase);
             }
 
@@ -107,7 +109,7 @@ namespace CoffeeCard.Library.Services.v2
                     });
                     
                     purchaseStatus = PurchaseStatus.PendingPayment;
-                    transactionId = (paymentDetails as MobilePayPaymentDetails).PaymentId;
+                    transactionId = ((MobilePayPaymentDetails) paymentDetails).PaymentId;
                     
                     break;
                 case PaymentType.FreePurchase:
@@ -238,6 +240,8 @@ namespace CoffeeCard.Library.Services.v2
             purchase.Completed = true;
             purchase.Status = PurchaseStatus.Completed;
             await _context.SaveChangesAsync();
+            
+            Log.Information("Completed purchase with Id {Id}, TransactionId {TransactionId}", purchase.Id, purchase.TransactionId);
 
             await _emailService.SendInvoiceAsyncV2(purchase, purchase.PurchasedBy);
         }

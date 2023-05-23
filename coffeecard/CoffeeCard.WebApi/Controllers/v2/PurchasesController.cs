@@ -17,7 +17,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
     [ApiController]
     [Authorize]
     [ApiVersion("2")]
-    [Route("api/v{version:apiVersion}/purchases")]
+    [Route("api/v2/purchases")]
     public class PurchasesController : ControllerBase
     {
         private readonly IPurchaseService _purchaseService;
@@ -57,7 +57,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <response code="200">Successful request</response>
         /// <response code="401">Invalid credentials</response>
         /// <response code="404">No purchase found with purchase-id</response>
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         [ProducesResponseType(typeof(SinglePurchaseResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status404NotFound)]
@@ -85,7 +85,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
             var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
             var purchaseResponse = await _purchaseService.InitiatePurchase(initiateRequest, user);
 
-            // Return CreatedAtAction
+            // TODO Return CreatedAtAction
             return Ok(purchaseResponse);
         }
     }

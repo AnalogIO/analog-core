@@ -36,6 +36,8 @@ namespace CoffeeCard.MobilePay.Service.v2
                     Description = paymentRequest.Description
                 }, null);
 
+                Log.Information("Initiated Payment with MobilePay PaymentId {TransactionId} of {OrerAmount} Oerer kr.", response.PaymentId.ToString(), paymentRequest.Amount);
+                
                 return new MobilePayPaymentDetails(paymentRequest.OrderId.ToString(), response.MobilePayAppRedirectUri,
                     response.PaymentId.ToString(), null);
             }
