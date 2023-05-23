@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -93,7 +93,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             await context.SaveChangesAsync();
 
             var dateTimeProvider = new Mock<IDateTimeProvider>();
-            dateTimeProvider.Setup(dtp => dtp.UtcNow()).Returns(new DateTime(2020, 11, 30));
+            dateTimeProvider.Setup(dtp => dtp.UtcNow()).Returns(new DateTime(2020, 11, 11));
             
             var leaderboardService = new LeaderboardService(context, dateTimeProvider.Object);
 
@@ -243,7 +243,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             await context.SaveChangesAsync();
 
             var dateTimeProvider = new Mock<IDateTimeProvider>();
-            dateTimeProvider.Setup(dtp => dtp.UtcNow()).Returns(new DateTime(2020, 11, 30));
+            dateTimeProvider.Setup(dtp => dtp.UtcNow()).Returns(new DateTime(2020, 11, 11));
 
             var leaderboardService = new LeaderboardService(context, dateTimeProvider.Object);
 
@@ -392,12 +392,12 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         [Theory(DisplayName = "GetTopLeaderboardEntries given preset does not include expired entries")]
         [InlineData(LeaderboardPreset.Month)]
         [InlineData(LeaderboardPreset.Semester)]
-        public async Task GetTopLeaderboardEntriesGivenPresetDoesnotIncludeExpiredEntries(
+        public async Task GetTopLeaderboardEntriesGivenPresetDoesNotIncludeExpiredEntries(
             LeaderboardPreset inputPreset)
         {
             // Arrange
             var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(nameof(GetTopLeaderboardEntriesGivenPresetDoesnotIncludeExpiredEntries) +
+                .UseInMemoryDatabase(nameof(GetTopLeaderboardEntriesGivenPresetDoesNotIncludeExpiredEntries) +
                                      inputPreset);
 
             var databaseSettings = new DatabaseSettings
@@ -464,6 +464,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             await context.SaveChangesAsync();
 
             var dateTimeProvider = new Mock<IDateTimeProvider>();
+            dateTimeProvider.Setup(dtp => dtp.UtcNow()).Returns(new DateTime(2020, 11, 12));
             var leaderboardService = new LeaderboardService(context, dateTimeProvider.Object);
 
             // Act
