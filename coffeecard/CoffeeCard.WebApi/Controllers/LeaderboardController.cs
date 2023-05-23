@@ -28,7 +28,6 @@ namespace CoffeeCard.WebApi.Controllers
         /// <returns>Top leader board users</returns>
         /// <response code="410">Deprecated</response>
         [HttpGet]
-        [ProducesResponseType(typeof(List<LeaderboardDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status410Gone)]
         public ActionResult<List<LeaderboardDto>> Get([FromQuery] int preset, [FromQuery] int top = 10)
         {
