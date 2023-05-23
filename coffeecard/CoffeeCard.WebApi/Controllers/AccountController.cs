@@ -25,11 +25,9 @@ namespace CoffeeCard.WebApi.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
         /// </summary>
-        public AccountController(IAccountService accountService,
-            IMapperService mapperService, IHttpContextAccessor httpContextAccessor)
+        public AccountController(IAccountService accountService, IHttpContextAccessor httpContextAccessor)
         {
             _accountService = accountService;
-            _mapperService = mapperService;
             _httpContextAccessor = httpContextAccessor;
         }
 
