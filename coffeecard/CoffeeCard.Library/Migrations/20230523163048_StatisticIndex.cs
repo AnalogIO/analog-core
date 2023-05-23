@@ -9,16 +9,16 @@ namespace CoffeeCard.Library.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateIndex(
-                name: "IX_Statistics_Preset_ExpiryDate_SwipeCount_LastSwipe",
+                name: "IX_Statistics_Preset_ExpiryDate",
                 schema: "dbo",
                 table: "Statistics",
-                columns: new[] { "Preset", "ExpiryDate", "SwipeCount", "LastSwipe" });
+                columns: new[] { "Preset", "ExpiryDate" });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropIndex(
-                name: "IX_Statistics_Preset_ExpiryDate_SwipeCount_LastSwipe",
+                name: "IX_Statistics_Preset_ExpiryDate",
                 schema: "dbo",
                 table: "Statistics");
         }

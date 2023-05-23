@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoffeeCard.Library.Migrations
 {
     [DbContext(typeof(CoffeeCardContext))]
-    [Migration("20230517191626_StatisticIndex")]
+    [Migration("20230523163048_StatisticIndex")]
     partial class StatisticIndex
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -198,7 +198,7 @@ namespace CoffeeCard.Library.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex("Preset", "ExpiryDate", "SwipeCount", "LastSwipe");
+                    b.HasIndex("Preset", "ExpiryDate");
 
                     b.ToTable("Statistics", "dbo");
                 });

@@ -196,7 +196,7 @@ namespace CoffeeCard.Library.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex("Preset", "ExpiryDate", "SwipeCount", "LastSwipe");
+                    b.HasIndex("Preset", "ExpiryDate");
 
                     b.ToTable("Statistics", "dbo");
                 });

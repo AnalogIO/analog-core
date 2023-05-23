@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,7 +31,7 @@ namespace CoffeeCard.Models.Entities
     /// <summary>
     /// Statistic represent a user's swipe of tickets. A Statistic entry is valid within a given preset period unless it is the total statistics.
     /// </summary>
-    [Index(nameof(Preset), nameof(ExpiryDate), nameof(SwipeCount), nameof(LastSwipe))]
+    [Index(nameof(Preset), nameof(ExpiryDate))]
     public class Statistic
     {
         /// <summary>
