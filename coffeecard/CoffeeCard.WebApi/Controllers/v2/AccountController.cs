@@ -18,7 +18,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
     /// </summary>
     [ApiController]
     [ApiVersion("2")]
-    [Route("api/v2/account")]
+    [Route("api/v{version:apiVersion}/account")]
     [Authorize]
     public class AccountController : ControllerBase
     {

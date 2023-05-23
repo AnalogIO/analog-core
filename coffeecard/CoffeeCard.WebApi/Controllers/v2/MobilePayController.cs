@@ -19,7 +19,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
     /// </summary>
     [ApiController]
     [ApiVersion("2")]
-    [Route("api/v2/mobilepay")]
+    [Route("api/v{version:apiVersion}/mobilepay")]
     public class MobilePayController : ControllerBase
     {
         private readonly IPurchaseService _purchaseService;

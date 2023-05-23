@@ -22,7 +22,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
     [Authorize]
     [ApiController]
     [ApiVersion("2")]
-    [Route("api/v2/vouchers")]
+    [Route("api/v{version:apiVersion}/vouchers")]
     public class VouchersController : ControllerBase
     {
         private readonly IVoucherService _voucherService;

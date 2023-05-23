@@ -10,7 +10,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
     /// </summary>
     [ApiController]
     [ApiVersion("2")]
-    [Route("api/v2/appconfig")]
+    [Route("api/v{version:apiVersion}/appconfig")]
     public class AppConfigController : ControllerBase
     {
         private readonly EnvironmentSettings _environmentSettings;
