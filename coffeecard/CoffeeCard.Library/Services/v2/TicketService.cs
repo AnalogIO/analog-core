@@ -40,6 +40,8 @@ namespace CoffeeCard.Library.Services.v2
 
             await _context.Tickets.AddRangeAsync(tickets);
             await _context.SaveChangesAsync();
+            
+            Log.Information("Issued {NoTickets} Tickets for ProductId {ProductId}, PurchaseId {PurchaseId}", purchase.NumberOfTickets, purchase.ProductId, purchase.Id);
         }
 
         public Task<List<TicketResponse>> GetTickets(User user, bool includeUsed)
@@ -57,7 +59,8 @@ namespace CoffeeCard.Library.Services.v2
         
         public async Task<UsedTicketResponse> UseTicketAsync(User user, int productId)
         {
-            Log.Information("Using ticket with id, {productId}", productId);
+            Log.Information("UserId {UserId} uses a ticket for ProductId {ProductId}", user.Id, productId);
+            
             var ticket = await GetFirstTicketFromProductAsync(productId, user.Id);
 
             ticket.IsUsed = true;

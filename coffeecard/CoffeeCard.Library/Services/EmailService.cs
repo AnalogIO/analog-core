@@ -52,6 +52,8 @@ namespace CoffeeCard.Library.Services
 
             message.Body = builder.ToMessageBody();
 
+            Log.Information("Sending invoice for PurchaseId {PurchaseId} to UserId {UserId}, E-mail {Email}", purchase.Id, user.Id, user.Email);
+            
             await SendEmailAsync(message);
         }
 

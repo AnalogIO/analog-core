@@ -14,7 +14,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
     /// </summary>
     [ApiController]
     [ApiVersion("2")]
-    [Route("api/v{version:apiVersion}/leaderboard")]
+    [Route("api/v2/leaderboard")]
     public class LeaderboardController : ControllerBase
     {
         private readonly ILeaderboardService _leaderboardService;
