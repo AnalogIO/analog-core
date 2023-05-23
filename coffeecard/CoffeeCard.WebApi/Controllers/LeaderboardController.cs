@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using CoffeeCard.Library.Services;
+using System.Collections.Generic;
 using CoffeeCard.Models.DataTransferObjects;
-using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,14 +13,11 @@ namespace CoffeeCard.WebApi.Controllers
     [Route("api/v{version:apiVersion}/[controller]")]
     public class LeaderboardController : ControllerBase
     {
-        private readonly ILeaderboardService _leaderboardService;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="LeaderboardController"/> class.
         /// </summary>
-        public LeaderboardController(ILeaderboardService leaderboardService)
+        public LeaderboardController()
         {
-            _leaderboardService = leaderboardService;
         }
         
         /// <summary>
@@ -31,15 +26,12 @@ namespace CoffeeCard.WebApi.Controllers
         /// <param name="preset">Leaderboard preset. 0 - Monthly, 1 - Semester and 2 - Total</param>
         /// <param name="top">Number of results to return</param>
         /// <returns>Top leader board users</returns>
-        /// <response code="200">Successful request</response>
-        /// <response code="401">Invalid credentials</response>
+        /// <response code="410">Deprecated</response>
         [HttpGet]
-        [ProducesResponseType(typeof(List<LeaderboardDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status410Gone)]
         public ActionResult<List<LeaderboardDto>> Get([FromQuery] int preset, [FromQuery] int top = 10)
         {
-            var leaderboard = _leaderboardService.GetLeaderboard(preset, top);
-            return Ok(leaderboard);
+            return StatusCode(StatusCodes.Status410Gone);
         }
     }
 }

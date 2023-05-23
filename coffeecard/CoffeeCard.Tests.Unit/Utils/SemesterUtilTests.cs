@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using CoffeeCard.Library.Utils;
 using Xunit;
 
@@ -39,35 +39,6 @@ namespace CoffeeCard.Tests.Unit.Utils
 
             var actualDate = SemesterUtils.GetSemesterEnd(currentDate);
             Assert.Equal(expectedDate, actualDate);
-        }
-
-        [Theory(DisplayName = "ValidateExpiredMonthly returns correct boolean based on last swipe")]
-        [InlineData("2022/01/01", "2022/01/01", true)]
-        [InlineData("2022/01/01", "2023/01/01", false)]
-        [InlineData("2022/12/31", "2022/12/31", true)]
-        [InlineData("2022/01/31", "2022/02/01", false)]
-        [InlineData("2022/01/31", "2023/01/31", false)]
-        public void TestValidateExpiredMonthly(string lastSwipeStr, string currentDateTimeStr, bool expectedResult)
-        {
-            var lastSwipe = DateTime.Parse(lastSwipeStr);
-            var currentDateTime = DateTime.Parse(currentDateTimeStr);
-
-            var result = SemesterUtils.IsSwipeValidInMonth(lastSwipe, currentDateTime);
-            Assert.Equal(expectedResult, result);
-        }
-
-        [Theory(DisplayName = "ValidateExpiredSemester returns boolean based on last swipe")]
-        [InlineData("2022/01/31", "2022/01/31", true)]
-        [InlineData("2022/01/01", "2022/01/31", false)]
-        [InlineData("2022/12/31", "2023/01/31", false)]
-        [InlineData("2022/07/01", "2022/09/01", true)]
-        public void TestValidateExpiredSemester(string lastSwipeStr, string currentDateTimeStr, bool expectedResult)
-        {
-            var lastSwipe = DateTime.Parse(lastSwipeStr);
-            var currentDateTime = DateTime.Parse(currentDateTimeStr);
-
-            var result = SemesterUtils.IsSwipeValidInSemester(lastSwipe, currentDateTime);
-            Assert.Equal(expectedResult, result);
         }
     }
 }
