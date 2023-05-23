@@ -23,10 +23,10 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task<IEnumerable<LeaderboardEntry>> GetTopLeaderboardEntries(LeaderboardPreset preset, int top)
         {
-            var sortedStatistics = GetSortedStatistics(preset)
+            var sortedStatistics = await GetSortedStatistics(preset)
                 .Take(top)
                 .Include(s => s.User)
-                .AsEnumerable();
+                .ToListAsync();
 
             return sortedStatistics.Select((s, index) => new LeaderboardEntry
             {
@@ -75,7 +75,8 @@ namespace CoffeeCard.Library.Services.v2
             return leaderBoardPlacement;
         }
 
-        private IOrderedQueryable<Statistic> GetSortedStatistics(LeaderboardPreset preset){
+        private IOrderedQueryable<Statistic> GetSortedStatistics(LeaderboardPreset preset)
+        {
             var statPreset = preset.ToStatisticPreset();
 
             return _context.Statistics
