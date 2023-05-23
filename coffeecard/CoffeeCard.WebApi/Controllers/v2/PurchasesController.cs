@@ -17,7 +17,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
     [ApiController]
     [Authorize]
     [ApiVersion("2")]
-    [Route("api/v2/purchases")]
+    [Route("api/v{version:apiVersion}/purchases")]
     public class PurchasesController : ControllerBase
     {
         private readonly IPurchaseService _purchaseService;
