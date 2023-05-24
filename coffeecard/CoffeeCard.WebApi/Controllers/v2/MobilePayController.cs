@@ -53,13 +53,12 @@ namespace CoffeeCard.WebApi.Controllers.v2
             var isSignatureValid = await VerifySignature(mpSignatureHeader);
             if (!isSignatureValid)
             {
-                Log.Error(
-                    "Signature did not match the computed signature. Request Body: {Request} Signature: {Signature}",
+                Log.Warning("Signature did not match the computed signature for request '{Request}', header signature: {Signature}",
                     request, mpSignatureHeader);
                 return BadRequest("Signature is not valid");
             }
 
-            Log.Information("MobilePay Webhook invoked. Request: {Request}", request);
+            Log.Information("MobilePay Webhook invoked with request: '{Request}'", request);
             await _purchaseService.HandleMobilePayPaymentUpdate(request);
 
             return NoContent();
@@ -83,12 +82,15 @@ namespace CoffeeCard.WebApi.Controllers.v2
                 rawRequestBody = await stream.ReadToEndAsync();
             }
 
-            Log.Debug("Body: '{Body}'", rawRequestBody);
-
+            Log.Debug("Raw request body (trimmed): '{Body}'", rawRequestBody.Trim());
+            Log.Debug("Endpoint Url '{EndpointUrl}', SignatureKey '{Signature}'", endpointUrl, signatureKey);
+            
             var hash = new HMACSHA1(Encoding.UTF8.GetBytes(signatureKey))
                 .ComputeHash(Encoding.UTF8.GetBytes(endpointUrl + rawRequestBody.Trim()));
             var computedSignature = Convert.ToBase64String(hash);
+            
             Log.Debug("ComputedSignature: {Signature}", computedSignature);
+            Log.Debug("mpSignatureHeader {mpSignatureHeader}", mpSignatureHeader);
 
             return mpSignatureHeader.Equals(computedSignature);
         }
