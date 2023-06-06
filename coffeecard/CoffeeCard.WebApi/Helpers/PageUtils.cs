@@ -29,7 +29,7 @@ namespace CoffeeCard.WebApi.Helpers
                 }
                 else
                 {
-                    setMessage("Error", ex.Message ,model);
+                    setMessage("Error", ex.Message, model);
                 }
             }
             catch (Exception ex)

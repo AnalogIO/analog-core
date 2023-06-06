@@ -40,7 +40,7 @@ namespace CoffeeCard.Library.Services.v2
 
             await _context.Tickets.AddRangeAsync(tickets);
             await _context.SaveChangesAsync();
-            
+
             Log.Information("Issued {NoTickets} Tickets for ProductId {ProductId}, PurchaseId {PurchaseId}", purchase.NumberOfTickets, purchase.ProductId, purchase.Id);
         }
 
@@ -56,17 +56,17 @@ namespace CoffeeCard.Library.Services.v2
                     ProductName = t.Purchase.ProductName
                 }).ToListAsync();
         }
-        
+
         public async Task<UsedTicketResponse> UseTicketAsync(User user, int productId)
         {
             Log.Information("UserId {UserId} uses a ticket for ProductId {ProductId}", user.Id, productId);
-            
+
             var ticket = await GetFirstTicketFromProductAsync(productId, user.Id);
 
             ticket.IsUsed = true;
             var timeUsed = DateTime.UtcNow;
             ticket.DateUsed = timeUsed;
-            
+
             if (ticket.Purchase.Price > 0) //Paid products increases your rank on the leaderboard
             {
                 await _statisticService.IncreaseStatisticsBy(user.Id, 1);
@@ -82,13 +82,13 @@ namespace CoffeeCard.Library.Services.v2
                 ProductName = ticket.Purchase.ProductName
             };
         }
-        
+
         private async Task<Ticket> GetFirstTicketFromProductAsync(int productId, int userId)
         {
             var ticket = await _context.Tickets
                 .Include(t => t.Purchase)
                 .FirstOrDefaultAsync(t => t.Owner.Id == userId && t.ProductId == productId && !t.IsUsed);
-            
+
             if (ticket == null)
             {
                 throw new EntityNotFoundException("No tickets found for the given product with this user");

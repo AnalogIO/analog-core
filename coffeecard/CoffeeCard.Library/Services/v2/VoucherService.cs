@@ -35,11 +35,11 @@ namespace CoffeeCard.Library.Services.v2
             while (newCodes.Count < request.Amount)
             {
                 var code = GenerateUniqueVoucherCode(8, request.VoucherPrefix, existingVouchers); // 8 character length gives 36^8 combos
-                newCodes.Add(code); 
+                newCodes.Add(code);
             }
-            
+
             var vouchers = newCodes
-                .Select( code => new Voucher
+                .Select(code => new Voucher
                 {
                     Code = code,
                     DateCreated = DateTime.Now,
@@ -52,13 +52,13 @@ namespace CoffeeCard.Library.Services.v2
             await _context.SaveChangesAsync();
 
             var responses = vouchers.
-                Select(v => 
-                    new IssueVoucherResponse 
-                    { 
-                        VoucherCode = v.Code, 
-                        IssuedAt = v.DateCreated, 
-                        ProductId = v.Product.Id, 
-                        ProductName = v.Product.Name 
+                Select(v =>
+                    new IssueVoucherResponse
+                    {
+                        VoucherCode = v.Code,
+                        IssuedAt = v.DateCreated,
+                        ProductId = v.Product.Id,
+                        ProductName = v.Product.Name
                     });
             return responses;
         }
@@ -75,15 +75,15 @@ namespace CoffeeCard.Library.Services.v2
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             StringBuilder code = new StringBuilder();
 
-            while( String.IsNullOrEmpty(code.ToString()) || existingCodes.Contains(code.ToString()))
+            while (String.IsNullOrEmpty(code.ToString()) || existingCodes.Contains(code.ToString()))
             {
                 code.Append($"{voucherPrefix}-"); // Ensure code starts with prefix
-                
-                for( var i = 0; i < codeLength; i++)
+
+                for (var i = 0; i < codeLength; i++)
                 {
                     code.Append(chars[_random.Next(chars.Length)]);
                 }
-            } 
+            }
             return code.ToString();
         }
     }

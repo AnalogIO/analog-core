@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CoffeeCard.WebApi.Controllers
 {
     // TODO: Remove this Controller after June 2023
-    
+
     /// <summary>
     /// Controller for retrieving and issuing
     /// </summary>

@@ -18,14 +18,14 @@ namespace CoffeeCard.MobilePay.Service.v2
         {
             _webhooksApi = webhooksApi;
         }
-        
+
         public async Task<SingleWebhookResponse> RegisterWebhook(string url, ICollection<Events> events)
         {
             try
             {
                 Log.Information("Register new webhook for Url: {url}, Events: {events}", url, events);
-                
-                return await _webhooksApi.CreateWebhookAsync( new CreateWebhookRequest
+
+                return await _webhooksApi.CreateWebhookAsync(new CreateWebhookRequest
                 {
                     Events = events,
                     Url = url
@@ -87,9 +87,9 @@ namespace CoffeeCard.MobilePay.Service.v2
         public async Task<SingleWebhookResponse> UpdateWebhook(Guid webhookId, string url, ICollection<Events> events)
         {
             var events3 = events.Select(MapEventsToEvents3).ToHashSet();
-            
+
             Log.Information("Sync webhook subscription. Webhook: {webhookId}, Url: {url}, subscribed webhook events: {events}", webhookId, url, events3);
-            
+
             try
             {
                 return await _webhooksApi.UpdateWebhookAsync(webhookId, new UpdateWebhookRequest

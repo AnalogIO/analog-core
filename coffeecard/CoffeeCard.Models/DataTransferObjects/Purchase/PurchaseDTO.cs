@@ -28,7 +28,7 @@ namespace CoffeeCard.Models.DataTransferObjects.Purchase
         /// <example>1371</example>
         [Required]
         public int Id { get; set; }
-        
+
         /// <summary>
         /// Name of purchased product
         /// </summary>
@@ -44,7 +44,7 @@ namespace CoffeeCard.Models.DataTransferObjects.Purchase
         /// <example>1</example>
         [Required]
         public int ProductId { get; set; }
-        
+
         /// <summary>
         /// Total purchase price in Danish Kroner (kr)
         /// </summary>
@@ -52,7 +52,7 @@ namespace CoffeeCard.Models.DataTransferObjects.Purchase
         /// <example>300</example>
         [Required]
         public int Price { get; set; }
-        
+
         /// <summary>
         /// Number of tickets issued in purchase
         /// </summary>
@@ -60,7 +60,7 @@ namespace CoffeeCard.Models.DataTransferObjects.Purchase
         /// <example>10</example>
         [Required]
         public int NumberOfTickets { get; set; }
-        
+
         /// <summary>
         /// Date time for purchase in Utc format
         /// </summary>
@@ -68,7 +68,7 @@ namespace CoffeeCard.Models.DataTransferObjects.Purchase
         /// <example>2022-01-09T21:03:52.2283208Z</example>
         [Required]
         public DateTime DateCreated { get; set; }
-        
+
         /// <summary>
         /// Is purchase completed (with MobilePay)
         /// </summary>
@@ -76,7 +76,7 @@ namespace CoffeeCard.Models.DataTransferObjects.Purchase
         /// <example>true</example>
         [Required]
         public bool Completed { get; set; }
-        
+
         /// <summary>
         /// Order Id
         /// </summary>

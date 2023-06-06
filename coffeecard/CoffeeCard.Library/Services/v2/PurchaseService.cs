@@ -36,15 +36,15 @@ namespace CoffeeCard.Library.Services.v2
         public async Task<InitiatePurchaseResponse> InitiatePurchase(InitiatePurchaseRequest initiateRequest, User user)
         {
             var product = await _productService.GetProductAsync(initiateRequest.ProductId);
-            CheckUserIsAllowedToPurchaseProduct(user, initiateRequest, product);        
-            
+            CheckUserIsAllowedToPurchaseProduct(user, initiateRequest, product);
+
             Log.Information("Initiating purchase of ProductId {ProductId}, PaymentType {PurchaseType} by UserId {UserId}", initiateRequest.ProductId, initiateRequest.PaymentType, user.Id);
 
             var (purchase, paymentDetails) = await InitiatePaymentAsync(initiateRequest, product, user);
-            
+
             await _context.Purchases.AddAsync(purchase);
             await _context.SaveChangesAsync();
-            
+
             if (purchase.Status == PurchaseStatus.Completed)
             {
                 Log.Information("Purchase {PurchaseId} has state Completed. Issues tickets", purchase.Id);
@@ -62,7 +62,7 @@ namespace CoffeeCard.Library.Services.v2
                 PaymentDetails = paymentDetails
             };
         }
-        
+
         /// <summary>
         /// Checks if a user is eligible to purchase a product
         /// Throws an ApiException if it does not pass the checks
@@ -91,8 +91,9 @@ namespace CoffeeCard.Library.Services.v2
                 throw new ArgumentException($"Product '{product.Name}' is not free");
             }
         }
-        
-        private async Task<(Purchase purchase, PaymentDetails paymentDetails)> InitiatePaymentAsync(InitiatePurchaseRequest purchaseRequest, Product product, User user){
+
+        private async Task<(Purchase purchase, PaymentDetails paymentDetails)> InitiatePaymentAsync(InitiatePurchaseRequest purchaseRequest, Product product, User user)
+        {
             var orderId = await GenerateUniqueOrderId();
             PaymentDetails paymentDetails;
             PurchaseStatus purchaseStatus;
@@ -107,22 +108,22 @@ namespace CoffeeCard.Library.Services.v2
                         OrderId = orderId,
                         Description = product.Name
                     });
-                    
+
                     purchaseStatus = PurchaseStatus.PendingPayment;
-                    transactionId = ((MobilePayPaymentDetails) paymentDetails).PaymentId;
-                    
+                    transactionId = ((MobilePayPaymentDetails)paymentDetails).PaymentId;
+
                     break;
                 case PaymentType.FreePurchase:
                     paymentDetails = new FreePurchasePaymentDetails(orderId.ToString());
                     purchaseStatus = PurchaseStatus.Completed;
                     transactionId = Guid.Empty.ToString();
-                    
+
                     break;
                 default:
                     Log.Error("Payment Type {PaymentType} is not handled in PurchaseService", purchaseRequest.PaymentType);
                     throw new ArgumentException($"Payment Type '{purchaseRequest.PaymentType}' is not handled");
             }
-            
+
             var purchase = new Purchase
             {
                 ProductName = product.Name,
@@ -137,7 +138,7 @@ namespace CoffeeCard.Library.Services.v2
                 Status = purchaseStatus
                 // FIXME State management, PaymentType
             };
-            
+
             return (purchase, paymentDetails);
         }
 
@@ -210,20 +211,20 @@ namespace CoffeeCard.Library.Services.v2
             switch (eventTypeLowerCase)
             {
                 case "payment.reserved":
-                {
-                    await CompletePurchase(purchase);
-                    break;
-                }
+                    {
+                        await CompletePurchase(purchase);
+                        break;
+                    }
                 case "payment.cancelled_by_user":
-                {
-                    await CancelPurchase(purchase);
-                    break;
-                }
+                    {
+                        await CancelPurchase(purchase);
+                        break;
+                    }
                 case "payment.expired":
-                {
-                    await CancelPurchase(purchase);
-                    break;
-                }
+                    {
+                        await CancelPurchase(purchase);
+                        break;
+                    }
                 default:
                     Log.Error(
                         "Unknown EventType from Webhook request. Event Type: {EventType}, Purchase Id: {PurchaseId}, Transaction Id: {TransactionId}",
@@ -240,7 +241,7 @@ namespace CoffeeCard.Library.Services.v2
             purchase.Completed = true;
             purchase.Status = PurchaseStatus.Completed;
             await _context.SaveChangesAsync();
-            
+
             Log.Information("Completed purchase with Id {Id}, TransactionId {TransactionId}", purchase.Id, purchase.TransactionId);
 
             await _emailService.SendInvoiceAsyncV2(purchase, purchase.PurchasedBy);
@@ -305,7 +306,8 @@ namespace CoffeeCard.Library.Services.v2
             _context.Entry(voucher).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
-            return new SimplePurchaseResponse{
+            return new SimplePurchaseResponse
+            {
                 Id = purchase.Id,
                 DateCreated = purchase.DateCreated,
                 ProductId = purchase.ProductId,

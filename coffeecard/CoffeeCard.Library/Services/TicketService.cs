@@ -130,7 +130,7 @@ namespace CoffeeCard.Library.Services
                 .Join(_context.Products,
                     ticket => ticket.ProductId,
                     product => product.Id,
-                    (ticket, product) => new {Ticket = ticket, Product = product})
+                    (ticket, product) => new { Ticket = ticket, Product = product })
                 .Where(tp => tp.Ticket.Owner.Id == userId && !tp.Ticket.IsUsed)
                 .AsEnumerable()
                 .GroupBy(
@@ -147,7 +147,7 @@ namespace CoffeeCard.Library.Services
                         }).ToList();
 
             var products = _productService.GetProductsForUserAsync(user).Result.Select(p => new Models.DataTransferObjects.CoffeeCard.CoffeeCard
-                {ProductId = p.Id, Name = p.Name, Price = p.Price, Quantity = p.NumberOfTickets, TicketsLeft = 0}).ToList();
+            { ProductId = p.Id, Name = p.Name, Price = p.Price, Quantity = p.NumberOfTickets, TicketsLeft = 0 }).ToList();
 
             var unionCoffeeCards = coffeeCards.Union(products, new CoffeeCardComparer());
             var toDto = unionCoffeeCards.Select(cc => new CoffeeCardDto()

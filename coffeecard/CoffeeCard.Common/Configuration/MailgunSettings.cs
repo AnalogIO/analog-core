@@ -10,7 +10,7 @@ namespace CoffeeCard.Common.Configuration
         [Required] public string Domain { get; set; }
 
         [Required] public string EmailBaseUrl { get; set; }
-        
+
         [Required] public string MailgunApiUrl { get; set; }
 
         public void Validate()

@@ -69,7 +69,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<SimplePurchaseResponse>> RedeemVoucher([FromRoute (Name = "voucher-code")] string voucherCode)
+        public async Task<ActionResult<SimplePurchaseResponse>> RedeemVoucher([FromRoute(Name = "voucher-code")] string voucherCode)
         {
             var user = await _claimUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
             return Ok(await _purchaseService.RedeemVoucher(voucherCode, user));

@@ -48,7 +48,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
 
             return Ok(purchases);
         }
-        
+
         /// <summary>
         /// Get purchase
         /// </summary>
@@ -64,7 +64,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         public async Task<ActionResult<SinglePurchaseResponse>> GetPurchase([FromRoute] int id)
         {
             var purchase = await _purchaseService.GetPurchase(id, await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims));
-            
+
             return Ok(purchase);
         }
 

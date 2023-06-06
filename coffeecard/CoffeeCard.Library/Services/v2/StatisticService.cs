@@ -33,8 +33,10 @@ namespace CoffeeCard.Library.Services.v2
             {
                 totalStatistics = new Statistic
                 {
-                    ExpiryDate = DateTime.UtcNow.AddYears(100), Preset = StatisticPreset.Total,
-                    SwipeCount = user.Tickets.Count(t => t.IsUsed) - increaseBy, LastSwipe = utcNow
+                    ExpiryDate = DateTime.UtcNow.AddYears(100),
+                    Preset = StatisticPreset.Total,
+                    SwipeCount = user.Tickets.Count(t => t.IsUsed) - increaseBy,
+                    LastSwipe = utcNow
                 };
                 user.Statistics.Add(totalStatistics);
             }
@@ -51,7 +53,8 @@ namespace CoffeeCard.Library.Services.v2
             {
                 semesterStatistics = new Statistic
                 {
-                    ExpiryDate = semesterEnd, Preset = StatisticPreset.Semester,
+                    ExpiryDate = semesterEnd,
+                    Preset = StatisticPreset.Semester,
                     SwipeCount =
                         user.Tickets.Count(t => t.IsUsed && t.DateUsed > semesterStart && t.DateUsed < semesterEnd) -
                         increaseBy,
@@ -82,7 +85,8 @@ namespace CoffeeCard.Library.Services.v2
             {
                 monthStatistics = new Statistic
                 {
-                    ExpiryDate = monthEnd, Preset = StatisticPreset.Monthly,
+                    ExpiryDate = monthEnd,
+                    Preset = StatisticPreset.Monthly,
                     SwipeCount = user.Tickets.Count(t => t.IsUsed && t.DateUsed > monthStart && t.DateUsed < monthEnd) -
                                  increaseBy,
                     LastSwipe = utcNow
