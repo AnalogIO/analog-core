@@ -25,7 +25,7 @@
       },
       {
         "name": "MobilePaySettingsV2__AnalogAppRedirectUri",
-        "value": "analog-coffeecard-dev://mobilepay_payment"
+        "value": "analogcoffeecard-dev://mobilepay_payment"
       },
       {
         "name": "MobilePaySettingsV2__ApiUrl",
