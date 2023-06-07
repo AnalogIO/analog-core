@@ -12,10 +12,10 @@ on:
         type: boolean
   
   workflow_dispatch:
-  
+
 jobs:
   build:
-    name: Build and test analog-core
+    name: Build analog-core
     runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v3
@@ -27,6 +27,19 @@ jobs:
       run: dotnet restore coffeecard/
     - name: Build CoffeeCard solution
       run: dotnet build coffeecard/ --no-restore /p:ContinuousIntegrationBuild=true
+
+  test:
+    name: Test and check formatting for analog-core
+    needs: build
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    - name: Check code formatting
+      run: dotnet format --verify-no-changes coffeecard/
     - name: Run tests
       run: dotnet test coffeecard/ /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
     - name: Upload test coverage to Codecov
@@ -36,6 +49,7 @@ jobs:
 
   docker:
     name: Build and push docker image
+    needs: [build, test]
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
