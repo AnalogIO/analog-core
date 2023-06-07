@@ -30,7 +30,7 @@ jobs:
       - name: Build CoffeeCard solution
         run: dotnet build coffeecard/ --no-restore /p:ContinuousIntegrationBuild=true
       - name: Check code formatting
-        run: dotnet format --verify-no-changes coffeecard/
+        run: dotnet-format --verify-no-changes coffeecard/
       - name: Run tests
         run: dotnet test coffeecard/ --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
       - name: Upload test coverage to Codecov
