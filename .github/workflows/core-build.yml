@@ -38,6 +38,8 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
+      - name: Restore dependencies
+        run: dotnet restore coffeecard/
       - name: Check code formatting
         run: dotnet format --verify-no-changes coffeecard/
       - name: Run tests
