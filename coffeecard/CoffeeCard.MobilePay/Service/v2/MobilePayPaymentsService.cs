@@ -10,7 +10,7 @@ using Serilog;
 namespace CoffeeCard.MobilePay.Service.v2
 {
     public class MobilePayPaymentsService : IMobilePayPaymentsService
-    {        
+    {
         private readonly MobilePaySettingsV2 _mobilePaySettings;
         private readonly PaymentsApi _paymentsApi;
 
