@@ -21,7 +21,7 @@ namespace CoffeeCard.Models.DataTransferObjects.Programme
         /// <example>1</example>
         [Required]
         public int Id { get; set; }
-        
+
         /// <summary>
         /// Short name of study programme
         /// </summary>

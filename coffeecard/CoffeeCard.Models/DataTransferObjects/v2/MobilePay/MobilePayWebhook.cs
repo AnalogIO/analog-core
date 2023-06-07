@@ -24,7 +24,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.MobilePay
         /// </summary>
         /// <example>c85f42aa-0a81-4838-8e87-72236a348d08</example>
         public string NotificationId { get; set; }
-        
+
         /// <summary>
         /// Type of event
         /// <list type="table">
@@ -44,12 +44,12 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.MobilePay
         /// </summary>
         /// <example>payment.expired</example>
         public string EventType { get; set; }
-        
+
         /// <summary>
         /// Date time of event dispatch
         /// </summary>
         public DateTime EventDate { get; set; }
-        
+
         /// <summary>
         /// Event data, e.g. payment id
         /// </summary>
@@ -78,7 +78,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.MobilePay
         /// </summary>
         /// <example>ceb351ac-9d20-4300-b5ad-e05851d5a3b7</example>
         public string Id { get; set; }
-        
+
         /// <summary>
         /// Internal MobilePay representation of a type.
         /// </summary>

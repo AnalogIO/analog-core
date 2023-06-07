@@ -19,7 +19,7 @@ namespace CoffeeCard.WebApi.Controllers
         public LeaderboardController()
         {
         }
-        
+
         /// <summary>
         /// Gets the leaderboard by the specified preset
         /// </summary>

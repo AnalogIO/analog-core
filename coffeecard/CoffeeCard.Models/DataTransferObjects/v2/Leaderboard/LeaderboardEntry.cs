@@ -21,21 +21,21 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Leaderboard
         /// <value>Account Id</value>
         /// <example>1</example>
         public int Id { get; set; }
-        
+
         /// <summary>
         /// Account name
         /// </summary>
         /// <value>Account name</value>
         /// <example>John Doe</example>
         public string Name { get; set; }
-        
+
         /// <summary>
         /// Leaderboard rank
         /// </summary>
         /// <value>Rank</value>
         /// <example>2</example>
         public int Rank { get; set; }
-        
+
         /// <summary>
         /// Account score
         /// </summary>
@@ -54,7 +54,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Leaderboard
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((LeaderboardEntry) obj);
+            return Equals((LeaderboardEntry)obj);
         }
 
         public override int GetHashCode()

@@ -34,8 +34,8 @@ namespace CoffeeCard.Library.Services.v2
             return await
             (
                 from p in from pug in _context.ProductUserGroups
-                    where pug.UserGroup == userGroup
-                    select pug.Product
+                          where pug.UserGroup == userGroup
+                          select pug.Product
                 where p.Visible
                 orderby p.Id
                 select p
@@ -53,10 +53,10 @@ namespace CoffeeCard.Library.Services.v2
                 Log.Error("No product was found by Product Id: {Id}", productId);
                 throw new EntityNotFoundException($"No product was found by Product Id: {productId}");
             }
-            
+
             return product;
         }
-        
+
         public void Dispose()
         {
             _context?.Dispose();

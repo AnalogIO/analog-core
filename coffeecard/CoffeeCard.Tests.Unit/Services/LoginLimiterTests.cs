@@ -9,26 +9,32 @@ namespace CoffeeCard.Tests.Unit.Services
 {
     public class LoginLimiterTests
     {
-        
+
         [Fact(DisplayName = "LoginLimiter allows logins after timeout expired")]
         public async Task LoginAllowsLoginsAfterTimeout()
         {
             // Arrange
             var loginLimiterSettings = new LoginLimiterSettings()
             {
-                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 5, TimeOutPeriodInSeconds = 1
+                IsEnabled = true,
+                MaximumLoginAttemptsWithinTimeOut = 5,
+                TimeOutPeriodInSeconds = 1
             };
             var user = new User
             {
-                Id = 1, Name = "test", Email = "test@email.dk", Programme = new Programme(),
-                Password = "test", IsVerified = true
+                Id = 1,
+                Name = "test",
+                Email = "test@email.dk",
+                Programme = new Programme(),
+                Password = "test",
+                IsVerified = true
             };
-            
+
             var loginLimiter = new LoginLimiter(loginLimiterSettings);
 
             const bool lockedOutExpected = false;
             const bool loginAllowedAgainExpected = true;
-            
+
             // Act
             //Triggers the lockout by attempting login 5 times in a row
             loginLimiter.LoginAllowed(user);
@@ -36,31 +42,37 @@ namespace CoffeeCard.Tests.Unit.Services
             loginLimiter.LoginAllowed(user);
             loginLimiter.LoginAllowed(user);
             loginLimiter.LoginAllowed(user);
-            
+
             var lockedOutActual = loginLimiter.LoginAllowed(user); //Checks that you are actually locked after the initial attempts
             await Task.Delay(1100);
             var loginAllowedAgainActual = loginLimiter.LoginAllowed(user); //Checks that you are allowed to login again after the timeout period
-            
+
             Assert.Equal(lockedOutExpected, lockedOutActual);
             Assert.Equal(loginAllowedAgainExpected, loginAllowedAgainActual);
         }
-        
+
         [Fact(DisplayName = "Login can lockout twice")]
         public async Task LoginLockoutsTwice()
         {
             // Arrange
             var loginLimiterSettings = new LoginLimiterSettings()
             {
-                IsEnabled = true, MaximumLoginAttemptsWithinTimeOut = 5, TimeOutPeriodInSeconds = 1
+                IsEnabled = true,
+                MaximumLoginAttemptsWithinTimeOut = 5,
+                TimeOutPeriodInSeconds = 1
             };
             var user = new User
             {
-                Id = 1, Name = "test", Email = "test@email.dk", Programme = new Programme(),
-                Password = "test", IsVerified = true
+                Id = 1,
+                Name = "test",
+                Email = "test@email.dk",
+                Programme = new Programme(),
+                Password = "test",
+                IsVerified = true
             };
-            
+
             var loginLimiter = new LoginLimiter(loginLimiterSettings);
-            
+
             // Act
             var allowedLoginResults = new List<bool>();
             //Triggers the lockout by attempting login 5 times in a row
@@ -77,9 +89,9 @@ namespace CoffeeCard.Tests.Unit.Services
             {
                 allowedLoginResults.Add(loginLimiter.LoginAllowed(user));
             }
-            
+
             var actualLogoutResult = loginLimiter.LoginAllowed(user); //Checks that you are actually locked after the second series of attempts
-            
+
             Assert.All(allowedLoginResults, Assert.True);
             Assert.False(actualFirstLockoutResult);
             Assert.False(actualLogoutResult);

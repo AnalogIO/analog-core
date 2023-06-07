@@ -11,7 +11,7 @@ namespace CoffeeCard.Models.DataTransferObjects.Ticket
     ///     "productIds": [
     ///         1,
     ///         2
-///         ]
+    ///         ]
     /// }
     /// </example>
     public class UseMultipleTicketDto

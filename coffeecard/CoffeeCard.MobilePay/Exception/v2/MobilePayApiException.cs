@@ -3,7 +3,7 @@
     public class MobilePayApiException : System.Exception
     {
         public int StatusCode { get; }
-        
+
         public string? ErrorCode { get; }
 
         public MobilePayApiException(int statusCode, string message) : base(message)

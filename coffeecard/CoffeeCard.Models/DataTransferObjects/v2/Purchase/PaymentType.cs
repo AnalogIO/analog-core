@@ -9,7 +9,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// MobilePay App Payments
         /// </summary>
         MobilePay,
-        
+
         /// <summary>
         /// Free purchase
         /// </summary>

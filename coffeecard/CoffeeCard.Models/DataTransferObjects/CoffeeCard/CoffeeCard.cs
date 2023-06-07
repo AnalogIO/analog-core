@@ -22,28 +22,28 @@ namespace CoffeeCard.Models.DataTransferObjects.CoffeeCard
         /// <value>Product Id</value>
         /// <example>1</example>
         public int ProductId { get; set; }
-        
+
         /// <summary>
         /// Name of product
         /// </summary>
         /// <value>Product Name</value>
         /// <example>Filter Coffee</example>
         public string Name { get; set; }
-        
+
         /// <summary>
         /// Remaining (if any) unused tickets left for product
         /// </summary>
         /// <value>Remaining Tickets</value>
         /// <example>5</example>
         public int TicketsLeft { get; set; }
-        
+
         /// <summary>
         /// Price of product
         /// </summary>
         /// <value>Product Price</value>
         /// <example>50</example>
         public int Price { get; set; }
-        
+
         /// <summary>
         /// Quantity of tickets in product
         /// </summary>
@@ -72,7 +72,7 @@ namespace CoffeeCard.Models.DataTransferObjects.CoffeeCard
             return x.ProductId == y.ProductId;
         }
 
-        
+
 
         /// <summary>
         /// If Equals() returns true for a pair of objects 

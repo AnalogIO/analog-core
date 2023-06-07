@@ -11,12 +11,12 @@ namespace CoffeeCard.Models.Entities
         }
 
         public int Id { get; set; }
-        
+
         public string TokenHash { get; set; }
 
         [Column(name: "User_Id")]
         public int? UserId { get; set; }
-        
+
         public User? User { get; set; }
 
         public override bool Equals(object? obj)

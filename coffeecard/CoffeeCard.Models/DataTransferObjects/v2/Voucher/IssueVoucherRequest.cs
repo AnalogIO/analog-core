@@ -22,7 +22,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Voucher
         /// <example>6</example>
         [Required]
         public int ProductId { get; set; }
-        
+
         /// <summary>
         /// The amount of vouchers to be issued
         /// </summary>

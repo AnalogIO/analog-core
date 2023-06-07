@@ -70,8 +70,8 @@ namespace CoffeeCard.WebApi.Logging
         private string GetCorrelationId()
         {
             var id = $"correlationid:{Guid.NewGuid().ToString().Substring(0, 8)}";
-            
-            return (string) (_contextAccessor.HttpContext.Items[CorrelationIdItemName] ??
+
+            return (string)(_contextAccessor.HttpContext.Items[CorrelationIdItemName] ??
                              (_contextAccessor.HttpContext.Items[CorrelationIdItemName] = id));
         }
     }

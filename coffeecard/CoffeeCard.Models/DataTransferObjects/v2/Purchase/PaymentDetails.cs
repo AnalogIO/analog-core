@@ -16,7 +16,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <example>MobilePay</example>
         [Required]
         public PaymentType PaymentType { get; set; }
-        
+
         /// <summary>
         /// Order id of purchase
         /// </summary>

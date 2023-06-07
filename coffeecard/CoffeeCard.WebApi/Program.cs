@@ -64,7 +64,7 @@ namespace CoffeeCard.WebApi
                 })
                 .UseSerilog();
         }
-        
+
         private static async Task PreStartupTasks(IHost webhost)
         {
             using var serviceScope = webhost.Services.CreateScope();

@@ -264,7 +264,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
         public static IEnumerable<object[]> ProductGenerator()
         {
-            var pug = new List<ProductUserGroup> {new ProductUserGroup {ProductId = 1}};
+            var pug = new List<ProductUserGroup> { new ProductUserGroup { ProductId = 1 } };
             yield return new object[]
             {
                 new Product

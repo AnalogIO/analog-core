@@ -17,7 +17,7 @@ public class ServiceHealthResponse
     /// <value>Health</value>
     /// <example>true</example>
     public bool MobilePay { get; set; }
-    
+
     /// <summary>
     /// Database connected
     /// </summary>
