@@ -7,10 +7,10 @@ on:
   workflow_call:
     inputs:
       push_image:
-        description: 'Push docker image to registry'
+        description: "Push docker image to registry"
         required: false
         type: boolean
-  
+
   workflow_dispatch:
 
 jobs:
@@ -18,34 +18,34 @@ jobs:
     name: Build analog-core
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
-    - name: Restore dependencies
-      run: dotnet restore coffeecard/
-    - name: Build CoffeeCard solution
-      run: dotnet build coffeecard/ --no-restore /p:ContinuousIntegrationBuild=true
+      - uses: actions/checkout@v3
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+      - name: Restore dependencies
+        run: dotnet restore coffeecard/
+      - name: Build CoffeeCard solution
+        run: dotnet build coffeecard/ --no-restore /p:ContinuousIntegrationBuild=true
 
   test:
     name: Test and check formatting for analog-core
     needs: build
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
-    - name: Check code formatting
-      run: dotnet format --verify-no-changes coffeecard/
-    - name: Run tests
-      run: dotnet test coffeecard/ /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
-    - name: Upload test coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        files: coffeecard/CoffeeCard.Tests.Integration/coverage.opencover.xml,coffeecard/CoffeeCard.Tests.Unit/coverage.opencover.xml
+      - uses: actions/checkout@v3
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+      - name: Check code formatting
+        run: dotnet format --verify-no-changes coffeecard/
+      - name: Run tests
+        run: dotnet test coffeecard/ /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+      - name: Upload test coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: coffeecard/CoffeeCard.Tests.Integration/coverage.opencover.xml,coffeecard/CoffeeCard.Tests.Unit/coverage.opencover.xml
 
   docker:
     name: Build and push docker image
