@@ -23,6 +23,8 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
+      - name: Install dotnet-format
+        run: dotnet tool install -g dotnet-format
       - name: Restore dependencies
         run: dotnet restore coffeecard/
       - name: Build CoffeeCard solution
