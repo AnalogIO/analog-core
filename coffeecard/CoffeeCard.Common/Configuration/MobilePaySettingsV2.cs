@@ -18,6 +18,9 @@ namespace CoffeeCard.Common.Configuration
         [Required]
         public string WebhookUrl { get; set; }
 
+        [Required]
+        public string AnalogAppRedirectUri { get; set; }
+
         public void Validate()
         {
             Validator.ValidateObject(this, new ValidationContext(this), true);
