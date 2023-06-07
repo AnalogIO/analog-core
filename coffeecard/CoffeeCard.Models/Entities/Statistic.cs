@@ -17,11 +17,11 @@ namespace CoffeeCard.Models.Entities
         /// <summary>
         /// Statistic preset for a month
         /// </summary>
-        Monthly, 
+        Monthly,
         /// <summary>
         /// Statistic preset for a semester
         /// </summary>
-        Semester, 
+        Semester,
         /// <summary>
         /// All Statistics
         /// </summary>
@@ -38,22 +38,22 @@ namespace CoffeeCard.Models.Entities
         /// Statistic Id
         /// </summary>
         public int Id { get; set; }
-        
+
         /// <summary>
         /// Preset. A uesr is expected to have one entry of each Preset type
         /// </summary>
         public StatisticPreset Preset { get; set; }
-        
+
         /// <summary>
         /// Number of swipes for preset and within expiry date
         /// </summary>
         public int SwipeCount { get; set; }
-        
+
         /// <summary>
         /// Last time a user swiped for a given preset
         /// </summary>
         public DateTime LastSwipe { get; set; }
-        
+
         /// <summary>
         /// Expiry date of statistic entry. When the expiry date has been exceeded, the statistic entry is reest
         /// </summary>

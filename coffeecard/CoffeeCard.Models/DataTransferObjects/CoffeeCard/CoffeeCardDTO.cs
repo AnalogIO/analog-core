@@ -23,7 +23,7 @@ namespace CoffeeCard.Models.DataTransferObjects.CoffeeCard
         /// <example>1</example>
         [Required]
         public int ProductId { get; set; }
-        
+
         /// <summary>
         /// Name of product
         /// </summary>
@@ -39,7 +39,7 @@ namespace CoffeeCard.Models.DataTransferObjects.CoffeeCard
         /// <example>5</example>
         [Required]
         public int TicketsLeft { get; set; }
-        
+
         /// <summary>
         /// Price of product
         /// </summary>
@@ -47,7 +47,7 @@ namespace CoffeeCard.Models.DataTransferObjects.CoffeeCard
         /// <example>50</example>
         [Required]
         public int Price { get; set; }
-        
+
         /// <summary>
         /// Quantity of tickets in product
         /// </summary>

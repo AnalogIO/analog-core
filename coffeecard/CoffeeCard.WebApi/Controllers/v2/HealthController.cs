@@ -42,7 +42,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         {
             return Ok("pong");
         }
-        
+
         /// <summary>
         /// Check service health
         /// </summary>
@@ -55,21 +55,21 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesDefaultResponseType]
         public async Task<IActionResult> Healthcheck()
         {
-                var databaseConnected = await IsServiceHealthy(async () => await _context.Database.CanConnectAsync());
-                var mobilepayApiConnected = await IsServiceHealthy(async () => await _mobilePayWebhooksService.GetAllWebhooks());
+            var databaseConnected = await IsServiceHealthy(async () => await _context.Database.CanConnectAsync());
+            var mobilepayApiConnected = await IsServiceHealthy(async () => await _mobilePayWebhooksService.GetAllWebhooks());
 
-                var response = new ServiceHealthResponse()
-                {
-                    Database = databaseConnected,
-                    MobilePay = mobilepayApiConnected
-                };
+            var response = new ServiceHealthResponse()
+            {
+                Database = databaseConnected,
+                MobilePay = mobilepayApiConnected
+            };
 
-                if (databaseConnected && mobilepayApiConnected)
-                {
-                    return Ok(response);
-                }
-                
-                return StatusCode(StatusCodes.Status503ServiceUnavailable, response);
+            if (databaseConnected && mobilepayApiConnected)
+            {
+                return Ok(response);
+            }
+
+            return StatusCode(StatusCodes.Status503ServiceUnavailable, response);
         }
 
         private static async Task<bool> IsServiceHealthy(Func<Task> action)

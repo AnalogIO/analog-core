@@ -11,12 +11,12 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Leaderboard
         /// Monthly
         /// </summary>
         Month,
-        
+
         /// <summary>
         /// Semesterly
         /// </summary>
         Semester,
-        
+
         /// <summary>
         /// Total
         /// </summary>

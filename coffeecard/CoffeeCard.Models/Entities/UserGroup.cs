@@ -8,16 +8,19 @@ namespace CoffeeCard.Models.Entities
         /// Normal user for customers
         Customer,
         /// Active Barista in Analog
-        Barista, 
+        Barista,
         /// Active Manager in Analog
         Manager,
         /// Active board member in Analog
-        Board 
+        Board
     }
 
-	public static class UserGroupExtention {
-		public static UserRole toUserRole(this UserGroup userGroup){
-            return userGroup switch {
+    public static class UserGroupExtention
+    {
+        public static UserRole toUserRole(this UserGroup userGroup)
+        {
+            return userGroup switch
+            {
                 UserGroup.Customer => UserRole.Customer,
                 UserGroup.Barista => UserRole.Barista,
                 UserGroup.Board => UserRole.Board,
@@ -25,5 +28,5 @@ namespace CoffeeCard.Models.Entities
                 _ => UserRole.Customer,
             };
         }
-	}
+    }
 }

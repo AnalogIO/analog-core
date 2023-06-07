@@ -36,7 +36,7 @@ namespace CoffeeCard.Models.Entities
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((Product) obj);
+            return Equals((Product)obj);
         }
 
         public override int GetHashCode()

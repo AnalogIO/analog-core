@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CoffeeCard.WebApi.Controllers
 {
     // TODO: Remove this Controller after June 2023
-    
+
     /// <summary>
     /// Controller for retrieving app configuration
     /// </summary>

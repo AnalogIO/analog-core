@@ -29,7 +29,7 @@ namespace CoffeeCard.Models.DataTransferObjects.Purchase
         /// <example>122</example>
         [Required]
         public int UserId { get; set; }
-        
+
         /// <summary>
         /// Id of Product to issue
         /// </summary>

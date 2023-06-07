@@ -28,7 +28,7 @@ namespace CoffeeCard.WebApi.Pages
 
         public async Task<IActionResult> OnGet()
         {
-            Func<Task<IActionResult>> func = async delegate()
+            Func<Task<IActionResult>> func = async delegate ()
             {
                 IsTokenValid = await _tokenService.ValidateTokenIsUnusedAsync(Token);
 

@@ -48,7 +48,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult> Webhook([FromBody]MobilePayWebhook request, [FromHeader(Name = "x-mobilepay-signature")] [Required] string mpSignatureHeader)
+        public async Task<ActionResult> Webhook([FromBody] MobilePayWebhook request, [FromHeader(Name = "x-mobilepay-signature")][Required] string mpSignatureHeader)
         {
             var isSignatureValid = await VerifySignature(mpSignatureHeader);
             if (!isSignatureValid)
@@ -84,11 +84,11 @@ namespace CoffeeCard.WebApi.Controllers.v2
 
             Log.Debug("Raw request body (trimmed): '{Body}'", rawRequestBody.Trim());
             Log.Debug("Endpoint Url '{EndpointUrl}', SignatureKey '{Signature}'", endpointUrl, signatureKey);
-            
+
             var hash = new HMACSHA1(Encoding.UTF8.GetBytes(signatureKey))
                 .ComputeHash(Encoding.UTF8.GetBytes(endpointUrl + rawRequestBody.Trim()));
             var computedSignature = Convert.ToBase64String(hash);
-            
+
             Log.Debug("ComputedSignature: {Signature}", computedSignature);
             Log.Debug("mpSignatureHeader {mpSignatureHeader}", mpSignatureHeader);
 

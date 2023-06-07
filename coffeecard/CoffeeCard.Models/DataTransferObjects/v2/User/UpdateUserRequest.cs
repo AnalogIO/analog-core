@@ -22,7 +22,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
         /// <value>Full Name</value>
         /// <example>John Doe</example>
         public string? Name { get; set; }
-        
+
         /// <summary>
         /// Email of user
         /// </summary>
@@ -30,21 +30,21 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
         /// <example>john@doe.com</example>
         [EmailAddress]
         public string? Email { get; set; }
-        
+
         /// <summary>
         /// Privacy Activated
         /// </summary>
         /// <value>Privacy Activated</value>
         /// <example>true</example>
         public bool? PrivacyActivated { get; set; }
-        
+
         /// <summary>
         /// Study Programme Id of user
         /// </summary>
         /// <value>Study Programme Id</value>
         /// <example>1</example>
         public int? ProgrammeId { get; set; }
-        
+
         /// <summary>
         /// Pin Code as first UTF8 encoded, then SHA256 hashed, and then Base64 encoded string
         /// </summary>
