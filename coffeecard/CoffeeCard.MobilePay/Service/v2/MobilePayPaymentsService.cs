@@ -11,8 +11,6 @@ namespace CoffeeCard.MobilePay.Service.v2
 {
     public class MobilePayPaymentsService : IMobilePayPaymentsService
     {
-        private const string CoffeeCardAppRedirectUrl = "analogcoffeecard://mobilepay_purchase";
-
         private readonly MobilePaySettingsV2 _mobilePaySettings;
         private readonly PaymentsApi _paymentsApi;
 
@@ -31,7 +29,7 @@ namespace CoffeeCard.MobilePay.Service.v2
                     Amount = ConvertAmountToOrer(paymentRequest.Amount),
                     IdempotencyKey = paymentRequest.OrderId,
                     PaymentPointId = _mobilePaySettings.PaymentPointId,
-                    RedirectUri = CoffeeCardAppRedirectUrl,
+                    RedirectUri = _mobilePaySettings.AnalogAppRedirectUri,
                     Reference = paymentRequest.OrderId.ToString(),
                     Description = paymentRequest.Description
                 }, null);
