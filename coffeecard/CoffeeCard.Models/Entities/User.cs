@@ -123,8 +123,6 @@ namespace CoffeeCard.Models.Entities
                 throw new ArgumentException("Value cannot be null or empty.", nameof(password));
             if (string.IsNullOrEmpty(salt))
                 throw new ArgumentException("Value cannot be null or empty.", nameof(salt));
-            // if (salt == null)
-            //     throw new ArgumentException("Value cannot be null.", nameof(salt));
             if (programme == null)
                 throw new ArgumentNullException(nameof(programme));
 

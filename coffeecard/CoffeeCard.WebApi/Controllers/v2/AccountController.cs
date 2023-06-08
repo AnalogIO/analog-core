@@ -142,15 +142,10 @@ namespace CoffeeCard.WebApi.Controllers.v2
 
             return new UserResponse
             (
-                id: user.Id,
-                email: user.Email,
+                user: user,
                 rankAllTime: total,
                 rankMonth: month,
-                rankSemester: semester,
-                name: user.Name,
-                role: user.UserGroup.toUserRole(),
-                programme: new ProgrammeResponse(user.Programme),
-                privacyActivated: user.PrivacyActivated
+                rankSemester: semester
             );
         }
     }
