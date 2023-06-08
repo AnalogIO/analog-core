@@ -61,7 +61,8 @@ namespace CoffeeCard.Models.DataTransferObjects.CoffeeCard
         /// <param name="quantity">The quantity.</param>
         public CoffeeCard(int productId, string name, int ticketsLeft, int price, int quantity)
         {
-            if (string.IsNullOrEmpty(name)) {
+            if (string.IsNullOrEmpty(name))
+            {
                 throw new System.ArgumentException("Name cannot be null or empty", nameof(name));
             }
             ProductId = productId;
