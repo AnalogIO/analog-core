@@ -31,7 +31,7 @@ namespace CoffeeCard.Library.Services.v2
             var totalStatistics = user.Statistics.FirstOrDefault(x => x.Preset == StatisticPreset.Total);
             if (totalStatistics == null)
             {
-                totalStatistics = new Statistic
+                totalStatistics = new Statistic(user)
                 {
                     ExpiryDate = DateTime.UtcNow.AddYears(100),
                     Preset = StatisticPreset.Total,
@@ -51,7 +51,7 @@ namespace CoffeeCard.Library.Services.v2
 
             if (semesterStatistics == null)
             {
-                semesterStatistics = new Statistic
+                semesterStatistics = new Statistic(user)
                 {
                     ExpiryDate = semesterEnd,
                     Preset = StatisticPreset.Semester,
@@ -83,7 +83,7 @@ namespace CoffeeCard.Library.Services.v2
 
             if (monthStatistics == null)
             {
-                monthStatistics = new Statistic
+                monthStatistics = new Statistic(user)
                 {
                     ExpiryDate = monthEnd,
                     Preset = StatisticPreset.Monthly,

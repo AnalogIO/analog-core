@@ -1,6 +1,5 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-
 namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
 {
     /// <summary>
@@ -73,5 +72,40 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <example>Completed</example>
         [Required]
         public PurchaseStatus? PurchaseStatus { get; set; }
+
+        // create a constructor to set the values of the properties
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SimplePurchaseResponse"/> class.
+        /// </summary>
+        public SimplePurchaseResponse(int id, DateTime dateCreated, int productId, string productName, int numberOfTickets, int totalAmount, PurchaseStatus? purchaseStatus)
+        {
+            if (string.IsNullOrEmpty(productName))
+            {
+                throw new ArgumentException("Product name cannot be null or empty");
+            }
+
+            Id = id;
+            DateCreated = dateCreated;
+            ProductId = productId;
+            ProductName = productName;
+            NumberOfTickets = numberOfTickets;
+            TotalAmount = totalAmount;
+            PurchaseStatus = purchaseStatus;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SimplePurchaseResponse"/> class from a <see cref="Entities.Purchase"/>.
+        /// </summary>
+        public SimplePurchaseResponse(Entities.Purchase purchase)
+        {
+            Id = purchase.Id;
+            DateCreated = purchase.DateCreated;
+            ProductId = purchase.ProductId;
+            ProductName = purchase.Product.Name;
+            NumberOfTickets = purchase.NumberOfTickets;
+            TotalAmount = purchase.Price;
+            PurchaseStatus = purchase.Status;
+        }
+
     }
 }

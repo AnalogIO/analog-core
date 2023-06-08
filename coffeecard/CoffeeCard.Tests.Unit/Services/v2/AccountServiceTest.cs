@@ -1,22 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services;
-using CoffeeCard.Library.Services.v2;
-using CoffeeCard.Library.Utils;
-using CoffeeCard.Models.DataTransferObjects.v2.Programme;
 using CoffeeCard.Models.DataTransferObjects.v2.User;
 using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Moq;
 using Xunit;
 
@@ -24,6 +18,15 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 {
     public class AccountServiceTest
     {
+
+        private static User testuser => new User(
+            email: "email",
+            name: "name",
+            password: "password",
+            salt: "salt",
+            programme: new Programme(fullName: "fullName", shortName: "shortName") { Id = 1 }
+        );
+
         private CoffeeCardContext CreateTestCoffeeCardContextWithName(string name)
         {
             var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
@@ -46,7 +49,9 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         {
             // Arrange
             var claims = new List<Claim>() { new Claim(ClaimTypes.Email, "test@test.test") };
-            var expected = new User() { Name = "User", Email = "test@test.test" };
+            var expected = testuser;
+            expected.Name = "User";
+            expected.Email = "test@test.test";
             User result;
 
             using var context = CreateTestCoffeeCardContextWithName(nameof(GetAccountByClaimsReturnsUserClaimWithEmail));
@@ -62,16 +67,21 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         }
 
 
-        [Theory(DisplayName = "GetAccountByClaims throws ApieEception, given invalid claim")]
+        [Theory(DisplayName = "GetAccountByClaims throws ApiException, given invalid claim")]
         [MemberData(nameof(ClaimGenerator))]
         public async Task GetAccountByClaimsThrowsApiExceptionGivenInvalidClaim(IEnumerable<Claim> claims)
         {
             // Arrange
-            var validUser = new User() { Name = "User", Email = "test@test.test" };
+            var validUser = testuser;
 
             using var context = CreateTestCoffeeCardContextWithName(nameof(GetAccountByClaimsThrowsApiExceptionGivenInvalidClaim) + claims.ToString());
-            context.Users.Add(validUser);
-            await context.SaveChangesAsync();
+            if (!context.Users.Any())
+            {
+                // Avoid adding duplicate users
+                context.Users.Add(validUser);
+                await context.SaveChangesAsync();
+            }
+
             // Act
             var accountService = new Library.Services.v2.AccountService(context, new Mock<ITokenService>().Object,
                 new Mock<IEmailService>().Object, new Mock<IHashService>().Object);
@@ -88,22 +98,29 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         public async Task RegisterAccountReturnsUserOnValidInput(String name, String email, string password, int programmeId)
         {
             // Arrange
-            var programme = new Programme()
+            var programme = testuser.Programme;
+            programme.Id = 1;
+            var programme2 = testuser.Programme;
+            programme2.Id = 2;
+            var programme3 = testuser.Programme;
+            programme3.Id = 3;
+            var programme4 = testuser.Programme;
+            programme4.Id = 4;
+
+            var expected = testuser;
+            expected.Name = name;
+            expected.Email = email;
+            expected.Password = "hashedPassword" + password;
+            expected.Programme = programmeId switch
             {
-                Id = programmeId,
-                FullName = "test",
-                ShortName = "t",
-                Users = new List<User>()
+                1 => programme,
+                2 => programme2,
+                3 => programme3,
+                4 => programme4,
+                _ => throw new Exception("Invalid programmeId")
             };
-            var expectedPass = "HashedPassword";
-            var expected = new User()
-            {
-                Name = name,
-                Email = email,
-                Password = expectedPass,
-                PrivacyActivated = false,
-                Programme = programme
-            };
+            expected.ProgrammeId = expected.Programme.Id;
+
             User result;
 
             // Using same context across all valid users to test creation of multiple users
@@ -113,11 +130,19 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var emailService = emailServiceMock.Object;
 
             var hashServiceMock = new Mock<IHashService>();
-            hashServiceMock.Setup(h => h.GenerateSalt()).Returns("");
-            hashServiceMock.Setup(h => h.Hash(password)).Returns(expectedPass);
+            hashServiceMock.Setup(h => h.GenerateSalt()).Returns("salt");
+            hashServiceMock.Setup(h => h.Hash(It.IsAny<String>())).Returns("hashedPassword" + password);
             var hashService = hashServiceMock.Object;
 
-            context.Programmes.Add(programme);
+            // Avoid adding duplicate programmes
+            if (!context.Programmes.Any())
+            {
+                context.Programmes.Add(programme);
+                context.Programmes.Add(programme2);
+                context.Programmes.Add(programme3);
+                context.Programmes.Add(programme4);
+            }
+
             await context.SaveChangesAsync();
             // Act
             var accountService = new Library.Services.v2.AccountService(context, new Mock<ITokenService>().Object,
@@ -136,16 +161,18 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         public async Task RegisterAccountThrowsApiExceptionWithStatus409OnExistingEmail()
         {
             // Arrange
-            var programme = new Programme() { Id = 1, FullName = "test", ShortName = "t", SortPriority = 1, Users = new List<User>() };
-            var email = "test@test.dk";
+            var programme = new Programme(fullName: "fullName", shortName: "shortName");
+
+            var user = testuser;
+            var expectedSalt = "salt";
 
             using var context = CreateTestCoffeeCardContextWithName(nameof(RegisterAccountThrowsApiExceptionWithStatus409OnExistingEmail));
             context.Programmes.Add(programme);
             await context.SaveChangesAsync();
 
             var hashservice = new Mock<IHashService>();
-            hashservice.Setup(h => h.GenerateSalt()).Returns("");
-            hashservice.Setup(h => h.Hash("pass")).Returns("");
+            hashservice.Setup(h => h.GenerateSalt()).Returns(expectedSalt);
+            hashservice.Setup(h => h.Hash(testuser.Password + expectedSalt)).Returns("hashedPassword");
 
             // Act
             var accountService = new Library.Services.v2.AccountService(context, new Mock<ITokenService>().Object,
@@ -153,10 +180,10 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             // Assert
             // Register the first user
-            await accountService.RegisterAccountAsync("name", email, "pass", 1);
+            await accountService.RegisterAccountAsync(user.Name, user.Email, user.Password, 1);
             // Try to register user with the sme email as before
             var exception = await Assert.ThrowsAsync<ApiException>(
-                async () => await accountService.RegisterAccountAsync("name", email, "pass", 1));
+                async () => await accountService.RegisterAccountAsync(user.Name, user.Email, user.Password, 1));
             Assert.Equal(StatusCodes.Status409Conflict, exception.StatusCode);
         }
 
@@ -179,39 +206,34 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         public async Task RegisterAccountSendsVerificationEmailOnlyValidInput()
         {
             // Arrange
-            var programme = new Programme()
-            {
-                Id = 1,
-                FullName = "test",
-                ShortName = "t",
-                Users = new List<User>()
-            };
-            var expectedPass = "HashedPassword";
-            var expected = new User()
-            {
-                Name = "name",
-                Email = "email",
-                Password = expectedPass,
-                PrivacyActivated = false,
-                Programme = programme
-            };
+            var programme = new Programme(fullName: "fullName", shortName: "shortName");
+
+            var expectedPassword = "password";
+
+            var user = testuser;
+            user.Password = expectedPassword;
 
             using var context = CreateTestCoffeeCardContextWithName(nameof(RegisterAccountSendsVerificationEmailOnlyValidInput));
             var emailServiceMock = new Mock<IEmailService>();
             emailServiceMock.Setup(e => e.SendRegistrationVerificationEmailAsync(It.IsAny<User>(), It.IsAny<String>())).Returns(Task.CompletedTask);
             var emailService = emailServiceMock.Object;
 
+            var expectedSalt = "salt";
+            var expectedSaltedPassword = "HashedPassword";
             var hashServiceMock = new Mock<IHashService>();
-            hashServiceMock.Setup(h => h.GenerateSalt()).Returns("");
-            hashServiceMock.Setup(h => h.Hash("password")).Returns(expectedPass);
+            hashServiceMock.Setup(h => h.GenerateSalt()).Returns(expectedSalt);
+            hashServiceMock
+                .Setup(h => h.Hash(expectedPassword + expectedSalt))
+                .Returns(expectedSaltedPassword);
             var hashService = hashServiceMock.Object;
 
             context.Programmes.Add(programme);
+
             await context.SaveChangesAsync();
             // Act
             var accountService = new Library.Services.v2.AccountService(context, new Mock<ITokenService>().Object,
                 emailService, hashService);
-            await accountService.RegisterAccountAsync("name", "email", "password", 1);
+            await accountService.RegisterAccountAsync(user.Name, user.Email, user.Password, 1);
 
             // Assert
             // Verify an email would have been send for the first registration
@@ -232,13 +254,6 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         public async Task UpdateAccountUpdatesAllNonNullProperties(String name, String email, String? password, bool? privacyActivated, int? programmeId)
         {
             // Arrange
-            var programme = new Programme()
-            {
-                Id = 1,
-                FullName = "test",
-                ShortName = "t",
-                Users = new List<User>()
-            };
             var updateUserRequest = new UpdateUserRequest()
             {
                 Name = name,
@@ -247,31 +262,22 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 PrivacyActivated = privacyActivated,
                 ProgrammeId = programmeId
             };
-            var user = new User()
-            {
-                Name = "name",
-                Password = "pass",
-                PrivacyActivated = false,
-                Email = "test@test.test",
-                Programme = programme
-            };
-            var expected = new User()
-            {
-                Name = name,
-                Email = email,
-                Password = password ?? user.Password,
-                PrivacyActivated = privacyActivated ?? user.PrivacyActivated,
-                Programme = programme ?? user.Programme
-            };
+            var user = testuser;
+            user.ProgrammeId = -1;
+
+            var expected = testuser;
+            expected.Name = name ?? user.Name;
+            expected.Email = email ?? user.Email;
+            expected.Password = password ?? user.Password;
+            expected.PrivacyActivated = privacyActivated ?? user.PrivacyActivated;
+            expected.ProgrammeId = programmeId ?? user.ProgrammeId;
 
             using var context = CreateTestCoffeeCardContextWithName(nameof(UpdateAccountUpdatesAllNonNullProperties) + name);
             context.Users.Add(user);
-
-            context.Programmes.Add(programme);
             await context.SaveChangesAsync();
 
             var hashServiceMock = new Mock<IHashService>();
-            hashServiceMock.Setup(h => h.Hash(It.IsAny<String>())).Returns(password);
+            hashServiceMock.Setup(h => h.Hash(It.IsAny<String>())).Returns(password ?? user.Password);
             var hashService = hashServiceMock.Object;
 
             // Act
@@ -291,13 +297,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         public async Task UpdateAccountThrowsApiExceptionOnInvalidProgrammeId()
         {
             // Arrange
-            var programme = new Programme()
-            {
-                Id = 1,
-                FullName = "test",
-                ShortName = "t",
-                Users = new List<User>()
-            };
+            var programme = new Programme(fullName: "fullName", shortName: "shortName");
+
             var updateUserRequest = new UpdateUserRequest()
             {
                 Name = "name",
@@ -306,14 +307,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 PrivacyActivated = false,
                 ProgrammeId = 2 // No prgramme with Id
             };
-            var user = new User()
-            {
-                Name = "name",
-                Password = "pass",
-                PrivacyActivated = false,
-                Email = "test@test.test",
-                Programme = programme
-            };
+            var user = testuser;
+            user.Programme = programme;
 
             using var context = CreateTestCoffeeCardContextWithName(nameof(UpdateAccountThrowsApiExceptionOnInvalidProgrammeId));
             context.Users.Add(user);
@@ -334,13 +329,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         public async Task RequestAnonymizationSendsEmail()
         {
             // Arrange
-            var user = new User()
-            {
-                Name = "name",
-                Password = "pass",
-                PrivacyActivated = false,
-                Email = "test@test.test",
-            };
+            var user = testuser;
 
             using var context = CreateTestCoffeeCardContextWithName(nameof(RequestAnonymizationSendsEmail));
             context.Users.Add(user);
@@ -364,26 +353,17 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         {
             // Arrange
             var userEmail = "test@test.test";
-            var user = new User
-            {
-                Id = 1,
-                Name = "name",
-                Password = "pass",
-                Salt = "salt",
-                UserState = UserState.Active,
-                PrivacyActivated = false,
-                Email = userEmail,
-            };
-            var expected = new User
-            {
-                Id = 1,
-                Name = "",
-                Password = "",
-                Salt = "",
-                UserState = UserState.Deleted,
-                PrivacyActivated = true,
-                Email = "",
-            };
+            var user = testuser;
+            user.Email = userEmail;
+
+            var expected = testuser;
+            expected.Id = 1;
+            expected.Name = "";
+            expected.Password = "";
+            expected.Salt = "";
+            expected.UserState = UserState.Deleted;
+            expected.PrivacyActivated = true;
+            expected.Email = "";
 
             await using var context = CreateTestCoffeeCardContextWithName(nameof(AnonymizeAccountRemovesIdentifyableInformationFromUser));
             context.Users.Add(user);

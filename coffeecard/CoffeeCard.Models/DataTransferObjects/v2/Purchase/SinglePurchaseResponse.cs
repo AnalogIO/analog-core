@@ -69,5 +69,23 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <value>Payment Details</value>
         [Required]
         public PaymentDetails PaymentDetails { get; set; }
+
+        /// <summary>
+        /// Instantiates a new instance of the <see cref="SinglePurchaseResponse"/> class.
+        /// </summary>
+        public SinglePurchaseResponse(int id, DateTime dateCreated, int productId, int totalAmount, PurchaseStatus? purchaseStatus, PaymentDetails paymentDetails)
+        {
+            if (paymentDetails == null)
+            {
+                throw new ArgumentNullException(nameof(paymentDetails));
+            }
+
+            Id = id;
+            DateCreated = dateCreated;
+            ProductId = productId;
+            TotalAmount = totalAmount;
+            PurchaseStatus = purchaseStatus;
+            PaymentDetails = paymentDetails;
+        }
     }
 }

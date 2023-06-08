@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using CoffeeCard.Models.DataTransferObjects.v2.Programme;
 
@@ -92,5 +93,34 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
         /// <example>5</example>
         [Required]
         public int RankMonth { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserResponse"/> class.
+        /// </summary>
+        public UserResponse(int id, string name, string email, bool privacyActivated, UserRole role, ProgrammeResponse programme, int rankAllTime, int rankSemester, int rankMonth)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentException("Name cannot be null or empty", nameof(name));
+            }
+            if (string.IsNullOrEmpty(email))
+            {
+                throw new ArgumentException("Email cannot be null or empty", nameof(email));
+            }
+            if (programme == null)
+            {
+                throw new ArgumentException("Programme cannot be null", nameof(programme));
+            }
+
+            Id = id;
+            Name = name;
+            Email = email;
+            PrivacyActivated = privacyActivated;
+            Role = role;
+            Programme = programme;
+            RankAllTime = rankAllTime;
+            RankSemester = rankSemester;
+            RankMonth = rankMonth;
+        }
     }
 }

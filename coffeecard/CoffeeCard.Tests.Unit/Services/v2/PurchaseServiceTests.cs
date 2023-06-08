@@ -18,6 +18,36 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 {
     public class PurchaseServiceTests
     {
+        private static User testuser => new User(
+            email: "test",
+            name: "test",
+            password: "pass",
+            salt: "salt",
+            programme: new Programme(fullName: "fullName", shortName: "shortName")
+        );
+
+        private static Product testProduct1 => new Product(
+            id: 1,
+            name: "Coffee",
+            description: "Coffee clip card",
+            numberOfTickets: 10,
+            price: 10,
+            experienceWorth: 10,
+            visible: true,
+            productUserGroup: new List<ProductUserGroup>()
+        );
+
+        private static Product testProduct2 => new Product(
+            id: 2,
+            name: "Espresso",
+            description: "Espresso clip card",
+            numberOfTickets: 10,
+            price: 20,
+            experienceWorth: 20,
+            visible: true,
+            productUserGroup: new List<ProductUserGroup>()
+        );
+
         [Theory(DisplayName =
             "InitiatePurchase.CheckUserIsAllowedToPurchaseProduct throws exceptions in several conditions")]
         [InlineData(1, 1, typeof(ArgumentException))] // FreePurchase PaymentType fails when product has a price != 0
@@ -42,51 +72,19 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             };
 
             await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
-            var user = new User
-            {
-                Id = 1,
-                Name = "User1",
-                Email = "email@email.test",
-                Password = "password",
-                Salt = "salt",
-                DateCreated = new DateTime(year: 2020, month: 11, day: 11),
-                IsVerified = true,
-                PrivacyActivated = false,
-                UserGroup = UserGroup.Customer,
-                UserState = UserState.Active
-            };
+            var user = testuser;
             context.Add(user);
 
-            var product1 = new Product
-            {
-                Id = 1,
-                Name = "Product1",
-                Description = "desc",
-                Price = 100
-            };
+            var product1 = testProduct1;
             context.Add(product1);
 
-            var pug1 = new ProductUserGroup
-            {
-                UserGroup = UserGroup.Customer,
-                Product = product1
-            };
+            var pug1 = new ProductUserGroup(product1, UserGroup.Customer);
             context.Add(pug1);
 
-            var product2 = new Product
-            {
-                Id = 2,
-                Name = "Product2",
-                Description = "desc",
-                Price = 100
-            };
+            var product2 = testProduct2;
             context.Add(product2);
 
-            var pug2 = new ProductUserGroup
-            {
-                UserGroup = UserGroup.Barista,
-                Product = product2
-            };
+            var pug2 = new ProductUserGroup(product2, UserGroup.Barista);
             context.Add(pug2);
 
             await context.SaveChangesAsync();
@@ -126,31 +124,13 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             };
 
             await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
-            var user = new User
-            {
-                Id = 1,
-                Name = "User1",
-                Email = "test@test.test",
-                Password = "pass",
-                Salt = "salt",
-                UserGroup = UserGroup.Customer,
-            };
+            var user = testuser;
             context.Add(user);
 
-            var product1 = new Product
-            {
-                Id = 1,
-                Name = "Product1",
-                Description = "desc",
-                Price = 100
-            };
+            var product1 = testProduct1;
             context.Add(product1);
 
-            var pug1 = new ProductUserGroup
-            {
-                UserGroup = UserGroup.Customer,
-                Product = product1
-            };
+            var pug1 = new ProductUserGroup(product1, UserGroup.Customer);
             context.Add(pug1);
 
             await context.SaveChangesAsync();
@@ -199,12 +179,15 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             Assert.Equal(PaymentType.MobilePay, result.PaymentDetails.PaymentType);
             Assert.Equal(orderId, result.PaymentDetails.OrderId);
-            Assert.Equal(mobilepayPaymentId, (result.PaymentDetails as MobilePayPaymentDetails).PaymentId);
-            Assert.Equal(mpDeepLink, (result.PaymentDetails as MobilePayPaymentDetails).MobilePayAppRedirectUri);
+            Assert.IsType<MobilePayPaymentDetails>(result.PaymentDetails);
+            var mobilePayPaymentDetails = result.PaymentDetails as MobilePayPaymentDetails;
+            Assert.NotNull(mobilePayPaymentDetails);
+            Assert.Equal(mobilepayPaymentId, mobilePayPaymentDetails.PaymentId);
+            Assert.Equal(mpDeepLink, mobilePayPaymentDetails.MobilePayAppRedirectUri);
         }
 
         [Theory(DisplayName = "InitiatePurchase adds tickets to user when free")]
-        [MemberData(nameof(ProductGenerator))]
+        [MemberData(nameof(GetProductsWithTickets))]
         public async Task InitiatePurchaseAddsTicketsToUserWhenFree(Product product)
         {
             // Arrange
@@ -222,19 +205,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             };
 
             await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
-            var user = new User
-            {
-                Id = 1,
-                Name = "User1",
-                Email = "email@email.test",
-                Password = "password",
-                Salt = "salt",
-                DateCreated = new DateTime(year: 2020, month: 11, day: 11),
-                IsVerified = true,
-                PrivacyActivated = false,
-                UserGroup = UserGroup.Customer,
-                UserState = UserState.Active
-            };
+            var user = testuser;
             context.Add(user);
             context.Add(product);
             await context.SaveChangesAsync();
@@ -257,47 +228,29 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             // Assert
             var userUpdated = await context.Users.FindAsync(user.Id);
-
+            Assert.NotNull(userUpdated);
             Assert.Equal(1, userUpdated.Purchases.Count);
             Assert.Equal(product.NumberOfTickets, userUpdated.Tickets.Count);
         }
 
-        public static IEnumerable<object[]> ProductGenerator()
+        public static IEnumerable<object[]> GetProductsWithTickets()
         {
-            var pug = new List<ProductUserGroup> { new ProductUserGroup { ProductId = 1 } };
-            yield return new object[]
-            {
-                new Product
-                {
-                    Name = "Test1",
-                    Description = "Test1",
-                    Id = 1,
-                    NumberOfTickets = 1,
-                    ProductUserGroup = pug
-                }
-            };
-            yield return new object[]
-            {
-                new Product
-                {
-                    Name = "Test2",
-                    Description = "Test2",
-                    Id = 1,
-                    NumberOfTickets = 5,
-                    ProductUserGroup = pug
-                }
-            };
-            yield return new object[]
-            {
-                new Product
-                {
-                    Name = "Test3",
-                    Description = "Test3",
-                    Id = 1,
-                    NumberOfTickets = 10,
-                    ProductUserGroup = pug
-                }
-            };
+            var product1 = testProduct1;
+            product1.Price = 0;
+            product1.ProductUserGroup.Add(new ProductUserGroup(product1, UserGroup.Customer));
+            yield return new object[] { product1 };
+
+            var product2 = testProduct2;
+            product2.Price = 0;
+            product2.ProductUserGroup.Add(new ProductUserGroup(product2, UserGroup.Customer));
+            yield return new object[] { product2 };
+
+            var product3 = testProduct2;
+            product3.Id = 3;
+            product3.Price = 0;
+            product3.Name = "Tea";
+            product3.ProductUserGroup.Add(new ProductUserGroup(product3, UserGroup.Customer));
+            yield return new object[] { product3 };
         }
     }
 }

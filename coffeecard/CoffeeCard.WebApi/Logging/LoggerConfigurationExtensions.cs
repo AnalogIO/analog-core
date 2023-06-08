@@ -4,6 +4,9 @@ using Serilog.Configuration;
 
 namespace CoffeeCard.WebApi.Logging
 {
+    /// <summary>
+    /// Provides extension methods for configuring Serilog logging in the CoffeeCard.WebApi project.
+    /// </summary>
     public static class LoggerConfigurationExtensions
     {
         /**

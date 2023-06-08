@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -119,15 +118,13 @@ namespace CoffeeCard.Library.Services
             if (chosenProgramme == null)
                 throw new ApiException($"No programme found with the id: {programme}", StatusCodes.Status400BadRequest);
 
-            var user = new User
-            {
-                Name = EscapeName(name),
-                Email = email,
-                Password = hashedPassword,
-                Salt = salt,
-                Programme = chosenProgramme,
-                UserGroup = UserGroup.Customer
-            };
+            var user = new User(
+                name: EscapeName(name),
+                email: email,
+                password: hashedPassword,
+                salt: salt,
+                programme: chosenProgramme
+            );
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();

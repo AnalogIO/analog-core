@@ -16,6 +16,47 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 {
     public class LeaderboardServiceTests
     {
+        private static User testuser1 => new User(
+            email: "email@email.test",
+            name: "User1",
+            password: "password",
+            salt: "salt",
+            programme: new Programme(fullName: "fullName", shortName: "shortName")
+        )
+        {
+            Id = 1,
+            DateCreated = new DateTime(year: 2020, month: 11, day: 11),
+            IsVerified = true,
+            PrivacyActivated = false,
+            UserGroup = UserGroup.Customer,
+            UserState = UserState.Active
+        };
+
+        private static User testuser2 => new User(
+            email: "email2@email.test",
+            name: "User2",
+            password: testuser1.Password,
+            salt: testuser1.Salt,
+            programme: testuser1.Programme
+        )
+        {
+            Id = 2,
+            DateCreated = testuser1.DateCreated,
+            IsVerified = testuser1.IsVerified,
+            PrivacyActivated = testuser1.PrivacyActivated,
+            UserGroup = testuser1.UserGroup,
+            UserState = testuser1.UserState
+        };
+
+        private static Statistic getStatistic(int id, User user, StatisticPreset preset) => new Statistic(user)
+        {
+            Id = id,
+            Preset = preset,
+            SwipeCount = 10,
+            LastSwipe = new DateTime(year: 2020, month: 11, day: 11),
+            ExpiryDate = new DateTime(year: 2020, month: 11, day: 11),
+        };
+
         [Theory(DisplayName = "GetLeaderboardEntry given user and preset returns Leaderboard Entry")]
         [InlineData(LeaderboardPreset.Month)]
         [InlineData(LeaderboardPreset.Semester)]
@@ -38,56 +79,18 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             };
 
             await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
-            var user1 = new User
-            {
-                Id = 1,
-                Name = "User1",
-                Email = "email@email.test",
-                Password = "password",
-                Salt = "salt",
-                DateCreated = new DateTime(year: 2020, month: 11, day: 11),
-                IsVerified = true,
-                PrivacyActivated = false,
-                UserGroup = UserGroup.Customer,
-                UserState = UserState.Active
-            };
+            var user1 = testuser1;
             context.Add(user1);
 
-            var user2 = new User
-            {
-                Id = 2,
-                Name = "User2",
-                Email = "email@email.test",
-                Password = "password",
-                Salt = "salt",
-                DateCreated = new DateTime(year: 2020, month: 11, day: 11),
-                IsVerified = true,
-                PrivacyActivated = false,
-                UserGroup = UserGroup.Customer,
-                UserState = UserState.Active
-            };
+            var user2 = testuser2;
             context.Add(user2);
 
-            var user1Statistics = new Statistic
-            {
-                Id = 1,
-                Preset = inputPreset.ToStatisticPreset(),
-                SwipeCount = 10,
-                LastSwipe = new DateTime(year: 2020, month: 11, day: 11),
-                ExpiryDate = new DateTime(year: 2020, month: 11, day: 11),
-                User = user1
-            };
+            var statPreset = inputPreset.ToStatisticPreset();
+
+            var user1Statistics = getStatistic(1, user1, statPreset);
             context.Add(user1Statistics);
 
-            var user2Statistics = new Statistic
-            {
-                Id = 2,
-                Preset = inputPreset.ToStatisticPreset(),
-                SwipeCount = 20,
-                LastSwipe = new DateTime(year: 2020, month: 11, day: 11),
-                ExpiryDate = new DateTime(year: 2020, month: 11, day: 11),
-                User = user2
-            };
+            var user2Statistics = getStatistic(2, user2, statPreset);
             context.Add(user2Statistics);
 
             await context.SaveChangesAsync();
@@ -101,13 +104,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var result = await leaderboardService.GetLeaderboardEntry(user1, inputPreset);
 
             // Assert
-            Assert.Equal(new LeaderboardEntry
-            {
-                Id = user1.Id,
-                Name = user1.Name,
-                Rank = 2,
-                Score = 10
-            }, result);
+            Assert.Equal(new LeaderboardEntry(id: user1.Id, name: user1.Name, rank: 1, score: 10), result);
         }
 
         [Theory(DisplayName =
@@ -134,19 +131,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             };
 
             await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
-            var user1 = new User
-            {
-                Id = 1,
-                Name = "User1",
-                Email = "email@email.test",
-                Password = "password",
-                Salt = "salt",
-                DateCreated = new DateTime(year: 2020, month: 11, day: 11),
-                IsVerified = true,
-                PrivacyActivated = false,
-                UserGroup = UserGroup.Customer,
-                UserState = UserState.Active
-            };
+            var user1 = testuser1;
             context.Add(user1);
             await context.SaveChangesAsync();
 
@@ -157,13 +142,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var result = await leaderboardService.GetLeaderboardEntry(user1, inputPreset);
 
             // Assert
-            Assert.Equal(new LeaderboardEntry
-            {
-                Id = user1.Id,
-                Name = user1.Name,
-                Rank = 0,
-                Score = 0
-            }, result);
+            Assert.Equal(new LeaderboardEntry(id: user1.Id, name: user1.Name, rank: 0, score: 0), result);
         }
 
         [Theory(DisplayName = "GetTopLeaderboardEntries given preset returns list of leaderboard entries")]
@@ -188,56 +167,19 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             };
 
             await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
-            var user1 = new User
-            {
-                Id = 1,
-                Name = "User1",
-                Email = "email@email.test",
-                Password = "password",
-                Salt = "salt",
-                DateCreated = new DateTime(year: 2020, month: 11, day: 11),
-                IsVerified = true,
-                PrivacyActivated = false,
-                UserGroup = UserGroup.Customer,
-                UserState = UserState.Active
-            };
+            var user1 = testuser1;
             context.Add(user1);
 
-            var user2 = new User
-            {
-                Id = 2,
-                Name = "User2",
-                Email = "email@email.test",
-                Password = "password",
-                Salt = "salt",
-                DateCreated = new DateTime(year: 2020, month: 11, day: 11),
-                IsVerified = true,
-                PrivacyActivated = false,
-                UserGroup = UserGroup.Customer,
-                UserState = UserState.Active
-            };
+            var user2 = testuser2;
             context.Add(user2);
 
-            var user1Statistics = new Statistic
-            {
-                Id = 1,
-                Preset = inputPreset.ToStatisticPreset(),
-                SwipeCount = 10,
-                LastSwipe = new DateTime(year: 2020, month: 11, day: 11),
-                ExpiryDate = new DateTime(year: 2020, month: 11, day: 11),
-                User = user1
-            };
+            var statPreset = inputPreset.ToStatisticPreset();
+
+            var user1Statistics = getStatistic(1, user1, statPreset);
             context.Add(user1Statistics);
 
-            var user2Statistics = new Statistic
-            {
-                Id = 2,
-                Preset = inputPreset.ToStatisticPreset(),
-                SwipeCount = 20,
-                LastSwipe = new DateTime(year: 2020, month: 11, day: 11),
-                ExpiryDate = new DateTime(year: 2020, month: 11, day: 11),
-                User = user2
-            };
+            var user2Statistics = getStatistic(2, user2, statPreset);
+            user2Statistics.SwipeCount = 20;
             context.Add(user2Statistics);
 
             await context.SaveChangesAsync();
@@ -253,20 +195,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             // Assert
             Assert.Equal(new List<LeaderboardEntry>
             {
-                new LeaderboardEntry
-                {
-                    Id = user2.Id,
-                    Name = user2.Name,
-                    Rank = 1,
-                    Score = 20
-                },
-                new LeaderboardEntry
-                {
-                    Id = user1.Id,
-                    Name = user1.Name,
-                    Rank = 2,
-                    Score = 10
-                }
+                new LeaderboardEntry(id: user2.Id, name: user2.Name, rank: 1, score: 20),
+                new LeaderboardEntry(id: user1.Id, name: user1.Name, rank: 2, score: 10),
             }, result.ToList());
         }
 
@@ -291,56 +221,18 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             };
 
             await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
-            var user1 = new User
-            {
-                Id = 1,
-                Name = "User1",
-                Email = "email@email.test",
-                Password = "password",
-                Salt = "salt",
-                DateCreated = new DateTime(year: 2020, month: 11, day: 11),
-                IsVerified = true,
-                PrivacyActivated = false,
-                UserGroup = UserGroup.Customer,
-                UserState = UserState.Active
-            };
+            var user1 = testuser1;
             context.Add(user1);
 
-            var user2 = new User
-            {
-                Id = 2,
-                Name = "User2",
-                Email = "email@email.test",
-                Password = "password",
-                Salt = "salt",
-                DateCreated = new DateTime(year: 2020, month: 11, day: 11),
-                IsVerified = true,
-                PrivacyActivated = false,
-                UserGroup = UserGroup.Customer,
-                UserState = UserState.Active
-            };
+            var user2 = testuser2;
             context.Add(user2);
 
-            var user1Statistics = new Statistic
-            {
-                Id = 1,
-                Preset = inputPreset.ToStatisticPreset(),
-                SwipeCount = 10,
-                LastSwipe = new DateTime(year: 2020, month: 11, day: 11),
-                ExpiryDate = new DateTime(year: 2020, month: 11, day: 11),
-                User = user1
-            };
+            var statPreset = inputPreset.ToStatisticPreset();
+
+            var user1Statistics = getStatistic(1, user1, statPreset);
             context.Add(user1Statistics);
 
-            var user2Statistics = new Statistic
-            {
-                Id = 2,
-                Preset = inputPreset.ToStatisticPreset(),
-                SwipeCount = 20,
-                LastSwipe = new DateTime(year: 2020, month: 11, day: 11),
-                ExpiryDate = new DateTime(year: 2020, month: 11, day: 11),
-                User = user2
-            };
+            var user2Statistics = getStatistic(2, user2, statPreset);
             context.Add(user2Statistics);
 
             await context.SaveChangesAsync();
@@ -410,56 +302,18 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             };
 
             await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
-            var user1 = new User
-            {
-                Id = 1,
-                Name = "User1",
-                Email = "email@email.test",
-                Password = "password",
-                Salt = "salt",
-                DateCreated = new DateTime(year: 2020, month: 11, day: 11),
-                IsVerified = true,
-                PrivacyActivated = false,
-                UserGroup = UserGroup.Customer,
-                UserState = UserState.Active
-            };
+            var user1 = testuser1;
             context.Add(user1);
 
-            var user2 = new User
-            {
-                Id = 2,
-                Name = "User2",
-                Email = "email@email.test",
-                Password = "password",
-                Salt = "salt",
-                DateCreated = new DateTime(year: 2020, month: 11, day: 11),
-                IsVerified = true,
-                PrivacyActivated = false,
-                UserGroup = UserGroup.Customer,
-                UserState = UserState.Active
-            };
+            var user2 = testuser2;
             context.Add(user2);
 
-            var user1Statistics = new Statistic
-            {
-                Id = 1,
-                Preset = inputPreset.ToStatisticPreset(),
-                SwipeCount = 10,
-                LastSwipe = new DateTime(year: 2000, month: 11, day: 11),
-                ExpiryDate = new DateTime(year: 2000, month: 11, day: 11),
-                User = user1
-            };
+            var statPreset = inputPreset.ToStatisticPreset();
+
+            var user1Statistics = getStatistic(1, user1, statPreset);
             context.Add(user1Statistics);
 
-            var user2Statistics = new Statistic
-            {
-                Id = 2,
-                Preset = inputPreset.ToStatisticPreset(),
-                SwipeCount = 20,
-                LastSwipe = new DateTime(year: 2000, month: 11, day: 11),
-                ExpiryDate = new DateTime(year: 2000, month: 11, day: 11),
-                User = user2
-            };
+            var user2Statistics = getStatistic(2, user2, statPreset);
             context.Add(user2Statistics);
             await context.SaveChangesAsync();
 

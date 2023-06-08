@@ -1,4 +1,4 @@
-using System.ComponentModel;
+using System.Collections.Generic;
 using System.Linq;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Common.Errors;
@@ -13,6 +13,17 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 {
     public class VoucherServiceTests
     {
+        private static Product testProduct => new Product(
+            id: 1,
+            name: "Coffee",
+            description: "Coffee clip card",
+            numberOfTickets: 10,
+            price: 10,
+            experienceWorth: 10,
+            visible: true,
+            productUserGroup: new List<ProductUserGroup>()
+        );
+
         [Theory(DisplayName = "CreateVouchers returns unique responses")]
         [InlineData(0, 1)]
         [InlineData(1, 1)]
@@ -36,13 +47,19 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
 
-            var product = new Product { Id = 1, Name = "product", Description = "desc" };
+            var product = testProduct;
             await context.Products.AddAsync(product);
             await context.SaveChangesAsync();
             var voucherService = new VoucherService(context);
 
             // Act
-            var request = new IssueVoucherRequest { Amount = amount, ProductId = productId };
+            var request = new IssueVoucherRequest(
+                productId: productId,
+                amount: amount,
+                voucherPrefix: "???",
+                description: "???",
+                requester: "???"
+            );
             var responses = (await voucherService.CreateVouchers(request)).ToList();
 
             // Assert
@@ -70,7 +87,13 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var voucherService = new VoucherService(context);
 
             // Act
-            var request = new IssueVoucherRequest { ProductId = 1, Amount = 10 };
+            var request = new IssueVoucherRequest(
+                productId: 1,
+                amount: 10,
+                voucherPrefix: "???",
+                description: "???",
+                requester: "???"
+            );
 
             await Assert.ThrowsAsync<EntityNotFoundException>(() => voucherService.CreateVouchers(request));
         }
@@ -92,13 +115,19 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
 
-            var product = new Product { Id = 1, Name = "product", Description = "desc" };
+            var product = testProduct;
             await context.Products.AddAsync(product);
             await context.SaveChangesAsync();
             var voucherService = new VoucherService(context);
 
             // Act
-            var request = new IssueVoucherRequest { ProductId = 1, Amount = 10, VoucherPrefix = "ABC" };
+            var request = new IssueVoucherRequest(
+                productId: 1,
+                amount: 10,
+                voucherPrefix: "ABC",
+                description: "???",
+                requester: "???"
+            );
             var response = await voucherService.CreateVouchers(request);
 
             const int codeLength = 4 + 8; //ABC-XXXXXXXX
@@ -123,13 +152,19 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
 
-            var product = new Product { Id = 1, Name = "product", Description = "desc" };
+            var product = testProduct;
             await context.Products.AddAsync(product);
             await context.SaveChangesAsync();
             var voucherService = new VoucherService(context);
 
             // Act
-            var request = new IssueVoucherRequest { ProductId = 1, Amount = 10 };
+            var request = new IssueVoucherRequest(
+                productId: 1,
+                amount: 10,
+                voucherPrefix: "???",
+                description: "???",
+                requester: "???"
+            );
             var response = await voucherService.CreateVouchers(request);
 
             Assert.All(response, voucherResponse => Assert.True(context.Vouchers.Any(v => v.Code == voucherResponse.VoucherCode)));
@@ -152,13 +187,19 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
 
-            var product = new Product { Id = 1, Name = "product", Description = "desc" };
+            var product = testProduct;
             await context.Products.AddAsync(product);
             await context.SaveChangesAsync();
             var voucherService = new VoucherService(context);
 
             //Act
-            var request = new IssueVoucherRequest { ProductId = 1, Amount = 10, VoucherPrefix = "ACT" };
+            var request = new IssueVoucherRequest(
+                productId: 1,
+                amount: 10,
+                voucherPrefix: "ACT",
+                description: "???",
+                requester: "???"
+            );
             var response = await voucherService.CreateVouchers(request);
 
             //Assert

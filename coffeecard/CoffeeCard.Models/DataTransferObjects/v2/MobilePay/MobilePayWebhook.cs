@@ -60,6 +60,26 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.MobilePay
         {
             return $"{nameof(NotificationId)}: {NotificationId}, {nameof(EventType)}: {EventType}, {nameof(EventDate)}: {EventDate}, {nameof(Data)}: {Data}";
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MobilePayWebhook"/> class.
+        /// </summary>
+        public MobilePayWebhook(string notificationId, string eventType, DateTime eventDate, EventData data)
+        {
+            if (string.IsNullOrEmpty(notificationId))
+                throw new ArgumentException("NotificationId cannot be null or empty", nameof(notificationId));
+
+            if (string.IsNullOrEmpty(eventType))
+                throw new ArgumentException("EventType cannot be null or empty", nameof(eventType));
+
+            if (data == null)
+                throw new ArgumentNullException(nameof(data));
+
+            NotificationId = notificationId;
+            EventType = eventType;
+            EventDate = eventDate;
+            Data = data;
+        }
     }
 
     /// <summary>
@@ -90,6 +110,21 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.MobilePay
         public override string ToString()
         {
             return $"{nameof(Id)}: {Id}, {nameof(Type)}: {Type}";
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EventData"/> class.
+        /// </summary>
+        public EventData(string id, string type)
+        {
+            if (string.IsNullOrEmpty(id))
+                throw new ArgumentException("Id cannot be null or empty", nameof(id));
+
+            if (string.IsNullOrEmpty(type))
+                throw new ArgumentException("Type cannot be null or empty", nameof(type));
+
+            Id = id;
+            Type = type;
         }
     }
 }

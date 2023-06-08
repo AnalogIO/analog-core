@@ -50,7 +50,28 @@ namespace CoffeeCard.Models.DataTransferObjects.CoffeeCard
         /// <value>Quantity</value>
         /// <example>10</example>
         public int Quantity { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CoffeeCard"/> class.
+        /// </summary>
+        /// <param name="productId">The product identifier.</param>
+        /// <param name="name">The name.</param>
+        /// <param name="ticketsLeft">The tickets left.</param>
+        /// <param name="price">The price.</param>
+        /// <param name="quantity">The quantity.</param>
+        public CoffeeCard(int productId, string name, int ticketsLeft, int price, int quantity)
+        {
+            if (string.IsNullOrEmpty(name)) {
+                throw new System.ArgumentException("Name cannot be null or empty", nameof(name));
+            }
+            ProductId = productId;
+            Name = name;
+            TicketsLeft = ticketsLeft;
+            Price = price;
+            Quantity = quantity;
+        }
     }
+
 
     /// <summary>
     /// Coffee Card comparison class implementing <see cref="IEqualityComparer{T}"/>

@@ -39,5 +39,27 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Voucher
         /// </summary>
         [Required]
         public DateTime IssuedAt { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IssueVoucherResponse"/> class.
+        /// </summary>
+        public IssueVoucherResponse(string voucherCode, int productId, string productName, DateTime issuedAt)
+        {
+            VoucherCode = voucherCode;
+            ProductId = productId;
+            ProductName = productName;
+            IssuedAt = issuedAt;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IssueVoucherResponse"/> class from a <see cref="Entities.Voucher"/>.
+        /// </summary>
+        public IssueVoucherResponse(Entities.Voucher voucher)
+        {
+            VoucherCode = voucher.Code;
+            ProductId = voucher.ProductId;
+            ProductName = voucher.Product.Name;
+            IssuedAt = voucher.DateCreated;
+        }
     }
 }

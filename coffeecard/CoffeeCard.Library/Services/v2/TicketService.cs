@@ -6,7 +6,6 @@ using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Models.DataTransferObjects.v2.Ticket;
 using CoffeeCard.Models.Entities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -28,14 +27,7 @@ namespace CoffeeCard.Library.Services.v2
             var tickets = new List<Ticket>();
             for (var i = 0; i < purchase.NumberOfTickets; i++)
             {
-                tickets.Add(new Ticket
-                {
-                    DateCreated = DateTime.UtcNow,
-                    ProductId = purchase.ProductId,
-                    IsUsed = false,
-                    Owner = purchase.PurchasedBy,
-                    Purchase = purchase
-                });
+                tickets.Add(new Ticket(purchase: purchase));
             }
 
             await _context.Tickets.AddRangeAsync(tickets);
@@ -75,12 +67,12 @@ namespace CoffeeCard.Library.Services.v2
             await _context.SaveChangesAsync();
 
             return new UsedTicketResponse
-            {
-                Id = ticket.Id,
-                DateCreated = ticket.DateCreated,
-                DateUsed = timeUsed,
-                ProductName = ticket.Purchase.ProductName
-            };
+            (
+                id: ticket.Id,
+                dateCreated: ticket.DateCreated,
+                dateUsed: timeUsed,
+                productName: ticket.Purchase.ProductName
+            );
         }
 
         private async Task<Ticket> GetFirstTicketFromProductAsync(int productId, int userId)

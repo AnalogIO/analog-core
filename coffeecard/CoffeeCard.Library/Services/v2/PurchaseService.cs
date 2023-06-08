@@ -8,7 +8,6 @@ using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 using CoffeeCard.Models.Entities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Purchase = CoffeeCard.Models.Entities.Purchase;
@@ -52,15 +51,15 @@ namespace CoffeeCard.Library.Services.v2
             }
 
             return new InitiatePurchaseResponse
-            {
-                Id = purchase.Id,
-                DateCreated = purchase.DateCreated,
-                ProductId = product.Id,
-                ProductName = product.Name,
-                TotalAmount = purchase.Price,
-                PurchaseStatus = purchase.Status,
-                PaymentDetails = paymentDetails
-            };
+            (
+                id: purchase.Id,
+                dateCreated: purchase.DateCreated,
+                productId: product.Id,
+                productName: product.Name,
+                totalAmount: purchase.Price,
+                purchaseStatus: purchase.Status,
+                paymentDetails: paymentDetails
+            );
         }
 
         /// <summary>
@@ -102,12 +101,11 @@ namespace CoffeeCard.Library.Services.v2
             switch (purchaseRequest.PaymentType)
             {
                 case PaymentType.MobilePay:
-                    paymentDetails = await _mobilePayPaymentsService.InitiatePayment(new MobilePayPaymentRequest
-                    {
-                        Amount = product.Price,
-                        OrderId = orderId,
-                        Description = product.Name
-                    });
+                    paymentDetails = await _mobilePayPaymentsService.InitiatePayment(new MobilePayPaymentRequest(
+                        amount: product.Price,
+                        orderId: orderId,
+                        description: product.Name
+                    ));
 
                     purchaseStatus = PurchaseStatus.PendingPayment;
                     transactionId = ((MobilePayPaymentDetails)paymentDetails).PaymentId;
@@ -124,17 +122,14 @@ namespace CoffeeCard.Library.Services.v2
                     throw new ArgumentException($"Payment Type '{purchaseRequest.PaymentType}' is not handled");
             }
 
-            var purchase = new Purchase
+            var purchase = new Purchase(
+                product: product,
+                purchasedBy: user,
+                orderId: paymentDetails.OrderId
+            )
             {
-                ProductName = product.Name,
-                ProductId = product.Id,
-                Price = product.Price,
-                NumberOfTickets = product.NumberOfTickets,
-                DateCreated = DateTime.UtcNow,
                 Completed = false,
-                OrderId = paymentDetails.OrderId,
                 TransactionId = transactionId,
-                PurchasedBy = user,
                 Status = purchaseStatus
                 // FIXME State management, PaymentType
             };
@@ -158,31 +153,21 @@ namespace CoffeeCard.Library.Services.v2
 
             var paymentDetails = await _mobilePayPaymentsService.GetPayment(Guid.Parse(purchase.TransactionId));
 
-            return new SinglePurchaseResponse
-            {
-                Id = purchase.Id,
-                DateCreated = purchase.DateCreated,
-                TotalAmount = purchase.Price,
-                ProductId = purchase.ProductId,
-                PurchaseStatus = purchase.Status,
-                PaymentDetails = paymentDetails
-            };
+            return new SinglePurchaseResponse(
+                id: purchase.Id,
+                dateCreated: purchase.DateCreated,
+                totalAmount: purchase.Price,
+                productId: purchase.ProductId,
+                purchaseStatus: purchase.Status,
+                paymentDetails: paymentDetails
+            );
         }
 
         public async Task<IEnumerable<SimplePurchaseResponse>> GetPurchases(User user)
         {
             return await _context.Purchases
                 .Where(p => p.PurchasedBy.Equals(user))
-                .Select(p => new SimplePurchaseResponse
-                {
-                    Id = p.Id,
-                    DateCreated = p.DateCreated,
-                    ProductId = p.ProductId,
-                    ProductName = p.ProductName,
-                    NumberOfTickets = p.NumberOfTickets,
-                    TotalAmount = p.Price,
-                    PurchaseStatus = p.Status
-                })
+                .Select((p) => new SimplePurchaseResponse(p))
                 .ToListAsync();
         }
 
@@ -280,15 +265,13 @@ namespace CoffeeCard.Library.Services.v2
 
             var product = await _context.Products.FirstOrDefaultAsync(x => x.Id == voucher.Product.Id);
 
-            var purchase = new Purchase
+            var purchase = new Purchase(
+                product: product,
+                purchasedBy: user,
+                orderId: voucherCode
+            )
             {
-                DateCreated = DateTime.UtcNow,
-                NumberOfTickets = voucher.Product.NumberOfTickets,
-                OrderId = voucherCode,
                 Price = 0,
-                ProductId = voucher.Product.Id,
-                ProductName = voucher.Product.Name,
-                PurchasedBy = user
             };
 
             user.Purchases.Add(purchase);
@@ -306,16 +289,7 @@ namespace CoffeeCard.Library.Services.v2
             _context.Entry(voucher).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
-            return new SimplePurchaseResponse
-            {
-                Id = purchase.Id,
-                DateCreated = purchase.DateCreated,
-                ProductId = purchase.ProductId,
-                ProductName = purchase.ProductName,
-                NumberOfTickets = purchase.NumberOfTickets,
-                TotalAmount = purchase.Price,
-                PurchaseStatus = purchase.Status
-            };
+            return new SimplePurchaseResponse(purchase);
         }
 
         public void Dispose()
