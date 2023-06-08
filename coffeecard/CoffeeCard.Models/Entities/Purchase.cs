@@ -6,6 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CoffeeCard.Models.Entities
 {
+    /// <summary>
+    /// Represents a purchase made by a user.
+    /// </summary>
     // TODO Should me marked as unique
     [Index(nameof(OrderId), IsUnique = true)]
     [Index(nameof(ExternalTransactionId))]
@@ -84,11 +87,42 @@ namespace CoffeeCard.Models.Entities
         /// The type of purchase e.g. MobilePayV1, Free
         public PurchaseType Type { get; set; }
 
+        /// <summary>
+        /// Id of the <see cref="User"/> who made the purchase.
+        /// </summary>
         [Column(name: "PurchasedBy_Id")]
         public int PurchasedById { get; set; }
 
+        /// <summary>
+        /// The <see cref="User"/> who made the purchase.
+        /// </summary>
         public User PurchasedBy { get; set; }
 
-        public virtual ICollection<Ticket> Tickets { get; set; }
+        /// <summary>
+        /// The <see cref="Ticket"/>s associated with the purchase.
+        /// </summary>
+        public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Purchase"/> class.
+        /// </summary>
+        public Purchase(Product product, User purchasedBy, string orderId)
+        {
+            Product = product;
+            ProductName = product.Name;
+            ProductId = product.Id;
+            Price = product.Price;
+            OrderId = orderId;
+            NumberOfTickets = product.NumberOfTickets;
+            PurchasedBy = purchasedBy;
+            PurchasedById = purchasedBy.Id;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Purchase"/> class.
+        /// </summary>
+        public Purchase()
+        {
+        }
     }
 }

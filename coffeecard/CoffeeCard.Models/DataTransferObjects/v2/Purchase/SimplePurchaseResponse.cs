@@ -1,6 +1,5 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-
 namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
 {
     /// <summary>

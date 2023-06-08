@@ -7,8 +7,6 @@ using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Models.DataTransferObjects.v2.Voucher;
 using CoffeeCard.Models.Entities;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 
 namespace CoffeeCard.Library.Services.v2
 {

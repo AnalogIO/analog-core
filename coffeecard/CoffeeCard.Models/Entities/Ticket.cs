@@ -3,32 +3,63 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CoffeeCard.Models.Entities
 {
+    /// <summary>
+    /// Represents a ticket entity.
+    /// </summary>
     public class Ticket
     {
+        /// <summary>
+        /// Gets or sets the ID of the ticket.
+        /// </summary>
         public int Id { get; set; }
 
+        /// <summary>
+        /// Gets or sets the date the ticket was created.
+        /// </summary>
         public DateTime DateCreated { get; set; } = DateTime.UtcNow;
 
+        /// <summary>
+        /// Gets or sets the date the ticket was used.
+        /// </summary>
         public DateTime? DateUsed { get; set; }
 
+        /// <summary>
+        /// Gets or sets the ID of the product associated with the ticket.
+        /// </summary>
         public int ProductId { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the ticket has been used.
+        /// </summary>
         [Obsolete("Use Status instead", true)]
         public bool IsUsed { get; set; }
+
 
         /// <summary>
         /// The status of this ticket (e.g. has this ticket been used or refunded?)
         /// </summary>
         public TicketStatus Status { get; set; }
-
+        
+        /// <summary>
+        /// Gets or sets the ID of the owner associated with the ticket.
+        /// </summary>
         [Column(name: "Owner_Id")]
         public int OwnerId { get; set; }
 
+        /// <summary>
+        /// Gets or sets the owner associated with the ticket.
+        /// </summary>
         public User Owner { get; set; }
 
+        /// <summary>
+        /// Gets or sets the ID of the purchase associated with the ticket.
+        /// </summary>
         [Column(name: "Purchase_Id")]
         public int PurchaseId { get; set; }
 
+        /// <summary>
+        /// Gets or sets the purchase associated with the ticket.
+        /// </summary>
         public Purchase Purchase { get; set; }
 
         /// <summary>
