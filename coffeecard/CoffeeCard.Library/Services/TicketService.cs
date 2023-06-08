@@ -124,9 +124,6 @@ namespace CoffeeCard.Library.Services
             var userId = int.Parse(userIdClaim.Value);
             var user = _context.Users.Find(userId);
 
-            var product = _context.Products.FirstOrDefault(p => p.Id == 4);
-            var name = product.Name;
-
             var coffeeCards = _context.Tickets
                 .Include(p => p.Purchase)
                 .Join(_context.Products,
