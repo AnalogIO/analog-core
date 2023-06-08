@@ -36,8 +36,8 @@ namespace CoffeeCard.Library.Services
             return await
             (
                 from p in from pug in _context.ProductUserGroups
-                    where pug.UserGroup == userGroup
-                    select pug.Product
+                          where pug.UserGroup == userGroup
+                          select pug.Product
                 where p.Visible
                 orderby p.Id
                 select p

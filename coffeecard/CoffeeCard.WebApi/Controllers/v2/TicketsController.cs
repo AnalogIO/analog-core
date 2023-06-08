@@ -47,7 +47,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         public async Task<ActionResult<List<TicketResponse>>> Get([FromQuery] bool includeUsed)
         {
             var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
-            
+
             return Ok(await _ticketService.GetTickets(user, includeUsed));
         }
     }

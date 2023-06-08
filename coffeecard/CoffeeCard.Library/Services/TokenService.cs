@@ -47,7 +47,7 @@ namespace CoffeeCard.Library.Services
             return new JwtSecurityTokenHandler().ReadToken(token) as JwtSecurityToken;
         }
 
-        
+
         /// <summary>
         /// Receives the serialized version of a JWT token as a string.
         /// Checks if the JWT token is valid (Based on its lifetime)
@@ -83,7 +83,7 @@ namespace CoffeeCard.Library.Services
 
             return true;
         }
-        
+
         /// <summary>
         /// Receives the serialized version of a JWT token as a string.
         /// Checks if the JWT token is valid (Based on its lifetime and if it has been used before)
@@ -109,7 +109,7 @@ namespace CoffeeCard.Library.Services
                 return false;
             }
         }
-        
+
         public string ValidateVerificationTokenAndGetEmail(string token)
         {
             if (!ValidateToken(token))
@@ -117,14 +117,14 @@ namespace CoffeeCard.Library.Services
                 Log.Information("Token validation failed. DId not pass validation parameters");
                 throw new ApiException("The token is invalid!", StatusCodes.Status401Unauthorized);
             }
-            
+
             var jwtToken = ReadToken(token);
             if (jwtToken.Claims.Any(x => x.Type == ClaimTypes.Role && x.Value != "verification_token"))
             {
                 Log.Information("Token validation failed. Not a verification token");
                 throw new ApiException("The token is invalid!", StatusCodes.Status401Unauthorized);
             }
-            
+
             var emailClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
             if (emailClaim == null)
             {

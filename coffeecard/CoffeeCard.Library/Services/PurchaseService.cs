@@ -68,7 +68,7 @@ namespace CoffeeCard.Library.Services
                 throw new ApiException($"The product with id {purchase.ProductId} could not be found!");
             for (var i = 0; i < purchase.NumberOfTickets; i++)
             {
-                var ticket = new Ticket {ProductId = product.Id, Purchase = purchase};
+                var ticket = new Ticket { ProductId = product.Id, Purchase = purchase };
                 user.Tickets.Add(ticket);
             }
 

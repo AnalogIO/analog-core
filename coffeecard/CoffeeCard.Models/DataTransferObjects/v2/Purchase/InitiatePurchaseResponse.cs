@@ -31,7 +31,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <example>122</example>
         [Required]
         public int Id { get; set; }
-        
+
         /// <summary>
         /// Date time for purchase in Utc format
         /// </summary>
@@ -39,7 +39,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <example>2022-01-09T21:03:52.2283208Z</example>
         [Required]
         public DateTime DateCreated { get; set; }
-        
+
         /// <summary>
         /// Id of the product to be purchased
         /// </summary>
@@ -64,7 +64,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <example>100</example>
         [Required]
         public int TotalAmount { get; set; }
-        
+
         /// <summary>
         /// Status of the purchase
         /// </summary>
@@ -72,7 +72,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <example>Completed</example>
         [Required]
         public PurchaseStatus? PurchaseStatus { get; set; }
-        
+
         /// <summary>
         /// Details about the payment. The details object is specific to the Payment Type
         /// </summary>

@@ -24,6 +24,10 @@
         "value": "https://core.prd.analogio.dk"
       },
       {
+        "name": "MobilePaySettingsV2__AnalogAppRedirectUri",
+        "value": "analogcoffeecard://mobilepay_purchase"
+      },
+      {
         "name": "MobilePaySettingsV2__ApiUrl",
         "value": "https://api.mobilepay.dk/"
       },

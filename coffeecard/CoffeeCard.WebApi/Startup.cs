@@ -42,7 +42,7 @@ namespace CoffeeCard.WebApi
     {
         private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _environment;
-        
+
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             _configuration = configuration;
@@ -53,7 +53,7 @@ namespace CoffeeCard.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddConfigurationSettings(_configuration);
-            
+
             // Setup database connection
             var databaseSettings = _configuration.GetSection(nameof(DatabaseSettings)).Get<DatabaseSettings>();
             services.AddDbContext<CoffeeCardContext>(opt =>
@@ -62,7 +62,7 @@ namespace CoffeeCard.WebApi
 
             // Setup cache
             services.AddMemoryCache();
-            
+
             // Setup Dependency Injection
             services.AddSingleton(_environment);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -95,7 +95,7 @@ namespace CoffeeCard.WebApi
             // Azure Application Insights
             services.AddApplicationInsightsTelemetry();
             services.AddSingleton<TelemetryClient>();
-            
+
             // Setup filter to catch outgoing exceptions
             services.AddControllers(options =>
                 {
@@ -108,7 +108,7 @@ namespace CoffeeCard.WebApi
                     options.SerializerSettings.Converters.Add(new StringEnumConverter());
                     options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
                 });
-            
+
             services.AddCors(options => options.AddDefaultPolicy(builder =>
                 builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
@@ -128,7 +128,7 @@ namespace CoffeeCard.WebApi
                 config.SuppressMapClientErrors = true;
             });
 
-                GenerateOpenApiDocument(services);
+            GenerateOpenApiDocument(services);
 
             // Setup razor pages
             services.AddRazorPages();
@@ -173,7 +173,7 @@ namespace CoffeeCard.WebApi
                             var identitySettings = _configuration.GetSection(nameof(IdentitySettings)).Get<IdentitySettings>();
                             var apiKey = identitySettings.ApiKey;
                             if (apiKey == context.ApiKey)
-                                
+
                             {
                                 context.ValidationSucceeded();
                             }
@@ -200,7 +200,7 @@ namespace CoffeeCard.WebApi
                     config.Title = apiVersion.GroupName;
                     config.Version = apiVersion.ApiVersion.ToString();
                     config.DocumentName = apiVersion.GroupName;
-                    config.ApiGroupNames = new[] {apiVersion.GroupName};
+                    config.ApiGroupNames = new[] { apiVersion.GroupName };
                     config.Description = "ASP.NET Core WebAPI for Cafe Analog";
                     config.PostProcess = document =>
                     {
@@ -229,7 +229,7 @@ namespace CoffeeCard.WebApi
                         Type = OpenApiSecuritySchemeType.Http
                     }));
                     config.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("jwt"));
-                    
+
                     config.DocumentProcessors.Add(new SecurityDefinitionAppender("apikey", new OpenApiSecurityScheme
                     {
                         Description = "Api Key used for health endpoints",
@@ -278,9 +278,10 @@ namespace CoffeeCard.WebApi
                 endpoints.MapRazorPages();
                 endpoints.MapFallbackToPage("/result");
             });
-            
+
             // Enable Request Buffering so that a raw request body can be read after aspnet model binding
-            app.Use(next => context => {
+            app.Use(next => context =>
+            {
                 context.Request.EnableBuffering();
                 return next(context);
             });

@@ -94,7 +94,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             var dateTimeProvider = new Mock<IDateTimeProvider>();
             dateTimeProvider.Setup(dtp => dtp.UtcNow()).Returns(new DateTime(2020, 11, 11));
-            
+
             var leaderboardService = new LeaderboardService(context, dateTimeProvider.Object);
 
             // Act
@@ -269,7 +269,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 }
             }, result.ToList());
         }
-        
+
         [Theory(DisplayName = "GetTopLeaderboardEntries given preset when statistics are expired returns empty list")]
         [InlineData(LeaderboardPreset.Month)]
         [InlineData(LeaderboardPreset.Semester)]

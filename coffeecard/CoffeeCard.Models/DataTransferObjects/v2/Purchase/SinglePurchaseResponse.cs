@@ -30,7 +30,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <example>1371</example>
         [Required]
         public int Id { get; set; }
-        
+
         /// <summary>
         /// Date time for purchase in Utc format
         /// </summary>
@@ -46,7 +46,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <example>1</example>
         [Required]
         public int ProductId { get; set; }
-        
+
         /// <summary>
         /// Total purchase price in Danish Kroner (kr)
         /// </summary>
@@ -54,7 +54,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <example>300</example>
         [Required]
         public int TotalAmount { get; set; }
-        
+
         /// <summary>
         /// Status of the purchase
         /// </summary>
@@ -62,7 +62,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <example>Completed</example>
         [Required]
         public PurchaseStatus? PurchaseStatus { get; set; }
-        
+
         /// <summary>
         /// Details about the payment. The details object is specific to the Payment Type
         /// </summary>

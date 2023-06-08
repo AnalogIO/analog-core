@@ -71,7 +71,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         {
             var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
             await _accountService.RequestAnonymizationAsync(user);
-            
+
             return StatusCode(StatusCodes.Status202Accepted);
         }
 
@@ -136,7 +136,8 @@ namespace CoffeeCard.WebApi.Controllers.v2
             });
         }
 
-        private async Task<UserResponse> UserWithRanking(User user) {
+        private async Task<UserResponse> UserWithRanking(User user)
+        {
             var (total, semester, month) = await _leaderboardService.GetLeaderboardPlacement(user);
 
             return new UserResponse

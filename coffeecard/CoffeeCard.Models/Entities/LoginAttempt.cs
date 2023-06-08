@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace CoffeeCard.Models.Entities
 {
     // TODO: Remove this entity since it looks like it's not actively used
-    
+
     public class LoginAttempt
     {
         public LoginAttempt()

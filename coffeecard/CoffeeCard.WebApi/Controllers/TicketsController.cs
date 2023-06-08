@@ -70,7 +70,7 @@ namespace CoffeeCard.WebApi.Controllers
             var usedTickets = await _ticketService.UseMultipleTickets(User.Claims, dto);
             return Ok(_mapperService.Map(usedTickets));
         }
-        
+
         /// <summary>
         /// Use ticket request
         /// </summary>
