@@ -274,11 +274,12 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task<SimplePurchaseResponse> RedeemVoucher(string voucherCode, User user)
         {
-            var voucher = await _context.Vouchers.Include(x => x.Product).FirstOrDefaultAsync(x => x.Code.Equals(voucherCode));
-            if (voucher == null) throw new EntityNotFoundException($"Voucher '{voucherCode}' does not exist!");
-            if (voucher.User != null) throw new ConflictException("Voucher has already been redeemed!");
-
-            var product = await _context.Products.FirstOrDefaultAsync(x => x.Id == voucher.Product.Id);
+            var voucher = await _context.Vouchers
+                .Where(v => v.Code.Equals(voucherCode, StringComparison.OrdinalIgnoreCase))
+                .Include(v => v.Product)
+                .FirstOrDefaultAsync();
+            if (voucher == null) throw new EntityNotFoundException($"Voucher '{voucherCode}' does not exist");
+            if (voucher.UserId != null) throw new ConflictException($"Voucher '{voucherCode}' has already been redeemed");
 
             var purchase = new Purchase
             {
