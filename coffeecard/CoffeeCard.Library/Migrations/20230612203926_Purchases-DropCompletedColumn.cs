@@ -44,6 +44,7 @@ namespace CoffeeCard.Library.Migrations
                 nullable: false,
                 defaultValue: false);
 
+            migrationBuilder.Sql("UPDATE dbo.Purchases SET Completed = 0 WHERE Status != 'Completed'");
             migrationBuilder.Sql("UPDATE dbo.Purchases SET Completed = 1 WHERE Status = 'Completed'");
         }
     }
