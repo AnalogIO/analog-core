@@ -131,7 +131,6 @@ namespace CoffeeCard.Library.Services.v2
                 Price = product.Price,
                 NumberOfTickets = product.NumberOfTickets,
                 DateCreated = DateTime.UtcNow,
-                Completed = false,
                 OrderId = paymentDetails.OrderId,
                 TransactionId = transactionId,
                 PurchasedBy = user,
@@ -199,7 +198,7 @@ namespace CoffeeCard.Library.Services.v2
                     $"No purchase was found by Transaction Id: {webhook.Data.Id} from webhook request");
             }
 
-            if (purchase.Completed)
+            if (purchase.Status == PurchaseStatus.Completed)
             {
                 Log.Warning(
                     "Purchase from Webhook request is already completed. Purchase Id: {PurchaseId}, Transaction Id: {TransactionId}",
@@ -238,7 +237,6 @@ namespace CoffeeCard.Library.Services.v2
             await _mobilePayPaymentsService.CapturePayment(Guid.Parse(purchase.TransactionId), purchase.Price);
             await _ticketService.IssueTickets(purchase);
 
-            purchase.Completed = true;
             purchase.Status = PurchaseStatus.Completed;
             await _context.SaveChangesAsync();
 
@@ -250,7 +248,6 @@ namespace CoffeeCard.Library.Services.v2
         private async Task CancelPurchase(Purchase purchase)
         {
             await _mobilePayPaymentsService.CancelPayment(Guid.Parse(purchase.TransactionId));
-            purchase.Completed = false;
             purchase.Status = PurchaseStatus.Cancelled;
             await _context.SaveChangesAsync();
 
@@ -296,7 +293,6 @@ namespace CoffeeCard.Library.Services.v2
             await _ticketService.IssueTickets(purchase);
 
             purchase.TransactionId = $"VOUCHER: {voucher.Id}";
-            purchase.Completed = true;
             purchase.Status = PurchaseStatus.Completed;
 
             voucher.DateUsed = DateTime.UtcNow;

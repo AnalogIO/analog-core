@@ -22,7 +22,6 @@ namespace CoffeeCard.Library.Services
                 Price = purchase.Price,
                 NumberOfTickets = purchase.NumberOfTickets,
                 DateCreated = purchase.DateCreated,
-                Completed = purchase.Completed,
                 OrderId = purchase.OrderId,
                 TransactionId = purchase.TransactionId
             };

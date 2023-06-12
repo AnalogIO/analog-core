@@ -59,15 +59,6 @@ namespace CoffeeCard.Models.Entities
         public DateTime DateCreated { get; set; } = DateTime.UtcNow;
 
         /// <summary>
-        /// Purchase completed
-        /// </summary>
-        /// <value>Purchase Completed</value>
-        /// <example>true</example>
-
-        // FIXME More detailed state management?
-        public bool Completed { get; set; }
-
-        /// <summary>
         /// Order Id. Unique identifier used to represent the order at a external provider
         /// </summary>
         /// <value>Order Id</value>
@@ -87,7 +78,7 @@ namespace CoffeeCard.Models.Entities
         /// </summary>
         /// <value>Status</value>
         /// <example>Completed</example>
-        public PurchaseStatus? Status { get; set; }
+        public PurchaseStatus Status { get; set; }
 
         [Column(name: "PurchasedBy_Id")]
         public int PurchasedById { get; set; }

@@ -183,7 +183,6 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             // DB Contents
             Assert.Equal(mobilepayPaymentId, purchaseInDatabase.TransactionId);
             Assert.Equal(orderId, purchaseInDatabase.OrderId);
-            Assert.False(purchaseInDatabase.Completed);
 
             Assert.Equal(product1.Id, purchaseInDatabase.ProductId);
             Assert.Equal(product1.Name, purchaseInDatabase.ProductName);
