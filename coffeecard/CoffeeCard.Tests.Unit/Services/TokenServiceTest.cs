@@ -28,16 +28,13 @@ namespace CoffeeCard.Tests.Unit.Services
 
         private readonly IdentitySettings _identity;
 
-        private static User GenerateTestUser(
-            ICollection<Token> tokens,
-            string email = "test@email.dk",
-            string name = "test",
-            string password = "1234",
-            string salt = "salted"
-        )
-        {
-            return new User { Tokens = tokens, Email = email, Name = name, Password = password, Salt = salt, Programme = new Programme { ShortName = "test", FullName = "tester", SortPriority = 1 } };
-        }
+        private static User testuser => new User(
+            email: "test",
+            name: "test",
+            password: "pass",
+            salt: "salt",
+            programme: new Programme(fullName: "fullName", shortName: "shortName")
+        );
 
         [Fact(DisplayName = "ValidateToken given invalid token returns false")]
         public async Task ValidateTokenGivenInvalidTokenReturnsFalse()
@@ -63,7 +60,9 @@ namespace CoffeeCard.Tests.Unit.Services
         public async Task ValidateTokenGivenValidTokenReturnsTrue()
         {
             // Arrange
-            var claim = new Claim(ClaimTypes.Email, "test@email.dk");
+            var user = testuser;
+
+            var claim = new Claim(ClaimTypes.Email, user.Email);
             var claims = new List<Claim> { claim };
 
             bool result;
@@ -76,7 +75,7 @@ namespace CoffeeCard.Tests.Unit.Services
 
                 var token = tokenService.GenerateToken(claims);
                 var userTokens = new List<Token> { new Token(token) };
-                var user = GenerateTestUser(tokens: userTokens);
+                user.Tokens = userTokens;
                 await context.AddAsync(user);
                 await context.SaveChangesAsync();
 
@@ -125,7 +124,8 @@ namespace CoffeeCard.Tests.Unit.Services
         public async Task ValidateTokenGivenWelformedExpiredTokenReturnsFalse()
         {
             // Arrange
-            var claim = new Claim(ClaimTypes.Email, "test@email.dk");
+            var user = testuser;
+            var claim = new Claim(ClaimTypes.Email, user.Email);
             var claims = new List<Claim> { claim };
 
             bool result;
@@ -152,7 +152,7 @@ namespace CoffeeCard.Tests.Unit.Services
                     var token = new JwtSecurityTokenHandler().WriteToken(jwt);
 
                     var userTokens = new List<Token> { new Token(token) };
-                    var user = GenerateTestUser(tokens: userTokens);
+                    user.Tokens = userTokens;
                     await context.AddAsync(user);
                     await context.SaveChangesAsync();
 
@@ -169,7 +169,9 @@ namespace CoffeeCard.Tests.Unit.Services
         public async Task ValidateTokenGivenWelformedUsedTokenReturnsFalse()
         {
             // Arrange
-            var claim = new Claim(ClaimTypes.Email, "test@email.dk");
+            var user = testuser;
+
+            var claim = new Claim(ClaimTypes.Email, user.Email);
             var claims = new List<Claim> { claim };
 
             bool result;
@@ -182,9 +184,7 @@ namespace CoffeeCard.Tests.Unit.Services
 
                 var token = tokenService.GenerateToken(claims);
 
-                var userTokens =
-                    new List<Token>(); //No tokens are added to the users list, therefore all tokens with a claim for this user will be assumed to be expired
-                var user = GenerateTestUser(tokens: userTokens);
+                // No tokens are added to the users list, therefore all tokens with a claim for this user will be assumed to be expired
                 await context.AddAsync(user);
                 await context.SaveChangesAsync();
 

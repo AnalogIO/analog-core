@@ -9,6 +9,13 @@ namespace CoffeeCard.Tests.Unit.Services
 {
     public class LoginLimiterTests
     {
+        private static User testuser => new User(
+            email: "test",
+            name: "test",
+            password: "pass",
+            salt: "salt",
+            programme: new Programme(fullName: "fullName", shortName: "shortName")
+        );
 
         [Fact(DisplayName = "LoginLimiter allows logins after timeout expired")]
         public async Task LoginAllowsLoginsAfterTimeout()
@@ -20,15 +27,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 MaximumLoginAttemptsWithinTimeOut = 5,
                 TimeOutPeriodInSeconds = 1
             };
-            var user = new User
-            {
-                Id = 1,
-                Name = "test",
-                Email = "test@email.dk",
-                Programme = new Programme(),
-                Password = "test",
-                IsVerified = true
-            };
+            var user = testuser;
 
             var loginLimiter = new LoginLimiter(loginLimiterSettings);
 
@@ -61,15 +60,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 MaximumLoginAttemptsWithinTimeOut = 5,
                 TimeOutPeriodInSeconds = 1
             };
-            var user = new User
-            {
-                Id = 1,
-                Name = "test",
-                Email = "test@email.dk",
-                Programme = new Programme(),
-                Password = "test",
-                IsVerified = true
-            };
+            var user = testuser;
 
             var loginLimiter = new LoginLimiter(loginLimiterSettings);
 

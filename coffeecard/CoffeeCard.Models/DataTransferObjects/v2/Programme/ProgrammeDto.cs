@@ -36,5 +36,16 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Programme
         /// <example>Software development</example>
         [Required]
         public string FullName { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProgrammeResponse"/> class from a <see cref="Entities.Programme"/> object.
+        /// </summary>
+        /// <param name="programme">The programme.</param>
+        public ProgrammeResponse(Entities.Programme programme)
+        {
+            Id = programme.Id;
+            ShortName = programme.ShortName;
+            FullName = programme.FullName;
+        }
     }
 }

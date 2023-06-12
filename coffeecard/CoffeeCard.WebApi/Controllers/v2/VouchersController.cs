@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
@@ -29,6 +27,12 @@ namespace CoffeeCard.WebApi.Controllers.v2
         private readonly IPurchaseService _purchaseService;
         private readonly ClaimsUtilities _claimUtilities;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VouchersController"/> class.
+        /// </summary>
+        /// <param name="voucherService">The voucher service</param>
+        /// <param name="purchaseService">The purchase service</param>
+        /// <param name="claimUtilities">The claims utilities</param>
         public VouchersController(IVoucherService voucherService, IPurchaseService purchaseService, ClaimsUtilities claimUtilities)
         {
             _voucherService = voucherService;

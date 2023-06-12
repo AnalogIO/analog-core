@@ -35,9 +35,15 @@ namespace CoffeeCard.Models.Entities
         public DateTime LastUpdated { get; set; }
     }
 
+    /// <summary>
+    /// Enum representing the status of a MobilePay webhook
+    /// </summary>
     public enum WebhookStatus
     {
+        /// Webhook is active
         Active,
+
+        /// Webhook is disabled
         Disabled
     }
 }

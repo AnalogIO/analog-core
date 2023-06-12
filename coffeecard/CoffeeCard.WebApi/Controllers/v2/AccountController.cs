@@ -141,22 +141,12 @@ namespace CoffeeCard.WebApi.Controllers.v2
             var (total, semester, month) = await _leaderboardService.GetLeaderboardPlacement(user);
 
             return new UserResponse
-            {
-                Id = user.Id,
-                Email = user.Email,
-                RankAllTime = total,
-                RankMonth = month,
-                RankSemester = semester,
-                Name = user.Name,
-                Role = user.UserGroup.toUserRole(),
-                Programme = new ProgrammeResponse()
-                {
-                    Id = user.Programme.Id,
-                    ShortName = user.Programme.ShortName,
-                    FullName = user.Programme.FullName
-                },
-                PrivacyActivated = user.PrivacyActivated,
-            };
+            (
+                user: user,
+                rankAllTime: total,
+                rankMonth: month,
+                rankSemester: semester
+            );
         }
     }
 }

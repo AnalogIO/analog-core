@@ -4,6 +4,7 @@
     <IsPackable>false</IsPackable>
     <LangVersion>8</LangVersion>
     <ProjectGuid>24274C8F-678F-4E4D-98A0-2899163BCCBA</ProjectGuid>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="coverlet.msbuild" Version="3.2.0">

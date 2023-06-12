@@ -7,8 +7,6 @@ using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Models.DataTransferObjects.v2.Voucher;
 using CoffeeCard.Models.Entities;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 
 namespace CoffeeCard.Library.Services.v2
 {
@@ -40,27 +38,17 @@ namespace CoffeeCard.Library.Services.v2
 
             var vouchers = newCodes
                 .Select(code => new Voucher
-                {
-                    Code = code,
-                    DateCreated = DateTime.Now,
-                    Product = product,
-                    Description = request.Description,
-                    Requester = request.Requester
-                }).ToList();
+                (
+                    code: code,
+                    product: product,
+                    description: request.Description,
+                    requester: request.Requester
+                )).ToList();
 
             await _context.Vouchers.AddRangeAsync(vouchers);
             await _context.SaveChangesAsync();
 
-            var responses = vouchers.
-                Select(v =>
-                    new IssueVoucherResponse
-                    {
-                        VoucherCode = v.Code,
-                        IssuedAt = v.DateCreated,
-                        ProductId = v.Product.Id,
-                        ProductName = v.Product.Name
-                    });
-            return responses;
+            return vouchers.Select(v => new IssueVoucherResponse(v));
         }
 
         /// <summary>

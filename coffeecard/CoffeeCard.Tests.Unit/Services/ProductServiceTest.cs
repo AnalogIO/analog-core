@@ -11,6 +11,47 @@ namespace CoffeeCard.Tests.Unit.Services
 {
     public class ProductServiceTest
     {
+        private static User testuser => new User(
+            email: "test",
+            name: "test",
+            password: "pass",
+            salt: "salt",
+            programme: new Programme(fullName: "fullName", shortName: "shortName")
+        );
+
+        private static Product testProduct1 => new Product(
+            id: 1,
+            name: "Coffee",
+            description: "Coffee clip card",
+            numberOfTickets: 10,
+            price: 10,
+            experienceWorth: 10,
+            visible: true,
+            productUserGroup: new List<ProductUserGroup>()
+        );
+
+        private static Product testProduct2 => new Product(
+            id: 2,
+            name: "Espresso",
+            description: "Espresso clip card",
+            numberOfTickets: 10,
+            price: 20,
+            experienceWorth: 20,
+            visible: true,
+            productUserGroup: new List<ProductUserGroup>()
+        );
+
+        private static Product testProduct3 => new Product(
+            id: 3,
+            name: "Latte",
+            description: "Latte clip card",
+            numberOfTickets: 10,
+            price: 30,
+            experienceWorth: 30,
+            visible: true,
+            productUserGroup: new List<ProductUserGroup>()
+        );
+
         [Fact(DisplayName = "GetProductsForUserAsync does not return non-visible products")]
         public async Task GetProductsForUserAsync_DoesNot_Return_NonVisible_Products()
         {
@@ -27,62 +68,23 @@ namespace CoffeeCard.Tests.Unit.Services
             };
 
             await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
-            var p1 = new Product
-            {
-                Id = 1,
-                Name = "Coffee",
-                Description = "Coffee Clip card",
-                NumberOfTickets = 10,
-                Price = 10,
-                ExperienceWorth = 10,
-                Visible = true
-            };
+            var p1 = testProduct1;
             await context.AddAsync(p1);
 
-            var p2 = new Product
-            {
-                Id = 2,
-                Name = "Espresso",
-                Description = "Espresso Clip card",
-                NumberOfTickets = 10,
-                Price = 20,
-                ExperienceWorth = 20,
-                Visible = false
-            };
+            var p2 = testProduct2;
+            p2.Visible = false;
             await context.AddAsync(p2);
             await context.SaveChangesAsync();
 
-            await context.AddAsync(new ProductUserGroup
-            {
-                Product = p1,
-                UserGroup = UserGroup.Barista
-            });
-            await context.AddAsync(new ProductUserGroup
-            {
-                Product = p2,
-                UserGroup = UserGroup.Barista
-            });
+            await context.AddAsync(new ProductUserGroup(p1, UserGroup.Barista));
+            await context.AddAsync(new ProductUserGroup(p2, UserGroup.Barista));
             await context.SaveChangesAsync();
 
             using var productService = new ProductService(context);
-            var expected = new List<Product>
-            {
-                new Product
-                {
-                    Id = 1,
-                    Name = "Coffee",
-                    Description = "Coffee Clip card",
-                    NumberOfTickets = 10,
-                    Price = 10,
-                    ExperienceWorth = 10,
-                    Visible = true
-                }
-            };
+            var expected = new List<Product> { testProduct1 };
 
-            var user = new User
-            {
-                UserGroup = UserGroup.Barista
-            };
+            var user = testuser;
+            user.UserGroup = UserGroup.Barista;
 
             var result = await productService.GetProductsForUserAsync(user);
 
@@ -105,100 +107,32 @@ namespace CoffeeCard.Tests.Unit.Services
             };
 
             await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
-            var p1 = new Product
-            {
-                Id = 1,
-                Name = "Coffee",
-                Description = "Coffee Clip card",
-                NumberOfTickets = 10,
-                Price = 10,
-                ExperienceWorth = 10,
-                Visible = true
-            };
+            var p1 = testProduct1;
             await context.AddAsync(p1);
 
-            var p2 = new Product
-            {
-                Id = 2,
-                Name = "Espresso",
-                Description = "Espresso Clip card",
-                NumberOfTickets = 10,
-                Price = 20,
-                ExperienceWorth = 20,
-                Visible = true
-            };
+            var p2 = testProduct2;
             await context.AddAsync(p2);
 
-            var p3 = new Product
-            {
-                Id = 3,
-                Name = "Barista Coffee",
-                Description = "Barista Coffee Clip card",
-                NumberOfTickets = 10,
-                Price = 30,
-                ExperienceWorth = 10,
-                Visible = true
-            };
+            var p3 = testProduct3;
             await context.AddAsync(p3);
             await context.SaveChangesAsync();
 
-            await context.AddAsync(new ProductUserGroup
-            {
-                Product = p1,
-                UserGroup = UserGroup.Barista
-            });
-            await context.AddAsync(new ProductUserGroup
-            {
-                Product = p2,
-                UserGroup = UserGroup.Barista
-            });
-            await context.AddAsync(new ProductUserGroup
-            {
-                Product = p3,
-                UserGroup = UserGroup.Barista
-            });
+            await context.AddAsync(new ProductUserGroup(p1, UserGroup.Barista));
+            await context.AddAsync(new ProductUserGroup(p2, UserGroup.Barista));
+            await context.AddAsync(new ProductUserGroup(p3, UserGroup.Barista));
             await context.SaveChangesAsync();
 
             using (var productService = new ProductService(context))
             {
                 var expected = new List<Product>
                 {
-                    new Product
-                    {
-                        Id = 1,
-                        Name = "Coffee",
-                        Description = "Coffee Clip card",
-                        NumberOfTickets = 10,
-                        Price = 10,
-                        ExperienceWorth = 10,
-                        Visible = true
-                    },
-                    new Product
-                    {
-                        Id = 2,
-                        Name = "Espresso",
-                        Description = "Espresso Clip card",
-                        NumberOfTickets = 10,
-                        Price = 20,
-                        ExperienceWorth = 20,
-                        Visible = true
-                    },
-                    new Product
-                    {
-                        Id = 3,
-                        Name = "Barista Coffee",
-                        Description = "Barista Coffee Clip card",
-                        NumberOfTickets = 10,
-                        Price = 30,
-                        ExperienceWorth = 10,
-                        Visible = true
-                    }
+                    testProduct1,
+                    testProduct2,
+                    testProduct3
                 };
 
-                var user = new User
-                {
-                    UserGroup = UserGroup.Barista
-                };
+                var user = testuser;
+                user.UserGroup = UserGroup.Barista;
 
                 var result = await productService.GetProductsForUserAsync(user);
 
@@ -223,57 +157,20 @@ namespace CoffeeCard.Tests.Unit.Services
 
             using (var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings))
             {
-                var p1 = new Product
-                {
-                    Id = 1,
-                    Name = "Coffee",
-                    Description = "Coffee Clip card",
-                    NumberOfTickets = 10,
-                    Price = 10,
-                    ExperienceWorth = 10,
-                    Visible = true
-                };
+                var p1 = testProduct1;
                 await context.AddAsync(p1);
 
-                var p2 = new Product
-                {
-                    Id = 2,
-                    Name = "Espresso",
-                    Description = "Espresso Clip card",
-                    NumberOfTickets = 10,
-                    Price = 20,
-                    ExperienceWorth = 20,
-                    Visible = false
-                };
+                var p2 = testProduct2;
+                p2.Visible = false;
                 await context.AddAsync(p2);
                 await context.SaveChangesAsync();
 
-                await context.AddAsync(new ProductUserGroup
-                {
-                    Product = p1,
-                    UserGroup = UserGroup.Customer
-                });
-                await context.AddAsync(new ProductUserGroup
-                {
-                    Product = p2,
-                    UserGroup = UserGroup.Customer
-                });
+                await context.AddAsync(new ProductUserGroup(p1, UserGroup.Customer));
+                await context.AddAsync(new ProductUserGroup(p2, UserGroup.Customer));
                 await context.SaveChangesAsync();
 
                 using var productService = new ProductService(context);
-                var expected = new List<Product>
-                {
-                    new Product
-                    {
-                        Id = 1,
-                        Name = "Coffee",
-                        Description = "Coffee Clip card",
-                        NumberOfTickets = 10,
-                        Price = 10,
-                        ExperienceWorth = 10,
-                        Visible = true
-                    }
-                };
+                var expected = new List<Product> { testProduct1 };
 
                 var result = await productService.GetPublicProducts();
 
@@ -298,65 +195,26 @@ namespace CoffeeCard.Tests.Unit.Services
 
             using (var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings))
             {
-                var p1 = new Product
-                {
-                    Id = 1,
-                    Name = "Coffee",
-                    Description = "Coffee Clip card",
-                    NumberOfTickets = 10,
-                    Price = 10,
-                    ExperienceWorth = 10,
-                    Visible = true
-                };
+                var p1 = testProduct1;
                 await context.AddAsync(p1);
 
-                var p2 = new Product
-                {
-                    Id = 2,
-                    Name = "Espresso",
-                    Description = "Espresso Clip card",
-                    NumberOfTickets = 10,
-                    Price = 20,
-                    ExperienceWorth = 20,
-                    Visible = true
-                };
+                var p2 = testProduct2;
                 await context.AddAsync(p2);
 
-                var p3 = new Product
-                {
-                    Id = 3,
-                    Name = "Barista Coffee",
-                    Description = "Barista Coffee Clip card",
-                    NumberOfTickets = 10,
-                    Price = 30,
-                    ExperienceWorth = 10,
-                    Visible = true
-                };
+                var p3 = testProduct3;
                 await context.AddAsync(p3);
                 await context.SaveChangesAsync();
 
-                await context.AddAsync(new ProductUserGroup
-                {
-                    Product = p1,
-                    UserGroup = UserGroup.Customer
-                });
-                await context.AddAsync(new ProductUserGroup
-                {
-                    Product = p2,
-                    UserGroup = UserGroup.Customer
-                });
-                await context.AddAsync(new ProductUserGroup
-                {
-                    Product = p3,
-                    UserGroup = UserGroup.Barista
-                });
+                await context.AddAsync(new ProductUserGroup(p1, UserGroup.Customer));
+                await context.AddAsync(new ProductUserGroup(p2, UserGroup.Customer));
+                await context.AddAsync(new ProductUserGroup(p3, UserGroup.Barista));
                 await context.SaveChangesAsync();
 
                 using var productService = new ProductService(context);
                 var expected = new List<Product>
                 {
-                    p1,
-                    p2
+                    testProduct1,
+                    testProduct2
                 };
 
                 var result = await productService.GetPublicProducts();

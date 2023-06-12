@@ -47,5 +47,19 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Ticket
         /// <example>Coffee</example>
         [Required]
         public string ProductName { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UsedTicketResponse"/> class.
+        /// </summary>
+        public UsedTicketResponse(int id, DateTime dateCreated, DateTime dateUsed, string productName)
+        {
+            if (string.IsNullOrEmpty(productName))
+                throw new ArgumentException("Product name cannot be null or empty", nameof(productName));
+
+            Id = id;
+            DateCreated = dateCreated;
+            DateUsed = dateUsed;
+            ProductName = productName;
+        }
     }
 }

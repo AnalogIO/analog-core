@@ -7,8 +7,12 @@ using Serilog;
 
 namespace CoffeeCard.WebApi.Helpers
 {
+    /// <summary>
+    /// Exception filter for handling API exceptions and returning appropriate HTTP status codes and error messages.
+    /// </summary>
     public class ApiExceptionFilter : ExceptionFilterAttribute
     {
+        /// <inheritdoc/>
         public override void OnException(ExceptionContext context)
         {
             ApiError apiError;

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,13 +27,12 @@ namespace CoffeeCard.Library.Services.v2
                 .Include(s => s.User)
                 .ToListAsync();
 
-            return sortedStatistics.Select((s, index) => new LeaderboardEntry
-            {
-                Id = s.User.Id,
-                Name = s.User.PrivacyActivated ? "Anonymous" : s.User.Name,
-                Rank = index + 1,
-                Score = s.SwipeCount
-            });
+            return sortedStatistics.Select((s, index) => new LeaderboardEntry(
+                id: s.UserId,
+                name: s.User.PrivacyActivated ? "Anonymous" : s.User.Name,
+                rank: index + 1,
+                score: s.SwipeCount
+            ));
         }
 
         public async Task<LeaderboardEntry> GetLeaderboardEntry(User user, LeaderboardPreset preset)
@@ -48,13 +46,12 @@ namespace CoffeeCard.Library.Services.v2
 
             var swipeCount = userStatistic?.SwipeCount ?? 0;
 
-            return new LeaderboardEntry
-            {
-                Id = user.Id,
-                Name = user.Name,
-                Rank = rank,
-                Score = swipeCount
-            };
+            return new LeaderboardEntry(
+                id: user.Id,
+                name: user.PrivacyActivated ? "Anonymous" : user.Name,
+                rank: rank,
+                score: swipeCount
+                );
         }
 
 

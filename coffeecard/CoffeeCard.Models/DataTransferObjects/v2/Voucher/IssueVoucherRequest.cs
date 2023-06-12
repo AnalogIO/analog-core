@@ -51,5 +51,17 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Voucher
         /// <example>John Doe</example>
         [Required]
         public string Requester { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IssueVoucherRequest"/> class.
+        /// </summary>
+        public IssueVoucherRequest(int productId, int amount, string voucherPrefix, string description, string requester)
+        {
+            ProductId = productId;
+            Amount = amount;
+            VoucherPrefix = voucherPrefix;
+            Description = description;
+            Requester = requester;
+        }
     }
 }

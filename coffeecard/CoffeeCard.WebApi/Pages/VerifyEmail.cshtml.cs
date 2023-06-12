@@ -7,17 +7,30 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace CoffeeCard.WebApi.Pages
 {
+    /// <summary>
+    /// Represents the page model for verifying a user's email address.
+    /// </summary>
     public class VerifyEmail : PageModel
     {
         private readonly IAccountService _accountService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VerifyEmail"/> class.
+        /// </summary>
+        /// <param name="accountService">The account service.</param>
         public VerifyEmail(IAccountService accountService)
         {
             _accountService = accountService;
         }
 
+        /// <summary>
+        /// Gets or sets the token used for email verification.
+        /// </summary>
         [BindProperty(SupportsGet = true)] public string Token { get; set; }
 
+        /// <summary>
+        /// Handles GET requests for email verification.
+        /// </summary>
         public async Task<IActionResult> OnGet()
         {
 

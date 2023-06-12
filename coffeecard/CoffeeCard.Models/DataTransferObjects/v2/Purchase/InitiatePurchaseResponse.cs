@@ -79,5 +79,25 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <value>Payment Details</value>
         [Required]
         public PaymentDetails PaymentDetails { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InitiatePurchaseResponse"/> class.
+        /// </summary>
+        public InitiatePurchaseResponse(int id, DateTime dateCreated, int productId, string productName, int totalAmount, PurchaseStatus? purchaseStatus, PaymentDetails paymentDetails)
+        {
+            if (string.IsNullOrEmpty(productName))
+                throw new ArgumentException("Value cannot be null or empty.", nameof(productName));
+
+            if (paymentDetails == null)
+                throw new ArgumentNullException(nameof(paymentDetails));
+
+            Id = id;
+            DateCreated = dateCreated;
+            ProductId = productId;
+            ProductName = productName;
+            TotalAmount = totalAmount;
+            PurchaseStatus = purchaseStatus;
+            PaymentDetails = paymentDetails;
+        }
     }
 }

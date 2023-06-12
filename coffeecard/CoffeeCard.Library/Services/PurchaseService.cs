@@ -35,14 +35,13 @@ namespace CoffeeCard.Library.Services
             if (voucher.User != null) throw new ApiException("Voucher has already been redeemed!", StatusCodes.Status400BadRequest);
 
             var purchase = new Purchase
+            (
+                product: voucher.Product,
+                purchasedBy: user,
+                orderId: voucherCode
+            )
             {
-                DateCreated = DateTime.UtcNow,
-                NumberOfTickets = voucher.Product.NumberOfTickets,
-                OrderId = voucherCode,
                 Price = 0,
-                ProductId = voucher.Product.Id,
-                ProductName = voucher.Product.Name,
-                PurchasedBy = user
             };
 
             user.Purchases.Add(purchase);
@@ -68,8 +67,7 @@ namespace CoffeeCard.Library.Services
                 throw new ApiException($"The product with id {purchase.ProductId} could not be found!");
             for (var i = 0; i < purchase.NumberOfTickets; i++)
             {
-                var ticket = new Ticket { ProductId = product.Id, Purchase = purchase };
-                user.Tickets.Add(ticket);
+                user.Tickets.Add(new Ticket(purchase));
             }
 
             purchase.TransactionId = transactionId;

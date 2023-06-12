@@ -14,7 +14,9 @@ using Serilog;
 
 namespace CoffeeCard.WebApi
 {
-#pragma warning disable CS1591
+    /// <summary>
+    /// The main entry point for the CoffeeCard.WebApi application.
+    /// </summary>
     public class Program
     {
         private static IConfiguration Configuration { get; } = new ConfigurationBuilder()
@@ -23,6 +25,9 @@ namespace CoffeeCard.WebApi
             .AddEnvironmentVariables()
             .Build();
 
+        /// <summary>
+        /// The entry point for the CoffeeCard.WebApi application.
+        /// </summary>
         public static async Task<int> Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
@@ -84,9 +89,11 @@ namespace CoffeeCard.WebApi
             }
         }
 
+        /// <summary>
+        /// Constructor for the Program class.
+        /// </summary>
         protected Program()
         {
         }
     }
-#pragma warning restore CS1591
 }

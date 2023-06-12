@@ -21,6 +21,14 @@ namespace CoffeeCard.Tests.Unit.Services
 {
     public class AccountServiceTest
     {
+        private static User testuser => new User(
+            email: "test@email.com",
+            name: "name",
+            password: "password",
+            salt: "salt",
+            programme: new Programme(fullName: "fullName", shortName: "shortName") { Id = 1 }
+        );
+
         [Fact(DisplayName = "RecoverUser given malformed token returns false")]
         public async Task RecoverUserGivenMalformedTokenReturnsFalse()
         {
@@ -78,9 +86,15 @@ namespace CoffeeCard.Tests.Unit.Services
                 TimeOutPeriodInSeconds = 5
             };
 
-            var expectedResult = true;
+            var token = new Token("valid");
+            var user = testuser;
+            user.Tokens = new List<Token> { token };
 
-            var claim = new Claim(ClaimTypes.Email, "test@email.dk");
+            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            await context.AddAsync(user);
+            await context.SaveChangesAsync();
+
+            var claim = new Claim(ClaimTypes.Email, user.Email);
             var claims = new List<Claim> { claim };
             var validToken = new JwtSecurityToken("analog", "all", claims);
 
@@ -89,23 +103,14 @@ namespace CoffeeCard.Tests.Unit.Services
             tokenService.Setup(t => t.ValidateTokenIsUnusedAsync("valid")).ReturnsAsync(true);
 
             // Act
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
-            var token = new Token("valid");
-            var userTokens = new List<Token> { token };
-            var programme = new Programme { FullName = "fullName", ShortName = "shortName" };
-
-            var user = new User { Tokens = userTokens, Programme = programme, Email = "test@email.dk", Name = "test", Password = "pass", Salt = "salt" };
-            await context.AddAsync(user);
-            await context.SaveChangesAsync();
-
             var accountService = new AccountService(context, environmentSettings, tokenService.Object,
                 new Mock<IEmailService>().Object, new Mock<IHashService>().Object,
                 new Mock<IHttpContextAccessor>().Object, new Mock<ILoginLimiter>().Object, loginLimiterSettings);
 
-            var result = await accountService.RecoverUserAsync("valid", "3433");
+            var result = await accountService.RecoverUserAsync(token.TokenHash, "3433");
 
             // Assert
-            Assert.Equal(expectedResult, result);
+            Assert.True(result);
         }
 
         [Fact(DisplayName = "RecoverUser given valid token updates password and resets users tokens")]
@@ -143,11 +148,9 @@ namespace CoffeeCard.Tests.Unit.Services
             // Act
             await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
             var token = new Token("valid");
-            var userTokens = new List<Token> { token };
-            var programme = new Programme { FullName = "fullName", ShortName = "shortName" };
-
-            var user = new User
-            { Tokens = userTokens, Email = "test@email.dk", Name = "test", Programme = programme, Password = userPass, Salt = "salt" };
+            var user = testuser;
+            user.Email = "test@email.dk";
+            user.Tokens = new List<Token> { token };
             await context.AddAsync(user);
             await context.SaveChangesAsync();
 
@@ -188,20 +191,8 @@ namespace CoffeeCard.Tests.Unit.Services
                 TimeOutPeriodInSeconds = 5
             };
 
-            var userTokens = new List<Token>();
-            var programme = new Programme { FullName = "fullName", ShortName = "shortName" };
-
-            var user = new User
-            {
-                Id = 1,
-                Name = "test",
-                Tokens = userTokens,
-                Email = "test@email.dk",
-                Programme = programme,
-                Password = "test",
-                Salt = "salt",
-                IsVerified = true
-            };
+            var user = testuser;
+            user.IsVerified = true;
 
             var hasher = new Mock<IHashService>();
             hasher.Setup(h => h.Hash(user.Password + user.Salt)).Returns(user.Password);
@@ -249,20 +240,8 @@ namespace CoffeeCard.Tests.Unit.Services
                 TimeOutPeriodInSeconds = 5
             };
 
-            var userTokens = new List<Token>();
-            var programme = new Programme { FullName = "fullName", ShortName = "shortName" };
-
-            var user = new User
-            {
-                Id = 1,
-                Name = "test",
-                Tokens = userTokens,
-                Email = "test@email.dk",
-                Programme = programme,
-                Password = "test",
-                Salt = "salt",
-                IsVerified = true
-            };
+            var user = testuser;
+            user.IsVerified = true;
 
             var wrongPass = "wrongPassword";
 
@@ -308,20 +287,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 TimeOutPeriodInSeconds = 5
             };
 
-            var userTokens = new List<Token>();
-            var programme = new Programme { FullName = "fullName", ShortName = "shortName" };
-
-            var user = new User
-            {
-                Id = 1,
-                Name = "test",
-                Tokens = userTokens,
-                Email = "test@email.dk",
-                Programme = programme,
-                Password = "test",
-                Salt = "salt",
-                IsVerified = true
-            };
+            var user = testuser;
 
             var wrongPass = "wrongPassword";
 
@@ -367,19 +333,8 @@ namespace CoffeeCard.Tests.Unit.Services
                 TimeOutPeriodInSeconds = 1
             };
 
-            var userTokens = new List<Token>();
-            var programme = new Programme { FullName = "fullName", ShortName = "shortName" };
-            var user = new User
-            {
-                Id = 1,
-                Name = "test",
-                Tokens = userTokens,
-                Email = "test@email.dk",
-                Programme = programme,
-                Password = "test",
-                Salt = "salt",
-                IsVerified = true
-            };
+            var user = testuser;
+            user.IsVerified = true;
 
             var wrongPass = "wrongPassword";
 
@@ -430,19 +385,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 TimeOutPeriodInSeconds = 1
             };
 
-            var userTokens = new List<Token>();
-            var programme = new Programme { FullName = "fullName", ShortName = "shortName" };
-            var user = new User
-            {
-                Id = 1,
-                Name = "test",
-                Tokens = userTokens,
-                Email = "test@email.dk",
-                Programme = programme,
-                Password = "test",
-                Salt = "salt",
-                IsVerified = false
-            };
+            var user = testuser;
             var somePass = "somePassword";
 
             var httpContextAccessor = new Mock<IHttpContextAccessor>();
@@ -486,25 +429,14 @@ namespace CoffeeCard.Tests.Unit.Services
                 TimeOutPeriodInSeconds = 1
             };
 
-            var userTokens = new List<Token>();
-            var somePass = "somePassword";
-            var programme = new Programme() { FullName = "fullName", ShortName = "shortName" };
-            var user = new User
-            {
-                Id = 1,
-                Name = "test",
-                Tokens = userTokens,
-                Email = "test@email.dk",
-                Programme = programme,
-                Password = somePass,
-                Salt = "salt",
-                IsVerified = true
-            };
+            var user = testuser;
+            user.IsVerified = true;
+
             var httpContextAccessor = new Mock<IHttpContextAccessor>();
             httpContextAccessor.Setup(h => h.HttpContext).Returns(new DefaultHttpContext().HttpContext);
 
             var hashService = new Mock<IHashService>();
-            hashService.Setup(m => m.Hash(It.IsAny<string>())).Returns(somePass);
+            hashService.Setup(m => m.Hash(It.IsAny<string>())).Returns(user.Password);
 
             await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
             await context.AddAsync(user);
@@ -516,7 +448,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 new LoginLimiter(loginLimiterSettings), loginLimiterSettings);
 
             // Login 
-            var result = accountService.Login(user.Email, somePass, "2.1.0");
+            var result = accountService.Login(user.Email, user.Password, "2.1.0");
 
             // Assert we did not fail in the above call. This test does not test the result
             Assert.Null(result);
@@ -641,22 +573,12 @@ namespace CoffeeCard.Tests.Unit.Services
                 new Mock<IEmailService>().Object, new Mock<IHashService>().Object, httpContextAccessor.Object,
                 new LoginLimiter(loginLimiterSettings), loginLimiterSettings);
 
+            var user = testuser;
             var token = WriteTokenString(new List<Claim>
             {
                 new Claim(ClaimTypes.Role, "verification_token"),
-                new Claim(ClaimTypes.Email, "test@test.test")
+                new Claim(ClaimTypes.Email, user.Email)
             });
-
-            var programme = new Programme { FullName = "fullName", ShortName = "shortName" };
-            var user = new User
-            {
-                Email = "test@test.test",
-                Name = "test",
-                Password = "pass",
-                Salt = "salt",
-                Programme = programme
-
-            };
             await context.Users.AddAsync(user);
             await context.SaveChangesAsync();
 

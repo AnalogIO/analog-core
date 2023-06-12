@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using CoffeeCard.Models.DataTransferObjects.v2.Programme;
+using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.User
 {
@@ -92,5 +93,21 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
         /// <example>5</example>
         [Required]
         public int RankMonth { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserResponse"/> class.
+        /// </summary>
+        public UserResponse(Entities.User user, int rankAllTime, int rankSemester, int rankMonth)
+        {
+            Id = user.Id;
+            Name = user.Name;
+            Email = user.Email;
+            PrivacyActivated = user.PrivacyActivated;
+            Role = user.UserGroup.toUserRole();
+            Programme = new ProgrammeResponse(user.Programme);
+            RankAllTime = rankAllTime;
+            RankSemester = rankSemester;
+            RankMonth = rankMonth;
+        }
     }
 }
