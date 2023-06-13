@@ -414,7 +414,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         {
             // Arrange
             const string userEmail = "test@test.test";
-            var user = new User{
+            var user = new User
+            {
                 Id = 1,
                 Name = "name",
                 Password = "pass",
@@ -424,7 +425,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 Email = userEmail,
                 IsVerified = false
             };
-            
+
             await using var context = CreateTestCoffeeCardContextWithName(nameof(ResendVerificationEmailWhenAccountIsNotVerified));
             context.Users.Add(user);
             await context.SaveChangesAsync();
@@ -437,17 +438,18 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             {
                 Email = userEmail
             });
-            
+
             // Assert
             emailService.Verify(e => e.SendRegistrationVerificationEmailAsync(user, It.IsAny<string>()), Times.Once);
         }
-        
+
         [Fact(DisplayName = "Resend verification email throws ConflictException when already verified")]
         public async Task ResendVerificationEmailThrowsConflictExceptionWhenAccountIsAlreadyVerified()
         {
             // Arrange
             const string userEmail = "test@test.test";
-            var user = new User{
+            var user = new User
+            {
                 Id = 1,
                 Name = "name",
                 Password = "pass",
@@ -457,7 +459,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 Email = userEmail,
                 IsVerified = true
             };
-            
+
             await using var context = CreateTestCoffeeCardContextWithName(nameof(ResendVerificationEmailThrowsConflictExceptionWhenAccountIsAlreadyVerified));
             context.Users.Add(user);
             await context.SaveChangesAsync();
@@ -470,7 +472,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 Email = userEmail
             }));
         }
-        
+
         [Fact(DisplayName = "Resend verification email throws EntityNotFoundException when email doesnot exist")]
         public async Task ResendVerificationEmailThrowsEntityNotFoundExceptionWhenEmailDoesnotExist()
         {
@@ -485,7 +487,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 Email = "test@test.test"
             }));
         }
-        
+
         public static IEnumerable<object[]> ClaimGenerator()
         {
             yield return new object[] {
