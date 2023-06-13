@@ -73,7 +73,6 @@ namespace CoffeeCard.Library.Services
             }
 
             purchase.TransactionId = transactionId;
-            purchase.Completed = true;
 
             _context.Users.Attach(user);
             _context.Entry(user).State = EntityState.Modified;
