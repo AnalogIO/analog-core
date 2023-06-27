@@ -409,6 +409,85 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             Assert.Equal(expected.UserState, result.UserState);
         }
 
+        [Fact(DisplayName = "Resend verification email when account is not already verified")]
+        public async Task ResendVerificationEmailWhenAccountIsNotVerified()
+        {
+            // Arrange
+            const string userEmail = "test@test.test";
+            var user = new User
+            {
+                Id = 1,
+                Name = "name",
+                Password = "pass",
+                Salt = "salt",
+                UserState = UserState.Active,
+                PrivacyActivated = false,
+                Email = userEmail,
+                IsVerified = false
+            };
+
+            await using var context = CreateTestCoffeeCardContextWithName(nameof(ResendVerificationEmailWhenAccountIsNotVerified));
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
+
+            // Act
+            var emailService = new Mock<IEmailService>();
+            var accountService = new Library.Services.v2.AccountService(context, new Mock<ITokenService>().Object, emailService.Object, new Mock<IHashService>().Object);
+
+            await accountService.ResendAccountVerificationEmail(new ResendAccountVerificationEmailRequest
+            {
+                Email = userEmail
+            });
+
+            // Assert
+            emailService.Verify(e => e.SendRegistrationVerificationEmailAsync(user, It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact(DisplayName = "Resend verification email throws ConflictException when already verified")]
+        public async Task ResendVerificationEmailThrowsConflictExceptionWhenAccountIsAlreadyVerified()
+        {
+            // Arrange
+            const string userEmail = "test@test.test";
+            var user = new User
+            {
+                Id = 1,
+                Name = "name",
+                Password = "pass",
+                Salt = "salt",
+                UserState = UserState.Active,
+                PrivacyActivated = false,
+                Email = userEmail,
+                IsVerified = true
+            };
+
+            await using var context = CreateTestCoffeeCardContextWithName(nameof(ResendVerificationEmailThrowsConflictExceptionWhenAccountIsAlreadyVerified));
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
+
+            // Act
+            var accountService = new Library.Services.v2.AccountService(context, new Mock<ITokenService>().Object, new Mock<IEmailService>().Object, new Mock<IHashService>().Object);
+
+            await Assert.ThrowsAsync<ConflictException>(async () => await accountService.ResendAccountVerificationEmail(new ResendAccountVerificationEmailRequest
+            {
+                Email = userEmail
+            }));
+        }
+
+        [Fact(DisplayName = "Resend verification email throws EntityNotFoundException when email doesnot exist")]
+        public async Task ResendVerificationEmailThrowsEntityNotFoundExceptionWhenEmailDoesnotExist()
+        {
+            // Arrange
+            await using var context = CreateTestCoffeeCardContextWithName(nameof(ResendVerificationEmailThrowsEntityNotFoundExceptionWhenEmailDoesnotExist));
+
+            // Act
+            var accountService = new Library.Services.v2.AccountService(context, new Mock<ITokenService>().Object, new Mock<IEmailService>().Object, new Mock<IHashService>().Object);
+
+            await Assert.ThrowsAsync<EntityNotFoundException>(async () => await accountService.ResendAccountVerificationEmail(new ResendAccountVerificationEmailRequest
+            {
+                Email = "test@test.test"
+            }));
+        }
+
         public static IEnumerable<object[]> ClaimGenerator()
         {
             yield return new object[] {

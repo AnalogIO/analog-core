@@ -5,7 +5,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
-using CoffeeCard.Models.DataTransferObjects.v2.Programme;
 using CoffeeCard.Models.DataTransferObjects.v2.User;
 using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
@@ -60,6 +59,13 @@ namespace CoffeeCard.Library.Services.v2
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
+            await SendAccountVerificationEmail(user);
+
+            return user;
+        }
+
+        private async Task SendAccountVerificationEmail(User user)
+        {
             var claims = new[]
             {
                 new Claim(ClaimTypes.Email, user.Email), new Claim(ClaimTypes.Name, user.Name),
@@ -68,46 +74,44 @@ namespace CoffeeCard.Library.Services.v2
             var verificationToken = _tokenService.GenerateToken(claims);
 
             await _emailService.SendRegistrationVerificationEmailAsync(user, verificationToken);
-
-            return user;
         }
 
-        public async Task<User> UpdateAccountAsync(User user, UpdateUserRequest userDto)
+        public async Task<User> UpdateAccountAsync(User user, UpdateUserRequest updateUserRequest)
         {
-            if (userDto.Email != null)
+            if (updateUserRequest.Email != null)
             {
-                if (_context.Users.Any(x => x.Email == userDto.Email))
-                    throw new ApiException($"The email {userDto.Email} is already in use!", 400);
-                Log.Information($"Changing email of user from {user.Email} to {userDto.Email}");
-                user.Email = userDto.Email;
+                if (_context.Users.Any(x => x.Email == updateUserRequest.Email))
+                    throw new ApiException($"The email {updateUserRequest.Email} is already in use!", 400);
+                Log.Information($"Changing email of user from {user.Email} to {updateUserRequest.Email}");
+                user.Email = updateUserRequest.Email;
             }
 
-            if (userDto.Name != null)
+            if (updateUserRequest.Name != null)
             {
-                Log.Information($"Changing name of user from {user.Name} to {EscapeName(userDto.Name)}");
-                user.Name = EscapeName(userDto.Name);
+                Log.Information($"Changing name of user from {user.Name} to {EscapeName(updateUserRequest.Name)}");
+                user.Name = EscapeName(updateUserRequest.Name);
             }
 
-            if (userDto.PrivacyActivated != null)
+            if (updateUserRequest.PrivacyActivated != null)
             {
                 Log.Information(
-                    $"Changing privacy of user from {user.PrivacyActivated} to {(bool)userDto.PrivacyActivated}");
-                user.PrivacyActivated = (bool)userDto.PrivacyActivated;
+                    $"Changing privacy of user from {user.PrivacyActivated} to {(bool)updateUserRequest.PrivacyActivated}");
+                user.PrivacyActivated = (bool)updateUserRequest.PrivacyActivated;
             }
 
-            if (userDto.ProgrammeId != null)
+            if (updateUserRequest.ProgrammeId != null)
             {
-                var programme = _context.Programmes.FirstOrDefault(x => x.Id == userDto.ProgrammeId);
+                var programme = _context.Programmes.FirstOrDefault(x => x.Id == updateUserRequest.ProgrammeId);
                 if (programme == null)
-                    throw new ApiException($"No programme with id {userDto.ProgrammeId} exists!", 400);
+                    throw new ApiException($"No programme with id {updateUserRequest.ProgrammeId} exists!", 400);
                 Log.Information($"Changing programme of user from {user.Programme.Id} to {programme.Id}");
                 user.Programme = programme;
             }
 
-            if (userDto.Password != null)
+            if (updateUserRequest.Password != null)
             {
                 var salt = _hashService.GenerateSalt();
-                var hashedPassword = _hashService.Hash(userDto.Password + salt);
+                var hashedPassword = _hashService.Hash(updateUserRequest.Password + salt);
                 user.Salt = salt;
                 user.Password = hashedPassword;
                 Log.Information("User changed password");
@@ -153,6 +157,25 @@ namespace CoffeeCard.Library.Services.v2
         public Task<bool> EmailExistsAsync(string email)
         {
             return _context.Users.AnyAsync(x => x.Email == email);
+        }
+
+        public async Task ResendAccountVerificationEmail(ResendAccountVerificationEmailRequest request)
+        {
+            var user = await _context.Users
+                .Where(u => u.Email.Equals(request.Email, StringComparison.OrdinalIgnoreCase))
+                .FirstOrDefaultAsync();
+
+            if (user == null)
+            {
+                throw new EntityNotFoundException($"Email {request.Email} not found");
+            }
+
+            if (user.IsVerified)
+            {
+                throw new ConflictException($"Email {request.Email} is already verified");
+            }
+
+            await SendAccountVerificationEmail(user);
         }
 
         private async Task AnonymizeUserAsync(User user)
