@@ -18,6 +18,9 @@ namespace CoffeeCard.Library.Migrations
 
             // Update vouchers with references to the purchase issued by its redemption
             migrationBuilder.Sql("update Vouchers set PurchaseId = Purchases.Id from Purchases where Purchases.OrderId = Vouchers.Code");
+
+            // Create new vouchers for purchases where the same voucher have been used to issue multiple purchase
+            migrationBuilder.Sql("insert into Vouchers (Code, DateCreated, DateUsed, Description, Requester, Product_Id, User_Id, PurchaseId) select 'Migration-' + Purchases.OrderId + '-' + cast(Purchases.Id as varchar), Purchases.DateCreated, Purchases.DateCreated, 'Creation of extra vouchers for purchases without references', 'AnalogIO', Purchases.ProductId, Purchases.PurchasedBy_Id, Id from Purchases where Type = 'Voucher' and Id not in (select PurchaseId from Vouchers where PurchaseId is not null)");
             // Insert data to the new Pos table
             migrationBuilder.Sql("insert into PosPurchases (PurchaseId, BastiaInitials) select Id, TransactionId from Purchases where OrderId like 'Analog'");
         }

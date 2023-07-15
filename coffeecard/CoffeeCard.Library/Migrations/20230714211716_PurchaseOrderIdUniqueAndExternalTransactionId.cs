@@ -10,7 +10,6 @@ namespace CoffeeCard.Library.Migrations
         {
             // Make transactionId null, where not MobilePayV1, or MobilepayV2, and generate unique Guid orderIds
             migrationBuilder.Sql("update Purchases set OrderId = NEWID(), TransactionId=null where Type != 'MobilePayV1' and Type != 'MobilePayV2' or OrderId = 'OLD PURCHASES'");
-            migrationBuilder.Sql("update Purchases set TransactionId = null where Type = 'Free'");
 
             migrationBuilder.DropIndex(
                 name: "IX_Purchases_OrderId",

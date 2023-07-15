@@ -293,7 +293,7 @@ namespace CoffeeCard.Library.Services.v2
 
             await _ticketService.IssueTickets(purchase);
 
-            purchase.ExternalTransactionId = $"VOUCHER: {voucher.Id}";
+            purchase.ExternalTransactionId = null;
             purchase.Status = PurchaseStatus.Completed;
 
             voucher.DateUsed = DateTime.UtcNow;
