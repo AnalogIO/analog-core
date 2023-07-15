@@ -97,7 +97,7 @@ namespace CoffeeCard.Library.Services.v2
             var orderId = await GenerateUniqueOrderId();
             PaymentDetails paymentDetails;
             PurchaseStatus purchaseStatus;
-            string transactionId;
+            string? transactionId;
 
             switch (purchaseRequest.PaymentType)
             {
@@ -116,7 +116,7 @@ namespace CoffeeCard.Library.Services.v2
                 case PaymentType.FreePurchase:
                     paymentDetails = new FreePurchasePaymentDetails(orderId.ToString());
                     purchaseStatus = PurchaseStatus.Completed;
-                    transactionId = Guid.Empty.ToString();
+                    transactionId = null;
 
                     break;
                 default:
@@ -132,10 +132,10 @@ namespace CoffeeCard.Library.Services.v2
                 NumberOfTickets = product.NumberOfTickets,
                 DateCreated = DateTime.UtcNow,
                 OrderId = paymentDetails.OrderId,
-                TransactionId = transactionId,
+                ExternalTransactionId = transactionId,
                 PurchasedBy = user,
-                Status = purchaseStatus
-                // FIXME State management, PaymentType
+                Status = purchaseStatus,
+                Type = purchaseRequest.PaymentType.toPurchaseType()
             };
 
             return (purchase, paymentDetails);
@@ -155,7 +155,7 @@ namespace CoffeeCard.Library.Services.v2
                     $"No purchase was found by Purchase Id: {purchaseId} and User Id: {user.Id}");
             }
 
-            var paymentDetails = await _mobilePayPaymentsService.GetPayment(Guid.Parse(purchase.TransactionId));
+            var paymentDetails = await _mobilePayPaymentsService.GetPayment(Guid.Parse(purchase.ExternalTransactionId));
 
             return new SinglePurchaseResponse
             {
@@ -189,7 +189,7 @@ namespace CoffeeCard.Library.Services.v2
         {
             var purchase = await _context.Purchases
                 .Include(p => p.PurchasedBy)
-                .Where(p => p.TransactionId.Equals(webhook.Data.Id))
+                .Where(p => p.ExternalTransactionId.Equals(webhook.Data.Id))
                 .FirstOrDefaultAsync();
             if (purchase == null)
             {
@@ -234,25 +234,25 @@ namespace CoffeeCard.Library.Services.v2
 
         private async Task CompletePurchase(Purchase purchase)
         {
-            await _mobilePayPaymentsService.CapturePayment(Guid.Parse(purchase.TransactionId), purchase.Price);
+            await _mobilePayPaymentsService.CapturePayment(Guid.Parse(purchase.ExternalTransactionId), purchase.Price);
             await _ticketService.IssueTickets(purchase);
 
             purchase.Status = PurchaseStatus.Completed;
             await _context.SaveChangesAsync();
 
-            Log.Information("Completed purchase with Id {Id}, TransactionId {TransactionId}", purchase.Id, purchase.TransactionId);
+            Log.Information("Completed purchase with Id {Id}, TransactionId {TransactionId}", purchase.Id, purchase.ExternalTransactionId);
 
             await _emailService.SendInvoiceAsyncV2(purchase, purchase.PurchasedBy);
         }
 
         private async Task CancelPurchase(Purchase purchase)
         {
-            await _mobilePayPaymentsService.CancelPayment(Guid.Parse(purchase.TransactionId));
+            await _mobilePayPaymentsService.CancelPayment(Guid.Parse(purchase.ExternalTransactionId));
             purchase.Status = PurchaseStatus.Cancelled;
             await _context.SaveChangesAsync();
 
             Log.Information("Purchase has been cancelled Purchase Id {PurchaseId}, Transaction Id {TransactionId}",
-                purchase.Id, purchase.TransactionId);
+                purchase.Id, purchase.ExternalTransactionId);
         }
 
         private async Task<Guid> GenerateUniqueOrderId()
@@ -293,11 +293,12 @@ namespace CoffeeCard.Library.Services.v2
 
             await _ticketService.IssueTickets(purchase);
 
-            purchase.TransactionId = $"VOUCHER: {voucher.Id}";
+            purchase.ExternalTransactionId = $"VOUCHER: {voucher.Id}";
             purchase.Status = PurchaseStatus.Completed;
 
             voucher.DateUsed = DateTime.UtcNow;
             voucher.User = user;
+            voucher.Purchase = purchase;
 
             _context.Vouchers.Attach(voucher);
             _context.Entry(voucher).State = EntityState.Modified;

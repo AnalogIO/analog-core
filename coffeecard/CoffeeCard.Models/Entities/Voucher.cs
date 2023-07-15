@@ -29,5 +29,7 @@ namespace CoffeeCard.Models.Entities
         public int? UserId { get; set; }
 
         public User? User { get; set; }
+
+        public Purchase? Purchase { get; set; }
     }
 }

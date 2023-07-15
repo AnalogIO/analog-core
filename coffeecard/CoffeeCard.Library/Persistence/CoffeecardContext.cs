@@ -21,6 +21,7 @@ namespace CoffeeCard.Library.Persistence
         public DbSet<User> Users { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<Purchase> Purchases { get; set; }
+        public DbSet<PosPurhase> PosPurchases { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Token> Tokens { get; set; }
         public DbSet<LoginAttempt> LoginAttempts { get; set; }
@@ -44,10 +45,16 @@ namespace CoffeeCard.Library.Persistence
 
             // Use Enum to Int for UserGroups
             var userGroupIntConverter = new EnumToNumberConverter<UserGroup, int>();
+            // Use Enum to String for PurchaseTypes
+            var purchaseTypeStringConverter = new EnumToStringConverter<PurchaseType>();
 
             modelBuilder.Entity<User>()
                 .Property(u => u.UserGroup)
                 .HasConversion(userGroupIntConverter);
+
+            modelBuilder.Entity<Purchase>()
+                .Property(p => p.Type)
+                .HasConversion(purchaseTypeStringConverter);
 
             modelBuilder.Entity<User>().Property(u => u.UserState).HasConversion<string>();
 

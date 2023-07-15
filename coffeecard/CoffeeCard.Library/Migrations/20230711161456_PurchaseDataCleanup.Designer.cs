@@ -4,6 +4,7 @@ using CoffeeCard.Library.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoffeeCard.Library.Migrations
 {
     [DbContext(typeof(CoffeeCardContext))]
-    partial class CoffeeCardContextModelSnapshot : ModelSnapshot
+    [Migration("20230711161456_PurchaseDataCleanup")]
+    partial class PurchaseDataCleanup
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,14 +48,22 @@ namespace CoffeeCard.Library.Migrations
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.PosPurhase", b =>
                 {
-                    b.Property<int>("PurchaseId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("BastiaInitials")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("PurchaseId");
+                    b.Property<int>("PurchaseId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PurchaseId");
 
                     b.ToTable("PosPurchases", "dbo");
                 });
@@ -139,9 +149,6 @@ namespace CoffeeCard.Library.Migrations
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("ExternalTransactionId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("NumberOfTickets")
                         .HasColumnType("int");
 
@@ -167,20 +174,22 @@ namespace CoffeeCard.Library.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("TransactionId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ExternalTransactionId");
-
-                    b.HasIndex("OrderId")
-                        .IsUnique();
+                    b.HasIndex("OrderId");
 
                     b.HasIndex("ProductId");
 
                     b.HasIndex("PurchasedById");
+
+                    b.HasIndex("TransactionId");
 
                     b.ToTable("Purchases", "dbo");
                 });

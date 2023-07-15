@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -72,7 +72,7 @@ namespace CoffeeCard.Library.Services
                 user.Tickets.Add(ticket);
             }
 
-            purchase.TransactionId = transactionId;
+            purchase.ExternalTransactionId = transactionId;
 
             _context.Users.Attach(user);
             _context.Entry(user).State = EntityState.Modified;
