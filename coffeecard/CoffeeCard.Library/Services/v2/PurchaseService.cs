@@ -286,7 +286,9 @@ namespace CoffeeCard.Library.Services.v2
                 Price = 0,
                 ProductId = voucher.Product.Id,
                 ProductName = voucher.Product.Name,
-                PurchasedBy = user
+                PurchasedBy = user,
+                Status = PurchaseStatus.Completed,
+                Type = PurchaseType.Voucher
             };
 
             user.Purchases.Add(purchase);
