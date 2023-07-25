@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Library.Persistence;
@@ -50,14 +51,7 @@ namespace CoffeeCard.Tests.Integration.WebApplication
 
                 // Build the service provider
                 var sp = services.BuildServiceProvider();
-
-                // Create a scope to obtain a reference to the database context (ApplicationDbContext).
-                using var scope = sp.CreateScope();
-                var scopedServices = scope.ServiceProvider;
-                var db = scopedServices.GetRequiredService<CoffeeCardContext>();
-
-                // Ensure the database is created.
-                db.Database.EnsureCreated();
+               
             });
         }
     }

@@ -30,6 +30,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CoffeeCard.WebApi\CoffeeCard.WebApi.csproj" />
+    <ProjectReference Include="..\CoffeeCard.Tests.Common\CoffeeCard.Tests.Common.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\CoffeeCard.WebApi\appsettings.json">
