@@ -22,7 +22,7 @@ namespace CoffeeCard.Library.Migrations
             // Create new vouchers for purchases where the same voucher have been used to issue multiple purchase
             migrationBuilder.Sql("insert into Vouchers (Code, DateCreated, DateUsed, Description, Requester, Product_Id, User_Id, PurchaseId) select Purchases.OrderId + '-' + cast(Purchases.Id as varchar), Purchases.DateCreated, Purchases.DateCreated, 'Creation of extra vouchers for purchases without references', 'AnalogIO', Purchases.ProductId, Purchases.PurchasedBy_Id, Id from Purchases where Type = 'Voucher' and Id not in (select PurchaseId from Vouchers where PurchaseId is not null)");
             // Insert data to the new Pos table
-            migrationBuilder.Sql("insert into PosPurchases (PurchaseId, BastiaInitials) select Id, TransactionId from Purchases where OrderId like 'Analog'");
+            migrationBuilder.Sql("insert into PosPurchases (PurchaseId, BaristaInitials) select Id, TransactionId from Purchases where OrderId like 'Analog'");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

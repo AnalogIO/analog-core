@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -14,7 +14,7 @@ namespace CoffeeCard.Library.Migrations
                 columns: table => new
                 {
                     PurchaseId = table.Column<int>(type: "int", nullable: false),
-                    BastiaInitials = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    BaristaInitials = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {

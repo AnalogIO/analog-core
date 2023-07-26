@@ -83,7 +83,7 @@ namespace CoffeeCard.Models.Entities
 
         /// The type of purchase e.g. MobilePayV1, Free
         public PurchaseType Type { get; set; }
-        
+
         [Column(name: "PurchasedBy_Id")]
         public int PurchasedById { get; set; }
 

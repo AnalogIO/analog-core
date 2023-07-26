@@ -10,7 +10,7 @@ namespace CoffeeCard.Models.Entities
         Voucher,
         /// A purchase issued by the user redeeming a product costing 0
         Free,
-		/// Purchases performed in the cafe, for users without in-app payment options
-		PointOfSale,
+        /// Purchases performed in the cafe, for users without in-app payment options
+        PointOfSale,
     }
 }

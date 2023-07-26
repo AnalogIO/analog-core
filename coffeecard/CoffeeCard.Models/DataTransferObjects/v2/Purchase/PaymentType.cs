@@ -19,10 +19,13 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         FreePurchase
     }
 
-    public static class PaymentTypeExtension{
+    public static class PaymentTypeExtension
+    {
         /// Converts the payment type to a corresponding PurchasType
-        public static PurchaseType toPurchaseType(this PaymentType paymentType){
-            return paymentType switch {
+        public static PurchaseType toPurchaseType(this PaymentType paymentType)
+        {
+            return paymentType switch
+            {
                 PaymentType.MobilePay => PurchaseType.MobilePayV2,
                 PaymentType.FreePurchase => PurchaseType.Free,
                 _ => throw new ArgumentException("Unknown enum given to PaymentTypeExtension"),
