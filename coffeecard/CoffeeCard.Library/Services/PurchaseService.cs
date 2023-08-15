@@ -32,7 +32,7 @@ namespace CoffeeCard.Library.Services
 
             var voucher = _context.Vouchers.Include(x => x.Product).FirstOrDefault(x => x.Code.Equals(voucherCode));
             if (voucher == null) throw new ApiException($"Voucher '{voucherCode}' does not exist!", StatusCodes.Status404NotFound);
-            if (voucher.User != null) throw new ApiException("Voucher has already been redeemed!", StatusCodes.Status400BadRequest);
+            if (voucher.UserId != null) throw new ApiException("Voucher has already been redeemed!", StatusCodes.Status409Conflict);
 
             var purchase = new Purchase
             {
