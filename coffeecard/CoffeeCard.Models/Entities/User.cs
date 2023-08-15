@@ -37,17 +37,17 @@ namespace CoffeeCard.Models.Entities
 
         [Column(name: "Programme_Id")]
         public int ProgrammeId { get; set; }
-        
+
         public Programme Programme { get; set; }
 
         public virtual ICollection<LoginAttempt> LoginAttempts { get; set; } = new List<LoginAttempt>();
-        
+
         public virtual ICollection<Token> Tokens { get; set; } = new List<Token>();
-        
+
         public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
-        
+
         public virtual ICollection<Purchase> Purchases { get; set; } = new List<Purchase>();
-        
+
         public virtual ICollection<Statistic> Statistics { get; set; } = new List<Statistic>();
 
         public override string ToString()

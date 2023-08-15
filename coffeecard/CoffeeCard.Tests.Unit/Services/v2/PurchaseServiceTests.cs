@@ -183,7 +183,6 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             // DB Contents
             Assert.Equal(mobilepayPaymentId, purchaseInDatabase.TransactionId);
             Assert.Equal(orderId, purchaseInDatabase.OrderId);
-            Assert.False(purchaseInDatabase.Completed);
 
             Assert.Equal(product1.Id, purchaseInDatabase.ProductId);
             Assert.Equal(product1.Name, purchaseInDatabase.ProductName);
@@ -264,7 +263,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
         public static IEnumerable<object[]> ProductGenerator()
         {
-            var pug = new List<ProductUserGroup> {new ProductUserGroup {ProductId = 1}};
+            var pug = new List<ProductUserGroup> { new ProductUserGroup { ProductId = 1 } };
             yield return new object[]
             {
                 new Product

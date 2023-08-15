@@ -20,7 +20,7 @@ namespace CoffeeCard.MobilePay.Utils
             MobilePaySettingsV2 mobilePaySettings)
         {
             mobilePaySettings.Validate();
-            
+
             var apiKeyAuthentication = new AuthenticationHeaderValue("Bearer", mobilePaySettings.ApiKey);
 
             services.AddHttpClient<PaymentsApi>(client =>
@@ -28,7 +28,7 @@ namespace CoffeeCard.MobilePay.Utils
                 client.BaseAddress = mobilePaySettings.ApiUrl;
                 client.DefaultRequestHeaders.Authorization = apiKeyAuthentication;
             });
-            
+
             services.AddHttpClient<WebhooksApi>(client =>
             {
                 client.BaseAddress = mobilePaySettings.ApiUrl;

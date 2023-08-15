@@ -15,7 +15,7 @@ namespace CoffeeCard.WebApi.Helpers
         {
             _roles = roles;
         }
-        
+
         public void OnAuthorization(AuthorizationFilterContext context)
         {
             var user = context.HttpContext.User;

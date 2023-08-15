@@ -57,7 +57,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         public async Task<ActionResult<LeaderboardEntry>> Get([FromQuery] LeaderboardPreset preset = LeaderboardPreset.Semester)
         {
             var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
-            
+
             return Ok(await _leaderboardService.GetLeaderboardEntry(user, preset));
         }
     }

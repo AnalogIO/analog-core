@@ -13,7 +13,7 @@ namespace CoffeeCard.Models.Entities
         /// </summary>
         [Key]
         public Guid Id { get; set; }
-        
+
         /// <summary>
         /// Url which webhook is registered for
         /// </summary>
@@ -34,7 +34,7 @@ namespace CoffeeCard.Models.Entities
         /// </summary>
         public DateTime LastUpdated { get; set; }
     }
-    
+
     public enum WebhookStatus
     {
         Active,

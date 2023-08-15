@@ -68,12 +68,11 @@ namespace CoffeeCard.Library.Services
                 throw new ApiException($"The product with id {purchase.ProductId} could not be found!");
             for (var i = 0; i < purchase.NumberOfTickets; i++)
             {
-                var ticket = new Ticket {ProductId = product.Id, Purchase = purchase};
+                var ticket = new Ticket { ProductId = product.Id, Purchase = purchase };
                 user.Tickets.Add(ticket);
             }
 
             purchase.TransactionId = transactionId;
-            purchase.Completed = true;
 
             _context.Users.Attach(user);
             _context.Entry(user).State = EntityState.Modified;

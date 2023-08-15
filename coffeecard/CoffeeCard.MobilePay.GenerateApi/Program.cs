@@ -17,7 +17,7 @@ namespace CoffeeCard.MobilePay.GenerateApi
     {
         private const string PaymentsApi = "PaymentsApi";
         private const string WebhooksApi = "WebhooksApi";
-        
+
         /// <summary>
         /// Generate MobilePay Api Payments and Webhooks client
         /// </summary>
@@ -36,7 +36,7 @@ namespace CoffeeCard.MobilePay.GenerateApi
         private static async Task GenerateWebhooksApi(string inputFile, string outputFile)
         {
             CheckFileExists(inputFile);
-            
+
             var document = await OpenApiDocument.FromFileAsync(inputFile);
 
             var settings = new CSharpClientGeneratorSettings
@@ -58,7 +58,7 @@ namespace CoffeeCard.MobilePay.GenerateApi
         private static async Task GeneratePaymentsApi(string inputFile, string outputFile)
         {
             CheckFileExists(inputFile);
-            
+
             var document = await OpenApiDocument.FromFileAsync(inputFile);
 
             var settings = new CSharpClientGeneratorSettings

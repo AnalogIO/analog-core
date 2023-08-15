@@ -24,7 +24,7 @@ namespace CoffeeCard.Library.Services.v2
         /// <param name="user">User</param>
         /// <returns>Purchase details</returns>
         Task<SinglePurchaseResponse> GetPurchase(int purchaseId, User user);
-        
+
         /// <summary>
         /// Get all purchase for user
         /// </summary>

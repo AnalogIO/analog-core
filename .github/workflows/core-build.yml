@@ -7,35 +7,40 @@ on:
   workflow_call:
     inputs:
       push_image:
-        description: 'Push docker image to registry'
+        description: "Push docker image to registry"
         required: false
         type: boolean
-  
+
   workflow_dispatch:
-  
+
 jobs:
-  build:
+  build_and_test:
     name: Build and test analog-core
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
-    - name: Restore dependencies
-      run: dotnet restore coffeecard/
-    - name: Build CoffeeCard solution
-      run: dotnet build coffeecard/ --no-restore /p:ContinuousIntegrationBuild=true
-    - name: Run tests
-      run: dotnet test coffeecard/ /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
-    - name: Upload test coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        files: coffeecard/CoffeeCard.Tests.Integration/coverage.opencover.xml,coffeecard/CoffeeCard.Tests.Unit/coverage.opencover.xml
+      - uses: actions/checkout@v3
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+      - name: Install dotnet-format
+        run: dotnet tool install -g dotnet-format
+      - name: Restore dependencies
+        run: dotnet restore coffeecard/
+      - name: Build CoffeeCard solution
+        run: dotnet build coffeecard/ --no-restore /p:ContinuousIntegrationBuild=true
+      - name: Check code formatting
+        run: dotnet-format --no-restore --check coffeecard/
+      - name: Run tests
+        run: dotnet test coffeecard/ --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+      - name: Upload test coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: coffeecard/CoffeeCard.Tests.Integration/coverage.opencover.xml,coffeecard/CoffeeCard.Tests.Unit/coverage.opencover.xml
 
   docker:
     name: Build and push docker image
+    needs: build_and_test
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout

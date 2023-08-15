@@ -33,7 +33,7 @@ namespace CoffeeCard.Library.Persistence
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema(_databaseSettings.SchemaName);
-            
+
             // Setup PUG compound primary key
             modelBuilder.Entity<ProductUserGroup>()
                 .HasKey(pug => new
@@ -50,7 +50,7 @@ namespace CoffeeCard.Library.Persistence
                 .HasConversion(userGroupIntConverter);
 
             modelBuilder.Entity<User>().Property(u => u.UserState).HasConversion<string>();
-            
+
             modelBuilder.Entity<ProductUserGroup>()
                 .Property(pug => pug.UserGroup)
                 .HasConversion(userGroupIntConverter);
@@ -58,7 +58,7 @@ namespace CoffeeCard.Library.Persistence
             modelBuilder.Entity<WebhookConfiguration>()
                 .Property(w => w.Status)
                 .HasConversion<string>();
-            
+
             modelBuilder.Entity<Purchase>()
                 .Property(p => p.Status)
                 .HasConversion<string>();

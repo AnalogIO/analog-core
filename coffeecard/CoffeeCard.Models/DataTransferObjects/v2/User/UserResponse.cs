@@ -28,7 +28,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
         /// <example>123</example>
         [Required]
         public int Id { get; set; }
-        
+
         /// <summary>
         /// Full Name of user
         /// </summary>
@@ -36,7 +36,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
         /// <example>John Doe</example>
         [Required]
         public string Name { get; set; }
-        
+
         /// <summary>
         /// Email of user
         /// </summary>
@@ -44,7 +44,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
         /// <example>john@doe.com</example>
         [Required]
         public string Email { get; set; }
-        
+
         /// <summary>
         /// Privacy Activated
         /// </summary>
@@ -52,7 +52,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
         /// <example>true</example>
         [Required]
         public bool PrivacyActivated { get; set; }
-        
+
         /// <summary>
         /// User's role
         /// </summary>
@@ -68,7 +68,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
         /// <example>1</example>
         [Required]
         public ProgrammeResponse Programme { get; set; }
-        
+
         /// <summary>
         /// User's Rank all time
         /// </summary>
@@ -76,7 +76,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
         /// <example>15</example>
         [Required]
         public int RankAllTime { get; set; }
-        
+
         /// <summary>
         /// User's rank current semester
         /// </summary>
@@ -84,7 +84,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
         /// <example>4</example>
         [Required]
         public int RankSemester { get; set; }
-        
+
         /// <summary>
         /// User's rank current month
         /// </summary>

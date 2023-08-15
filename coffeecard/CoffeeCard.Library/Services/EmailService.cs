@@ -53,7 +53,7 @@ namespace CoffeeCard.Library.Services
             message.Body = builder.ToMessageBody();
 
             Log.Information("Sending invoice for PurchaseId {PurchaseId} to UserId {UserId}, E-mail {Email}", purchase.Id, user.Id, user.Email);
-            
+
             await SendEmailAsync(message);
         }
 
@@ -63,7 +63,7 @@ namespace CoffeeCard.Library.Services
             var message = new MimeMessage();
             var builder = RetrieveTemplate("email_verify_registration.html");
             const string endpoint = "verifyemail?token=";
-            
+
             builder = BuildVerifyEmail(builder, token, user.Email, user.Name, endpoint);
 
             message.To.Add(new MailboxAddress(user.Name, user.Email));
@@ -79,7 +79,7 @@ namespace CoffeeCard.Library.Services
             var message = new MimeMessage();
             var builder = RetrieveTemplate("email_verify_lostpassword.html");
             const string endpoint = "recover?token=";
-            
+
             builder = BuildVerifyEmail(builder, token, user.Email, user.Name, endpoint);
 
             message.To.Add(new MailboxAddress(user.Name, user.Email));
@@ -96,7 +96,7 @@ namespace CoffeeCard.Library.Services
             var message = new MimeMessage();
             var builder = RetrieveTemplate("email_verify_account_deletion.html");
             const string endpoint = "verifydelete?token=";
-            
+
             builder = BuildVerifyEmail(builder, token, user.Email, user.Name, endpoint);
 
             message.To.Add(new MailboxAddress(user.Name, user.Email));
@@ -106,7 +106,7 @@ namespace CoffeeCard.Library.Services
 
             await SendEmailAsync(message);
         }
-        
+
         public async Task SendInvoiceAsyncV2(Purchase purchase, User user)
         {
             var purchaseDto = _mapperService.Map(purchase);
@@ -118,7 +118,7 @@ namespace CoffeeCard.Library.Services
         private BodyBuilder BuildVerifyEmail(BodyBuilder builder, string token, string email, string name, string endpoint)
         {
             var baseUrl = _environmentSettings.DeploymentUrl;
-            
+
             builder.HtmlBody = builder.HtmlBody.Replace("{email}", email);
             builder.HtmlBody = builder.HtmlBody.Replace("{name}", name);
             builder.HtmlBody = builder.HtmlBody.Replace("{expiry}", "24 hours");

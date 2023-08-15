@@ -22,7 +22,6 @@ namespace CoffeeCard.Library.Services
                 Price = purchase.Price,
                 NumberOfTickets = purchase.NumberOfTickets,
                 DateCreated = purchase.DateCreated,
-                Completed = purchase.Completed,
                 OrderId = purchase.OrderId,
                 TransactionId = purchase.TransactionId
             };
@@ -52,8 +51,12 @@ namespace CoffeeCard.Library.Services
         {
             return new UserDto
             {
-                Email = user.Email, Id = user.Id, Name = user.Name, PrivacyActivated = user.PrivacyActivated,
-                ProgrammeId = user.Programme?.Id, Level = StatisticUtils.CalculateLevelFromXp(user.Experience),
+                Email = user.Email,
+                Id = user.Id,
+                Name = user.Name,
+                PrivacyActivated = user.PrivacyActivated,
+                ProgrammeId = user.Programme?.Id,
+                Level = StatisticUtils.CalculateLevelFromXp(user.Experience),
                 RequiredExp = StatisticUtils.CalculateRequiredXpByLevel(user.Experience)
             };
         }
@@ -62,8 +65,11 @@ namespace CoffeeCard.Library.Services
         {
             return new ProductDto
             {
-                Description = product.Description, Id = product.Id, Name = product.Name,
-                NumberOfTickets = product.NumberOfTickets, Price = product.Price
+                Description = product.Description,
+                Id = product.Id,
+                Name = product.Name,
+                NumberOfTickets = product.NumberOfTickets,
+                Price = product.Price
             };
         }
 
@@ -76,7 +82,9 @@ namespace CoffeeCard.Library.Services
         {
             return new TicketDto
             {
-                Id = ticket.Id, DateCreated = ticket.DateCreated, DateUsed = ticket.DateUsed,
+                Id = ticket.Id,
+                DateCreated = ticket.DateCreated,
+                DateUsed = ticket.DateUsed,
                 ProductName = ticket.Purchase?.ProductName
             };
         }

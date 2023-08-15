@@ -12,12 +12,12 @@ namespace CoffeeCard.Common.Errors
         {
             StatusCode = statusCode;
         }
-        
+
         public ApiException(Exception ex, int statusCode = 500) : base(ex.Message)
         {
             StatusCode = statusCode;
         }
-        
+
         protected ApiException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
             StatusCode = info.GetInt32("StatusCode");

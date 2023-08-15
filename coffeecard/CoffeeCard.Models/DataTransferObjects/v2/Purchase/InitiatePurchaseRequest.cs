@@ -15,7 +15,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <example>1</example>
         [Required]
         public int ProductId { get; set; }
-        
+
         /// <summary>
         /// Payment Type used to fulfill purchase
         /// </summary>
