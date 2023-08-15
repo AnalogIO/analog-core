@@ -50,12 +50,12 @@ namespace CoffeeCard.WebApi.Controllers
         /// </summary>
         /// <returns>Purchase description</returns>
         /// <response code="200">Successful request</response>
-        /// <response code="400">Voucher code already used</response>
+        /// <response code="409">Voucher code already used</response>
         /// <response code="401">Invalid credentials</response>
         /// <response code="404">Voucher code not found</response>
         [HttpPost("redeemvoucher")]
         [ProducesResponseType(typeof(PurchaseDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status409Conflict)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
         public ActionResult<PurchaseDto> RedeemVoucher([FromQuery] string voucherCode)
