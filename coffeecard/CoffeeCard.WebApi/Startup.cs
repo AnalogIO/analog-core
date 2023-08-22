@@ -114,7 +114,7 @@ namespace CoffeeCard.WebApi
 
             services.AddApiVersioning(config =>
             {
-                config.DefaultApiVersion = new ApiVersion(2, 0);
+                config.DefaultApiVersion = new ApiVersion(1, 0);
                 config.AssumeDefaultVersionWhenUnspecified = true;
                 config.ReportApiVersions = true;
             });
