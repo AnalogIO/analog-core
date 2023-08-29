@@ -124,7 +124,7 @@ namespace CoffeeCard.WebApi.Controllers
 
             return Ok(new MessageResponseDto()
             {
-                Message = "We have send you a confirmation email"
+                Message = "We have sent you a confirmation email"
             });
         }
     }
