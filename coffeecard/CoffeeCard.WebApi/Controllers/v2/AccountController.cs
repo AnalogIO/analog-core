@@ -52,7 +52,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
             await _accountService.RegisterAccountAsync(registerRequest.Name, registerRequest.Email,
                 registerRequest.Password, registerRequest.ProgrammeId);
 
-            return Created("/api/v{version:apiVersion}/account/Get", new MessageResponseDto
+            return Created("/api/v2/account/Get", new MessageResponseDto
             {
                 Message =
                     "Your user has been created! Please check your email to verify your account.\n(Check your spam folder!)"
