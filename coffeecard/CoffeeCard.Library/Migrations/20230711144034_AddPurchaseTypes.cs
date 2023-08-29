@@ -8,6 +8,20 @@ namespace CoffeeCard.Library.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AddColumn<int>(
+                name: "PurchaseId",
+                schema: "dbo",
+                table: "Vouchers",
+                type: "int",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "Type",
+                schema: "dbo",
+                table: "Purchases",
+                type: "nvarchar(max)",
+                nullable: true);
+
             migrationBuilder.CreateTable(
                 name: "PosPurchases",
                 schema: "dbo",
