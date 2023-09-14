@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using CoffeeCard.Models.Entities.ProductType
+using CoffeeCard.Models.Entities.ProductType;
 
 namespace CoffeeCard.Models.DataTransferObjects.Product
 {
