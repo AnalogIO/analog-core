@@ -162,7 +162,7 @@ namespace CoffeeCard.Library.Services.v2
         public async Task ResendAccountVerificationEmail(ResendAccountVerificationEmailRequest request)
         {
             var user = await _context.Users
-                .Where(u => u.Email.Equals(request.Email, StringComparison.OrdinalIgnoreCase))
+                .Where(u => u.Email.ToLower().Equals(request.Email.ToLower()))
                 .FirstOrDefaultAsync();
 
             if (user == null)
