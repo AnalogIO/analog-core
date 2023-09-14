@@ -11,7 +11,8 @@ namespace CoffeeCard.Models.DataTransferObjects.Product
     ///     "price": 300,
     ///     "numberOfTickets": 10,
     ///     "name": "Coffee clip card",
-    ///     "description": "Coffee clip card of 10 clips"
+    ///     "description": "Coffee clip card of 10 clips",
+    ///     "productType": "Clipcard"
     /// }
     /// </example>
     public class ProductDto
@@ -55,5 +56,13 @@ namespace CoffeeCard.Models.DataTransferObjects.Product
         /// <example>Coffee clip card of 10 clips</example>
         [Required]
         public string Description { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Product Type
+        /// </summary>
+        /// <value>Product Type enumeration</value>
+        /// <example>SingleUse</example>
+        [Required]
+        public ProductType ProductType { get; set; }
     }
 }
