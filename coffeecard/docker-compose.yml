@@ -6,7 +6,7 @@ services:
     container_name: mssql
     hostname: mssql
     environment:
-      SA_PASSWORD: "Your_password123"
+      SA_PASSWORD: "P@ssw0rd"
       ACCEPT_EULA: "Y"
     restart: unless-stopped
     ports:
