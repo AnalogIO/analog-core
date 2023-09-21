@@ -64,6 +64,7 @@ namespace CoffeeCard.Models.DataTransferObjects.Product
         /// <value>Product Type enumeration</value>
         /// <example>SingleUse</example>
         [Required]
-        public ProductType ProductType { get; set; }
+        // FIXME: Delibrate Techincal Debt. Product Type should be properly implemented in the future
+        public ProductType ProductType { get; set; } = ProductType.SingleUse;
     }
 }
