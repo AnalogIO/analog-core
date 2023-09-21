@@ -13,7 +13,7 @@ namespace CoffeeCard.Models.DataTransferObjects.Product
     ///     "numberOfTickets": 10,
     ///     "name": "Coffee clip card",
     ///     "description": "Coffee clip card of 10 clips",
-    ///     "productType": "Clipcard"
+    ///     "isPerk": true
     /// }
     /// </example>
     public class ProductDto
@@ -59,12 +59,12 @@ namespace CoffeeCard.Models.DataTransferObjects.Product
         public string Description { get; set; } = string.Empty;
 
         /// <summary>
-        /// Product Type
+        /// Eligible due to a user perk privilege 
         /// </summary>
-        /// <value>Product Type enumeration</value>
-        /// <example>SingleUse</example>
+        /// <value>Perk product</value>
+        /// <example>true</example>
         [Required]
-        // FIXME: Delibrate Techincal Debt. Product Type should be properly implemented in the future
-        public ProductType ProductType { get; set; } = ProductType.SingleUse;
+        // FIXME: Delibrate Techincal Debt. IsPerk should be implemented in the future. Exposed to show the new API model
+        public bool IsPerk { get; set; }
     }
 }
