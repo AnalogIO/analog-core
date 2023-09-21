@@ -91,8 +91,6 @@ namespace CoffeeCard.WebApi.Controllers.v2
         {
             var user = await _claimsUtilities.ValidateAndReturnUserFromEmailClaimAsync(User.Claims);
 
-            Log.Information("Extra logging: User {user}", user);
-
             return Ok(await UserWithRanking(user));
         }
 
