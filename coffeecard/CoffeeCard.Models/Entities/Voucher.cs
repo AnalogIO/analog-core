@@ -30,6 +30,8 @@ namespace CoffeeCard.Models.Entities
 
         public User? User { get; set; }
 
-        public Purchase? Purchase { get; set; }
+        public int? PurchaseId { get; set; }
+
+        public virtual Purchase? Purchase { get; set; }
     }
 }

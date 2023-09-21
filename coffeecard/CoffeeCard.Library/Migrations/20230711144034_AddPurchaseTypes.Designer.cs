@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoffeeCard.Library.Migrations
 {
     [DbContext(typeof(CoffeeCardContext))]
-    [Migration("20230921172352_AddPurchaseTypes")]
+    [Migration("20230711144034_AddPurchaseTypes")]
     partial class AddPurchaseTypes
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
