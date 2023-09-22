@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using CoffeeCard.Common;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
+using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -42,7 +43,9 @@ namespace CoffeeCard.Library.Services
                 Price = 0,
                 ProductId = voucher.Product.Id,
                 ProductName = voucher.Product.Name,
-                PurchasedBy = user
+                PurchasedBy = user,
+                Status = PurchaseStatus.Completed,
+                Type = PurchaseType.Voucher
             };
 
             user.Purchases.Add(purchase);
@@ -51,6 +54,7 @@ namespace CoffeeCard.Library.Services
 
             voucher.DateUsed = DateTime.UtcNow;
             voucher.User = user;
+            voucher.Purchase = purchase;
 
             _context.Vouchers.Attach(voucher);
             _context.Entry(voucher).State = EntityState.Modified;
@@ -72,7 +76,7 @@ namespace CoffeeCard.Library.Services
                 user.Tickets.Add(ticket);
             }
 
-            purchase.TransactionId = transactionId;
+            purchase.ExternalTransactionId = transactionId;
 
             _context.Users.Attach(user);
             _context.Entry(user).State = EntityState.Modified;
