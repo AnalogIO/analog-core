@@ -272,7 +272,7 @@ namespace CoffeeCard.Library.Services.v2
         public async Task<SimplePurchaseResponse> RedeemVoucher(string voucherCode, User user)
         {
             var voucher = await _context.Vouchers
-                .Where(v => v.Code.Equals(voucherCode, StringComparison.OrdinalIgnoreCase))
+                .Where(v => v.Code.Equals(voucherCode))
                 .Include(v => v.Product)
                 .FirstOrDefaultAsync();
             if (voucher == null) throw new EntityNotFoundException($"Voucher '{voucherCode}' does not exist");
