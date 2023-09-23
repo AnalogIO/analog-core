@@ -1,0 +1,14 @@
+name: Deploy to prd
+
+on:
+    release:
+        types: [ published ]
+
+jobs:
+    prd-deploy:
+        uses: ./.github/actions/deploy.yml
+        secrets: inherit
+        with:
+            environment: prd
+            subscriptionId: analogio-prd
+    

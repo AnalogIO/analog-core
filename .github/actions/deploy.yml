@@ -1,4 +1,4 @@
-name: Deployment template
+name: Deployment
 
 on:
   workflow_call:
@@ -6,16 +6,22 @@ on:
       environment:
         type: string
         required: true
-        description: "The environment to deploy to"
-        default: "dev"
+        description: "Target Environment. Can either be 'dev' or 'prd'"
       subscriptionId:
         type: string
         required: true
-        description: "The Azure subscription ID to deploy to"
-        default: "analogio-dev"
+        description: "The Azure subscription Id to deploy to"
 
 jobs:
+  build-all:
+    name: Build codebase
+    uses: ./.github/actions/build.yml
+    with:
+      push_image: true
+    secrets: inherit
+
   deploy:
+    needs: [build-all]
     name: Azure Deployment
     runs-on: ubuntu-22.04
     environment:
@@ -46,18 +52,18 @@ jobs:
           parameters: "environment=${{ inputs.environment }}"
           deploymentName: "azuredeploy-${{github.run_number}}"
           failOnStdErr: true
-      
+
       - name: Deploy analog core
         id: webapp-deploy
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ vars.AZURE_WEBAPP_NAME }}
           images: "ghcr.io/analogio/coffeecard-api:${{ github.sha }}"
-  
+
       - name: Invoke Web App CD Webhook
         run: |
           curl --location --request POST '${{ vars.AZURE_APPSERVICE_WEBHOOK_URL }}' --header 'Authorization: Basic ${{ secrets.AZURE_APPSERVICE_WEBHOOK_AUTH }}'
-  
+
       - name: Smoke tests
         uses: Azure/powershell@v1
         with:

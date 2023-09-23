@@ -1,0 +1,15 @@
+name: Deploy to dev
+
+on:
+    push:
+        branches:
+            - develop
+
+jobs:
+    dev-deploy:
+        uses: ./.github/actions/deploy.yml
+        secrets: inherit
+        with:
+            environment: dev
+            subscriptionId: analogio-dev
+    
