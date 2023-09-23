@@ -282,7 +282,7 @@ namespace CoffeeCard.Library.Services.v2
             {
                 DateCreated = DateTime.UtcNow,
                 NumberOfTickets = voucher.Product.NumberOfTickets,
-                OrderId = voucherCode,
+                OrderId = (await GenerateUniqueOrderId()).ToString(),
                 Price = 0,
                 ProductId = voucher.Product.Id,
                 ProductName = voucher.Product.Name,

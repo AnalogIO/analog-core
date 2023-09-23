@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using CoffeeCard.Common;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
@@ -22,7 +23,7 @@ namespace CoffeeCard.Library.Services
             _context = context;
         }
 
-        public Purchase RedeemVoucher(string voucherCode, IEnumerable<Claim> claims)
+        public async Task<Purchase> RedeemVoucher(string voucherCode, IEnumerable<Claim> claims)
         {
             var userId = claims.FirstOrDefault(x => x.Type == Constants.UserId);
             if (userId == null) throw new ApiException("The token is invalid!", StatusCodes.Status401Unauthorized);
@@ -39,7 +40,7 @@ namespace CoffeeCard.Library.Services
             {
                 DateCreated = DateTime.UtcNow,
                 NumberOfTickets = voucher.Product.NumberOfTickets,
-                OrderId = voucherCode,
+                OrderId = (await GenerateUniqueOrderId()).ToString(),
                 Price = 0,
                 ProductId = voucher.Product.Id,
                 ProductName = voucher.Product.Name,
@@ -61,6 +62,20 @@ namespace CoffeeCard.Library.Services
             _context.SaveChanges();
 
             return purchase;
+        }
+
+        private async Task<Guid> GenerateUniqueOrderId()
+        {
+            while (true)
+            {
+                var newOrderId = Guid.NewGuid();
+
+                var orderIdAlreadyExists =
+                    await _context.Purchases.Where(p => p.OrderId.Equals(newOrderId.ToString())).AnyAsync();
+                if (orderIdAlreadyExists) continue;
+
+                return newOrderId;
+            }
         }
 
         public Purchase DeliverProductToUser(Purchase purchase, User user, string transactionId)
