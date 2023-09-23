@@ -7,15 +7,11 @@ on:
         type: string
         required: true
         description: "Target Environment. Can either be 'dev' or 'prd'"
-      subscriptionId:
-        type: string
-        required: true
-        description: "The Azure subscription Id to deploy to"
 
 jobs:
   build-all:
     name: Build codebase
-    uses: ./.github/actions/build.yml
+    uses: ./.github/workflows/build.yml
     with:
       push_image: true
     secrets: inherit
@@ -45,7 +41,7 @@ jobs:
       - name: Deploy ARM template
         uses: azure/arm-deploy@v1
         with:
-          subscriptionId: ${{ inputs.subscriptionId }}
+          subscriptionId: ${{ vars.AZURE_SUBSCRIPTION_ID }}
           scope: subscription
           region: "West Europe"
           template: azuredeploy.json

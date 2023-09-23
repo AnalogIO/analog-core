@@ -6,9 +6,8 @@ on:
 
 jobs:
     prd-deploy:
-        uses: ./.github/actions/deploy.yml
+        uses: ./.github/workflows/deploy.yml
         secrets: inherit
         with:
             environment: prd
-            subscriptionId: analogio-prd
     

@@ -7,9 +7,8 @@ on:
 
 jobs:
     dev-deploy:
-        uses: ./.github/actions/deploy.yml
+        uses: ./.github/workflows/deploy.yml
         secrets: inherit
         with:
             environment: dev
-            subscriptionId: analogio-dev
     
