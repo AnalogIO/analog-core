@@ -10,6 +10,6 @@ namespace CoffeeCard.Library.Services
 {
     public interface IPurchaseService : IDisposable
     {
-        Purchase RedeemVoucher(string voucherCode, IEnumerable<Claim> claims);
+        Task<Purchase> RedeemVoucher(string voucherCode, IEnumerable<Claim> claims);
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Services;
 using CoffeeCard.Models.DataTransferObjects.Purchase;
@@ -58,9 +59,9 @@ namespace CoffeeCard.WebApi.Controllers
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status409Conflict)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
-        public ActionResult<PurchaseDto> RedeemVoucher([FromQuery] string voucherCode)
+        public async Task<ActionResult<PurchaseDto>> RedeemVoucher([FromQuery] string voucherCode)
         {
-            var purchase = _purchaseService.RedeemVoucher(voucherCode, User.Claims);
+            var purchase = await _purchaseService.RedeemVoucher(voucherCode, User.Claims);
             return Ok(_mapperService.Map(purchase));
         }
 
