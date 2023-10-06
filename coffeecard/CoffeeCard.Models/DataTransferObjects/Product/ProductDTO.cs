@@ -64,7 +64,7 @@ namespace CoffeeCard.Models.DataTransferObjects.Product
         /// <value>Perk product</value>
         /// <example>true</example>
         [Required]
-        // FIXME: Delibrate Techincal Debt. IsPerk should be implemented in the future. Exposed to show the new API model
+        // FIXME: Deliberate technical debt. IsPerk should be implemented in the future. Exposed to show the new API model
         public bool IsPerk { get; set; }
     }
 }
