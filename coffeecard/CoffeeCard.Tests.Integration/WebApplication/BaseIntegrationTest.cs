@@ -26,6 +26,10 @@ namespace CoffeeCard.Tests.Integration.WebApplication
 
         protected BaseIntegrationTest(CustomWebApplicationFactory<Startup> factory)
         {
+            // Set the random seed used for generation of data in the builders
+            // This ensures our tests are deterministic within a specific version of the code
+            var seed = new Random(42);
+            Bogus.Randomizer.Seed = seed;
             _factory = factory;
             _scope = _factory.Services.CreateScope();
 
