@@ -16,10 +16,10 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
 
         [Required]
         public string Name { get; set; }
-        
+
         [Required]
         public string Description { get; set; }
-        
+
         [Required]
         public bool Visible { get; set; }
     }

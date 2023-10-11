@@ -23,4 +23,4 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
         [DefaultValue(true)]
         public bool Visible { get; set; } = true;
     }
-}   
+}

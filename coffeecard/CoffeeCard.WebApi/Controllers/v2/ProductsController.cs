@@ -25,7 +25,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
     public class ProductsController : ControllerBase
     {
         private readonly IProductService _productService;
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ProductsController"/> class.
         /// </summary>
@@ -47,8 +47,8 @@ namespace CoffeeCard.WebApi.Controllers.v2
         {
             return Ok(await _productService.AddProduct(addProductRequest.Product, addProductRequest.AllowedUserGroups));
         }
-        
-        
+
+
         /// <summary>
         /// Updates a product with the specified changes.
         /// </summary>
@@ -62,5 +62,5 @@ namespace CoffeeCard.WebApi.Controllers.v2
         {
             return Ok(await _productService.UpdateProduct(product));
         }
-    }            
+    }
 }

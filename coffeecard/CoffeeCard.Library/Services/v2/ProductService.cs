@@ -69,7 +69,7 @@ namespace CoffeeCard.Library.Services.v2
                 ExperienceWorth = 0,
                 Visible = newProduct.Visible
             };
-            
+
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
@@ -80,8 +80,8 @@ namespace CoffeeCard.Library.Services.v2
             }).ToList();
 
             _context.ProductUserGroups.AddRange(productUserGroups);
-            
-            
+
+
             await _context.SaveChangesAsync();
 
 
@@ -96,11 +96,11 @@ namespace CoffeeCard.Library.Services.v2
 
             return result;
         }
-        
+
         public async Task<ProductResponse> UpdateProduct(UpdateProductRequest changedProduct)
         {
             var product = await GetProductAsync(changedProduct.Id);
-            
+
             if (changedProduct.Price != default(int))
             {
                 Log.Information($"Changing Price of product from {product.NumberOfTickets} to {changedProduct.NumberOfTickets}");
@@ -111,7 +111,7 @@ namespace CoffeeCard.Library.Services.v2
                 Log.Information($"Changing Description of product from {product.Description} to {changedProduct.Description}");
                 product.Description = changedProduct.Description;
             }
-            
+
             if (changedProduct.NumberOfTickets != default(int))
             {
                 Log.Information($"Changing NumberOfTickets of product from {product.NumberOfTickets} to {changedProduct.NumberOfTickets}");
@@ -131,7 +131,7 @@ namespace CoffeeCard.Library.Services.v2
             }
 
             await _context.SaveChangesAsync();
-            
+
             var result = new ProductResponse
             {
                 Price = product.Price,
@@ -140,7 +140,7 @@ namespace CoffeeCard.Library.Services.v2
                 NumberOfTickets = product.NumberOfTickets,
                 Visible = product.Visible
             };
-            
+
             return result;
         }
 
