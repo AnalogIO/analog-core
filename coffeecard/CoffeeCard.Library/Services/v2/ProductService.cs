@@ -58,7 +58,7 @@ namespace CoffeeCard.Library.Services.v2
             return product;
         }
 
-        public Task<InitiateProductResponse> AddProduct(InitiateProductRequest newProduct, IEnumerable<UserGroup> allowedUserGroups)
+        public async Task<ProductResponse> AddProduct(AddProductRequest newProduct, IEnumerable<UserGroup> allowedUserGroups)
         {
             var product = new Product()
             {
@@ -66,9 +66,13 @@ namespace CoffeeCard.Library.Services.v2
                 Description = newProduct.Description,
                 Name = newProduct.Name,
                 NumberOfTickets = newProduct.NumberOfTickets,
+                ExperienceWorth = 0,
                 Visible = newProduct.Visible
             };
             
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync();
+
             var productUserGroups = allowedUserGroups.Select(userGroup => new ProductUserGroup
             {
                 ProductId = product.Id,
@@ -77,12 +81,11 @@ namespace CoffeeCard.Library.Services.v2
 
             _context.ProductUserGroups.AddRange(productUserGroups);
             
-            _context.Products.Add(product);
             
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
 
-            var result = new InitiateProductResponse
+            var result = new ProductResponse
             {
                 Price = product.Price,
                 Description = product.Description,
@@ -91,24 +94,24 @@ namespace CoffeeCard.Library.Services.v2
                 Visible = product.Visible
             };
 
-            return Task.FromResult(result);
+            return result;
         }
         
-        private Product GetProduct(int productId)
+        public async Task<ProductResponse> UpdateProduct(UpdateProductRequest changedProduct)
         {
-            return _context.Products.Where(p => p.Id == productId).FirstOrDefault();
-        }
-        
-        public Task<InitiateProductResponse> UpdateProduct(InitiateProductRequest changedProduct)
-        {
-            var product = GetProduct(changedProduct.Id);
-
-            if (changedProduct.Id != default(int))
+            var product = await GetProductAsync(changedProduct.Id);
+            
+            if (changedProduct.Price != default(int))
             {
-                Log.Information($"Changing Id of product from {product.Id} to {changedProduct.Id}");
-                product.Id = changedProduct.Id;
+                Log.Information($"Changing Price of product from {product.NumberOfTickets} to {changedProduct.NumberOfTickets}");
+                product.Price = changedProduct.Price;
             }
-
+            if (!string.IsNullOrEmpty(changedProduct.Description))
+            {
+                Log.Information($"Changing Description of product from {product.Description} to {changedProduct.Description}");
+                product.Description = changedProduct.Description;
+            }
+            
             if (changedProduct.NumberOfTickets != default(int))
             {
                 Log.Information($"Changing NumberOfTickets of product from {product.NumberOfTickets} to {changedProduct.NumberOfTickets}");
@@ -121,21 +124,15 @@ namespace CoffeeCard.Library.Services.v2
                 product.Name = changedProduct.Name;
             }
 
-            if (changedProduct.ExperienceWorth != default(int))
-            {
-                Log.Information($"Changing ExperienceWorth of product from {product.ExperienceWorth} to {changedProduct.ExperienceWorth}");
-                product.ExperienceWorth = changedProduct.ExperienceWorth;
-            }
-
             if (changedProduct.Visible != default(bool))
             {
                 Log.Information($"Changing Visible of product from {product.Visible} to {changedProduct.Visible}");
                 product.Visible = changedProduct.Visible;
             }
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             
-            var result = new InitiateProductResponse
+            var result = new ProductResponse
             {
                 Price = product.Price,
                 Description = product.Description,
@@ -144,23 +141,7 @@ namespace CoffeeCard.Library.Services.v2
                 Visible = product.Visible
             };
             
-            return Task.FromResult(result);
-        }
-
-        public async Task<bool> DeactivateProduct(int productId)
-        {
-            var product = await _context.Products.FindAsync(productId);
-
-            if (product == null)
-            {
-                return false;
-            }
-    
-            product.Visible = false;
-    
-            await _context.SaveChangesAsync();
-
-            return true;
+            return result;
         }
 
         public void Dispose()

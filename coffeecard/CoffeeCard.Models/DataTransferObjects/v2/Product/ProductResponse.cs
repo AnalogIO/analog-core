@@ -1,18 +1,14 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.Product
 {
     /// <summary>
     /// Initiate a new product request
     /// </summary>
-    public class InitiateProductRequest
+    public class ProductResponse
     {
-        [Required]
-        public int Id { get; set; }
-
         [Required]
         public int Price { get; set; }
 
@@ -20,14 +16,11 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
 
         [Required]
         public string Name { get; set; }
-
-
+        
         [Required]
         public string Description { get; set; }
-
-        public int ExperienceWorth { get; set; }
-
-        [DefaultValue(true)]
-        public bool Visible { get; set; } = true;
+        
+        [Required]
+        public bool Visible { get; set; }
     }
-}   
+}

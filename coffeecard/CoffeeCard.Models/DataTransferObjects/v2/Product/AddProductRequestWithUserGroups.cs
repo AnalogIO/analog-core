@@ -3,8 +3,8 @@ using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.Product;
 
-public class InitiateProductRequestWithUserGroups
+public class AddProductRequestWithUserGroups
 {
-        public InitiateProductRequest Product { get; set; }
+        public AddProductRequest Product { get; set; }
         public IEnumerable<UserGroup> AllowedUserGroups { get; set; }
 }
