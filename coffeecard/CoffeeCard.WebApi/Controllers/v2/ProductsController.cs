@@ -40,7 +40,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <param name="addProductRequest">The request containing the details of the product to be added and allowed user groups.</param>
         /// <returns> The newly added product wrapped in a InitiateProductResponse object.</returns>
         /// <response code="200">The request was successful, and the product was added.</response>
-        [HttpPost("add")]
+        [HttpPost("")]
         [AuthorizeRoles(UserGroup.Board)]
         [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> AddProduct(AddProductRequestWithUserGroups addProductRequest)
@@ -55,7 +55,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <param name="product">The request containing the changes to be applied to the product.</param>
         /// <returns>A response indicating the result of the update operation.</returns>
         /// <response code="200">The request was successful, and the product was updated.</response>
-        [HttpPut("update")]
+        [HttpPut("")]
         [AuthorizeRoles(UserGroup.Board)]
         [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateProduct(UpdateProductRequest product)
