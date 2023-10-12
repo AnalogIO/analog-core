@@ -31,15 +31,11 @@ namespace CoffeeCard.Library.Services.v2
 
         private async Task<IEnumerable<Product>> GetProductsAsync(UserGroup userGroup)
         {
-            return await
-            (
-                from p in from pug in _context.ProductUserGroups
-                          where pug.UserGroup == userGroup
-                          select pug.Product
-                where p.Visible
-                orderby p.Id
-                select p
-            ).ToListAsync();
+            return await _context.Products
+                .Where(p => p.ProductUserGroup.Any(pug => pug.UserGroup == userGroup))
+                .Where(p => p.Visible).OrderBy(p => p.Id)
+                .Include(p => p.ProductUserGroup)
+                .ToListAsync();
         }
 
         public async Task<Product> GetProductAsync(int productId)
