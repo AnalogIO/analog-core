@@ -7,7 +7,7 @@ namespace CoffeeCard.Tests.Common.Builders
     {
         public static UserBuilder Simple()
         {
-            var programme = new ProgrammeBuilder().Simple().Build();
+            var programme = ProgrammeBuilder.Simple().Build();
 
             return new UserBuilder()
                 // ID?
