@@ -17,7 +17,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
     /// Controller for retrieving products
     /// </summary>
     [Authorize]
-    [ApiVersion("1")]
+    [ApiVersion("2")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     public class ProductsController : ControllerBase
