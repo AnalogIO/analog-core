@@ -69,8 +69,7 @@ namespace CoffeeCard.Library.Services
                 Id = product.Id,
                 Name = product.Name,
                 NumberOfTickets = product.NumberOfTickets,
-                Price = product.Price,
-                IsPerk = product.isPerk()
+                Price = product.Price
             };
         }
 
