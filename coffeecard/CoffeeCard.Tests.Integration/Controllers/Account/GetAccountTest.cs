@@ -18,7 +18,7 @@ namespace CoffeeCard.Tests.Integration.Controllers.Account {
 		[Fact]
 		public async Task Get_account_succeeds_when_authenticated_for_existing_account()
 		{
-			var user = new UserBuilder().DefaultCustomer().Build();
+			var user = UserBuilder.DefaultCustomer().Build();
 			await Context.Users.AddAsync(user);
 			await Context.SaveChangesAsync();
 			SetDefaultAuthHeader(user);

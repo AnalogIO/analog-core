@@ -2,22 +2,20 @@ using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Tests.Common.Builders
 {
-    public class TicketBuilder : BaseBuilder<Ticket>
+    [BuilderFor(typeof(Ticket))]
+    public partial class TicketBuilder
     {
-        public override TicketBuilder Simple()
+        public static TicketBuilder Simple()
         {
-            var owner = new UserBuilder().Simple().Build();
-            var purchase = new PurchaseBuilder().Simple().Build();
-            Faker.RuleFor(p => p.Id, f => f.IndexGlobal)
-                .RuleFor(p => p.Owner, owner)
-                .RuleFor(p => p.OwnerId, owner.Id)
-                .RuleFor(p => p.Purchase, f => purchase)
-                .RuleFor(p => p.PurchaseId, purchase.Id);
-
-            return this;
+            var owner = UserBuilder.Simple().Build();
+            var purchase = PurchaseBuilder.Simple().Build();
+            //TODO Ids?
+            return new TicketBuilder()
+                .WithOwner(owner)
+                .WithPurchase(purchase);
         }
 
-        public override TicketBuilder Typical()
+        public static TicketBuilder Typical()
         {
             return Simple();
         }

@@ -2,18 +2,19 @@ using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Tests.Common.Builders
 {
-    public class ProductUserGroupBuilder : BaseBuilder<ProductUserGroup>
+    [BuilderFor(typeof(ProductUserGroup))]
+    public partial class ProductUserGroupBuilder
     {
-        public override ProductUserGroupBuilder Simple()
+        public static ProductUserGroupBuilder Simple()
         {
-            var product = new ProductBuilder().Simple().Build();
-            Faker.RuleFor(p => p.Product, product)
-            .RuleFor(p => p.ProductId, product.Id)
-    .RuleFor(p => p.UserGroup, f => f.PickRandom(UserGroup.Barista, UserGroup.Board, UserGroup.Customer, UserGroup.Manager));
-            return this;
+            var product = ProductBuilder.Simple().Build();
+            return new ProductUserGroupBuilder()
+                .WithProduct(product)
+                .WithUserGroup(f =>
+                    f.PickRandom(UserGroup.Barista, UserGroup.Board, UserGroup.Customer, UserGroup.Manager));
         }
 
-        public override ProductUserGroupBuilder Typical()
+        public static ProductUserGroupBuilder Typical()
         {
             return Simple();
         }

@@ -2,20 +2,19 @@ using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Tests.Common.Builders
 {
-    public class VoucherBuilder : BaseBuilder<Voucher>
+    [BuilderFor(typeof(Voucher))]
+    public partial class VoucherBuilder
     {
-        public override VoucherBuilder Simple()
+        public static VoucherBuilder Simple()
         {
-			var product = new ProductBuilder().Simple().Build();
-            Faker.RuleFor(p => p.Id, f => f.IndexGlobal)
-                .RuleFor(p => p.User, f => null)
-				.RuleFor(v => v.UserId, f => null)
-				.RuleFor(v => v.Product, product)
-				.RuleFor(v => v.ProductId, product.Id);
-            return this;
+			var product = ProductBuilder.Simple().Build();
+            //TODO ids?
+            return new VoucherBuilder()
+                .WithProduct(product)
+                .WithUser(f => null);
         }
 
-        public override VoucherBuilder Typical()
+        public static VoucherBuilder Typical()
         {
             return Simple();
         }

@@ -2,17 +2,17 @@ using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Tests.Common.Builders
 {
-    public class StatisticBuilder : BaseBuilder<Statistic>
+    [BuilderFor(typeof(Statistic))]
+    public partial class StatisticBuilder
     {
-        public override StatisticBuilder Simple()
+        public static StatisticBuilder Simple()
         {
-			var user = new UserBuilder().Simple().Build();
-            Faker.RuleFor(p => p.Id, f => f.IndexGlobal)
-                .RuleFor(p => p.User, user);
-            return this;
+			var user = UserBuilder.Simple().Build();
+            return new StatisticBuilder()
+                .WithUser(user);;
         }
 
-        public override StatisticBuilder Typical()
+        public static StatisticBuilder Typical()
         {
             return Simple();
         }

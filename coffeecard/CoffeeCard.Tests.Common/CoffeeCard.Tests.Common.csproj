@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <ProjectReference Include="..\CoffeeCard.Generators\CoffeeCard.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
     <ProjectReference Include="..\CoffeeCard.Models\CoffeeCard.Models.csproj" />
   </ItemGroup>
 
@@ -9,12 +10,8 @@
     <PackageReference Include="AutoBogus.Conventions" Version="2.13.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="Builders\UserGroupBuilder.cs" />
-  </ItemGroup>
-
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net7</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>

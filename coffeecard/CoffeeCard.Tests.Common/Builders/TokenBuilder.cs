@@ -2,16 +2,17 @@ using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Tests.Common.Builders
 {
-    public class TokenBuilder : BaseBuilder<Token>
+    [BuilderFor(typeof(Token))]
+    public partial class TokenBuilder
     {
-        public override TokenBuilder Simple()
+        public static TokenBuilder Simple()
         {
-            Faker.RuleFor(p => p.Id, f => f.IndexGlobal)
-                .RuleFor(p => p.User, new UserBuilder().Simple().Build());
-            return this;
+            return new TokenBuilder()
+                //TODO id?
+                .WithUser(UserBuilder.Simple().Build());
         }
 
-        public override TokenBuilder Typical()
+        public static TokenBuilder Typical()
         {
             return Simple();
         }

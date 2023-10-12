@@ -2,18 +2,19 @@ using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Tests.Common.Builders
 {
-    public class ProgrammeBuilder : BaseBuilder<Programme>
+    [BuilderFor(typeof(Programme))]
+    public partial class ProgrammeBuilder
     {
-        public override ProgrammeBuilder Simple()
+        public static ProgrammeBuilder Simple()
         {
-            Faker.RuleFor(p => p.Id, f => f.IndexGlobal)
-                .RuleFor(p => p.FullName, f => f.Commerce.Department())
-                .RuleFor(p => p.ShortName, f => f.Random.String2(3))
-                .RuleFor(p => p.Users, () => new List<User>());
-            return this;
+            return new ProgrammeBuilder()
+                //TODO ID?
+                .WithUsers(new List<User>())
+                .WithShortName(f => f.Random.String2(3))
+                .WithFullName(f => f.Commerce.Department());
         }
 
-        public override ProgrammeBuilder Typical()
+        public static ProgrammeBuilder Typical()
         {
             return Simple();
         }

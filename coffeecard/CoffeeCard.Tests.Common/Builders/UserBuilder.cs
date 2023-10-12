@@ -2,30 +2,33 @@ using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Tests.Common.Builders
 {
-    public class UserBuilder : BaseBuilder<User>
+    [BuilderFor(typeof(User))]
+    public partial class UserBuilder
     {
-        public override UserBuilder Simple()
+        public static UserBuilder Simple()
         {
-			var programme = new ProgrammeBuilder().Simple().Build();
-			Faker.RuleFor(u => u.Id, f => f.IndexGlobal)
-			.RuleFor(u => u.ProgrammeId, programme.Id)
-			.RuleFor(u => u.Programme, programme)
-			.RuleFor(u => u.Purchases, new List<Purchase>())
-			.RuleFor(u => u.Statistics, new List<Statistic>())
-			.RuleFor(u => u.LoginAttempts, new List<LoginAttempt>())
-			.RuleFor(u => u.Tokens, new List<Token>())
-			.RuleFor(u => u.UserState, UserState.Active)
-			.RuleFor(u => u.IsVerified, true)
-			.RuleFor(u => u.Tickets, new List<Ticket>());
-			return this;
+            var programme = new ProgrammeBuilder().Simple().Build();
+
+            return new UserBuilder()
+                // ID?
+                //todo programme ID?
+                .WithProgramme(programme)
+                .WithPurchases(new List<Purchase>())
+                .WithStatistics(new List<Statistic>())
+                .WithLoginAttempts(new List<LoginAttempt>())
+                .WithTokens(new List<Token>())
+                .WithUserState(UserState.Active)
+                .WithTickets(new List<Ticket>());
         }
 
-		public UserBuilder DefaultCustomer(){
-			Faker.RuleFor(u => u.UserGroup, UserGroup.Customer);
-			return Simple();
-		}
+        public static UserBuilder DefaultCustomer()
+        {
+            return Simple()
+                .WithUserGroup(UserGroup.Customer)
+                .WithIsVerified(true);
+        }
 
-        public override UserBuilder Typical()
+        public static UserBuilder Typical()
         {
             return Simple();
         }
