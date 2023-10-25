@@ -36,8 +36,8 @@ namespace CoffeeCard.Library.Services.v2
             return await
             (
                 from p in from pug in _context.ProductUserGroups
-                    where pug.UserGroup == userGroup
-                    select pug.Product
+                          where pug.UserGroup == userGroup
+                          select pug.Product
                 where p.Visible
                 orderby p.Id
                 select p
@@ -58,7 +58,7 @@ namespace CoffeeCard.Library.Services.v2
 
             return product;
         }
-        
+
         private async Task<bool> CheckProductUniquenessAsync(string name, int price)
         {
             var product = await _context.Products
@@ -74,7 +74,7 @@ namespace CoffeeCard.Library.Services.v2
             {
                 throw new ConflictException($"Product already exists with name {newProduct.Name} and price of {newProduct.Price}");
             }
-            
+
             var product = new Product()
             {
                 Price = newProduct.Price,

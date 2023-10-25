@@ -43,7 +43,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
         /// </summary>
         [DefaultValue(true)]
         public bool Visible { get; set; } = true;
-        
+
         [Required]
         public IEnumerable<UserGroup> AllowedUserGroups { get; set; }
 
