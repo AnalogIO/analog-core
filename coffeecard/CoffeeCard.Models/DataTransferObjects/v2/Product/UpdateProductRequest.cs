@@ -28,24 +28,28 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
         /// Gets or sets the updated price of the product.
         /// </summary>
         [Required]
+        [Range(0, int.MaxValue, ErrorMessage = "Price must be a non-negative integer.")]
         public int Price { get; set; }
 
         /// <summary>
         /// Gets or sets the updated number of tickets associated with the product.
         /// </summary>
         [Required]
+        [Range(0, int.MaxValue, ErrorMessage = "Number of Tickets must be a non-negative integer.")]
         public int NumberOfTickets { get; set; }
 
         /// <summary>
         /// Gets or sets the updated name of the product.
         /// </summary>
         [Required]
+        [MinLength(1, ErrorMessage = "Name cannot be an empty string.")]
         public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the updated description of the product.
         /// </summary>
         [Required]
+        [MinLength(1, ErrorMessage = "Description cannot be an empty string.")]
         public string Description { get; set; }
 
         /// <summary>

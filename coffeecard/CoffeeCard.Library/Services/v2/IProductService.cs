@@ -11,7 +11,7 @@ namespace CoffeeCard.Library.Services.v2
         Task<IEnumerable<Product>> GetPublicProductsAsync();
         Task<IEnumerable<Product>> GetProductsForUserAsync(User user);
         Task<Product> GetProductAsync(int productId);
-        Task<ProductResponse> AddProduct(AddProductRequest product, IEnumerable<UserGroup> allowedUserGroups);
+        Task<ProductResponse> AddProduct(AddProductRequest product);
 
         Task<ProductResponse> UpdateProduct(UpdateProductRequest product);
     }

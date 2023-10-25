@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
@@ -35,8 +36,8 @@ namespace CoffeeCard.Library.Services.v2
             return await
             (
                 from p in from pug in _context.ProductUserGroups
-                          where pug.UserGroup == userGroup
-                          select pug.Product
+                    where pug.UserGroup == userGroup
+                    select pug.Product
                 where p.Visible
                 orderby p.Id
                 select p
@@ -57,9 +58,23 @@ namespace CoffeeCard.Library.Services.v2
 
             return product;
         }
-
-        public async Task<ProductResponse> AddProduct(AddProductRequest newProduct, IEnumerable<UserGroup> allowedUserGroups)
+        
+        private async Task<bool> CheckProductUniquenessAsync(string name, int price)
         {
+            var product = await _context.Products
+                .FirstOrDefaultAsync(p => (p.Name == name && p.Price == price));
+
+            return product == null;
+        }
+
+        public async Task<ProductResponse> AddProduct(AddProductRequest newProduct)
+        {
+            var unique = await CheckProductUniquenessAsync(newProduct.Name, newProduct.Price);
+            if (!unique)
+            {
+                throw new ConflictException($"Product already exists with name {newProduct.Name} and price of {newProduct.Price}");
+            }
+            
             var product = new Product()
             {
                 Price = newProduct.Price,
@@ -73,7 +88,7 @@ namespace CoffeeCard.Library.Services.v2
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
-            var productUserGroups = allowedUserGroups.Select(userGroup => new ProductUserGroup
+            var productUserGroups = newProduct.AllowedUserGroups.Select(userGroup => new ProductUserGroup
             {
                 ProductId = product.Id,
                 UserGroup = userGroup
@@ -100,35 +115,11 @@ namespace CoffeeCard.Library.Services.v2
         public async Task<ProductResponse> UpdateProduct(UpdateProductRequest changedProduct)
         {
             var product = await GetProductAsync(changedProduct.Id);
-
-            if (changedProduct.Price != default(int))
-            {
-                Log.Information($"Changing Price of product from {product.NumberOfTickets} to {changedProduct.NumberOfTickets}");
-                product.Price = changedProduct.Price;
-            }
-            if (!string.IsNullOrEmpty(changedProduct.Description))
-            {
-                Log.Information($"Changing Description of product from {product.Description} to {changedProduct.Description}");
-                product.Description = changedProduct.Description;
-            }
-
-            if (changedProduct.NumberOfTickets != default(int))
-            {
-                Log.Information($"Changing NumberOfTickets of product from {product.NumberOfTickets} to {changedProduct.NumberOfTickets}");
-                product.NumberOfTickets = changedProduct.NumberOfTickets;
-            }
-
-            if (!string.IsNullOrEmpty(changedProduct.Name))
-            {
-                Log.Information($"Changing Name of product from {product.Name} to {changedProduct.Name}");
-                product.Name = changedProduct.Name;
-            }
-
-            if (changedProduct.Visible != default(bool))
-            {
-                Log.Information($"Changing Visible of product from {product.Visible} to {changedProduct.Visible}");
-                product.Visible = changedProduct.Visible;
-            }
+            product.Price = changedProduct.Price;
+            product.Description = changedProduct.Description;
+            product.NumberOfTickets = changedProduct.NumberOfTickets;
+            product.Name = changedProduct.Name;
+            product.Visible = changedProduct.Visible;
 
             await _context.SaveChangesAsync();
 
