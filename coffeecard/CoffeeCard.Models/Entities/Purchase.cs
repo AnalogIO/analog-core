@@ -7,8 +7,8 @@ using Microsoft.EntityFrameworkCore;
 namespace CoffeeCard.Models.Entities
 {
     // TODO Should me marked as unique
-    [Index(nameof(OrderId))]
-    [Index(nameof(TransactionId))]
+    [Index(nameof(OrderId), IsUnique = true)]
+    [Index(nameof(ExternalTransactionId))]
     public class Purchase
     {
         /// <summary>
@@ -63,6 +63,7 @@ namespace CoffeeCard.Models.Entities
         /// </summary>
         /// <value>Order Id</value>
         /// <example>79ef0af3-02dd-4634-83fa-c15ddc05d338</example>
+        // TODO Change type to GUID, so it maps to uniqueuIdentifier in ef
         public string OrderId { get; set; }
 
         /// <summary>
@@ -70,7 +71,7 @@ namespace CoffeeCard.Models.Entities
         /// </summary>
         /// <value>Transaction Id</value>
         /// <example>186d2b31-ff25-4414-9fd1-bfe9807fa8b7</example>
-        public string? TransactionId { get; set; }
+        public string? ExternalTransactionId { get; set; }
 
         // Status is nullable for migration purposes
         /// <summary>
@@ -79,6 +80,9 @@ namespace CoffeeCard.Models.Entities
         /// <value>Status</value>
         /// <example>Completed</example>
         public PurchaseStatus Status { get; set; }
+
+        /// The type of purchase e.g. MobilePayV1, Free
+        public PurchaseType Type { get; set; }
 
         [Column(name: "PurchasedBy_Id")]
         public int PurchasedById { get; set; }

@@ -1,3 +1,6 @@
+using System;
+using CoffeeCard.Models.Entities;
+
 namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
 {
     /// <summary>
@@ -14,5 +17,19 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// Free purchase
         /// </summary>
         FreePurchase
+    }
+
+    public static class PaymentTypeExtension
+    {
+        /// Converts the payment type to a corresponding PurchasType
+        public static PurchaseType toPurchaseType(this PaymentType paymentType)
+        {
+            return paymentType switch
+            {
+                PaymentType.MobilePay => PurchaseType.MobilePayV2,
+                PaymentType.FreePurchase => PurchaseType.Free,
+                _ => throw new ArgumentException("Unknown enum given to PaymentTypeExtension"),
+            };
+        }
     }
 }

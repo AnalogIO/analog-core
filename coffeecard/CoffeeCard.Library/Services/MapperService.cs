@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.DataTransferObjects.Product;
@@ -23,7 +23,7 @@ namespace CoffeeCard.Library.Services
                 NumberOfTickets = purchase.NumberOfTickets,
                 DateCreated = purchase.DateCreated,
                 OrderId = purchase.OrderId,
-                TransactionId = purchase.TransactionId
+                TransactionId = purchase.ExternalTransactionId
             };
         }
 
