@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Library.Utils;
-using CoffeeCard.Models.DataTransferObjects.Product;
+using CoffeeCard.Models.DataTransferObjects.v2.Products;
 using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -35,19 +35,6 @@ namespace CoffeeCard.WebApi.Controllers.v2
             _claimsUtilities = claimsUtilities;
         }
 
-        private ProductDto mapProductToDto(Product product)
-        {
-            return new ProductDto
-            {
-                Description = product.Description,
-                Id = product.Id,
-                Name = product.Name,
-                NumberOfTickets = product.NumberOfTickets,
-                Price = product.Price,
-                IsPerk = product.isPerk()
-            };
-        }
-
         /// <summary>
         /// Returns a list of available products based on a account's user group
         /// </summary>
@@ -55,8 +42,8 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <response code="200">Successful request</response>
         [HttpGet]
         [AllowAnonymous]
-        [ProducesResponseType(typeof(List<ProductDto>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<ProductDto>>> GetProductsPublic()
+        [ProducesResponseType(typeof(IEnumerable<ProductResponse>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<ProductResponse>>> GetProducts()
         {
             IEnumerable<Product> products;
             try
@@ -72,24 +59,20 @@ namespace CoffeeCard.WebApi.Controllers.v2
             }
 
 
-            return Ok(products.Select(mapProductToDto).ToList());
+            return Ok(products.Select(MapProductToDto).ToList());
         }
 
-        /// <summary>
-        /// Returns a list of available products based on a account's user group
-        /// </summary>
-        /// <returns>List of available product</returns>
-        /// <response code="200">Successful request</response>
-        /// <response code="401">Invalid credentials</response>
-        [HttpGet("app")]
-        [ProducesResponseType(typeof(List<ProductDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<List<ProductDto>>> GetProductsForUser()
+        private static ProductResponse MapProductToDto(Product product)
         {
-            var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
-
-            var products = await _productService.GetProductsForUserAsync(user);
-            return Ok(products.Select(mapProductToDto));
+            return new ProductResponse
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                NumberOfTickets = product.NumberOfTickets,
+                Price = product.Price,
+                IsPerk = product.IsPerk()
+            };
         }
     }
 }

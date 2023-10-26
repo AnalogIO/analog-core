@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using CoffeeCard.Models.Entities;
 
-namespace CoffeeCard.Models.DataTransferObjects.Product
+namespace CoffeeCard.Models.DataTransferObjects.v2.Products
 {
     /// <summary>
     /// Represents a purchasable product
@@ -16,7 +15,7 @@ namespace CoffeeCard.Models.DataTransferObjects.Product
     ///     "isPerk": true
     /// }
     /// </example>
-    public class ProductDto
+    public class ProductResponse
     {
         /// <summary>
         /// Id of product
@@ -57,5 +56,13 @@ namespace CoffeeCard.Models.DataTransferObjects.Product
         /// <example>Coffee clip card of 10 clips</example>
         [Required]
         public string Description { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Eligible due to a user perk privilege 
+        /// </summary>
+        /// <value>Perk product</value>
+        /// <example>true</example>
+        [Required]
+        public bool IsPerk { get; set; }
     }
 }
