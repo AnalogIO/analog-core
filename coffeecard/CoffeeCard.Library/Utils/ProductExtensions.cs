@@ -16,7 +16,7 @@ namespace CoffeeCard.Library.Utils
         {
             if (product.ProductUserGroup == null)
             {
-                throw new ArgumentNullException($"{product.ProductUserGroup} must not be null");
+                throw new ArgumentNullException($"{nameof(Product.ProductUserGroup)} must not be null");
             }
 
             return product.ProductUserGroup.Any(pug => pug.UserGroup != UserGroup.Customer);
