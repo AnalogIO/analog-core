@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Models.DataTransferObjects.Product
 {
@@ -12,8 +11,7 @@ namespace CoffeeCard.Models.DataTransferObjects.Product
     ///     "price": 300,
     ///     "numberOfTickets": 10,
     ///     "name": "Coffee clip card",
-    ///     "description": "Coffee clip card of 10 clips",
-    ///     "isPerk": true
+    ///     "description": "Coffee clip card of 10 clips"
     /// }
     /// </example>
     public class ProductDto
