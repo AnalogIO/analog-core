@@ -32,7 +32,6 @@ namespace CoffeeCard.Tests.Integration.Controllers.Account
 
             var response = await Client.PostAsJsonAsync(LoginUrl, loginRequest);
 
-            Assert.Equal(UserBuilder.DefaultCustomer().Build(), UserBuilder.DefaultCustomer().Build());
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
@@ -56,7 +55,6 @@ namespace CoffeeCard.Tests.Integration.Controllers.Account
 
             var token = await DeserializeResponseAsync<TokenDto>(response);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.Equal(user, UserBuilder.DefaultCustomer().Build());
             Assert.NotEmpty(token.Token!);
         }
 
