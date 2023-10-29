@@ -13,7 +13,7 @@ namespace CoffeeCard.Tests.Common.Builders
         
         /// <summary>
         /// Creates a new instance of type T, 
-        /// using the configuration set by 
+        /// using the configuration set by using the builderMethods
         /// </summary>
         public T Build(){
             return Faker.Generate();
@@ -21,7 +21,7 @@ namespace CoffeeCard.Tests.Common.Builders
 
         /// <summary>
         /// Creates a new list of type T, 
-        /// using the configuration set by 
+        /// using the configuration set by using the builderMethods
         /// </summary>
         public List<T> Build(int count){
             return Faker.Generate(count);

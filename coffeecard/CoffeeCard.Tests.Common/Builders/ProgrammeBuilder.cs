@@ -8,7 +8,6 @@ namespace CoffeeCard.Tests.Common.Builders
         public static ProgrammeBuilder Simple()
         {
             return new ProgrammeBuilder()
-                //TODO ID?
                 .WithUsers(new List<User>())
                 .WithShortName(f => f.Random.String2(3))
                 .WithFullName(f => f.Commerce.Department());

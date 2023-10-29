@@ -8,7 +8,6 @@ namespace CoffeeCard.Tests.Common.Builders
         public static PurchaseBuilder Simple()
         {
             var purchasedBy = UserBuilder.Simple().Build();
-            //TODO id and purseById?
             return new PurchaseBuilder().WithPurchasedBy(purchasedBy)
                 .WithProductName(f => f.Commerce.ProductName())
                 .WithTickets(new List<Ticket>())

@@ -10,8 +10,6 @@ namespace CoffeeCard.Tests.Common.Builders
             var programme = ProgrammeBuilder.Simple().Build();
 
             return new UserBuilder()
-                // ID?
-                //todo programme ID?
                 .WithProgramme(programme)
                 .WithPurchases(new List<Purchase>())
                 .WithStatistics(new List<Statistic>())

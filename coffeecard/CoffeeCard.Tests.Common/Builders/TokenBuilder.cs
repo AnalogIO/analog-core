@@ -8,7 +8,6 @@ namespace CoffeeCard.Tests.Common.Builders
         public static TokenBuilder Simple()
         {
             return new TokenBuilder()
-                //TODO id?
                 .WithUser(UserBuilder.Simple().Build());
         }
 

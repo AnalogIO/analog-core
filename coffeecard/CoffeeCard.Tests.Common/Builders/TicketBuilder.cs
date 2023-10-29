@@ -9,7 +9,6 @@ namespace CoffeeCard.Tests.Common.Builders
         {
             var owner = UserBuilder.Simple().Build();
             var purchase = PurchaseBuilder.Simple().Build();
-            //TODO Ids?
             return new TicketBuilder()
                 .WithOwner(owner)
                 .WithPurchase(purchase);
