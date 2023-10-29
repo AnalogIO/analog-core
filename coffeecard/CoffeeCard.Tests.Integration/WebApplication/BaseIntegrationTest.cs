@@ -89,7 +89,7 @@ namespace CoffeeCard.Tests.Integration.WebApplication
             // Ensure the database is cleaned for each test run
             context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
-            
+
             return context;
         }
 

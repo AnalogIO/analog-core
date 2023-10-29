@@ -51,7 +51,7 @@ namespace CoffeeCard.Tests.Integration.WebApplication
 
                 // Build the service provider
                 var sp = services.BuildServiceProvider();
-               
+
             });
         }
     }

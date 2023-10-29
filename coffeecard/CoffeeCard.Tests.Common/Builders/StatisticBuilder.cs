@@ -7,9 +7,9 @@ namespace CoffeeCard.Tests.Common.Builders
     {
         public static StatisticBuilder Simple()
         {
-			var user = UserBuilder.Simple().Build();
+            var user = UserBuilder.Simple().Build();
             return new StatisticBuilder()
-                .WithUser(user);;
+                .WithUser(user); ;
         }
 
         public static StatisticBuilder Typical()
