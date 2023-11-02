@@ -72,8 +72,8 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <response code="200">Successful request</response>
         [HttpGet]
         [AllowAnonymous]
-        [ProducesResponseType(typeof(IEnumerable<ChangedProductResponse>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<ChangedProductResponse>>> GetProducts()
+        [ProducesResponseType(typeof(IEnumerable<ProductResponse>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<ProductResponse>>> GetProducts()
         {
             IEnumerable<Product> products;
             try
