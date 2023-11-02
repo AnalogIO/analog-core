@@ -19,7 +19,7 @@ namespace CoffeeCard.Library.Utils
                 throw new ArgumentNullException($"{nameof(Product.ProductUserGroup)} must not be null");
             }
 
-            return product.ProductUserGroup.Any(pug => pug.UserGroup != UserGroup.Customer);
+            return product.ProductUserGroup.All(pug => pug.UserGroup != UserGroup.Customer);
         }
     }
 }
