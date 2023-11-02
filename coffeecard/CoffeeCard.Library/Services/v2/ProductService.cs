@@ -33,15 +33,11 @@ namespace CoffeeCard.Library.Services.v2
 
         private async Task<IEnumerable<Product>> GetProductsAsync(UserGroup userGroup)
         {
-            return await
-            (
-                from p in from pug in _context.ProductUserGroups
-                          where pug.UserGroup == userGroup
-                          select pug.Product
-                where p.Visible
-                orderby p.Id
-                select p
-            ).ToListAsync();
+            return await _context.Products
+                .Where(p => p.ProductUserGroup.Any(pug => pug.UserGroup == userGroup))
+                .Where(p => p.Visible).OrderBy(p => p.Id)
+                .Include(p => p.ProductUserGroup)
+                .ToListAsync();
         }
 
         public async Task<Product> GetProductAsync(int productId)
@@ -67,7 +63,7 @@ namespace CoffeeCard.Library.Services.v2
             return product == null;
         }
 
-        public async Task<ProductResponse> AddProduct(AddProductRequest newProduct)
+        public async Task<ChangedProductResponse> AddProduct(AddProductRequest newProduct)
         {
             var unique = await CheckProductUniquenessAsync(newProduct.Name, newProduct.Price);
             if (!unique)
@@ -100,7 +96,7 @@ namespace CoffeeCard.Library.Services.v2
             await _context.SaveChangesAsync();
 
 
-            var result = new ProductResponse
+            var result = new ChangedProductResponse
             {
                 Price = product.Price,
                 Description = product.Description,
@@ -112,7 +108,7 @@ namespace CoffeeCard.Library.Services.v2
             return result;
         }
 
-        public async Task<ProductResponse> UpdateProduct(UpdateProductRequest changedProduct)
+        public async Task<ChangedProductResponse> UpdateProduct(UpdateProductRequest changedProduct)
         {
             var product = await GetProductAsync(changedProduct.Id);
             product.Price = changedProduct.Price;
@@ -123,7 +119,7 @@ namespace CoffeeCard.Library.Services.v2
 
             await _context.SaveChangesAsync();
 
-            var result = new ProductResponse
+            var result = new ChangedProductResponse
             {
                 Price = product.Price,
                 Description = product.Description,

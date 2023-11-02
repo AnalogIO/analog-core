@@ -7,7 +7,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
     /// <summary>
     /// Represents the product response.
     /// </summary>
-    public class ProductResponse
+    public class ChangedProductResponse
     {
         /// <summary>
         /// Gets or sets the price of the product.

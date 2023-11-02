@@ -1,10 +1,10 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using CoffeeCard.Library.Services;
-using CoffeeCard.Library.Services.v2;
+using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Utils;
-using CoffeeCard.Models.DataTransferObjects.v2.Leaderboard;
 using CoffeeCard.Models.DataTransferObjects.v2.Product;
+using CoffeeCard.Models.DataTransferObjects.v2.Products;
 using CoffeeCard.Models.Entities;
 using CoffeeCard.WebApi.Helpers;
 using Microsoft.AspNetCore.Authorization;
@@ -25,13 +25,15 @@ namespace CoffeeCard.WebApi.Controllers.v2
     public class ProductsController : ControllerBase
     {
         private readonly IProductService _productService;
+        private readonly ClaimsUtilities _claimsUtilities;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProductsController"/> class.
         /// </summary>
-        public ProductsController(IProductService productService)
+        public ProductsController(IProductService productService, ClaimsUtilities claimsUtilities)
         {
             _productService = productService;
+            _claimsUtilities = claimsUtilities;
         }
 
         /// <summary>
@@ -42,7 +44,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <response code="200">The request was successful, and the product was added.</response>
         [HttpPost("")]
         [AuthorizeRoles(UserGroup.Board)]
-        [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ChangedProductResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> AddProduct(AddProductRequest addProductRequest)
         {
             return Ok(await _productService.AddProduct(addProductRequest));
@@ -57,10 +59,50 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <response code="200">The request was successful, and the product was updated.</response>
         [HttpPut("")]
         [AuthorizeRoles(UserGroup.Board)]
-        [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ChangedProductResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateProduct(UpdateProductRequest product)
         {
             return Ok(await _productService.UpdateProduct(product));
+        }
+
+        /// <summary>
+        /// Returns a list of available products based on a account's user group
+        /// </summary>
+        /// <returns>List of available products</returns>
+        /// <response code="200">Successful request</response>
+        [HttpGet]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(IEnumerable<ChangedProductResponse>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<ChangedProductResponse>>> GetProducts()
+        {
+            IEnumerable<Product> products;
+            try
+            {
+                // Try find user from potential login token
+                var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
+                products = await _productService.GetProductsForUserAsync(user);
+            }
+            catch (ApiException)
+            {
+                // No token found, retrieve customer products
+                products = await _productService.GetPublicProductsAsync();
+            }
+
+
+            return Ok(products.Select(MapProductToDto).ToList());
+        }
+
+        private static ProductResponse MapProductToDto(Product product)
+        {
+            return new ProductResponse
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                NumberOfTickets = product.NumberOfTickets,
+                Price = product.Price,
+                IsPerk = product.IsPerk()
+            };
         }
     }
 }
