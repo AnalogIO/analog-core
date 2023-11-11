@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Models.Entities;
-using Serilog;
 
 namespace CoffeeCard.WebApi.Controllers.v2
 {
@@ -134,6 +133,25 @@ namespace CoffeeCard.WebApi.Controllers.v2
             {
                 EmailExists = emailInUse
             });
+        }
+        
+        /// <summary>
+        /// Updates the user group of a user
+        /// </summary>
+        /// <param name="id"> id of the user whose userGroup will be updated </param>
+        /// <param name="userGroup"> UserGroup object that will update the current userGroup attribute </param>
+        /// <returns> Account information </returns>
+        /// <response code="204"> The update was processed </response>
+        /// <response code="401"> Invalid credentials </response>
+        [HttpPatch]
+        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+        [Route("{id:int}/user-group")]
+        public async Task<ActionResult> UpdateAccountUserGroup(int id, UserGroup userGroup)
+        {
+            await _accountService.UpdateUserGroup(userGroup, id);
+
+            return new NoContentResult();
         }
 
         /// <summary>

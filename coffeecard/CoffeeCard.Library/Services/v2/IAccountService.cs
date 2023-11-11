@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Models.DataTransferObjects.v2.User;
 using CoffeeCard.Models.Entities;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CoffeeCard.Library.Services.v2
 {
@@ -53,8 +54,14 @@ namespace CoffeeCard.Library.Services.v2
         /// Resend invite e-mail if user account is not already verified
         /// </summary>
         /// <param name="request">Email request</param>
-        /// <exception cref="ConflictException">User account is already verified</exception>
         /// <exception cref="EntityNotFoundException">Email account not found</exception>
         Task ResendAccountVerificationEmail(ResendAccountVerificationEmailRequest request);
+        
+        /// <summary>
+        /// Update a userGroup of a user with a provided id
+        /// </summary>
+        /// <param name="userGroup"> The user group that will be updated </param>
+        /// <param name="id"> id of the user </param>
+        Task UpdateUserGroup(UserGroup userGroup, int id);
     }
 }
