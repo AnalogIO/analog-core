@@ -56,7 +56,7 @@ namespace CoffeeCard.Library.Services.v2
         /// <param name="request">Email request</param>
         /// <exception cref="EntityNotFoundException">Email account not found</exception>
         Task ResendAccountVerificationEmail(ResendAccountVerificationEmailRequest request);
-        
+
         /// <summary>
         /// Update a userGroup of a user with a provided id
         /// </summary>

@@ -204,7 +204,7 @@ namespace CoffeeCard.Library.Services.v2
         public async Task UpdateUserGroup(UserGroup userGroup, int id)
         {
             User user = await GetUserByIdAsync(id);
-            
+
             user.UserGroup = userGroup;
 
             await _context.SaveChangesAsync();
@@ -215,7 +215,7 @@ namespace CoffeeCard.Library.Services.v2
             var user = await _context.Users
                 .Where(u => u.Id == id)
                 .FirstOrDefaultAsync();
-            
+
             if (user == null)
             {
                 Log.Error("No user was found by user id: {id}", id);
@@ -224,7 +224,7 @@ namespace CoffeeCard.Library.Services.v2
 
             return user;
         }
- 
+
 
         private static string EscapeName(string name)
         {

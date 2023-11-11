@@ -134,7 +134,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
                 EmailExists = emailInUse
             });
         }
-        
+
         /// <summary>
         /// Updates the user group of a user
         /// </summary>
