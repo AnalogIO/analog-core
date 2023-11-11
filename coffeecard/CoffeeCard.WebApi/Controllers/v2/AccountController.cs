@@ -140,7 +140,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// </summary>
         /// <param name="id"> id of the user whose userGroup will be updated </param>
         /// <param name="userGroup"> UserGroup object that will update the current userGroup attribute </param>
-        /// <returns> Account information </returns>
+        /// <returns> no content result </returns>
         /// <response code="204"> The update was processed </response>
         /// <response code="401"> Invalid credentials </response>
         [HttpPatch]
