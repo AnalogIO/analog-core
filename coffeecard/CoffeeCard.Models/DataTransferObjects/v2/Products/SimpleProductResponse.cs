@@ -15,7 +15,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Products
     ///     "isPerk": true
     /// }
     /// </example>
-    public class ProductResponse
+    public class SimpleProductResponse
     {
         /// <summary>
         /// Id of product

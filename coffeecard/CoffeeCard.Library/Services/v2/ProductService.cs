@@ -63,7 +63,7 @@ namespace CoffeeCard.Library.Services.v2
             return product == null;
         }
 
-        public async Task<ChangedProductResponse> AddProduct(AddProductRequest newProduct)
+        public async Task<DetailedProductResponse> AddProduct(AddProductRequest newProduct)
         {
             var unique = await CheckProductUniquenessAsync(newProduct.Name, newProduct.Price);
             if (!unique)
@@ -91,13 +91,11 @@ namespace CoffeeCard.Library.Services.v2
             }).ToList();
 
             _context.ProductUserGroups.AddRange(productUserGroups);
-
-
             await _context.SaveChangesAsync();
 
-
-            var result = new ChangedProductResponse
+            var result = new DetailedProductResponse
             {
+                Id = product.Id,
                 Price = product.Price,
                 Description = product.Description,
                 Name = product.Name,
@@ -108,9 +106,10 @@ namespace CoffeeCard.Library.Services.v2
             return result;
         }
 
-        public async Task<ChangedProductResponse> UpdateProduct(UpdateProductRequest changedProduct)
+        public async Task<DetailedProductResponse> UpdateProduct(int productId, UpdateProductRequest changedProduct)
         {
-            var product = await GetProductAsync(changedProduct.Id);
+            var product = await GetProductAsync(productId);
+
             product.Price = changedProduct.Price;
             product.Description = changedProduct.Description;
             product.NumberOfTickets = changedProduct.NumberOfTickets;
@@ -119,8 +118,9 @@ namespace CoffeeCard.Library.Services.v2
 
             await _context.SaveChangesAsync();
 
-            var result = new ChangedProductResponse
+            var result = new DetailedProductResponse
             {
+                Id = product.Id,
                 Price = product.Price,
                 Description = product.Description,
                 Name = product.Name,
