@@ -95,14 +95,14 @@ namespace CoffeeCard.Library.Services.v2
 
             await _context.SaveChangesAsync();
 
-
             var result = new ChangedProductResponse
             {
                 Price = product.Price,
                 Description = product.Description,
                 Name = product.Name,
                 NumberOfTickets = product.NumberOfTickets,
-                Visible = product.Visible
+                Visible = product.Visible,
+                AllowedUserGroups = newProduct.AllowedUserGroups
             };
 
             return result;
@@ -119,13 +119,28 @@ namespace CoffeeCard.Library.Services.v2
 
             await _context.SaveChangesAsync();
 
+            var existingUserGroups = _context.ProductUserGroups.Where(e => e.ProductId == changedProduct.Id);
+
+            _context.RemoveRange(existingUserGroups);
+
+            var newProductUserGroups = changedProduct.AllowedUserGroups.Select(userGroup => new ProductUserGroup
+            {
+                ProductId = product.Id,
+                UserGroup = userGroup
+            }).ToList();
+
+            _context.AddRange(newProductUserGroups);
+
+            await _context.SaveChangesAsync();
+
             var result = new ChangedProductResponse
             {
                 Price = product.Price,
                 Description = product.Description,
                 Name = product.Name,
                 NumberOfTickets = product.NumberOfTickets,
-                Visible = product.Visible
+                Visible = product.Visible,
+                AllowedUserGroups = changedProduct.AllowedUserGroups
             };
 
             return result;

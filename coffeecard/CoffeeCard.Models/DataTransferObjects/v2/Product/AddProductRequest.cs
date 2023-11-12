@@ -63,6 +63,11 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
         [DefaultValue(true)]
         public bool Visible { get; set; } = true;
 
+        /// <summary>
+        /// Gets or sets the user groups that can access the product.
+        /// </summary>
+        /// <value> Product User Groups </value>
+        /// <example> Customer </example>
         [Required]
         public IEnumerable<UserGroup> AllowedUserGroups { get; set; }
 
