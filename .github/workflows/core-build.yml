@@ -9,6 +9,7 @@ on:
       push_image:
         description: "Push docker image to registry"
         required: false
+        default: false
         type: boolean
 
   workflow_dispatch:
