@@ -1,43 +1,79 @@
-name: Deploy
+name: Deployment
 
 on:
-  push:
-    branches: [ develop, production ]
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
+        description: "Target Environment. Can either be 'dev' or 'prd'"
 
 jobs:
-  core-build:
+  build-all:
     name: Build codebase
-    uses: ./.github/workflows/core-build.yml
+    uses: ./.github/workflows/build.yml
     with:
       push_image: true
     secrets: inherit
-  
-  infra-build:
-    name: Build infrastructure
-    uses: ./.github/workflows/infra-build.yml
-    secrets: inherit
 
-  sonarcloud:
-    name: SonarCloud
-    uses: ./.github/workflows/core-sonarcloud.yml
-    secrets: inherit
+  deploy:
+    needs: [build-all]
+    name: Azure Deployment
+    runs-on: ubuntu-22.04
+    environment:
+      name: ${{ inputs.environment }}
+      url: ${{ vars.AZURE_SUBSCRIPTION_URL }}
+    concurrency:
+      group: ${{ inputs.environment }}
+      cancel-in-progress: false
 
-  deploy_dev:
-    name: Deploy dev
-    if: github.ref_name == 'develop'
-    needs: [ core-build, infra-build ]
-    uses: ./.github/workflows/template-deploy.yml
-    secrets: inherit
-    with:
-      environment: dev
-      subscriptionId: analogio-dev
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: arm
 
-  deploy_prod:
-    name: Deploy prd
-    if: github.ref_name == 'production'
-    needs: [ core-build, infra-build ]
-    uses: ./.github/workflows/template-deploy.yml
-    secrets: inherit
-    with:
-      environment: prd
-      subscriptionId: analogio-prd
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy ARM template
+        uses: azure/arm-deploy@v1
+        with:
+          subscriptionId: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          scope: subscription
+          region: "West Europe"
+          template: azuredeploy.json
+          parameters: "environment=${{ inputs.environment }}"
+          deploymentName: "azuredeploy-${{github.run_number}}"
+          failOnStdErr: true
+
+      - name: Deploy analog core
+        id: webapp-deploy
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ vars.AZURE_WEBAPP_NAME }}
+          images: "ghcr.io/analogio/coffeecard-api:${{ github.sha }}"
+
+      - name: Invoke Web App CD Webhook
+        run: |
+          curl --location --request POST '${{ vars.AZURE_APPSERVICE_WEBHOOK_URL }}' --header 'Authorization: Basic ${{ secrets.AZURE_APPSERVICE_WEBHOOK_AUTH }}'
+
+      - name: Smoke tests
+        uses: Azure/powershell@v1
+        with:
+          inlineScript: |
+            $apiKey = az keyvault secret show --name IdentitySettings-ApiKey --vault-name ${{ vars.KEY_VAULT_NAME }} | ConvertFrom-Json | Select -ExpandProperty value
+            $header = @{'x-api-key' = $apiKey}
+
+            Write-Host 'Running smoke tests' -ForegroundColor Yellow
+            Write-Host '- GET /api/v2/health/ping'
+            Invoke-RestMethod -Method Get -Uri ${{ steps.webapp-deploy.outputs.webapp-url }}/api/v2/health/ping -Headers $header -MaximumRetryCount 4 -RetryIntervalSec 15
+
+            Write-Host '- GET /api/v2/health/check'
+            Invoke-RestMethod -Method Get -Uri ${{ steps.webapp-deploy.outputs.webapp-url }}/api/v2/health/check -Headers $header -MaximumRetryCount 4 -RetryIntervalSec 15
+
+            Write-Host 'Smoke tests successful!' -ForegroundColor Green
+          failOnStandardError: true
+          azPSVersion: "latest"

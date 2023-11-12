@@ -12,15 +12,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
         /// <summary>
         /// Gets or sets the price of the product.
         /// </summary>
-        /// <example>
-        /// {
-        ///   "Price": 150,
-        ///   "NumberOfTickets": 10,
-        ///   "Name": "Espresso",
-        ///   "Description": "A coffee made by forcing steam through ground coffee beans.",
-        ///   "Visible": false
-        /// }
-        /// </example>
+        /// <example> 150 </example>
         [Required]
         [Range(0, int.MaxValue, ErrorMessage = "Price must be a non-negative integer.")]
         public int Price { get; set; }

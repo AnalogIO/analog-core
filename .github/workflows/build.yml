@@ -3,13 +3,20 @@ name: Build
 on:
   workflow_dispatch:
 
-  pull_request:
-    branches: [ develop, production ]
+  workflow_call:
+    inputs:
+      push_image:
+        description: "Push docker image to registry"
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   core-build:
     name: Build codebase
     uses: ./.github/workflows/core-build.yml
+    with:
+      push_image: ${{ inputs.push_image }}
     secrets: inherit
 
   infra-build:
@@ -19,5 +26,5 @@ jobs:
 
   sonarcloud:
     name: SonarCloud
-    uses: ./.github/workflows/core-sonarcloud.yml
+    uses: ./.github/workflows/sonarcloud.yml
     secrets: inherit

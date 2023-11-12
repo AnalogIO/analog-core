@@ -1,0 +1,55 @@
+name: Static Analysis using SonarCloud
+
+on:
+  workflow_call:
+
+  workflow_dispatch:
+
+jobs:
+  core-sonarcloud:
+    name: Configure and scan using SonarCloud
+    runs-on: windows-latest
+    steps:
+      # Sonarscanner part
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.17
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v1
+        with:
+          path: ~\sonar\cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: Cache SonarCloud scanner
+        id: cache-sonar-scanner
+        uses: actions/cache@v1
+        with:
+          path: .\.sonar\scanner
+          key: ${{ runner.os }}-sonar-scanner
+          restore-keys: ${{ runner.os }}-sonar-scanner
+      - name: Install SonarCloud scanner
+        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        shell: powershell
+        run: |
+          New-Item -Path .\.sonar\scanner -ItemType Directory
+          dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
+      - name: Build and analyze
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        shell: powershell
+        run: |
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"AnalogIO_analog-core" /o:"analogio" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="coverageunit.xml,coverageintegration.xml" /d:sonar.exclusions="CoffeeCard.Library/Migrations/*"
+
+          dotnet tool install --global coverlet.console
+
+          dotnet build --no-incremental coffeecard/
+
+          coverlet ./coffeecard/CoffeeCard.Tests.Unit/bin/Debug/net6.0/CoffeeCard.Tests.Unit.dll --target "dotnet" --targetargs "test --no-build coffeecard/CoffeeCard.Tests.Unit" -f=opencover -o="coverageunit.xml"
+          coverlet ./coffeecard/CoffeeCard.Tests.Integration/bin/Debug/net6.0/CoffeeCard.Tests.Integration.dll --target "dotnet" --targetargs "test --no-build coffeecard/CoffeeCard.Tests.Integration" -f=opencover -o="coverageintegration.xml"
+
+          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
