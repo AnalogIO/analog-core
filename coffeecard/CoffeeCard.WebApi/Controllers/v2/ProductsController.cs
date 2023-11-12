@@ -41,15 +41,17 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// </summary>
         /// <param name="addProductRequest">The request containing the details of the product to be added and allowed user groups.</param>
         /// <returns> The newly added product wrapped in a InitiateProductResponse object.</returns>
-        /// <response code="200">Product created</response>
+        /// <response code="201">Product created</response>
         /// <response code="409">Product name already exists</response>
         [HttpPost]
         [AuthorizeRoles(UserGroup.Board)]
-        [ProducesResponseType(typeof(DetailedProductResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DetailedProductResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status409Conflict)]
         public async Task<ActionResult<DetailedProductResponse>> AddProduct([FromBody] AddProductRequest addProductRequest)
         {
-            return Ok(await _productService.AddProduct(addProductRequest));
+            var product = await _productService.AddProduct(addProductRequest);
+
+            return CreatedAtAction(nameof(GetProductById), new { id = product.Id, version = 2 }, product);
         }
 
         /// <summary>
