@@ -106,15 +106,15 @@ namespace CoffeeCard.Library.Services.v2
             return result;
         }
 
-        public async Task<DetailedProductResponse> UpdateProduct(int productId, UpdateProductRequest changedProduct)
+        public async Task<DetailedProductResponse> UpdateProduct(int productId, UpdateProductRequest updateProduct)
         {
             var product = await GetProductAsync(productId);
 
-            product.Price = changedProduct.Price;
-            product.Description = changedProduct.Description;
-            product.NumberOfTickets = changedProduct.NumberOfTickets;
-            product.Name = changedProduct.Name;
-            product.Visible = changedProduct.Visible;
+            product.Price = updateProduct.Price;
+            product.Description = updateProduct.Description;
+            product.NumberOfTickets = updateProduct.NumberOfTickets;
+            product.Name = updateProduct.Name;
+            product.Visible = updateProduct.Visible;
 
             await _context.SaveChangesAsync();
 
