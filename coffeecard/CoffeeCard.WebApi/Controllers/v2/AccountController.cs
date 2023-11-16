@@ -157,7 +157,6 @@ namespace CoffeeCard.WebApi.Controllers.v2
 
             return new NoContentResult();
         }
-        
 
         /// <summary>
         /// Resend account verification email if account is not already verified
