@@ -146,8 +146,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <response code="401"> Invalid credentials </response>
         /// <response code="404"> User not found </response>
         [HttpPatch]
-        [AllowAnonymous]
-        //[AuthorizeRoles(UserGroup.Board)]
+        [AuthorizeRoles(UserGroup.Board)]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
@@ -158,6 +157,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
 
             return new NoContentResult();
         }
+        
 
         /// <summary>
         /// Resend account verification email if account is not already verified
