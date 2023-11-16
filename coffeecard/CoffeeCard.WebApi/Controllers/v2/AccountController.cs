@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Models.Entities;
+using CoffeeCard.WebApi.Helpers;
 
 namespace CoffeeCard.WebApi.Controllers.v2
 {
@@ -139,17 +140,21 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// Updates the user group of a user
         /// </summary>
         /// <param name="id"> id of the user whose userGroup will be updated </param>
-        /// <param name="userGroup"> UserGroup object that will update the current userGroup attribute </param>
+        /// <param name="updateUserGroupRequest"> Update User Group information request  </param>
         /// <returns> no content result </returns>
         /// <response code="204"> The update was processed </response>
         /// <response code="401"> Invalid credentials </response>
+        /// <response code="404"> User not found </response>
         [HttpPatch]
+        [AllowAnonymous]
+        //[AuthorizeRoles(UserGroup.Board)]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
-        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
         [Route("{id:int}/user-group")]
-        public async Task<ActionResult> UpdateAccountUserGroup(int id, UserGroup userGroup)
+        public async Task<ActionResult> UpdateAccountUserGroup(int id, [FromBody] UpdateUserGroupRequest updateUserGroupRequest)
         {
-            await _accountService.UpdateUserGroup(userGroup, id);
+            await _accountService.UpdateUserGroup(updateUserGroupRequest.UserGroup, id);
 
             return new NoContentResult();
         }

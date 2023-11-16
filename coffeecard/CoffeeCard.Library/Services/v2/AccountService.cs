@@ -201,9 +201,9 @@ namespace CoffeeCard.Library.Services.v2
             return user;
         }
 
-        public async Task UpdateUserGroup(UserGroup userGroup, int id)
+        public async Task UpdateUserGroup(UserGroup userGroup, int userId)
         {
-            User user = await GetUserByIdAsync(id);
+            User user = await GetUserByIdAsync(userId);
 
             user.UserGroup = userGroup;
 
