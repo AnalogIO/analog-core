@@ -167,7 +167,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <response code="404">Email not found</response>
         /// <response code="409">Account already verified</response>
         [HttpPost]
-        [AllowAnonymous]
+        [AuthorizeRoles(UserGroup.Board)]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status409Conflict)]
