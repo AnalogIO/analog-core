@@ -57,7 +57,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
         /// Gets or sets the user groups that can access the product.
         /// </summary>
         /// <value> Product User Groups </value>
-        /// <example> Customer </example>
+        /// <example> Manager, Board </example>
         [Required]
         public IEnumerable<UserGroup> AllowedUserGroups { get; set; }
     }

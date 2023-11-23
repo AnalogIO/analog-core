@@ -15,7 +15,8 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
     ///   "NumberOfTickets": 10,
     ///   "Name": "Espresso",
     ///   "Description": "A coffee made by forcing steam through ground coffee beans.",
-    ///   "Visible": false
+    ///   "Visible": false,
+    ///   "AllowedUserGroups": ["Manager", "Board"]
     /// }
     /// </example>
     public class UpdateProductRequest
@@ -76,7 +77,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
         /// Gets or sets the user groups that can access the product.
         /// </summary>
         /// <value> Product User Groups </value>
-        /// <example> Customer </example>
+        /// <example> Manager, Board </example>
         [Required]
         public IEnumerable<UserGroup> AllowedUserGroups { get; set; }
     }
