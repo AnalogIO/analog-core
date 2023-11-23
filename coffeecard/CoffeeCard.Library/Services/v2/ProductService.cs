@@ -119,7 +119,7 @@ namespace CoffeeCard.Library.Services.v2
 
             await _context.SaveChangesAsync();
 
-            var existingUserGroups = _context.ProductUserGroups.Where(e => e.ProductId == changedProduct.Id);
+            var existingUserGroups = product.ProductUserGroup;
 
             _context.RemoveRange(existingUserGroups);
 
