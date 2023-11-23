@@ -151,7 +151,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
         [Route("{id:int}/user-group")]
-        public async Task<ActionResult> UpdateAccountUserGroup(int id, [FromBody] UpdateUserGroupRequest updateUserGroupRequest)
+        public async Task<ActionResult> UpdateAccountUserGroup([FromRoute] int id, [FromBody] UpdateUserGroupRequest updateUserGroupRequest)
         {
             await _accountService.UpdateUserGroup(updateUserGroupRequest.UserGroup, id);
 
@@ -166,7 +166,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <response code="404">Email not found</response>
         /// <response code="409">Account already verified</response>
         [HttpPost]
-        [AuthorizeRoles(UserGroup.Board)]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status409Conflict)]
