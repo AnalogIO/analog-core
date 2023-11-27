@@ -110,26 +110,19 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task<ChangedProductResponse> UpdateProduct(UpdateProductRequest changedProduct)
         {
+            var newProductUserGroups = changedProduct.AllowedUserGroups.Select(userGroup => new ProductUserGroup
+            {
+                ProductId = changedProduct.Id,
+                UserGroup = userGroup
+            }).ToList();
+
             var product = await GetProductAsync(changedProduct.Id);
             product.Price = changedProduct.Price;
             product.Description = changedProduct.Description;
             product.NumberOfTickets = changedProduct.NumberOfTickets;
             product.Name = changedProduct.Name;
             product.Visible = changedProduct.Visible;
-
-            await _context.SaveChangesAsync();
-
-            var existingUserGroups = product.ProductUserGroup;
-
-            _context.RemoveRange(existingUserGroups);
-
-            var newProductUserGroups = changedProduct.AllowedUserGroups.Select(userGroup => new ProductUserGroup
-            {
-                ProductId = product.Id,
-                UserGroup = userGroup
-            }).ToList();
-
-            _context.AddRange(newProductUserGroups);
+            product.ProductUserGroup = newProductUserGroups;
 
             await _context.SaveChangesAsync();
 
