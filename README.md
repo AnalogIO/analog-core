@@ -4,7 +4,7 @@
 
 **Contact** AnalogIO at *support [at] analogio.dk*
 
-Analog Coffee Card API handles clip card sale, user management and statistics for coffee clip cards for the apps in Cafe Analog. The API is setup as a classic ASP.NET core solution, currently running .NET Core 3.1.
+Analog Coffee Card API handles clip card sale, user management and statistics for coffee clip cards for the apps in Cafe Analog. The API is setup as a classic ASP.NET core solution, currently running .NET 6
 
 ## Documentation
 
