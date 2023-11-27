@@ -78,14 +78,12 @@ namespace CoffeeCard.Library.Services.v2
                 Name = newProduct.Name,
                 NumberOfTickets = newProduct.NumberOfTickets,
                 ExperienceWorth = 0,
-                Visible = newProduct.Visible
+                Visible = newProduct.Visible,
+                ProductUserGroup = newProduct.AllowedUserGroups.Select(userGroup => new ProductUserGroup
+                {
+                    UserGroup = userGroup
+                }).ToList()
             };
-
-            product.ProductUserGroup = newProduct.AllowedUserGroups.Select(userGroup => new ProductUserGroup
-            {
-                ProductId = product.Id,
-                UserGroup = userGroup
-            }).ToList();
 
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
@@ -105,19 +103,17 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task<ChangedProductResponse> UpdateProduct(UpdateProductRequest changedProduct)
         {
-            var newProductUserGroups = changedProduct.AllowedUserGroups.Select(userGroup => new ProductUserGroup
-            {
-                ProductId = changedProduct.Id,
-                UserGroup = userGroup
-            }).ToList();
-
             var product = await GetProductAsync(changedProduct.Id);
             product.Price = changedProduct.Price;
             product.Description = changedProduct.Description;
             product.NumberOfTickets = changedProduct.NumberOfTickets;
             product.Name = changedProduct.Name;
             product.Visible = changedProduct.Visible;
-            product.ProductUserGroup = newProductUserGroups;
+            product.ProductUserGroup = changedProduct.AllowedUserGroups.Select(userGroup => new ProductUserGroup
+            {
+                ProductId = changedProduct.Id,
+                UserGroup = userGroup
+            }).ToList();
 
             await _context.SaveChangesAsync();
 
