@@ -81,5 +81,48 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 e => e.Equals(UserGroup.Customer),
                 e => e.Equals(UserGroup.Board));
         }
+
+        [Fact(DisplayName = "AddProduct adds only selected user groups")]
+        public async Task AddProduct_Sets_Correct_UserGroups()
+        {
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
+                .UseInMemoryDatabase(nameof(AddProduct_Sets_Correct_UserGroups));
+
+            var databaseSettings = new DatabaseSettings
+            {
+                SchemaName = "test"
+            };
+            var environmentSettings = new EnvironmentSettings()
+            {
+                EnvironmentType = EnvironmentType.Test
+            };
+
+            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+
+            using var productService = new ProductService(context);
+
+            var p = new AddProductRequest
+            {
+                Name = "Coffee",
+                Description = "Coffee Clip card",
+                NumberOfTickets = 10,
+                Price = 10,
+                Visible = true,
+                AllowedUserGroups = new List<UserGroup> { UserGroup.Manager, UserGroup.Board }
+            };
+
+            await productService.AddProduct(p);
+
+            var expected = new List<UserGroup>
+            {
+                UserGroup.Manager, UserGroup.Board
+            };
+
+            var result = await productService.GetProductAsync(1);
+
+            Assert.Collection<UserGroup>(expected,
+                e => e.Equals(UserGroup.Customer),
+                e => e.Equals(UserGroup.Board));
+        }
     }
 }

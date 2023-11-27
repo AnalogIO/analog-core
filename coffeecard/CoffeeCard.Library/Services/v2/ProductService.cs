@@ -81,18 +81,13 @@ namespace CoffeeCard.Library.Services.v2
                 Visible = newProduct.Visible
             };
 
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
-
-            var productUserGroups = newProduct.AllowedUserGroups.Select(userGroup => new ProductUserGroup
+            product.ProductUserGroup = newProduct.AllowedUserGroups.Select(userGroup => new ProductUserGroup
             {
                 ProductId = product.Id,
                 UserGroup = userGroup
             }).ToList();
 
-            _context.ProductUserGroups.AddRange(productUserGroups);
-
-
+            _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
             var result = new ChangedProductResponse
