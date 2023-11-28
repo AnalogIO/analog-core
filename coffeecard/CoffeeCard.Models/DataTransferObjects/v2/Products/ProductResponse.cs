@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.Products
 {
@@ -12,7 +14,8 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Products
     ///     "numberOfTickets": 10,
     ///     "name": "Coffee clip card",
     ///     "description": "Coffee clip card of 10 clips",
-    ///     "isPerk": true
+    ///     "isPerk": true,
+    ///     "AllowedUserGroups": ["Manager", "Board"]
     /// }
     /// </example>
     public class ProductResponse
@@ -64,5 +67,13 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Products
         /// <example>true</example>
         [Required]
         public bool IsPerk { get; set; }
+
+        /// <summary>
+        /// Decides the user groups that can access the product.
+        /// </summary>
+        /// <value> Product User Groups </value>
+        /// <example> Manager, Board </example>
+        [Required]
+        public IEnumerable<UserGroup> AllowedUserGroups { get; set; } = new List<UserGroup>();
     }
 }

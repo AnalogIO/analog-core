@@ -14,7 +14,8 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
     ///     "Price": 25,
     ///     "NumberOfTickets": 10,
     ///     "Description": "xxx",
-    ///     "Visible": true
+    ///     "Visible": true,
+    ///     "AllowedUserGroups": ["Manager", "Board"]
     /// }
     /// </example>
     public class AddProductRequest
@@ -63,8 +64,13 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
         [DefaultValue(true)]
         public bool Visible { get; set; } = true;
 
+        /// <summary>
+        /// Gets or sets the user groups that can access the product.
+        /// </summary>
+        /// <value> Product User Groups </value>
+        /// <example> Manager, Board </example>
         [Required]
-        public IEnumerable<UserGroup> AllowedUserGroups { get; set; }
+        public IEnumerable<UserGroup> AllowedUserGroups { get; set; } = new List<UserGroup>();
 
     }
 }
