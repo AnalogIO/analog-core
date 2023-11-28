@@ -70,7 +70,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
         /// <value> Product User Groups </value>
         /// <example> Manager, Board </example>
         [Required]
-        public IEnumerable<UserGroup> AllowedUserGroups { get; set; }
+        public IEnumerable<UserGroup> AllowedUserGroups { get; set; } = new List<UserGroup>();
 
     }
 }
