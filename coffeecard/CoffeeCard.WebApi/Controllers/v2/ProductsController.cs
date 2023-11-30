@@ -101,7 +101,8 @@ namespace CoffeeCard.WebApi.Controllers.v2
                 Description = product.Description,
                 NumberOfTickets = product.NumberOfTickets,
                 Price = product.Price,
-                IsPerk = product.IsPerk()
+                IsPerk = product.IsPerk(),
+                AllowedUserGroups = product.ProductUserGroup.Select(e => e.UserGroup)
             };
         }
     }
