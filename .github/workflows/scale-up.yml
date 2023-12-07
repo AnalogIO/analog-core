@@ -1,0 +1,23 @@
+name: Scale up app service plan
+
+on:
+  schedule:
+    - cron: "0 19 * * 1-5"
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    environment: dev
+
+    steps:
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Upscale in hours
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.42.0
+          inlineScript: |
+            az appservice plan update --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} --name ${{ vars.AZURE_APPSERVICE_PLAN_NAME }} --sku B2
