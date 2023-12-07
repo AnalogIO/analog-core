@@ -1,33 +1,22 @@
-name: CI
+name: Scale down app service plan
 
 on:
   schedule:
-    - cron: "15 17 * * 1-5"
-    - cron: "15 5 * * 1-5"
+    - cron: "55 18 * * 1-5"
 
 jobs:
   build:
     runs-on: ubuntu-22.04
-    environment: prd
+    environment: dev
 
     steps:
       - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-
       - name: Downscale outside hours
         uses: azure/CLI@v1
-        if: github.event.schedule == '15 17 * * 1-5'
         with:
           azcliversion: 2.42.0
           inlineScript: |
             az appservice plan update --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} --name ${{ vars.AZURE_APPSERVICE_PLAN_NAME }} --sku B1
-
-      - name: Upscale in hours
-        uses: azure/CLI@v1
-        if: github.event.schedule == '15 5 * * 1-5'
-        with:
-          azcliversion: 2.42.0
-          inlineScript: |
-            az appservice plan update --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} --name ${{ vars.AZURE_APPSERVICE_PLAN_NAME }} --sku B2
