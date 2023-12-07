@@ -2,7 +2,7 @@ name: Scale down app service plan
 
 on:
   schedule:
-    - cron: "55 18 * * 1-5"
+    - cron: "05 19 * * 1-5"
 
 jobs:
   build:
