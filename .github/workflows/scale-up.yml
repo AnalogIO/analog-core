@@ -2,12 +2,12 @@ name: Scale up app service plan
 
 on:
   schedule:
-    - cron: "0 19 * * 1-5"
+    - cron: "15 5 * * 1-5" # UTC Time
 
 jobs:
   build:
     runs-on: ubuntu-22.04
-    environment: dev
+    environment: prd
 
     steps:
       - name: Azure Login
