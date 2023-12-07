@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Utils;
@@ -199,6 +202,38 @@ namespace CoffeeCard.WebApi.Controllers.v2
                     FullName = user.Programme.FullName
                 },
                 PrivacyActivated = user.PrivacyActivated,
+            };
+        }
+
+        /// <summary>
+        /// Searches a user in the database
+        /// </summary>
+        /// <param name="searchUserRequest"> Update User Group information request  </param>
+        /// <returns> no content result </returns>
+        /// <response code="200"> The user(s) were found </response>
+        /// <response code="401"> Invalid credentials </response>
+        /// <response code="404"> User(s) not found </response>
+        [HttpGet]
+        //[AuthorizeRoles(UserGroup.Board)]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status200OK)]
+        [Route("search")]
+        public async Task<ActionResult<IEnumerable<User>>> SearchUsers([FromQuery] String search, [FromQuery] int pageNum, [FromQuery] int pageLength)
+        {
+            List<User> users = await _accountService.SearchUsers(search, pageNum, pageLength);
+            return Ok(users.Select(MapSearchedUserToDto).ToList());
+        }
+
+        private static UserSearchResponse MapSearchedUserToDto(User user)
+        {
+            return new UserSearchResponse
+            {
+                Id = user.Id,
+                Email = user.Email,
+                Name = user.Name,
+                Role = user.UserGroup.toUserRole(),
             };
         }
     }

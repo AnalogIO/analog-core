@@ -210,6 +210,35 @@ namespace CoffeeCard.Library.Services.v2
             await _context.SaveChangesAsync();
         }
 
+        public async Task<List<User>> SearchUsers(String search, int pageNum, int pageLength)
+        {
+            List<User> users = new List<User>();
+            
+            int skip = pageNum * pageLength;
+
+            if (int.TryParse(search, out int id))
+            {
+                var user = await _context.Users.Skip(skip).Take(pageLength).FirstOrDefaultAsync(u => u.Id == id);
+                if (user != null)
+                {
+                    users.Add(user);
+                }
+            }
+            
+            users = await _context.Users.Skip(0).Take(pageLength)
+                .Where(u => u.Email.ToLower().StartsWith(search.ToLower()) || u.Name.ToLower().StartsWith(search.ToLower()))
+                .ToListAsync();
+            
+
+            if (users.Count == 0)
+            {
+                throw new EntityNotFoundException("No users match the search");
+            }
+
+            return users;
+        }
+
+
         private async Task<User> GetUserByIdAsync(int id)
         {
             var user = await _context.Users
