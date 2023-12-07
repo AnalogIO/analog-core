@@ -40,6 +40,14 @@ namespace CoffeeCard.Library.Services.v2
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Product>> GetAllProductsAsync()
+        {
+            return await _context.Products
+                .OrderBy(p => p.Id)
+                .Include(p => p.ProductUserGroup)
+                .ToListAsync();
+        }
+
         public async Task<Product> GetProductAsync(int productId)
         {
             var product = await _context.Products

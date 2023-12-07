@@ -102,8 +102,23 @@ namespace CoffeeCard.WebApi.Controllers.v2
                 NumberOfTickets = product.NumberOfTickets,
                 Price = product.Price,
                 IsPerk = product.IsPerk(),
+                Visible = product.Visible,
                 AllowedUserGroups = product.ProductUserGroup.Select(e => e.UserGroup)
             };
+        }
+
+        /// <summary>
+        /// Returns a list of all products
+        /// </summary>
+        /// <returns>List of all products</returns>
+        /// <response code="200">Successful request</response>
+        [HttpGet("all")]
+        [AuthorizeRoles(UserGroup.Board)]
+        [ProducesResponseType(typeof(IEnumerable<ProductResponse>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<ProductResponse>>> GetAllProducts()
+        {
+            IEnumerable<Product> products = await _productService.GetAllProductsAsync();
+            return Ok(products.Select(MapProductToDto).ToList());
         }
     }
 }
