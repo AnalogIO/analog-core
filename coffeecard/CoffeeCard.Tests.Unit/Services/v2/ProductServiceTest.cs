@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Library.Persistence;
@@ -69,16 +70,14 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 AllowedUserGroups = new List<UserGroup>() { UserGroup.Customer, UserGroup.Board }
             });
 
-            var expected = new List<UserGroup>
-            {
-                UserGroup.Customer, UserGroup.Board
-            };
-
             var result = await productService.GetProductAsync(1);
 
-            Assert.Collection<UserGroup>(expected,
-                e => e.Equals(UserGroup.Customer),
-                e => e.Equals(UserGroup.Board));
+            Assert.Collection<ProductUserGroup>(result.ProductUserGroup,
+                e => Assert.Equal(UserGroup.Customer, e.UserGroup),
+                e => Assert.Equal(UserGroup.Board, e.UserGroup));
+
+            Assert.DoesNotContain(UserGroup.Barista, result.ProductUserGroup.Select(e => e.UserGroup));
+            Assert.DoesNotContain(UserGroup.Manager, result.ProductUserGroup.Select(e => e.UserGroup));
         }
 
         [Fact(DisplayName = "AddProduct adds only selected user groups")]
@@ -112,16 +111,11 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             await productService.AddProduct(p);
 
-            var expected = new List<UserGroup>
-            {
-                UserGroup.Manager, UserGroup.Board
-            };
-
             var result = await productService.GetProductAsync(1);
 
-            Assert.Collection<UserGroup>(expected,
-                e => e.Equals(UserGroup.Customer),
-                e => e.Equals(UserGroup.Board));
+            Assert.Collection<ProductUserGroup>(result.ProductUserGroup,
+                e => Assert.Equal(UserGroup.Manager, e.UserGroup),
+                e => Assert.Equal(UserGroup.Board, e.UserGroup));
         }
 
         [Fact(DisplayName = "GetAllProducts shows non-visible products")]
