@@ -8,6 +8,7 @@ using CoffeeCard.Library.Persistence;
 using CoffeeCard.Models.DataTransferObjects.v2.User;
 using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -199,6 +200,31 @@ namespace CoffeeCard.Library.Services.v2
 
             return user;
         }
+
+        public async Task UpdateUserGroup(UserGroup userGroup, int userId)
+        {
+            User user = await GetUserByIdAsync(userId);
+
+            user.UserGroup = userGroup;
+
+            await _context.SaveChangesAsync();
+        }
+
+        private async Task<User> GetUserByIdAsync(int id)
+        {
+            var user = await _context.Users
+                .Where(u => u.Id == id)
+                .FirstOrDefaultAsync();
+
+            if (user == null)
+            {
+                Log.Error("No user was found by user id: {id}", id);
+                throw new EntityNotFoundException($"No user was found by user id: {id}");
+            }
+
+            return user;
+        }
+
 
         private static string EscapeName(string name)
         {

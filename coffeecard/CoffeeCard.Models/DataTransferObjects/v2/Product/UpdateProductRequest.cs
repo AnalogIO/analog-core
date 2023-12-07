@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.Product
 {
@@ -13,7 +15,8 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
     ///   "NumberOfTickets": 10,
     ///   "Name": "Espresso",
     ///   "Description": "A coffee made by forcing steam through ground coffee beans.",
-    ///   "Visible": false
+    ///   "Visible": false,
+    ///   "AllowedUserGroups": ["Manager", "Board"]
     /// }
     /// </example>
     public class UpdateProductRequest
@@ -69,5 +72,13 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
         /// <example> true </example>
         [DefaultValue(true)]
         public bool Visible { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets the user groups that can access the product.
+        /// </summary>
+        /// <value> Product User Groups </value>
+        /// <example> Manager, Board </example>
+        [Required]
+        public IEnumerable<UserGroup> AllowedUserGroups { get; set; } = new List<UserGroup>();
     }
 }
