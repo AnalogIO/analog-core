@@ -208,13 +208,15 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <summary>
         /// Searches a user in the database
         /// </summary>
-        /// <param name="searchUserRequest"> Update User Group information request  </param>
-        /// <returns> no content result </returns>
+        /// <param name="search"> The search string from a search bar </param>
+        /// <param name="pageNum"> The page number </param>
+        /// <param name="pageLength"> The length of a page </param>
+        /// <returns> A collection of User objects that match the search criteria </returns>
         /// <response code="200"> The user(s) were found </response>
         /// <response code="401"> Invalid credentials </response>
         /// <response code="404"> User(s) not found </response>
         [HttpGet]
-        //[AuthorizeRoles(UserGroup.Board)]
+        [AuthorizeRoles(UserGroup.Board)]
         [AllowAnonymous]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]

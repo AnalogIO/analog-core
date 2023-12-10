@@ -68,7 +68,10 @@ namespace CoffeeCard.Library.Services.v2
         /// <summary>
         /// Search a user from the database
         /// </summary>
-        /// <param name="searchUserRequest"> The request to search a user by id, name, or email </param>
+        /// <param name="search"> The search string from a search bar </param>
+        /// <param name="pageNum"> The page number </param>
+        /// <param name="pageLength"> The length of a page </param>
+        /// <exception cref="EntityNotFoundException"> No user found </exception>
         Task<List<User>> SearchUsers(String search, int pageNum, int pageLength);
     }
 }

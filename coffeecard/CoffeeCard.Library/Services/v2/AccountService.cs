@@ -213,22 +213,26 @@ namespace CoffeeCard.Library.Services.v2
         public async Task<List<User>> SearchUsers(String search, int pageNum, int pageLength)
         {
             List<User> users = new List<User>();
-            
+
             int skip = pageNum * pageLength;
 
             if (int.TryParse(search, out int id))
             {
-                var user = await _context.Users.Skip(skip).Take(pageLength).FirstOrDefaultAsync(u => u.Id == id);
+                Log.Information("this is an integer");
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
                 if (user != null)
                 {
                     users.Add(user);
+                    return users;
                 }
             }
-            
-            users = await _context.Users.Skip(0).Take(pageLength)
+
+            users = await _context.Users
                 .Where(u => u.Email.ToLower().StartsWith(search.ToLower()) || u.Name.ToLower().StartsWith(search.ToLower()))
+                .OrderBy(u => u.Id)
+                .Skip(skip).Take(pageLength)
                 .ToListAsync();
-            
+
 
             if (users.Count == 0)
             {
