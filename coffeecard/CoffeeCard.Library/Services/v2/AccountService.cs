@@ -218,7 +218,6 @@ namespace CoffeeCard.Library.Services.v2
 
             if (int.TryParse(search, out int id))
             {
-                Log.Information("this is an integer");
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
                 if (user != null)
                 {
