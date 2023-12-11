@@ -21,11 +21,6 @@ namespace CoffeeCard.Library.Services.v2
             _context = context;
         }
 
-        public async Task<IEnumerable<Product>> GetPublicProductsAsync()
-        {
-            return await GetProductsAsync(UserGroup.Customer);
-        }
-
         public async Task<IEnumerable<Product>> GetProductsForUserAsync(User user)
         {
             return await GetProductsAsync(user.UserGroup);
