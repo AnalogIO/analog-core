@@ -76,6 +76,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 e => Assert.Equal(UserGroup.Customer, e.UserGroup),
                 e => Assert.Equal(UserGroup.Board, e.UserGroup));
 
+            // Explicitly check for exclusion of Barista and Manager, even though Assert.Collection implicitly covers it.
             Assert.DoesNotContain(UserGroup.Barista, result.ProductUserGroup.Select(e => e.UserGroup));
             Assert.DoesNotContain(UserGroup.Manager, result.ProductUserGroup.Select(e => e.UserGroup));
         }
