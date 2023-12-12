@@ -15,6 +15,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Products
     ///     "name": "Coffee clip card",
     ///     "description": "Coffee clip card of 10 clips",
     ///     "isPerk": true,
+    ///     "visible": true,
     ///     "AllowedUserGroups": ["Manager", "Board"]
     /// }
     /// </example>
