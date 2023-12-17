@@ -1,8 +1,9 @@
 name: Scale up app service plan
 
 on:
-  schedule:
-    - cron: "15 5 * * 1-5" # UTC Time
+  # schedule:
+  #   - cron: "15 5 * * 1-5" # UTC Time
+  workflow_dispatch:
 
 jobs:
   build:
