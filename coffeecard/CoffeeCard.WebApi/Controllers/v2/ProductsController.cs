@@ -66,29 +66,18 @@ namespace CoffeeCard.WebApi.Controllers.v2
         }
 
         /// <summary>
-        /// Returns a list of available products based on a account's user group
+        /// Returns a list of available products based on a account's user group.
         /// </summary>
         /// <returns>List of available products</returns>
         /// <response code="200">Successful request</response>
+        /// <response code="401">Invalid credentials</response>
         [HttpGet]
-        [AllowAnonymous]
         [ProducesResponseType(typeof(IEnumerable<ProductResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<IEnumerable<ProductResponse>>> GetProducts()
         {
-            IEnumerable<Product> products;
-            try
-            {
-                // Try find user from potential login token
-                var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
-                products = await _productService.GetProductsForUserAsync(user);
-            }
-            catch (ApiException)
-            {
-                // No token found, retrieve customer products
-                products = await _productService.GetPublicProductsAsync();
-            }
-
-
+            var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
+            var products = await _productService.GetProductsForUserAsync(user);
             return Ok(products.Select(MapProductToDto).ToList());
         }
 
@@ -102,8 +91,23 @@ namespace CoffeeCard.WebApi.Controllers.v2
                 NumberOfTickets = product.NumberOfTickets,
                 Price = product.Price,
                 IsPerk = product.IsPerk(),
+                Visible = product.Visible,
                 AllowedUserGroups = product.ProductUserGroup.Select(e => e.UserGroup)
             };
+        }
+
+        /// <summary>
+        /// Returns a list of all products
+        /// </summary>
+        /// <returns>List of all products</returns>
+        /// <response code="200">Successful request</response>
+        [HttpGet("all")]
+        [AuthorizeRoles(UserGroup.Board)]
+        [ProducesResponseType(typeof(IEnumerable<ProductResponse>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<ProductResponse>>> GetAllProducts()
+        {
+            IEnumerable<Product> products = await _productService.GetAllProductsAsync();
+            return Ok(products.Select(MapProductToDto).ToList());
         }
     }
 }

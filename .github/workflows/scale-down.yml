@@ -1,0 +1,22 @@
+name: Scale down app service plan
+
+on:
+  schedule:
+    - cron: "15 16 * * 1-5" # UTC Time
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    environment: prd
+
+    steps:
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Downscale outside hours
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.42.0
+          inlineScript: |
+            az appservice plan update --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} --name ${{ vars.AZURE_APPSERVICE_PLAN_NAME }} --sku B1

@@ -21,11 +21,6 @@ namespace CoffeeCard.Library.Services.v2
             _context = context;
         }
 
-        public async Task<IEnumerable<Product>> GetPublicProductsAsync()
-        {
-            return await GetProductsAsync(UserGroup.Customer);
-        }
-
         public async Task<IEnumerable<Product>> GetProductsForUserAsync(User user)
         {
             return await GetProductsAsync(user.UserGroup);
@@ -36,6 +31,14 @@ namespace CoffeeCard.Library.Services.v2
             return await _context.Products
                 .Where(p => p.ProductUserGroup.Any(pug => pug.UserGroup == userGroup))
                 .Where(p => p.Visible).OrderBy(p => p.Id)
+                .Include(p => p.ProductUserGroup)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Product>> GetAllProductsAsync()
+        {
+            return await _context.Products
+                .OrderBy(p => p.Id)
                 .Include(p => p.ProductUserGroup)
                 .ToListAsync();
         }

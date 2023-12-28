@@ -15,6 +15,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Products
     ///     "name": "Coffee clip card",
     ///     "description": "Coffee clip card of 10 clips",
     ///     "isPerk": true,
+    ///     "visible": true,
     ///     "AllowedUserGroups": ["Manager", "Board"]
     /// }
     /// </example>
@@ -67,6 +68,14 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Products
         /// <example>true</example>
         [Required]
         public bool IsPerk { get; set; }
+
+        /// <summary>
+        /// Visibility of products for users
+        /// </summary>
+        /// <value>Product visibility</value>
+        /// <example>true</example>
+        [Required]
+        public bool Visible { get; set; }
 
         /// <summary>
         /// Decides the user groups that can access the product.
