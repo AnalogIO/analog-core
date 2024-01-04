@@ -241,7 +241,7 @@ namespace CoffeeCard.WebApi
                     config.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("apikey"));
 
                     // Assume not null as default unless parameter is marked as nullable
-                    config.DefaultReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull;
+                    // config.DefaultReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull;
                 });
             }
         }
@@ -260,7 +260,7 @@ namespace CoffeeCard.WebApi
                 app.UseHsts();
 
             app.UseOpenApi();
-            app.UseSwaggerUi3();
+            app.UseSwaggerUi();
 
             app.UseHttpsRedirection();
 

@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoffeeCard.Models", "Coffee
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoffeeCard.MobilePay.GenerateApi", "CoffeeCard.MobilePay.GenerateApi\CoffeeCard.MobilePay.GenerateApi.csproj", "{D295CCD7-DDB7-477D-82B6-53AFA97F5749}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeeCard.Common.Test", "CoffeeCard.Tests.Common\CoffeeCard.Tests.Common.csproj", "{938E0AD9-C1C8-4C10-B9FB-DD279DAD4D0B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoffeeCard.Common.Test", "CoffeeCard.Tests.Common\CoffeeCard.Tests.Common.csproj", "{938E0AD9-C1C8-4C10-B9FB-DD279DAD4D0B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeeCard.Generators", "CoffeeCard.Generators\CoffeeCard.Generators.csproj", "{BE332D7E-FD07-4878-B7E3-A06988F0C382}"
 EndProject

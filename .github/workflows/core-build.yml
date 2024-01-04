@@ -1,7 +1,7 @@
 name: Build and test solution
 
 env:
-  DOTNET_VERSION: 6
+  DOTNET_VERSION: 8
 
 on:
   workflow_call:

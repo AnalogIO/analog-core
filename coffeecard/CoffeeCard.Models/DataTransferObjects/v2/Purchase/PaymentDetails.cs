@@ -7,7 +7,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
 {
     [KnownType(typeof(MobilePayPaymentDetails))]
     [KnownType(typeof(FreePurchasePaymentDetails))]
-    [JsonConverter(typeof(JsonInheritanceConverter))]
+    [JsonConverter(typeof(JsonInheritanceConverter<PaymentDetails>))]
     public abstract class PaymentDetails
     {
         /// <summary>
