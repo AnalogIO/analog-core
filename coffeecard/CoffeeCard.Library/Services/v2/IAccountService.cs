@@ -71,6 +71,6 @@ namespace CoffeeCard.Library.Services.v2
         /// <param name="search"> The search string from a search bar </param>
         /// <param name="pageNum"> The page number </param>
         /// <param name="pageLength"> The length of a page </param>
-        Task<IEnumerable<SimpleUserResponse>> SearchUsers(String search, int pageNum, int pageLength);
+        Task<UserSearchResponse> SearchUsers(String search, int pageNum, int pageLength);
     }
 }

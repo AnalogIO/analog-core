@@ -210,9 +210,11 @@ namespace CoffeeCard.Library.Services.v2
         }
 
 
-        public async Task<IEnumerable<SimpleUserResponse>> SearchUsers(String search, int pageNum, int pageLength)
+        public async Task<UserSearchResponse> SearchUsers(String search, int pageNum, int pageLength)
         {
             int skip = pageNum * pageLength;
+
+            var totalUsers = await _context.Users.CountAsync();
 
             IQueryable<User> query;
             if (string.IsNullOrEmpty(search))
@@ -227,7 +229,7 @@ namespace CoffeeCard.Library.Services.v2
                     EF.Functions.Contains(u.Email, search));
             }
 
-            return await query
+            var userByPage = await query
                 .OrderBy(u => u.Id)
                 .Skip(skip).Take(pageLength)
                 .Select(u => new SimpleUserResponse
@@ -239,6 +241,12 @@ namespace CoffeeCard.Library.Services.v2
                     State = u.UserState
                 })
                 .ToListAsync();
+
+            return new UserSearchResponse
+            {
+                TotalUsers = totalUsers,
+                Users = userByPage
+            };
         }
 
 
