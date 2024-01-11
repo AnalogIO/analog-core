@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Models.Entities;
 using CoffeeCard.WebApi.Helpers;
+using System.ComponentModel.DataAnnotations;
 
 namespace CoffeeCard.WebApi.Controllers.v2
 {
@@ -219,7 +220,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(SimpleUserResponse), StatusCodes.Status200OK)]
         [Route("search")]
-        public async Task<ActionResult<IEnumerable<SimpleUserResponse>>> SearchUsers([FromQuery] int pageNum, [FromQuery] string filter = "", [FromQuery] int pageLength = 30)
+        public async Task<ActionResult<IEnumerable<SimpleUserResponse>>> SearchUsers([FromQuery] [Range(0, int.MaxValue)] int pageNum, [FromQuery] string filter = "", [FromQuery] [Range(1, 100)] int pageLength = 30)
         {
             return Ok(await _accountService.SearchUsers(filter, pageNum, pageLength));
         }
