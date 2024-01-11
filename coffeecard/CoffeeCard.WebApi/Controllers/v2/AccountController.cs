@@ -208,35 +208,20 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <summary>
         /// Searches a user in the database
         /// </summary>
-        /// <param name="search"> The search string from a search bar </param>
-        /// <param name="pageNum"> The page number </param>
-        /// <param name="pageLength"> The length of a page </param>
+        /// <param name="filter">A filter to search by Id, Name or Email. When an empty string is given, all users will be returned</param>
+        /// <param name="pageNum">The page number</param>
+        /// <param name="pageLength">The length of a page</param>
         /// <returns> A collection of User objects that match the search criteria </returns>
-        /// <response code="200"> The user(s) were found </response>
+        /// <response code="200">Users, possible with filter applied</response>
         /// <response code="401"> Invalid credentials </response>
-        /// <response code="404"> User(s) not found </response>
         [HttpGet]
         [AuthorizeRoles(UserGroup.Board)]
-        [AllowAnonymous]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ApiError), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SimpleUserResponse), StatusCodes.Status200OK)]
         [Route("search")]
-        public async Task<ActionResult<IEnumerable<User>>> SearchUsers([FromQuery] String search, [FromQuery] int pageNum, [FromQuery] int pageLength)
+        public async Task<ActionResult<IEnumerable<SimpleUserResponse>>> SearchUsers([FromQuery] int pageNum, [FromQuery] string filter = "", [FromQuery] int pageLength = 30)
         {
-            List<User> users = await _accountService.SearchUsers(search, pageNum, pageLength);
-            return Ok(users.Select(MapSearchedUserToDto).ToList());
-        }
-
-        private static UserSearchResponse MapSearchedUserToDto(User user)
-        {
-            return new UserSearchResponse
-            {
-                Id = user.Id,
-                Email = user.Email,
-                Name = user.Name,
-                Role = user.UserGroup.toUserRole(),
-            };
+            return Ok(await _accountService.SearchUsers(filter, pageNum, pageLength));
         }
     }
 }
