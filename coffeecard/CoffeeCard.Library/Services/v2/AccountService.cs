@@ -214,12 +214,13 @@ namespace CoffeeCard.Library.Services.v2
         {
             int skip = pageNum * pageLength;
 
-            var totalUsers = await _context.Users.CountAsync();
+            int totalUsers;
 
             IQueryable<User> query;
             if (string.IsNullOrEmpty(search))
             {
                 query = _context.Users;
+                totalUsers = await _context.Users.CountAsync();
             }
             else
             {
@@ -227,6 +228,7 @@ namespace CoffeeCard.Library.Services.v2
                 .Where(u => EF.Functions.Contains(u.Id.ToString(), search) ||
                     EF.Functions.Contains(u.Name, search) ||
                     EF.Functions.Contains(u.Email, search));
+                totalUsers = await query.CountAsync();
             }
 
             var userByPage = await query
