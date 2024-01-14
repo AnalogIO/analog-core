@@ -21,7 +21,6 @@ namespace CoffeeCard.WebApi.Controllers.v2
     [Authorize]
     [ApiVersion("2")]
     [Route("api/v{version:apiVersion}/products")]
-
     public class ProductsController : ControllerBase
     {
         private readonly IProductService _productService;
@@ -49,7 +48,6 @@ namespace CoffeeCard.WebApi.Controllers.v2
         {
             return Ok(await _productService.AddProduct(addProductRequest));
         }
-
 
         /// <summary>
         /// Updates a product with the specified changes.

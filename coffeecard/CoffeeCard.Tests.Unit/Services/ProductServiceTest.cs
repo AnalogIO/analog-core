@@ -14,19 +14,21 @@ namespace CoffeeCard.Tests.Unit.Services
         [Fact(DisplayName = "GetProductsForUserAsync does not return non-visible products")]
         public async Task GetProductsForUserAsync_DoesNot_Return_NonVisible_Products()
         {
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(nameof(GetProductsForUserAsync_DoesNot_Return_NonVisible_Products));
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseInMemoryDatabase(
+                nameof(GetProductsForUserAsync_DoesNot_Return_NonVisible_Products)
+            );
 
-            var databaseSettings = new DatabaseSettings
-            {
-                SchemaName = "test"
-            };
+            var databaseSettings = new DatabaseSettings { SchemaName = "test" };
             var environmentSettings = new EnvironmentSettings()
             {
                 EnvironmentType = EnvironmentType.Test
             };
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            await using var context = new CoffeeCardContext(
+                builder.Options,
+                databaseSettings,
+                environmentSettings
+            );
             var p1 = new Product
             {
                 Id = 1,
@@ -52,16 +54,12 @@ namespace CoffeeCard.Tests.Unit.Services
             await context.AddAsync(p2);
             await context.SaveChangesAsync();
 
-            await context.AddAsync(new ProductUserGroup
-            {
-                Product = p1,
-                UserGroup = UserGroup.Barista
-            });
-            await context.AddAsync(new ProductUserGroup
-            {
-                Product = p2,
-                UserGroup = UserGroup.Barista
-            });
+            await context.AddAsync(
+                new ProductUserGroup { Product = p1, UserGroup = UserGroup.Barista }
+            );
+            await context.AddAsync(
+                new ProductUserGroup { Product = p2, UserGroup = UserGroup.Barista }
+            );
             await context.SaveChangesAsync();
 
             using var productService = new ProductService(context);
@@ -79,10 +77,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 }
             };
 
-            var user = new User
-            {
-                UserGroup = UserGroup.Barista
-            };
+            var user = new User { UserGroup = UserGroup.Barista };
 
             var result = await productService.GetProductsForUserAsync(user);
 
@@ -92,19 +87,21 @@ namespace CoffeeCard.Tests.Unit.Services
         [Fact(DisplayName = "GetProductsForUserAsync return products for usergroup")]
         public async Task GetProductsForUserAsync_Return_Products_For_UserGroup()
         {
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(nameof(GetProductsForUserAsync_Return_Products_For_UserGroup));
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseInMemoryDatabase(
+                nameof(GetProductsForUserAsync_Return_Products_For_UserGroup)
+            );
 
-            var databaseSettings = new DatabaseSettings
-            {
-                SchemaName = "test"
-            };
+            var databaseSettings = new DatabaseSettings { SchemaName = "test" };
             var environmentSettings = new EnvironmentSettings()
             {
                 EnvironmentType = EnvironmentType.Test
             };
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            await using var context = new CoffeeCardContext(
+                builder.Options,
+                databaseSettings,
+                environmentSettings
+            );
             var p1 = new Product
             {
                 Id = 1,
@@ -142,21 +139,15 @@ namespace CoffeeCard.Tests.Unit.Services
             await context.AddAsync(p3);
             await context.SaveChangesAsync();
 
-            await context.AddAsync(new ProductUserGroup
-            {
-                Product = p1,
-                UserGroup = UserGroup.Barista
-            });
-            await context.AddAsync(new ProductUserGroup
-            {
-                Product = p2,
-                UserGroup = UserGroup.Barista
-            });
-            await context.AddAsync(new ProductUserGroup
-            {
-                Product = p3,
-                UserGroup = UserGroup.Barista
-            });
+            await context.AddAsync(
+                new ProductUserGroup { Product = p1, UserGroup = UserGroup.Barista }
+            );
+            await context.AddAsync(
+                new ProductUserGroup { Product = p2, UserGroup = UserGroup.Barista }
+            );
+            await context.AddAsync(
+                new ProductUserGroup { Product = p3, UserGroup = UserGroup.Barista }
+            );
             await context.SaveChangesAsync();
 
             using (var productService = new ProductService(context))
@@ -195,10 +186,7 @@ namespace CoffeeCard.Tests.Unit.Services
                     }
                 };
 
-                var user = new User
-                {
-                    UserGroup = UserGroup.Barista
-                };
+                var user = new User { UserGroup = UserGroup.Barista };
 
                 var result = await productService.GetProductsForUserAsync(user);
 
@@ -209,19 +197,23 @@ namespace CoffeeCard.Tests.Unit.Services
         [Fact(DisplayName = "GetPublicProducts does not return non-visible products")]
         public async Task GetPublicProducts_DoesNot_Return_NonVisible_Products()
         {
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(nameof(GetPublicProducts_DoesNot_Return_NonVisible_Products));
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseInMemoryDatabase(
+                nameof(GetPublicProducts_DoesNot_Return_NonVisible_Products)
+            );
 
-            var databaseSettings = new DatabaseSettings
-            {
-                SchemaName = "test"
-            };
+            var databaseSettings = new DatabaseSettings { SchemaName = "test" };
             var environmentSettings = new EnvironmentSettings()
             {
                 EnvironmentType = EnvironmentType.Test
             };
 
-            using (var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings))
+            using (
+                var context = new CoffeeCardContext(
+                    builder.Options,
+                    databaseSettings,
+                    environmentSettings
+                )
+            )
             {
                 var p1 = new Product
                 {
@@ -248,16 +240,12 @@ namespace CoffeeCard.Tests.Unit.Services
                 await context.AddAsync(p2);
                 await context.SaveChangesAsync();
 
-                await context.AddAsync(new ProductUserGroup
-                {
-                    Product = p1,
-                    UserGroup = UserGroup.Customer
-                });
-                await context.AddAsync(new ProductUserGroup
-                {
-                    Product = p2,
-                    UserGroup = UserGroup.Customer
-                });
+                await context.AddAsync(
+                    new ProductUserGroup { Product = p1, UserGroup = UserGroup.Customer }
+                );
+                await context.AddAsync(
+                    new ProductUserGroup { Product = p2, UserGroup = UserGroup.Customer }
+                );
                 await context.SaveChangesAsync();
 
                 using var productService = new ProductService(context);
@@ -284,19 +272,23 @@ namespace CoffeeCard.Tests.Unit.Services
         [Fact(DisplayName = "GetPublicProducts return all non-barista products")]
         public async Task GetPublicProducts_Return_All_NonBarista_Products()
         {
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(nameof(GetPublicProducts_Return_All_NonBarista_Products));
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseInMemoryDatabase(
+                nameof(GetPublicProducts_Return_All_NonBarista_Products)
+            );
 
-            var databaseSettings = new DatabaseSettings
-            {
-                SchemaName = "test"
-            };
+            var databaseSettings = new DatabaseSettings { SchemaName = "test" };
             var environmentSettings = new EnvironmentSettings()
             {
                 EnvironmentType = EnvironmentType.Test
             };
 
-            using (var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings))
+            using (
+                var context = new CoffeeCardContext(
+                    builder.Options,
+                    databaseSettings,
+                    environmentSettings
+                )
+            )
             {
                 var p1 = new Product
                 {
@@ -335,29 +327,19 @@ namespace CoffeeCard.Tests.Unit.Services
                 await context.AddAsync(p3);
                 await context.SaveChangesAsync();
 
-                await context.AddAsync(new ProductUserGroup
-                {
-                    Product = p1,
-                    UserGroup = UserGroup.Customer
-                });
-                await context.AddAsync(new ProductUserGroup
-                {
-                    Product = p2,
-                    UserGroup = UserGroup.Customer
-                });
-                await context.AddAsync(new ProductUserGroup
-                {
-                    Product = p3,
-                    UserGroup = UserGroup.Barista
-                });
+                await context.AddAsync(
+                    new ProductUserGroup { Product = p1, UserGroup = UserGroup.Customer }
+                );
+                await context.AddAsync(
+                    new ProductUserGroup { Product = p2, UserGroup = UserGroup.Customer }
+                );
+                await context.AddAsync(
+                    new ProductUserGroup { Product = p3, UserGroup = UserGroup.Barista }
+                );
                 await context.SaveChangesAsync();
 
                 using var productService = new ProductService(context);
-                var expected = new List<Product>
-                {
-                    p1,
-                    p2
-                };
+                var expected = new List<Product> { p1, p2 };
 
                 var result = await productService.GetPublicProducts();
 

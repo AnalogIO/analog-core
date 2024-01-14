@@ -6,12 +6,14 @@
 
         public string? ErrorCode { get; }
 
-        public MobilePayApiException(int statusCode, string message) : base(message)
+        public MobilePayApiException(int statusCode, string message)
+            : base(message)
         {
             StatusCode = statusCode;
         }
 
-        public MobilePayApiException(int statusCode, string message, string errorCode) : base(message)
+        public MobilePayApiException(int statusCode, string message, string errorCode)
+            : base(message)
         {
             StatusCode = statusCode;
             ErrorCode = errorCode;

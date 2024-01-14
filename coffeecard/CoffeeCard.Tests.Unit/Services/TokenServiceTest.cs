@@ -23,7 +23,9 @@ namespace CoffeeCard.Tests.Unit.Services
 
             //creates the key for signing the token
             const string keyForHmacSha256 = "signingKey";
-            _identity.TokenKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(keyForHmacSha256)).ToString();
+            _identity.TokenKey = new SymmetricSecurityKey(
+                Encoding.ASCII.GetBytes(keyForHmacSha256)
+            ).ToString();
         }
 
         private readonly IdentitySettings _identity;
@@ -36,7 +38,20 @@ namespace CoffeeCard.Tests.Unit.Services
             string salt = "salted"
         )
         {
-            return new User { Tokens = tokens, Email = email, Name = name, Password = password, Salt = salt, Programme = new Programme { ShortName = "test", FullName = "tester", SortPriority = 1 } };
+            return new User
+            {
+                Tokens = tokens,
+                Email = email,
+                Name = name,
+                Password = password,
+                Salt = salt,
+                Programme = new Programme
+                {
+                    ShortName = "test",
+                    FullName = "tester",
+                    SortPriority = 1
+                }
+            };
         }
 
         [Fact(DisplayName = "ValidateToken given invalid token returns false")]
@@ -45,7 +60,9 @@ namespace CoffeeCard.Tests.Unit.Services
             // Arrange
             bool result;
 
-            var context = GenerateCoffeeCardContext(nameof(ValidateTokenGivenInvalidTokenReturnsFalse));
+            var context = GenerateCoffeeCardContext(
+                nameof(ValidateTokenGivenInvalidTokenReturnsFalse)
+            );
             await using (context)
             {
                 var claimsUtility = new ClaimsUtilities(context);
@@ -68,7 +85,9 @@ namespace CoffeeCard.Tests.Unit.Services
 
             bool result;
 
-            var context = GenerateCoffeeCardContext(nameof(ValidateTokenGivenValidTokenReturnsTrue));
+            var context = GenerateCoffeeCardContext(
+                nameof(ValidateTokenGivenValidTokenReturnsTrue)
+            );
             await using (context)
             {
                 var claimsUtility = new ClaimsUtilities(context);
@@ -95,13 +114,15 @@ namespace CoffeeCard.Tests.Unit.Services
             var claim = new Claim(ClaimTypes.Email, "test@email.dk");
             var claims = new List<Claim> { claim };
 
-            var context = GenerateCoffeeCardContext(nameof(ValidateTokenGivenInvalidSignedTokenReturnsFalse));
+            var context = GenerateCoffeeCardContext(
+                nameof(ValidateTokenGivenInvalidSignedTokenReturnsFalse)
+            );
             await using (context)
             {
-                var key = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes("Invalid signing key"));
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Invalid signing key"));
 
-                var jwt = new JwtSecurityToken("AnalogIO",
+                var jwt = new JwtSecurityToken(
+                    "AnalogIO",
                     "Everyone",
                     claims,
                     DateTime.UtcNow,
@@ -130,18 +151,20 @@ namespace CoffeeCard.Tests.Unit.Services
 
             bool result;
 
-            var context = GenerateCoffeeCardContext(nameof(ValidateTokenGivenWelformedExpiredTokenReturnsFalse));
+            var context = GenerateCoffeeCardContext(
+                nameof(ValidateTokenGivenWelformedExpiredTokenReturnsFalse)
+            );
             {
                 await using (context)
                 {
                     var claimsUtility = new ClaimsUtilities(context);
                     var tokenService = new TokenService(_identity, claimsUtility);
 
-                    var key = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(_identity.TokenKey));
+                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_identity.TokenKey));
 
                     //Creates the expired token
-                    var jwt = new JwtSecurityToken("AnalogIO",
+                    var jwt = new JwtSecurityToken(
+                        "AnalogIO",
                         "Everyone",
                         claims,
                         DateTime.UtcNow.Subtract(new TimeSpan(1200)),
@@ -174,7 +197,9 @@ namespace CoffeeCard.Tests.Unit.Services
 
             bool result;
 
-            var context = GenerateCoffeeCardContext(nameof(ValidateTokenGivenWelformedUsedTokenReturnsFalse));
+            var context = GenerateCoffeeCardContext(
+                nameof(ValidateTokenGivenWelformedUsedTokenReturnsFalse)
+            );
             await using (context)
             {
                 var claimsUtility = new ClaimsUtilities(context);
@@ -182,8 +207,7 @@ namespace CoffeeCard.Tests.Unit.Services
 
                 var token = tokenService.GenerateToken(claims);
 
-                var userTokens =
-                    new List<Token>(); //No tokens are added to the users list, therefore all tokens with a claim for this user will be assumed to be expired
+                var userTokens = new List<Token>(); //No tokens are added to the users list, therefore all tokens with a claim for this user will be assumed to be expired
                 var user = GenerateTestUser(tokens: userTokens);
                 await context.AddAsync(user);
                 await context.SaveChangesAsync();
@@ -198,13 +222,11 @@ namespace CoffeeCard.Tests.Unit.Services
 
         private CoffeeCardContext GenerateCoffeeCardContext(string uniqueString)
         {
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(uniqueString);
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseInMemoryDatabase(
+                uniqueString
+            );
 
-            var databaseSettings = new DatabaseSettings
-            {
-                SchemaName = "test"
-            };
+            var databaseSettings = new DatabaseSettings { SchemaName = "test" };
             var environmentSettings = new EnvironmentSettings()
             {
                 EnvironmentType = EnvironmentType.Test

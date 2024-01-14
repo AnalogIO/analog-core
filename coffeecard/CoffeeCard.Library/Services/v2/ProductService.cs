@@ -28,31 +28,34 @@ namespace CoffeeCard.Library.Services.v2
 
         private async Task<IEnumerable<Product>> GetProductsAsync(UserGroup userGroup)
         {
-            return await _context.Products
-                .Where(p => p.ProductUserGroup.Any(pug => pug.UserGroup == userGroup))
-                .Where(p => p.Visible).OrderBy(p => p.Id)
+            return await _context
+                .Products.Where(p => p.ProductUserGroup.Any(pug => pug.UserGroup == userGroup))
+                .Where(p => p.Visible)
+                .OrderBy(p => p.Id)
                 .Include(p => p.ProductUserGroup)
                 .ToListAsync();
         }
 
         public async Task<IEnumerable<Product>> GetAllProductsAsync()
         {
-            return await _context.Products
-                .OrderBy(p => p.Id)
+            return await _context
+                .Products.OrderBy(p => p.Id)
                 .Include(p => p.ProductUserGroup)
                 .ToListAsync();
         }
 
         public async Task<Product> GetProductAsync(int productId)
         {
-            var product = await _context.Products
-                .Include(p => p.ProductUserGroup)
+            var product = await _context
+                .Products.Include(p => p.ProductUserGroup)
                 .FirstOrDefaultAsync(p => p.Id == productId);
 
             if (product == null)
             {
                 Log.Error("No product was found by Product Id: {Id}", productId);
-                throw new EntityNotFoundException($"No product was found by Product Id: {productId}");
+                throw new EntityNotFoundException(
+                    $"No product was found by Product Id: {productId}"
+                );
             }
 
             return product;
@@ -60,8 +63,9 @@ namespace CoffeeCard.Library.Services.v2
 
         private async Task<bool> CheckProductUniquenessAsync(string name, int price)
         {
-            var product = await _context.Products
-                .FirstOrDefaultAsync(p => (p.Name == name && p.Price == price));
+            var product = await _context.Products.FirstOrDefaultAsync(
+                p => (p.Name == name && p.Price == price)
+            );
 
             return product == null;
         }
@@ -71,7 +75,9 @@ namespace CoffeeCard.Library.Services.v2
             var unique = await CheckProductUniquenessAsync(newProduct.Name, newProduct.Price);
             if (!unique)
             {
-                throw new ConflictException($"Product already exists with name {newProduct.Name} and price of {newProduct.Price}");
+                throw new ConflictException(
+                    $"Product already exists with name {newProduct.Name} and price of {newProduct.Price}"
+                );
             }
 
             var product = new Product()
@@ -82,10 +88,11 @@ namespace CoffeeCard.Library.Services.v2
                 NumberOfTickets = newProduct.NumberOfTickets,
                 ExperienceWorth = 0,
                 Visible = newProduct.Visible,
-                ProductUserGroup = newProduct.AllowedUserGroups.Select(userGroup => new ProductUserGroup
-                {
-                    UserGroup = userGroup
-                }).ToList()
+                ProductUserGroup = newProduct
+                    .AllowedUserGroups.Select(
+                        userGroup => new ProductUserGroup { UserGroup = userGroup }
+                    )
+                    .ToList()
             };
 
             _context.Products.Add(product);
@@ -112,11 +119,16 @@ namespace CoffeeCard.Library.Services.v2
             product.NumberOfTickets = changedProduct.NumberOfTickets;
             product.Name = changedProduct.Name;
             product.Visible = changedProduct.Visible;
-            product.ProductUserGroup = changedProduct.AllowedUserGroups.Select(userGroup => new ProductUserGroup
-            {
-                ProductId = changedProduct.Id,
-                UserGroup = userGroup
-            }).ToList();
+            product.ProductUserGroup = changedProduct
+                .AllowedUserGroups.Select(
+                    userGroup =>
+                        new ProductUserGroup
+                        {
+                            ProductId = changedProduct.Id,
+                            UserGroup = userGroup
+                        }
+                )
+                .ToList();
 
             await _context.SaveChangesAsync();
 

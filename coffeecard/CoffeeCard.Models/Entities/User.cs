@@ -40,7 +40,8 @@ namespace CoffeeCard.Models.Entities
 
         public Programme Programme { get; set; }
 
-        public virtual ICollection<LoginAttempt> LoginAttempts { get; set; } = new List<LoginAttempt>();
+        public virtual ICollection<LoginAttempt> LoginAttempts { get; set; } =
+            new List<LoginAttempt>();
 
         public virtual ICollection<Token> Tokens { get; set; } = new List<Token>();
 

@@ -28,10 +28,10 @@ namespace CoffeeCard.Library.Services
 
         public string GenerateToken(IEnumerable<Claim> claims)
         {
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_identitySettings.TokenKey)); // get token from appsettings.json
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_identitySettings.TokenKey)); // get token from appsettings.json
 
-            var jwt = new JwtSecurityToken("AnalogIO",
+            var jwt = new JwtSecurityToken(
+                "AnalogIO",
                 "Everyone",
                 claims,
                 DateTime.UtcNow,
@@ -47,7 +47,6 @@ namespace CoffeeCard.Library.Services
             return new JwtSecurityTokenHandler().ReadToken(token) as JwtSecurityToken;
         }
 
-
         /// <summary>
         /// Receives the serialized version of a JWT token as a string.
         /// Checks if the JWT token is valid (Based on its lifetime)
@@ -57,7 +56,8 @@ namespace CoffeeCard.Library.Services
         public bool ValidateToken(string tokenString)
         {
             var securityKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_identitySettings.TokenKey));
+                Encoding.UTF8.GetBytes(_identitySettings.TokenKey)
+            );
 
             try
             {
@@ -74,8 +74,7 @@ namespace CoffeeCard.Library.Services
 
                 securityTokenHandler.ValidateToken(tokenString, validationParameters, out _); // Throws exception if token is invalid
             }
-            catch (Exception e) when (e is ArgumentException ||
-                                      e is SecurityTokenException)
+            catch (Exception e) when (e is ArgumentException || e is SecurityTokenException)
             {
                 Log.Information("Received invalid token");
                 return false;
@@ -97,9 +96,12 @@ namespace CoffeeCard.Library.Services
                 var tokenIsUnused = false;
                 var token = ReadToken(tokenString);
 
-                var user = await _claimsUtilities.ValidateAndReturnUserFromEmailClaimAsync(token.Claims);
+                var user = await _claimsUtilities.ValidateAndReturnUserFromEmailClaimAsync(
+                    token.Claims
+                );
 
-                if (user.Tokens.Contains(new Token(tokenString))) tokenIsUnused = true; // Tokens are removed from the user on account recovery
+                if (user.Tokens.Contains(new Token(tokenString)))
+                    tokenIsUnused = true; // Tokens are removed from the user on account recovery
 
                 return ValidateToken(tokenString) && tokenIsUnused;
             }
@@ -119,7 +121,11 @@ namespace CoffeeCard.Library.Services
             }
 
             var jwtToken = ReadToken(token);
-            if (jwtToken.Claims.Any(x => x.Type == ClaimTypes.Role && x.Value != "verification_token"))
+            if (
+                jwtToken.Claims.Any(
+                    x => x.Type == ClaimTypes.Role && x.Value != "verification_token"
+                )
+            )
             {
                 Log.Information("Token validation failed. Not a verification token");
                 throw new ApiException("The token is invalid!", StatusCodes.Status401Unauthorized);

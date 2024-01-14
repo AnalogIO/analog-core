@@ -25,7 +25,10 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <summary>
         /// Initializes a new instance of the <see cref="HealthController"/> class.
         /// </summary>
-        public HealthController(IMobilePayWebhooksService mobilePayWebhooksService, CoffeeCardContext context)
+        public HealthController(
+            IMobilePayWebhooksService mobilePayWebhooksService,
+            CoffeeCardContext context
+        )
         {
             _mobilePayWebhooksService = mobilePayWebhooksService;
             _context = context;
@@ -51,12 +54,19 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <response code="503">Unhealthy service</response>
         [HttpGet("check")]
         [ProducesResponseType(typeof(ServiceHealthResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ServiceHealthResponse), StatusCodes.Status503ServiceUnavailable)]
+        [ProducesResponseType(
+            typeof(ServiceHealthResponse),
+            StatusCodes.Status503ServiceUnavailable
+        )]
         [ProducesDefaultResponseType]
         public async Task<IActionResult> Healthcheck()
         {
-            var databaseConnected = await IsServiceHealthy(async () => await _context.Database.CanConnectAsync());
-            var mobilepayApiConnected = await IsServiceHealthy(async () => await _mobilePayWebhooksService.GetAllWebhooks());
+            var databaseConnected = await IsServiceHealthy(
+                async () => await _context.Database.CanConnectAsync()
+            );
+            var mobilepayApiConnected = await IsServiceHealthy(
+                async () => await _mobilePayWebhooksService.GetAllWebhooks()
+            );
 
             var response = new ServiceHealthResponse()
             {

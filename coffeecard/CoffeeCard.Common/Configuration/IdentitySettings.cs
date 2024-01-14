@@ -7,6 +7,7 @@ namespace CoffeeCard.Common.Configuration
     {
         [Required]
         public string TokenKey { get; set; }
+
         [Required]
         public string AdminToken { get; set; }
 
@@ -15,7 +16,11 @@ namespace CoffeeCard.Common.Configuration
 
         public void Validate()
         {
-            Validator.ValidateObject(this, new ValidationContext(this), validateAllProperties: true);
+            Validator.ValidateObject(
+                this,
+                new ValidationContext(this),
+                validateAllProperties: true
+            );
         }
     }
 }

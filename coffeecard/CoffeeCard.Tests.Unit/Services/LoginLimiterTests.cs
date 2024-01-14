@@ -9,7 +9,6 @@ namespace CoffeeCard.Tests.Unit.Services
 {
     public class LoginLimiterTests
     {
-
         [Fact(DisplayName = "LoginLimiter allows logins after timeout expired")]
         public async Task LoginAllowsLoginsAfterTimeout()
         {
@@ -82,7 +81,6 @@ namespace CoffeeCard.Tests.Unit.Services
             }
             var actualFirstLockoutResult = loginLimiter.LoginAllowed(user); //Checks that you are actually locked after the first series of attempts
             await Task.Delay(1100); //Passes the lockout time
-
 
             //Triggers the lockout again by another 5 attempted logins in a row
             for (var i = 0; i < loginLimiterSettings.MaximumLoginAttemptsWithinTimeOut; i++)

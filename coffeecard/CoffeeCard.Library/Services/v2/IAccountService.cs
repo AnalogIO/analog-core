@@ -20,7 +20,7 @@ namespace CoffeeCard.Library.Services.v2
         /// Register an account. Sends out an verification email to provided email
         /// </summary>
         /// <param name="name">Name of the user</param>
-        /// <param name="email">The email address of the account to be created</param> 
+        /// <param name="email">The email address of the account to be created</param>
         /// <param name="password">Desired password for the account</param>
         /// <param name="programme">Programme Id of ITU Study programme</param>
         Task<User> RegisterAccountAsync(string name, string email, string password, int programme);
@@ -29,7 +29,7 @@ namespace CoffeeCard.Library.Services.v2
         /// Updates an account with the non-null properties of the updateUserRequest
         /// </summary>
         /// <param name="user"> The user entity representing an account</param>
-        /// <param name="updateUserRequest"> The request to update the user, containing several nullable properties</param> 
+        /// <param name="updateUserRequest"> The request to update the user, containing several nullable properties</param>
         Task<User> UpdateAccountAsync(User user, UpdateUserRequest updateUserRequest);
 
         /// <summary>

@@ -19,11 +19,11 @@ namespace CoffeeCard.WebApi.Helpers
                     context.HttpContext.Response.StatusCode = StatusCodes.Status409Conflict;
                     break;
                 case ApiException exception:
-                    {
-                        apiError = new ApiError(exception.Message);
-                        context.HttpContext.Response.StatusCode = exception.StatusCode;
-                        break;
-                    }
+                {
+                    apiError = new ApiError(exception.Message);
+                    context.HttpContext.Response.StatusCode = exception.StatusCode;
+                    break;
+                }
                 case UnauthorizedAccessException _:
                     apiError = new ApiError("Unauthorized Access");
                     context.HttpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
@@ -33,19 +33,20 @@ namespace CoffeeCard.WebApi.Helpers
                     context.HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
                     break;
                 default:
-                    {
-                        Log.Error(context.Exception, "Unhandled exception caught");
+                {
+                    Log.Error(context.Exception, "Unhandled exception caught");
 
 #if !DEBUG
                     var msg = "An unhandled error occurred.";
 #else
-                        var msg = context.Exception.GetBaseException().Message;
+                    var msg = context.Exception.GetBaseException().Message;
 #endif
 
-                        apiError = new ApiError(msg);
-                        context.HttpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                        break;
-                    }
+                    apiError = new ApiError(msg);
+                    context.HttpContext.Response.StatusCode =
+                        StatusCodes.Status500InternalServerError;
+                    break;
+                }
             }
 
             // always return a JSON result

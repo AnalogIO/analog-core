@@ -13,23 +13,29 @@ namespace CoffeeCard.Library.Migrations
                 schema: "dbo",
                 table: "Vouchers",
                 type: "int",
-                nullable: true);
+                nullable: true
+            );
 
             migrationBuilder.AddColumn<string>(
                 name: "Type",
                 schema: "dbo",
                 table: "Purchases",
                 type: "nvarchar(max)",
-                nullable: true);
+                nullable: true
+            );
 
             migrationBuilder.CreateTable(
                 name: "PosPurchases",
                 schema: "dbo",
-                columns: table => new
-                {
-                    PurchaseId = table.Column<int>(type: "int", nullable: false),
-                    BaristaInitials = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
+                columns: table =>
+                    new
+                    {
+                        PurchaseId = table.Column<int>(type: "int", nullable: false),
+                        BaristaInitials = table.Column<string>(
+                            type: "nvarchar(max)",
+                            nullable: false
+                        )
+                    },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PosPurchases", x => x.PurchaseId);
@@ -39,15 +45,15 @@ namespace CoffeeCard.Library.Migrations
                         principalSchema: "dbo",
                         principalTable: "Purchases",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "PosPurchases",
-                schema: "dbo");
+            migrationBuilder.DropTable(name: "PosPurchases", schema: "dbo");
         }
     }
 }

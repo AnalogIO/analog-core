@@ -19,15 +19,23 @@ namespace CoffeeCard.Library.Services.v2
         private const string MpSignatureKeyCacheKey = "MpSignatureKey";
 
         private static readonly ISet<Events> DefaultEvents = new HashSet<Events>
-            {Events.Payment_reserved, Events.Payment_expired, Events.Payment_cancelled_by_user};
+        {
+            Events.Payment_reserved,
+            Events.Payment_expired,
+            Events.Payment_cancelled_by_user
+        };
 
         private readonly CoffeeCardContext _context;
         private readonly IMobilePayWebhooksService _mobilePayWebhooksService;
         private readonly MobilePaySettingsV2 _mobilePaySettings;
         private readonly IMemoryCache _memoryCache;
 
-        public WebhookService(CoffeeCardContext context, IMobilePayWebhooksService mobilePayWebhooksService,
-            MobilePaySettingsV2 mobilePaySettings, IMemoryCache memoryCache)
+        public WebhookService(
+            CoffeeCardContext context,
+            IMobilePayWebhooksService mobilePayWebhooksService,
+            MobilePaySettingsV2 mobilePaySettings,
+            IMemoryCache memoryCache
+        )
         {
             _context = context;
             _mobilePayWebhooksService = mobilePayWebhooksService;
@@ -44,8 +52,10 @@ namespace CoffeeCard.Library.Services.v2
         {
             if (!_memoryCache.TryGetValue(MpSignatureKeyCacheKey, out string signatureKey))
             {
-                signatureKey = await _context.WebhookConfigurations.Where(w => w.Status == WebhookStatus.Active)
-                    .Select(w => w.SignatureKey).FirstAsync();
+                signatureKey = await _context
+                    .WebhookConfigurations.Where(w => w.Status == WebhookStatus.Active)
+                    .Select(w => w.SignatureKey)
+                    .FirstAsync();
 
                 var cacheExpiryOptions = new MemoryCacheEntryOptions
                 {
@@ -62,11 +72,15 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task EnsureWebhookIsRegistered()
         {
-            var webhooks = _context.WebhookConfigurations.Where(w => w.Status == WebhookStatus.Active);
+            var webhooks = _context.WebhookConfigurations.Where(
+                w => w.Status == WebhookStatus.Active
+            );
             if (await webhooks.AnyAsync())
             {
                 await SyncWebhook(await webhooks.FirstAsync());
-                Log.Information("A MobilePay Webhook was already registered. Configuration has been synced");
+                Log.Information(
+                    "A MobilePay Webhook was already registered. Configuration has been synced"
+                );
             }
             else
             {
@@ -81,14 +95,22 @@ namespace CoffeeCard.Library.Services.v2
             {
                 var mobilePayWebhook = await _mobilePayWebhooksService.GetWebhook(webhook.Id);
 
-                if (!mobilePayWebhook.Url.Equals(_mobilePaySettings.WebhookUrl, StringComparison.OrdinalIgnoreCase))
+                if (
+                    !mobilePayWebhook.Url.Equals(
+                        _mobilePaySettings.WebhookUrl,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                )
                 {
                     await DisableAndRegisterNewWebhook(webhook);
                     return;
                 }
 
-                mobilePayWebhook = await _mobilePayWebhooksService.UpdateWebhook(mobilePayWebhook.WebhookId,
-                    _mobilePaySettings.WebhookUrl, DefaultEvents);
+                mobilePayWebhook = await _mobilePayWebhooksService.UpdateWebhook(
+                    mobilePayWebhook.WebhookId,
+                    _mobilePaySettings.WebhookUrl,
+                    DefaultEvents
+                );
 
                 webhook.Url = mobilePayWebhook.Url;
                 webhook.SignatureKey = mobilePayWebhook.SignatureKey;
@@ -113,8 +135,10 @@ namespace CoffeeCard.Library.Services.v2
 
         private async Task RegisterWebhook()
         {
-            var mobilePayWebhook =
-                await _mobilePayWebhooksService.RegisterWebhook(_mobilePaySettings.WebhookUrl, DefaultEvents);
+            var mobilePayWebhook = await _mobilePayWebhooksService.RegisterWebhook(
+                _mobilePaySettings.WebhookUrl,
+                DefaultEvents
+            );
 
             var webhook = new WebhookConfiguration
             {

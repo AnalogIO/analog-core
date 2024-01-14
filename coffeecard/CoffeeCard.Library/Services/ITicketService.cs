@@ -11,7 +11,10 @@ namespace CoffeeCard.Library.Services
     {
         IEnumerable<Ticket> GetTickets(IEnumerable<Claim> claims, bool used);
         Task<Ticket> UseTicket(IEnumerable<Claim> claims, int productId);
-        Task<IEnumerable<Ticket>> UseMultipleTickets(IEnumerable<Claim> claims, UseMultipleTicketDto dto);
+        Task<IEnumerable<Ticket>> UseMultipleTickets(
+            IEnumerable<Claim> claims,
+            UseMultipleTicketDto dto
+        );
         IEnumerable<CoffeeCardDto> GetCoffeeCards(IEnumerable<Claim> claims);
     }
 }

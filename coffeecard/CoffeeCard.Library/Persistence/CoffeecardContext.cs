@@ -11,7 +11,11 @@ namespace CoffeeCard.Library.Persistence
 
         private readonly EnvironmentSettings _environmentSettings;
 
-        public CoffeeCardContext(DbContextOptions<CoffeeCardContext> options, DatabaseSettings databaseSettings, EnvironmentSettings environmentSettings)
+        public CoffeeCardContext(
+            DbContextOptions<CoffeeCardContext> options,
+            DatabaseSettings databaseSettings,
+            EnvironmentSettings environmentSettings
+        )
             : base(options)
         {
             _databaseSettings = databaseSettings;
@@ -36,41 +40,41 @@ namespace CoffeeCard.Library.Persistence
             modelBuilder.HasDefaultSchema(_databaseSettings.SchemaName);
 
             // Setup PUG compound primary key
-            modelBuilder.Entity<ProductUserGroup>()
-                .HasKey(pug => new
-                {
-                    pug.ProductId,
-                    pug.UserGroup
-                });
+            modelBuilder
+                .Entity<ProductUserGroup>()
+                .HasKey(pug => new { pug.ProductId, pug.UserGroup });
 
             // Use Enum to Int for UserGroups
             var userGroupIntConverter = new EnumToNumberConverter<UserGroup, int>();
             // Use Enum to String for PurchaseTypes
             var purchaseTypeStringConverter = new EnumToStringConverter<PurchaseType>();
 
-            modelBuilder.Entity<User>()
+            modelBuilder
+                .Entity<User>()
                 .Property(u => u.UserGroup)
                 .HasConversion(userGroupIntConverter);
 
-            modelBuilder.Entity<Purchase>()
+            modelBuilder
+                .Entity<Purchase>()
                 .Property(p => p.Type)
                 .HasConversion(purchaseTypeStringConverter);
 
             modelBuilder.Entity<User>().Property(u => u.UserState).HasConversion<string>();
 
-            modelBuilder.Entity<ProductUserGroup>()
+            modelBuilder
+                .Entity<ProductUserGroup>()
                 .Property(pug => pug.UserGroup)
                 .HasConversion(userGroupIntConverter);
 
-            modelBuilder.Entity<WebhookConfiguration>()
+            modelBuilder
+                .Entity<WebhookConfiguration>()
                 .Property(w => w.Status)
                 .HasConversion<string>();
 
-            modelBuilder.Entity<Purchase>()
-                .Property(p => p.Status)
-                .HasConversion<string>();
+            modelBuilder.Entity<Purchase>().Property(p => p.Status).HasConversion<string>();
 
-            modelBuilder.Entity<Ticket>()
+            modelBuilder
+                .Entity<Ticket>()
                 .HasOne<User>(t => t.Owner)
                 .WithMany(u => u.Tickets)
                 .HasForeignKey(t => t.OwnerId)

@@ -25,12 +25,21 @@ namespace CoffeeCard.MobilePay.GenerateApi
         public static async Task Main(string[] args)
         {
             // TODO: Fix that they might be null and give a error if that is the case.
-            var openApiSpecDirectory = Directory.GetParent(Environment.CurrentDirectory)?.Parent?.Parent?.FullName + "\\OpenApiSpecs\\";
-            var outputDirectory = Directory.GetParent(Environment.CurrentDirectory)?.Parent?.Parent?.Parent?.FullName +
-                                  "\\CoffeeCard.MobilePay\\Generated\\";
+            var openApiSpecDirectory =
+                Directory.GetParent(Environment.CurrentDirectory)?.Parent?.Parent?.FullName
+                + "\\OpenApiSpecs\\";
+            var outputDirectory =
+                Directory.GetParent(Environment.CurrentDirectory)?.Parent?.Parent?.Parent?.FullName
+                + "\\CoffeeCard.MobilePay\\Generated\\";
 
-            await GeneratePaymentsApi(openApiSpecDirectory + PaymentsApi + ".tojson.json", outputDirectory + $"{PaymentsApi}\\" + PaymentsApi + ".cs");
-            await GenerateWebhooksApi(openApiSpecDirectory + WebhooksApi + ".tojson.json", outputDirectory + $"{WebhooksApi}\\" + WebhooksApi + ".cs");
+            await GeneratePaymentsApi(
+                openApiSpecDirectory + PaymentsApi + ".tojson.json",
+                outputDirectory + $"{PaymentsApi}\\" + PaymentsApi + ".cs"
+            );
+            await GenerateWebhooksApi(
+                openApiSpecDirectory + WebhooksApi + ".tojson.json",
+                outputDirectory + $"{WebhooksApi}\\" + WebhooksApi + ".cs"
+            );
         }
 
         private static async Task GenerateWebhooksApi(string inputFile, string outputFile)

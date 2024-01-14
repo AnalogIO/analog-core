@@ -28,38 +28,55 @@ namespace CoffeeCard.Library.Services.v2
             var tickets = new List<Ticket>();
             for (var i = 0; i < purchase.NumberOfTickets; i++)
             {
-                tickets.Add(new Ticket
-                {
-                    DateCreated = DateTime.UtcNow,
-                    ProductId = purchase.ProductId,
-                    IsUsed = false,
-                    Owner = purchase.PurchasedBy,
-                    Purchase = purchase
-                });
+                tickets.Add(
+                    new Ticket
+                    {
+                        DateCreated = DateTime.UtcNow,
+                        ProductId = purchase.ProductId,
+                        IsUsed = false,
+                        Owner = purchase.PurchasedBy,
+                        Purchase = purchase
+                    }
+                );
             }
 
             await _context.Tickets.AddRangeAsync(tickets);
             await _context.SaveChangesAsync();
 
-            Log.Information("Issued {NoTickets} Tickets for ProductId {ProductId}, PurchaseId {PurchaseId}", purchase.NumberOfTickets, purchase.ProductId, purchase.Id);
+            Log.Information(
+                "Issued {NoTickets} Tickets for ProductId {ProductId}, PurchaseId {PurchaseId}",
+                purchase.NumberOfTickets,
+                purchase.ProductId,
+                purchase.Id
+            );
         }
 
         public Task<List<TicketResponse>> GetTickets(User user, bool includeUsed)
         {
-            return _context.Tickets.Where(t => t.Owner.Equals(user) && t.IsUsed == includeUsed).Include(t => t.Purchase)
-                .Select(t => new TicketResponse
-                {
-                    Id = t.Id,
-                    DateCreated = t.DateCreated,
-                    DateUsed = t.DateUsed,
-                    ProductId = t.ProductId,
-                    ProductName = t.Purchase.ProductName
-                }).ToListAsync();
+            return _context
+                .Tickets.Where(t => t.Owner.Equals(user) && t.IsUsed == includeUsed)
+                .Include(t => t.Purchase)
+                .Select(
+                    t =>
+                        new TicketResponse
+                        {
+                            Id = t.Id,
+                            DateCreated = t.DateCreated,
+                            DateUsed = t.DateUsed,
+                            ProductId = t.ProductId,
+                            ProductName = t.Purchase.ProductName
+                        }
+                )
+                .ToListAsync();
         }
 
         public async Task<UsedTicketResponse> UseTicketAsync(User user, int productId)
         {
-            Log.Information("UserId {UserId} uses a ticket for ProductId {ProductId}", user.Id, productId);
+            Log.Information(
+                "UserId {UserId} uses a ticket for ProductId {ProductId}",
+                user.Id,
+                productId
+            );
 
             var ticket = await GetFirstTicketFromProductAsync(productId, user.Id);
 
@@ -85,13 +102,17 @@ namespace CoffeeCard.Library.Services.v2
 
         private async Task<Ticket> GetFirstTicketFromProductAsync(int productId, int userId)
         {
-            var ticket = await _context.Tickets
-                .Include(t => t.Purchase)
-                .FirstOrDefaultAsync(t => t.Owner.Id == userId && t.ProductId == productId && !t.IsUsed);
+            var ticket = await _context
+                .Tickets.Include(t => t.Purchase)
+                .FirstOrDefaultAsync(
+                    t => t.Owner.Id == userId && t.ProductId == productId && !t.IsUsed
+                );
 
             if (ticket == null)
             {
-                throw new EntityNotFoundException("No tickets found for the given product with this user");
+                throw new EntityNotFoundException(
+                    "No tickets found for the given product with this user"
+                );
             }
             return ticket;
         }

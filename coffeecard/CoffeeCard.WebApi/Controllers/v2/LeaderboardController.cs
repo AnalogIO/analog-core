@@ -23,7 +23,10 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <summary>
         /// Initializes a new instance of the <see cref="LeaderboardController"/> class.
         /// </summary>
-        public LeaderboardController(ILeaderboardService leaderboardService, ClaimsUtilities claimsUtilities)
+        public LeaderboardController(
+            ILeaderboardService leaderboardService,
+            ClaimsUtilities claimsUtilities
+        )
         {
             _leaderboardService = leaderboardService;
             _claimsUtilities = claimsUtilities;
@@ -38,7 +41,10 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <response code="200">Top leader board entries</response>
         [HttpGet("top")]
         [ProducesResponseType(typeof(List<LeaderboardEntry>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<LeaderboardEntry>>> GetTopEntries([FromQuery] LeaderboardPreset preset = LeaderboardPreset.Semester, [FromQuery] int top = 10)
+        public async Task<ActionResult<IEnumerable<LeaderboardEntry>>> GetTopEntries(
+            [FromQuery] LeaderboardPreset preset = LeaderboardPreset.Semester,
+            [FromQuery] int top = 10
+        )
         {
             return Ok(await _leaderboardService.GetTopLeaderboardEntries(preset, top));
         }
@@ -54,7 +60,9 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [Authorize]
         [ProducesResponseType(typeof(LeaderboardEntry), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<LeaderboardEntry>> Get([FromQuery] LeaderboardPreset preset = LeaderboardPreset.Semester)
+        public async Task<ActionResult<LeaderboardEntry>> Get(
+            [FromQuery] LeaderboardPreset preset = LeaderboardPreset.Semester
+        )
         {
             var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
 

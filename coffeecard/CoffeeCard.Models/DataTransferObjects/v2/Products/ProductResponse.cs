@@ -62,7 +62,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Products
         public string Description { get; set; } = string.Empty;
 
         /// <summary>
-        /// Eligible due to a user perk privilege 
+        /// Eligible due to a user perk privilege
         /// </summary>
         /// <value>Perk product</value>
         /// <example>true</example>

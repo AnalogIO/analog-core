@@ -11,6 +11,7 @@ namespace CoffeeCard.WebApi.Helpers
     public class AuthorizeRolesAttribute : Attribute, IAuthorizationFilter
     {
         private readonly UserGroup[] _roles;
+
         public AuthorizeRolesAttribute(params UserGroup[] roles)
         {
             _roles = roles;

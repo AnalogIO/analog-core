@@ -25,13 +25,11 @@ namespace CoffeeCard.Tests.Unit.Services
         public async Task RecoverUserGivenMalformedTokenReturnsFalse()
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(nameof(RecoverUserGivenMalformedTokenReturnsFalse));
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseInMemoryDatabase(
+                nameof(RecoverUserGivenMalformedTokenReturnsFalse)
+            );
 
-            var databaseSettings = new DatabaseSettings
-            {
-                SchemaName = "test"
-            };
+            var databaseSettings = new DatabaseSettings { SchemaName = "test" };
             var environmentSettings = new EnvironmentSettings()
             {
                 EnvironmentType = EnvironmentType.Test
@@ -46,10 +44,21 @@ namespace CoffeeCard.Tests.Unit.Services
             var expectedResult = false;
 
             // Act
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
-            var accountService = new AccountService(context, environmentSettings, new Mock<ITokenService>().Object,
-                new Mock<IEmailService>().Object, new Mock<IHashService>().Object,
-                new Mock<IHttpContextAccessor>().Object, new Mock<ILoginLimiter>().Object, loginLimiterSettings);
+            await using var context = new CoffeeCardContext(
+                builder.Options,
+                databaseSettings,
+                environmentSettings
+            );
+            var accountService = new AccountService(
+                context,
+                environmentSettings,
+                new Mock<ITokenService>().Object,
+                new Mock<IEmailService>().Object,
+                new Mock<IHashService>().Object,
+                new Mock<IHttpContextAccessor>().Object,
+                new Mock<ILoginLimiter>().Object,
+                loginLimiterSettings
+            );
             var result = await accountService.RecoverUserAsync("bogus", "3433");
 
             // Assert
@@ -60,13 +69,11 @@ namespace CoffeeCard.Tests.Unit.Services
         public async Task RecoverUserGivenValidTokenReturnsTrue()
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(nameof(RecoverUserGivenValidTokenReturnsTrue));
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseInMemoryDatabase(
+                nameof(RecoverUserGivenValidTokenReturnsTrue)
+            );
 
-            var databaseSettings = new DatabaseSettings
-            {
-                SchemaName = "test"
-            };
+            var databaseSettings = new DatabaseSettings { SchemaName = "test" };
             var environmentSettings = new EnvironmentSettings()
             {
                 EnvironmentType = EnvironmentType.Test
@@ -89,18 +96,37 @@ namespace CoffeeCard.Tests.Unit.Services
             tokenService.Setup(t => t.ValidateTokenIsUnusedAsync("valid")).ReturnsAsync(true);
 
             // Act
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            await using var context = new CoffeeCardContext(
+                builder.Options,
+                databaseSettings,
+                environmentSettings
+            );
             var token = new Token("valid");
             var userTokens = new List<Token> { token };
             var programme = new Programme { FullName = "fullName", ShortName = "shortName" };
 
-            var user = new User { Tokens = userTokens, Programme = programme, Email = "test@email.dk", Name = "test", Password = "pass", Salt = "salt" };
+            var user = new User
+            {
+                Tokens = userTokens,
+                Programme = programme,
+                Email = "test@email.dk",
+                Name = "test",
+                Password = "pass",
+                Salt = "salt"
+            };
             await context.AddAsync(user);
             await context.SaveChangesAsync();
 
-            var accountService = new AccountService(context, environmentSettings, tokenService.Object,
-                new Mock<IEmailService>().Object, new Mock<IHashService>().Object,
-                new Mock<IHttpContextAccessor>().Object, new Mock<ILoginLimiter>().Object, loginLimiterSettings);
+            var accountService = new AccountService(
+                context,
+                environmentSettings,
+                tokenService.Object,
+                new Mock<IEmailService>().Object,
+                new Mock<IHashService>().Object,
+                new Mock<IHttpContextAccessor>().Object,
+                new Mock<ILoginLimiter>().Object,
+                loginLimiterSettings
+            );
 
             var result = await accountService.RecoverUserAsync("valid", "3433");
 
@@ -108,17 +134,17 @@ namespace CoffeeCard.Tests.Unit.Services
             Assert.Equal(expectedResult, result);
         }
 
-        [Fact(DisplayName = "RecoverUser given valid token updates password and resets users tokens")]
+        [Fact(
+            DisplayName = "RecoverUser given valid token updates password and resets users tokens"
+        )]
         public async Task RecoverUserGivenValidTokenUpdatesPasswordAndResetsUsersTokens()
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(nameof(RecoverUserGivenValidTokenUpdatesPasswordAndResetsUsersTokens));
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseInMemoryDatabase(
+                nameof(RecoverUserGivenValidTokenUpdatesPasswordAndResetsUsersTokens)
+            );
 
-            var databaseSettings = new DatabaseSettings
-            {
-                SchemaName = "test"
-            };
+            var databaseSettings = new DatabaseSettings { SchemaName = "test" };
             var environmentSettings = new EnvironmentSettings()
             {
                 EnvironmentType = EnvironmentType.Test
@@ -141,19 +167,37 @@ namespace CoffeeCard.Tests.Unit.Services
             var userPass = "not set";
 
             // Act
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            await using var context = new CoffeeCardContext(
+                builder.Options,
+                databaseSettings,
+                environmentSettings
+            );
             var token = new Token("valid");
             var userTokens = new List<Token> { token };
             var programme = new Programme { FullName = "fullName", ShortName = "shortName" };
 
             var user = new User
-            { Tokens = userTokens, Email = "test@email.dk", Name = "test", Programme = programme, Password = userPass, Salt = "salt" };
+            {
+                Tokens = userTokens,
+                Email = "test@email.dk",
+                Name = "test",
+                Programme = programme,
+                Password = userPass,
+                Salt = "salt"
+            };
             await context.AddAsync(user);
             await context.SaveChangesAsync();
 
-            var accountService = new AccountService(context, environmentSettings, tokenService.Object,
-                new Mock<IEmailService>().Object, new Mock<IHashService>().Object,
-                new Mock<IHttpContextAccessor>().Object, new Mock<ILoginLimiter>().Object, loginLimiterSettings);
+            var accountService = new AccountService(
+                context,
+                environmentSettings,
+                tokenService.Object,
+                new Mock<IEmailService>().Object,
+                new Mock<IHashService>().Object,
+                new Mock<IHttpContextAccessor>().Object,
+                new Mock<ILoginLimiter>().Object,
+                loginLimiterSettings
+            );
 
             await accountService.RecoverUserAsync("valid", "3433");
 
@@ -172,15 +216,17 @@ namespace CoffeeCard.Tests.Unit.Services
         public async Task LoginGivenValidCredentialsReturnsToken()
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(nameof(LoginGivenValidCredentialsReturnsToken));
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseInMemoryDatabase(
+                nameof(LoginGivenValidCredentialsReturnsToken)
+            );
 
-            var databaseSettings = new DatabaseSettings()
-            {
-                SchemaName = "test"
-            };
+            var databaseSettings = new DatabaseSettings() { SchemaName = "test" };
             var environmentSettings = new EnvironmentSettings()
-            { DeploymentUrl = "test", EnvironmentType = EnvironmentType.Test, MinAppVersion = "2.1.0" };
+            {
+                DeploymentUrl = "test",
+                EnvironmentType = EnvironmentType.Test,
+                MinAppVersion = "2.1.0"
+            };
             var loginLimiterSettings = new LoginLimiterSettings()
             {
                 IsEnabled = true,
@@ -209,19 +255,32 @@ namespace CoffeeCard.Tests.Unit.Services
             var expectedToken = "valid";
 
             var tokenService = new Mock<ITokenService>();
-            tokenService.Setup(t => t.GenerateToken(It.IsAny<IEnumerable<Claim>>())).Returns(expectedToken);
+            tokenService
+                .Setup(t => t.GenerateToken(It.IsAny<IEnumerable<Claim>>()))
+                .Returns(expectedToken);
 
             var loginLimiter = new Mock<ILoginLimiter>();
             loginLimiter.Setup(l => l.LoginAllowed(user)).Returns(true);
 
             // Act
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            await using var context = new CoffeeCardContext(
+                builder.Options,
+                databaseSettings,
+                environmentSettings
+            );
             await context.AddAsync(user);
             await context.SaveChangesAsync();
 
-            var accountService = new AccountService(context, environmentSettings, tokenService.Object,
-                new Mock<IEmailService>().Object, hasher.Object,
-                new Mock<IHttpContextAccessor>().Object, loginLimiter.Object, loginLimiterSettings);
+            var accountService = new AccountService(
+                context,
+                environmentSettings,
+                tokenService.Object,
+                new Mock<IEmailService>().Object,
+                hasher.Object,
+                new Mock<IHttpContextAccessor>().Object,
+                loginLimiter.Object,
+                loginLimiterSettings
+            );
 
             var actualToken = accountService.Login(user.Email, user.Password, "2.1.0");
 
@@ -233,15 +292,17 @@ namespace CoffeeCard.Tests.Unit.Services
         public async Task LoginRejectsAfterFiveFailedLogins()
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(nameof(LoginRejectsAfterFiveFailedLogins));
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseInMemoryDatabase(
+                nameof(LoginRejectsAfterFiveFailedLogins)
+            );
 
-            var databaseSettings = new DatabaseSettings()
-            {
-                SchemaName = "test"
-            };
+            var databaseSettings = new DatabaseSettings() { SchemaName = "test" };
             var environmentSettings = new EnvironmentSettings()
-            { DeploymentUrl = "test", EnvironmentType = EnvironmentType.Test, MinAppVersion = "2.1.0" };
+            {
+                DeploymentUrl = "test",
+                EnvironmentType = EnvironmentType.Test,
+                MinAppVersion = "2.1.0"
+            };
             var loginLimiterSettings = new LoginLimiterSettings()
             {
                 IsEnabled = true,
@@ -267,19 +328,32 @@ namespace CoffeeCard.Tests.Unit.Services
             var wrongPass = "wrongPassword";
 
             var httpContextAccessor = new Mock<IHttpContextAccessor>();
-            httpContextAccessor.Setup(h => h.HttpContext).Returns(new DefaultHttpContext().HttpContext);
+            httpContextAccessor
+                .Setup(h => h.HttpContext)
+                .Returns(new DefaultHttpContext().HttpContext);
 
             var loginLimiter = new Mock<ILoginLimiter>();
             loginLimiter.Setup(l => l.LoginAllowed(user)).Returns(true);
 
             // Act
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            await using var context = new CoffeeCardContext(
+                builder.Options,
+                databaseSettings,
+                environmentSettings
+            );
             await context.AddAsync(user);
             await context.SaveChangesAsync();
 
-            var accountService = new AccountService(context, environmentSettings, new Mock<ITokenService>().Object,
-                new Mock<IEmailService>().Object, new HashService(), httpContextAccessor.Object,
-                loginLimiter.Object, loginLimiterSettings);
+            var accountService = new AccountService(
+                context,
+                environmentSettings,
+                new Mock<ITokenService>().Object,
+                new Mock<IEmailService>().Object,
+                new HashService(),
+                httpContextAccessor.Object,
+                loginLimiter.Object,
+                loginLimiterSettings
+            );
 
             //Attempts to login
             Assert.Throws<ApiException>(() => accountService.Login(user.Email, wrongPass, "2.1.0"));
@@ -292,15 +366,17 @@ namespace CoffeeCard.Tests.Unit.Services
         public async Task LoginLimiterNotCalledWhenDisabled()
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(nameof(LoginLimiterNotCalledWhenDisabled));
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseInMemoryDatabase(
+                nameof(LoginLimiterNotCalledWhenDisabled)
+            );
 
-            var databaseSettings = new DatabaseSettings()
-            {
-                SchemaName = "test"
-            };
+            var databaseSettings = new DatabaseSettings() { SchemaName = "test" };
             var environmentSettings = new EnvironmentSettings()
-            { DeploymentUrl = "test", EnvironmentType = EnvironmentType.Test, MinAppVersion = "2.1.0" };
+            {
+                DeploymentUrl = "test",
+                EnvironmentType = EnvironmentType.Test,
+                MinAppVersion = "2.1.0"
+            };
             var loginLimiterSettings = new LoginLimiterSettings()
             {
                 IsEnabled = false,
@@ -326,19 +402,32 @@ namespace CoffeeCard.Tests.Unit.Services
             var wrongPass = "wrongPassword";
 
             var httpContextAccessor = new Mock<IHttpContextAccessor>();
-            httpContextAccessor.Setup(h => h.HttpContext).Returns(new DefaultHttpContext().HttpContext);
+            httpContextAccessor
+                .Setup(h => h.HttpContext)
+                .Returns(new DefaultHttpContext().HttpContext);
 
             var loginLimiter = new Mock<ILoginLimiter>();
             loginLimiter.Setup(l => l.LoginAllowed(user)).Returns(true);
 
             // Act
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            await using var context = new CoffeeCardContext(
+                builder.Options,
+                databaseSettings,
+                environmentSettings
+            );
             await context.AddAsync(user);
             await context.SaveChangesAsync();
 
-            var accountService = new AccountService(context, environmentSettings, new Mock<ITokenService>().Object,
-                new Mock<IEmailService>().Object, new HashService(), httpContextAccessor.Object,
-                loginLimiter.Object, loginLimiterSettings);
+            var accountService = new AccountService(
+                context,
+                environmentSettings,
+                new Mock<ITokenService>().Object,
+                new Mock<IEmailService>().Object,
+                new HashService(),
+                httpContextAccessor.Object,
+                loginLimiter.Object,
+                loginLimiterSettings
+            );
 
             //Attempts to login
             Assert.Throws<ApiException>(() => accountService.Login(user.Email, wrongPass, "2.1.0"));
@@ -351,15 +440,17 @@ namespace CoffeeCard.Tests.Unit.Services
         public async Task LoginThrowsExceptionWhenLimitIsReached()
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(nameof(LoginThrowsExceptionWhenLimitIsReached));
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseInMemoryDatabase(
+                nameof(LoginThrowsExceptionWhenLimitIsReached)
+            );
 
-            var databaseSettings = new DatabaseSettings()
-            {
-                SchemaName = "test"
-            };
+            var databaseSettings = new DatabaseSettings() { SchemaName = "test" };
             var environmentSettings = new EnvironmentSettings()
-            { DeploymentUrl = "test", EnvironmentType = EnvironmentType.Test, MinAppVersion = "2.1.0" };
+            {
+                DeploymentUrl = "test",
+                EnvironmentType = EnvironmentType.Test,
+                MinAppVersion = "2.1.0"
+            };
             var loginLimiterSettings = new LoginLimiterSettings()
             {
                 IsEnabled = true,
@@ -384,28 +475,41 @@ namespace CoffeeCard.Tests.Unit.Services
             var wrongPass = "wrongPassword";
 
             var httpContextAccessor = new Mock<IHttpContextAccessor>();
-            httpContextAccessor.Setup(h => h.HttpContext).Returns(new DefaultHttpContext().HttpContext);
+            httpContextAccessor
+                .Setup(h => h.HttpContext)
+                .Returns(new DefaultHttpContext().HttpContext);
 
             // Act
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            await using var context = new CoffeeCardContext(
+                builder.Options,
+                databaseSettings,
+                environmentSettings
+            );
             await context.AddAsync(user);
             await context.SaveChangesAsync();
 
-            var accountService = new AccountService(context, environmentSettings, new Mock<ITokenService>().Object,
-                new Mock<IEmailService>().Object, new HashService(), httpContextAccessor.Object,
-                new LoginLimiter(loginLimiterSettings), loginLimiterSettings);
+            var accountService = new AccountService(
+                context,
+                environmentSettings,
+                new Mock<ITokenService>().Object,
+                new Mock<IEmailService>().Object,
+                new HashService(),
+                httpContextAccessor.Object,
+                new LoginLimiter(loginLimiterSettings),
+                loginLimiterSettings
+            );
 
-            //Attempts to login with the wrong credentials 
+            //Attempts to login with the wrong credentials
             Assert.Throws<ApiException>(() => accountService.Login(user.Email, wrongPass, "2.1.0"));
 
-            //Attempts to login a sixth time with the same credentials and captures the exception 
-            var tooManyLoginsException =
-                (ApiException)Record.Exception(() => accountService.Login(user.Email, wrongPass, "2.1.0"));
+            //Attempts to login a sixth time with the same credentials and captures the exception
+            var tooManyLoginsException = (ApiException)
+                Record.Exception(() => accountService.Login(user.Email, wrongPass, "2.1.0"));
             // Assert
-            var expectedException =
-                new ApiException(
-                    $"Amount of failed login attempts exceeds the allowed amount, please wait for {loginLimiterSettings.TimeOutPeriodInSeconds / 60} minutes before trying again",
-                    429);
+            var expectedException = new ApiException(
+                $"Amount of failed login attempts exceeds the allowed amount, please wait for {loginLimiterSettings.TimeOutPeriodInSeconds / 60} minutes before trying again",
+                429
+            );
             Assert.Equal(tooManyLoginsException?.StatusCode, expectedException.StatusCode);
             Assert.Equal(tooManyLoginsException?.Message, expectedException.Message);
         }
@@ -414,15 +518,17 @@ namespace CoffeeCard.Tests.Unit.Services
         public async Task LoginFailsIfEmailIsNotVerified()
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(nameof(LoginFailsIfEmailIsNotVerified));
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseInMemoryDatabase(
+                nameof(LoginFailsIfEmailIsNotVerified)
+            );
 
-            var databaseSettings = new DatabaseSettings()
-            {
-                SchemaName = "test"
-            };
+            var databaseSettings = new DatabaseSettings() { SchemaName = "test" };
             var environmentSettings = new EnvironmentSettings()
-            { DeploymentUrl = "test", EnvironmentType = EnvironmentType.Test, MinAppVersion = "2.1.0" };
+            {
+                DeploymentUrl = "test",
+                EnvironmentType = EnvironmentType.Test,
+                MinAppVersion = "2.1.0"
+            };
             var loginLimiterSettings = new LoginLimiterSettings()
             {
                 IsEnabled = true,
@@ -446,19 +552,33 @@ namespace CoffeeCard.Tests.Unit.Services
             var somePass = "somePassword";
 
             var httpContextAccessor = new Mock<IHttpContextAccessor>();
-            httpContextAccessor.Setup(h => h.HttpContext).Returns(new DefaultHttpContext().HttpContext);
+            httpContextAccessor
+                .Setup(h => h.HttpContext)
+                .Returns(new DefaultHttpContext().HttpContext);
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            await using var context = new CoffeeCardContext(
+                builder.Options,
+                databaseSettings,
+                environmentSettings
+            );
             await context.AddAsync(user);
             await context.SaveChangesAsync();
 
             // Act
-            var accountService = new AccountService(context, environmentSettings, new Mock<ITokenService>().Object,
-                new Mock<IEmailService>().Object, new HashService(), httpContextAccessor.Object,
-                new LoginLimiter(loginLimiterSettings), loginLimiterSettings);
+            var accountService = new AccountService(
+                context,
+                environmentSettings,
+                new Mock<ITokenService>().Object,
+                new Mock<IEmailService>().Object,
+                new HashService(),
+                httpContextAccessor.Object,
+                new LoginLimiter(loginLimiterSettings),
+                loginLimiterSettings
+            );
 
-            // Login 
-            var exception = (ApiException)Record.Exception(() => accountService.Login(user.Email, somePass, "2.1.0"));
+            // Login
+            var exception = (ApiException)
+                Record.Exception(() => accountService.Login(user.Email, somePass, "2.1.0"));
 
             // Assert
             var expectedException = new ApiException("E-mail has not been verified", 403);
@@ -470,15 +590,17 @@ namespace CoffeeCard.Tests.Unit.Services
         public async Task LoginSucceedsIfEmailIsVerified()
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(nameof(LoginSucceedsIfEmailIsVerified));
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseInMemoryDatabase(
+                nameof(LoginSucceedsIfEmailIsVerified)
+            );
 
-            var databaseSettings = new DatabaseSettings()
-            {
-                SchemaName = "test"
-            };
+            var databaseSettings = new DatabaseSettings() { SchemaName = "test" };
             var environmentSettings = new EnvironmentSettings()
-            { DeploymentUrl = "test", EnvironmentType = EnvironmentType.Test, MinAppVersion = "2.1.0" };
+            {
+                DeploymentUrl = "test",
+                EnvironmentType = EnvironmentType.Test,
+                MinAppVersion = "2.1.0"
+            };
             var loginLimiterSettings = new LoginLimiterSettings()
             {
                 IsEnabled = true,
@@ -501,21 +623,34 @@ namespace CoffeeCard.Tests.Unit.Services
                 IsVerified = true
             };
             var httpContextAccessor = new Mock<IHttpContextAccessor>();
-            httpContextAccessor.Setup(h => h.HttpContext).Returns(new DefaultHttpContext().HttpContext);
+            httpContextAccessor
+                .Setup(h => h.HttpContext)
+                .Returns(new DefaultHttpContext().HttpContext);
 
             var hashService = new Mock<IHashService>();
             hashService.Setup(m => m.Hash(It.IsAny<string>())).Returns(somePass);
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            await using var context = new CoffeeCardContext(
+                builder.Options,
+                databaseSettings,
+                environmentSettings
+            );
             await context.AddAsync(user);
             await context.SaveChangesAsync();
 
             // Act
-            var accountService = new AccountService(context, environmentSettings, new Mock<ITokenService>().Object,
-                new Mock<IEmailService>().Object, hashService.Object, httpContextAccessor.Object,
-                new LoginLimiter(loginLimiterSettings), loginLimiterSettings);
+            var accountService = new AccountService(
+                context,
+                environmentSettings,
+                new Mock<ITokenService>().Object,
+                new Mock<IEmailService>().Object,
+                hashService.Object,
+                httpContextAccessor.Object,
+                new LoginLimiter(loginLimiterSettings),
+                loginLimiterSettings
+            );
 
-            // Login 
+            // Login
             var result = accountService.Login(user.Email, somePass, "2.1.0");
 
             // Assert we did not fail in the above call. This test does not test the result
@@ -526,15 +661,17 @@ namespace CoffeeCard.Tests.Unit.Services
         public async Task LoginWithUnknownUserThrowsApiException()
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(nameof(LoginWithUnknownUserThrowsApiException));
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseInMemoryDatabase(
+                nameof(LoginWithUnknownUserThrowsApiException)
+            );
 
-            var databaseSettings = new DatabaseSettings()
-            {
-                SchemaName = "test"
-            };
+            var databaseSettings = new DatabaseSettings() { SchemaName = "test" };
             var environmentSettings = new EnvironmentSettings()
-            { DeploymentUrl = "test", EnvironmentType = EnvironmentType.Test, MinAppVersion = "2.1.0" };
+            {
+                DeploymentUrl = "test",
+                EnvironmentType = EnvironmentType.Test,
+                MinAppVersion = "2.1.0"
+            };
             var loginLimiterSettings = new LoginLimiterSettings()
             {
                 IsEnabled = true,
@@ -542,23 +679,39 @@ namespace CoffeeCard.Tests.Unit.Services
                 TimeOutPeriodInSeconds = 1
             };
 
-
             var httpContextAccessor = new Mock<IHttpContextAccessor>();
-            httpContextAccessor.Setup(h => h.HttpContext).Returns(new DefaultHttpContext().HttpContext);
+            httpContextAccessor
+                .Setup(h => h.HttpContext)
+                .Returns(new DefaultHttpContext().HttpContext);
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            await using var context = new CoffeeCardContext(
+                builder.Options,
+                databaseSettings,
+                environmentSettings
+            );
             await context.SaveChangesAsync();
 
             // Act
-            var accountService = new AccountService(context, environmentSettings, new Mock<ITokenService>().Object,
-                new Mock<IEmailService>().Object, new Mock<IHashService>().Object, httpContextAccessor.Object,
-                new LoginLimiter(loginLimiterSettings), loginLimiterSettings);
+            var accountService = new AccountService(
+                context,
+                environmentSettings,
+                new Mock<ITokenService>().Object,
+                new Mock<IEmailService>().Object,
+                new Mock<IHashService>().Object,
+                httpContextAccessor.Object,
+                new LoginLimiter(loginLimiterSettings),
+                loginLimiterSettings
+            );
 
-            // Login 
-            var exception = (ApiException)Record.Exception(() => accountService.Login("unknown email", "somePass", "2.1.0"));
+            // Login
+            var exception = (ApiException)
+                Record.Exception(() => accountService.Login("unknown email", "somePass", "2.1.0"));
 
             // Assert
-            var expectedException = new ApiException("The username or password does not match", 401);
+            var expectedException = new ApiException(
+                "The username or password does not match",
+                401
+            );
             Assert.Equal(exception.StatusCode, expectedException.StatusCode);
             Assert.Equal(exception.Message, expectedException.Message);
         }
@@ -568,20 +721,21 @@ namespace CoffeeCard.Tests.Unit.Services
         public async Task VerifyRegistrationReturnsFalseOnInvalidToken(string token)
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(nameof(VerifyRegistrationReturnsFalseOnInvalidToken) +
-                                     token);
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseInMemoryDatabase(
+                nameof(VerifyRegistrationReturnsFalseOnInvalidToken) + token
+            );
 
-            var databaseSettings = new DatabaseSettings
-            {
-                SchemaName = "test"
-            };
+            var databaseSettings = new DatabaseSettings { SchemaName = "test" };
             var environmentSettings = new EnvironmentSettings()
             {
                 EnvironmentType = EnvironmentType.Test
             };
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            await using var context = new CoffeeCardContext(
+                builder.Options,
+                databaseSettings,
+                environmentSettings
+            );
 
             var httpContextAccessor = new Mock<IHttpContextAccessor>();
             var loginLimiterSettings = new LoginLimiterSettings()
@@ -596,10 +750,19 @@ namespace CoffeeCard.Tests.Unit.Services
             };
             var tokenService = new TokenService(identitySettings, new ClaimsUtilities(context));
 
-            httpContextAccessor.Setup(h => h.HttpContext).Returns(new DefaultHttpContext().HttpContext);
-            var accountService = new AccountService(context, environmentSettings, tokenService,
-                new Mock<IEmailService>().Object, new Mock<IHashService>().Object, httpContextAccessor.Object,
-                new LoginLimiter(loginLimiterSettings), loginLimiterSettings);
+            httpContextAccessor
+                .Setup(h => h.HttpContext)
+                .Returns(new DefaultHttpContext().HttpContext);
+            var accountService = new AccountService(
+                context,
+                environmentSettings,
+                tokenService,
+                new Mock<IEmailService>().Object,
+                new Mock<IHashService>().Object,
+                httpContextAccessor.Object,
+                new LoginLimiter(loginLimiterSettings),
+                loginLimiterSettings
+            );
 
             //Act & Assert
             await Assert.ThrowsAsync<ApiException>(() => accountService.VerifyRegistration(token));
@@ -609,19 +772,21 @@ namespace CoffeeCard.Tests.Unit.Services
         public async Task VerifyRegistrationReturnsTrueGivenValidToken()
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(nameof(VerifyRegistrationReturnsTrueGivenValidToken));
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseInMemoryDatabase(
+                nameof(VerifyRegistrationReturnsTrueGivenValidToken)
+            );
 
-            var databaseSettings = new DatabaseSettings
-            {
-                SchemaName = "test"
-            };
+            var databaseSettings = new DatabaseSettings { SchemaName = "test" };
             var environmentSettings = new EnvironmentSettings()
             {
                 EnvironmentType = EnvironmentType.Test
             };
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            await using var context = new CoffeeCardContext(
+                builder.Options,
+                databaseSettings,
+                environmentSettings
+            );
 
             var httpContextAccessor = new Mock<IHttpContextAccessor>();
             var loginLimiterSettings = new LoginLimiterSettings
@@ -636,16 +801,27 @@ namespace CoffeeCard.Tests.Unit.Services
             };
             var tokenService = new TokenService(identitySettings, new ClaimsUtilities(context));
 
-            httpContextAccessor.Setup(h => h.HttpContext).Returns(new DefaultHttpContext().HttpContext);
-            var accountService = new AccountService(context, environmentSettings, tokenService,
-                new Mock<IEmailService>().Object, new Mock<IHashService>().Object, httpContextAccessor.Object,
-                new LoginLimiter(loginLimiterSettings), loginLimiterSettings);
+            httpContextAccessor
+                .Setup(h => h.HttpContext)
+                .Returns(new DefaultHttpContext().HttpContext);
+            var accountService = new AccountService(
+                context,
+                environmentSettings,
+                tokenService,
+                new Mock<IEmailService>().Object,
+                new Mock<IHashService>().Object,
+                httpContextAccessor.Object,
+                new LoginLimiter(loginLimiterSettings),
+                loginLimiterSettings
+            );
 
-            var token = WriteTokenString(new List<Claim>
-            {
-                new Claim(ClaimTypes.Role, "verification_token"),
-                new Claim(ClaimTypes.Email, "test@test.test")
-            });
+            var token = WriteTokenString(
+                new List<Claim>
+                {
+                    new Claim(ClaimTypes.Role, "verification_token"),
+                    new Claim(ClaimTypes.Email, "test@test.test")
+                }
+            );
 
             var programme = new Programme { FullName = "fullName", ShortName = "shortName" };
             var user = new User
@@ -655,7 +831,6 @@ namespace CoffeeCard.Tests.Unit.Services
                 Password = "pass",
                 Salt = "salt",
                 Programme = programme
-
             };
             await context.Users.AddAsync(user);
             await context.SaveChangesAsync();
@@ -669,27 +844,34 @@ namespace CoffeeCard.Tests.Unit.Services
 
         public static IEnumerable<object[]> TokenGenerator()
         {
-            yield return new object[] {
-                "Malformed token"
+            yield return new object[] { "Malformed token" };
+            yield return new object[]
+            {
+                WriteTokenString(
+                    new List<Claim> // Incorrect role
+                    {
+                        new Claim(ClaimTypes.Role, "")
+                    }
+                )
             };
-            yield return new object[] {
-                WriteTokenString(new List<Claim> // Incorrect role
-                {
-                    new Claim(ClaimTypes.Role, "")
-                })
+            yield return new object[]
+            {
+                WriteTokenString(
+                    new List<Claim> // No email claim
+                    {
+                        new Claim(ClaimTypes.Role, "verification_token")
+                    }
+                )
             };
-            yield return new object[] {
-                WriteTokenString(new List<Claim> // No email claim
-                {
-                    new Claim(ClaimTypes.Role, "verification_token")
-                })
-            };
-            yield return new object[] {
-                WriteTokenString(new List<Claim> // Good token, assuming user can be found in database
-                {
-                    new Claim(ClaimTypes.Role, "verification_token"),
-                    new Claim(ClaimTypes.Email, "test@test.test")
-                })
+            yield return new object[]
+            {
+                WriteTokenString(
+                    new List<Claim> // Good token, assuming user can be found in database
+                    {
+                        new Claim(ClaimTypes.Role, "verification_token"),
+                        new Claim(ClaimTypes.Email, "test@test.test")
+                    }
+                )
             };
         }
 
@@ -697,9 +879,11 @@ namespace CoffeeCard.Tests.Unit.Services
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("This is a long test token key"));
+                Encoding.UTF8.GetBytes("This is a long test token key")
+            );
 
-            var jwt = new JwtSecurityToken("AnalogIO",
+            var jwt = new JwtSecurityToken(
+                "AnalogIO",
                 "Everyone",
                 claims,
                 DateTime.UtcNow,

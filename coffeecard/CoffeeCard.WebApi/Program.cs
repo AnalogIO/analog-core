@@ -17,11 +17,12 @@ namespace CoffeeCard.WebApi
 #pragma warning disable CS1591
     public class Program
     {
-        private static IConfiguration Configuration { get; } = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile($"appsettings.json", false, true)
-            .AddEnvironmentVariables()
-            .Build();
+        private static IConfiguration Configuration { get; } =
+            new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile($"appsettings.json", false, true)
+                .AddEnvironmentVariables()
+                .Build();
 
         public static async Task<int> Main(string[] args)
         {
@@ -53,11 +54,15 @@ namespace CoffeeCard.WebApi
         private static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration(((context, builder) =>
-                {
-                    builder.AddJsonFile("appsettings.json", false, true);
-                    builder.AddEnvironmentVariables();
-                }))
+                .ConfigureAppConfiguration(
+                    (
+                        (context, builder) =>
+                        {
+                            builder.AddJsonFile("appsettings.json", false, true);
+                            builder.AddEnvironmentVariables();
+                        }
+                    )
+                )
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
@@ -68,10 +73,12 @@ namespace CoffeeCard.WebApi
         private static async Task PreStartupTasks(IHost webhost)
         {
             using var serviceScope = webhost.Services.CreateScope();
-            var environment = serviceScope.ServiceProvider.GetRequiredService<EnvironmentSettings>();
+            var environment =
+                serviceScope.ServiceProvider.GetRequiredService<EnvironmentSettings>();
 
             Log.Information("Apply Database Migrations if any");
-            await using var context = serviceScope.ServiceProvider.GetRequiredService<CoffeeCardContext>();
+            await using var context =
+                serviceScope.ServiceProvider.GetRequiredService<CoffeeCardContext>();
             if (context.Database.IsRelational())
             {
                 context.Database.Migrate();
@@ -79,14 +86,13 @@ namespace CoffeeCard.WebApi
 
             if (environment.EnvironmentType != EnvironmentType.LocalDevelopment)
             {
-                var webhookService = serviceScope.ServiceProvider.GetRequiredService<IWebhookService>();
+                var webhookService =
+                    serviceScope.ServiceProvider.GetRequiredService<IWebhookService>();
                 await webhookService.EnsureWebhookIsRegistered();
             }
         }
 
-        protected Program()
-        {
-        }
+        protected Program() { }
     }
 #pragma warning restore CS1591
 }

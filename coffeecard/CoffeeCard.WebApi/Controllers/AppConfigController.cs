@@ -22,9 +22,7 @@ namespace CoffeeCard.WebApi.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="AppConfigController"/> class.
         /// </summary>
-        public AppConfigController()
-        {
-        }
+        public AppConfigController() { }
 
         /// <summary>
         /// Get app configuration

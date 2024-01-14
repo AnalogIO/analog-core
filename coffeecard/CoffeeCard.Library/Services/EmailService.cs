@@ -21,8 +21,12 @@ namespace CoffeeCard.Library.Services
         private readonly MailgunSettings _mailgunSettings;
         private readonly IMapperService _mapperService;
 
-        public EmailService(MailgunSettings mailgunSettings, EnvironmentSettings environmentSettings,
-            IWebHostEnvironment env, IMapperService mapperService)
+        public EmailService(
+            MailgunSettings mailgunSettings,
+            EnvironmentSettings environmentSettings,
+            IWebHostEnvironment env,
+            IMapperService mapperService
+        )
         {
             _mailgunSettings = mailgunSettings;
             _environmentSettings = environmentSettings;
@@ -40,7 +44,10 @@ namespace CoffeeCard.Library.Services
 
             builder.HtmlBody = builder.HtmlBody.Replace("{email}", user.Email);
             builder.HtmlBody = builder.HtmlBody.Replace("{name}", user.Name);
-            builder.HtmlBody = builder.HtmlBody.Replace("{quantity}", purchase.NumberOfTickets.ToString());
+            builder.HtmlBody = builder.HtmlBody.Replace(
+                "{quantity}",
+                purchase.NumberOfTickets.ToString()
+            );
             builder.HtmlBody = builder.HtmlBody.Replace("{product}", purchase.ProductName);
             builder.HtmlBody = builder.HtmlBody.Replace("{vat}", (purchase.Price * 0.2).ToString());
             builder.HtmlBody = builder.HtmlBody.Replace("{price}", purchase.Price.ToString());
@@ -52,14 +59,23 @@ namespace CoffeeCard.Library.Services
 
             message.Body = builder.ToMessageBody();
 
-            Log.Information("Sending invoice for PurchaseId {PurchaseId} to UserId {UserId}, E-mail {Email}", purchase.Id, user.Id, user.Email);
+            Log.Information(
+                "Sending invoice for PurchaseId {PurchaseId} to UserId {UserId}, E-mail {Email}",
+                purchase.Id,
+                user.Id,
+                user.Email
+            );
 
             await SendEmailAsync(message);
         }
 
         public async Task SendRegistrationVerificationEmailAsync(User user, string token)
         {
-            Log.Information("Sending registration verification email to {email} {userid}", user.Email, user.Id);
+            Log.Information(
+                "Sending registration verification email to {email} {userid}",
+                user.Email,
+                user.Id
+            );
             var message = new MimeMessage();
             var builder = RetrieveTemplate("email_verify_registration.html");
             const string endpoint = "verifyemail?token=";
@@ -92,7 +108,11 @@ namespace CoffeeCard.Library.Services
 
         public async Task SendVerificationEmailForDeleteAccount(User user, string token)
         {
-            Log.Information("Sending delete verification email to {email} {userid}", user.Email, user.Id);
+            Log.Information(
+                "Sending delete verification email to {email} {userid}",
+                user.Email,
+                user.Id
+            );
             var message = new MimeMessage();
             var builder = RetrieveTemplate("email_verify_account_deletion.html");
             const string endpoint = "verifydelete?token=";
@@ -115,7 +135,13 @@ namespace CoffeeCard.Library.Services
             await SendInvoiceAsync(userDto, purchaseDto);
         }
 
-        private BodyBuilder BuildVerifyEmail(BodyBuilder builder, string token, string email, string name, string endpoint)
+        private BodyBuilder BuildVerifyEmail(
+            BodyBuilder builder,
+            string token,
+            string email,
+            string name,
+            string endpoint
+        )
         {
             var baseUrl = _environmentSettings.DeploymentUrl;
 
@@ -131,15 +157,16 @@ namespace CoffeeCard.Library.Services
 
         private BodyBuilder RetrieveTemplate(string templateName)
         {
-            var pathToTemplate = _env.WebRootPath
-                                 + Path.DirectorySeparatorChar
-                                 + "Templates"
-                                 + Path.DirectorySeparatorChar
-                                 + "EmailTemplate"
-                                 + Path.DirectorySeparatorChar
-                                 + "GeneratedEmails"
-                                 + Path.DirectorySeparatorChar
-                                 + templateName;
+            var pathToTemplate =
+                _env.WebRootPath
+                + Path.DirectorySeparatorChar
+                + "Templates"
+                + Path.DirectorySeparatorChar
+                + "EmailTemplate"
+                + Path.DirectorySeparatorChar
+                + "GeneratedEmails"
+                + Path.DirectorySeparatorChar
+                + templateName;
 
             var builder = new BodyBuilder();
 
@@ -171,7 +198,11 @@ namespace CoffeeCard.Library.Services
 
             if (!response.IsSuccessful)
             {
-                Log.Error("Error sending request to Mailgun. StatusCode: {statusCode} ErrorMessage: {errorMessage}", response.StatusCode, response.ErrorMessage);
+                Log.Error(
+                    "Error sending request to Mailgun. StatusCode: {statusCode} ErrorMessage: {errorMessage}",
+                    response.StatusCode,
+                    response.ErrorMessage
+                );
             }
         }
     }

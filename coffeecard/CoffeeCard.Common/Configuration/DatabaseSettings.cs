@@ -5,9 +5,11 @@ namespace CoffeeCard.Common.Configuration
 {
     public class DatabaseSettings : IValidatable
     {
-        [Required] public string ConnectionString { get; set; }
+        [Required]
+        public string ConnectionString { get; set; }
 
-        [Required] public string SchemaName { get; set; }
+        [Required]
+        public string SchemaName { get; set; }
 
         public void Validate()
         {

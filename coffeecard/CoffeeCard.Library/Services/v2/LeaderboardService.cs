@@ -21,30 +21,34 @@ namespace CoffeeCard.Library.Services.v2
             _dateTimeProvider = dateTimeProvider;
         }
 
-        public async Task<IEnumerable<LeaderboardEntry>> GetTopLeaderboardEntries(LeaderboardPreset preset, int top)
+        public async Task<IEnumerable<LeaderboardEntry>> GetTopLeaderboardEntries(
+            LeaderboardPreset preset,
+            int top
+        )
         {
             var sortedStatistics = await GetSortedStatistics(preset)
                 .Take(top)
                 .Include(s => s.User)
                 .ToListAsync();
 
-            return sortedStatistics.Select((s, index) => new LeaderboardEntry
-            {
-                Id = s.User.Id,
-                Name = s.User.PrivacyActivated ? "Anonymous" : s.User.Name,
-                Rank = index + 1,
-                Score = s.SwipeCount
-            });
+            return sortedStatistics.Select(
+                (s, index) =>
+                    new LeaderboardEntry
+                    {
+                        Id = s.User.Id,
+                        Name = s.User.PrivacyActivated ? "Anonymous" : s.User.Name,
+                        Rank = index + 1,
+                        Score = s.SwipeCount
+                    }
+            );
         }
 
         public async Task<LeaderboardEntry> GetLeaderboardEntry(User user, LeaderboardPreset preset)
         {
             var sortedStatistics = await GetSortedStatistics(preset).ToListAsync();
 
-            var rank = sortedStatistics
-                .FindIndex(s => s.UserId == user.Id) + 1;
-            var userStatistic = sortedStatistics
-                .FirstOrDefault(s => s.UserId == user.Id);
+            var rank = sortedStatistics.FindIndex(s => s.UserId == user.Id) + 1;
+            var userStatistic = sortedStatistics.FirstOrDefault(s => s.UserId == user.Id);
 
             var swipeCount = userStatistic?.SwipeCount ?? 0;
 
@@ -56,7 +60,6 @@ namespace CoffeeCard.Library.Services.v2
                 Score = swipeCount
             };
         }
-
 
         public async Task<(int Total, int Semester, int Month)> GetLeaderboardPlacement(User user)
         {
@@ -79,8 +82,8 @@ namespace CoffeeCard.Library.Services.v2
         {
             var statPreset = preset.ToStatisticPreset();
 
-            return _context.Statistics
-                .Where(s => s.Preset == statPreset)
+            return _context
+                .Statistics.Where(s => s.Preset == statPreset)
                 .Where(s => _dateTimeProvider.UtcNow() <= s.ExpiryDate)
                 .OrderByDescending(s => s.SwipeCount)
                 .ThenBy(s => s.LastSwipe);

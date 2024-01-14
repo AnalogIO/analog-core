@@ -23,8 +23,13 @@ namespace CoffeeCard.Library.Services.v2
         private readonly ITicketService _ticketService;
         private readonly IProductService _productService;
 
-        public PurchaseService(CoffeeCardContext context, IMobilePayPaymentsService mobilePayPaymentsService,
-            ITicketService ticketService, IEmailService emailService, IProductService productService)
+        public PurchaseService(
+            CoffeeCardContext context,
+            IMobilePayPaymentsService mobilePayPaymentsService,
+            ITicketService ticketService,
+            IEmailService emailService,
+            IProductService productService
+        )
         {
             _context = context;
             _mobilePayPaymentsService = mobilePayPaymentsService;
@@ -33,21 +38,36 @@ namespace CoffeeCard.Library.Services.v2
             _productService = productService;
         }
 
-        public async Task<InitiatePurchaseResponse> InitiatePurchase(InitiatePurchaseRequest initiateRequest, User user)
+        public async Task<InitiatePurchaseResponse> InitiatePurchase(
+            InitiatePurchaseRequest initiateRequest,
+            User user
+        )
         {
             var product = await _productService.GetProductAsync(initiateRequest.ProductId);
             CheckUserIsAllowedToPurchaseProduct(user, initiateRequest, product);
 
-            Log.Information("Initiating purchase of ProductId {ProductId}, PaymentType {PurchaseType} by UserId {UserId}", initiateRequest.ProductId, initiateRequest.PaymentType, user.Id);
+            Log.Information(
+                "Initiating purchase of ProductId {ProductId}, PaymentType {PurchaseType} by UserId {UserId}",
+                initiateRequest.ProductId,
+                initiateRequest.PaymentType,
+                user.Id
+            );
 
-            var (purchase, paymentDetails) = await InitiatePaymentAsync(initiateRequest, product, user);
+            var (purchase, paymentDetails) = await InitiatePaymentAsync(
+                initiateRequest,
+                product,
+                user
+            );
 
             await _context.Purchases.AddAsync(purchase);
             await _context.SaveChangesAsync();
 
             if (purchase.Status == PurchaseStatus.Completed)
             {
-                Log.Information("Purchase {PurchaseId} has state Completed. Issues tickets", purchase.Id);
+                Log.Information(
+                    "Purchase {PurchaseId} has state Completed. Issues tickets",
+                    purchase.Id
+                );
                 await _ticketService.IssueTickets(purchase);
             }
 
@@ -72,27 +92,41 @@ namespace CoffeeCard.Library.Services.v2
         /// <param name="product">Product</param>
         /// <exception cref="IllegalUserOperationException">User is not entitled to purchase product</exception>
         /// <exception cref="ArgumentException">PaymentType FreePurchase used for a non-free product</exception>
-        private static void CheckUserIsAllowedToPurchaseProduct(User user, InitiatePurchaseRequest initiateRequest, Product product)
+        private static void CheckUserIsAllowedToPurchaseProduct(
+            User user,
+            InitiatePurchaseRequest initiateRequest,
+            Product product
+        )
         {
             //Product does not belong to same userGroup as user
             if (!product.ProductUserGroup.Any(pug => pug.UserGroup == user.UserGroup))
             {
                 Log.Warning(
                     "User {UserId} is not authorized to purchase Product Id: {ProductId} as user is not in Product User Group",
-                    user.Id, product.Id);
-                throw new IllegalUserOperationException($"User is not entitled to purchase product '{product.Name}'");
+                    user.Id,
+                    product.Id
+                );
+                throw new IllegalUserOperationException(
+                    $"User is not entitled to purchase product '{product.Name}'"
+                );
             }
 
             if (initiateRequest.PaymentType == PaymentType.FreePurchase && product.Price != 0)
             {
                 Log.Warning(
                     "User tried to issue paid product to themselves, User {UserId}, Product {ProductId}",
-                    user.Id, product.Id);
+                    user.Id,
+                    product.Id
+                );
                 throw new ArgumentException($"Product '{product.Name}' is not free");
             }
         }
 
-        private async Task<(Purchase purchase, PaymentDetails paymentDetails)> InitiatePaymentAsync(InitiatePurchaseRequest purchaseRequest, Product product, User user)
+        private async Task<(Purchase purchase, PaymentDetails paymentDetails)> InitiatePaymentAsync(
+            InitiatePurchaseRequest purchaseRequest,
+            Product product,
+            User user
+        )
         {
             var orderId = await GenerateUniqueOrderId();
             PaymentDetails paymentDetails;
@@ -102,12 +136,14 @@ namespace CoffeeCard.Library.Services.v2
             switch (purchaseRequest.PaymentType)
             {
                 case PaymentType.MobilePay:
-                    paymentDetails = await _mobilePayPaymentsService.InitiatePayment(new MobilePayPaymentRequest
-                    {
-                        Amount = product.Price,
-                        OrderId = orderId,
-                        Description = product.Name
-                    });
+                    paymentDetails = await _mobilePayPaymentsService.InitiatePayment(
+                        new MobilePayPaymentRequest
+                        {
+                            Amount = product.Price,
+                            OrderId = orderId,
+                            Description = product.Name
+                        }
+                    );
 
                     purchaseStatus = PurchaseStatus.PendingPayment;
                     transactionId = ((MobilePayPaymentDetails)paymentDetails).PaymentId;
@@ -120,8 +156,13 @@ namespace CoffeeCard.Library.Services.v2
 
                     break;
                 default:
-                    Log.Error("Payment Type {PaymentType} is not handled in PurchaseService", purchaseRequest.PaymentType);
-                    throw new ArgumentException($"Payment Type '{purchaseRequest.PaymentType}' is not handled");
+                    Log.Error(
+                        "Payment Type {PaymentType} is not handled in PurchaseService",
+                        purchaseRequest.PaymentType
+                    );
+                    throw new ArgumentException(
+                        $"Payment Type '{purchaseRequest.PaymentType}' is not handled"
+                    );
             }
 
             var purchase = new Purchase
@@ -143,19 +184,25 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task<SinglePurchaseResponse> GetPurchase(int purchaseId, User user)
         {
-            var purchase = await _context.Purchases
-                .Include(p => p.PurchasedBy)
-                .Where(p => p.Id == purchaseId
-                            && p.PurchasedBy.Equals(user))
+            var purchase = await _context
+                .Purchases.Include(p => p.PurchasedBy)
+                .Where(p => p.Id == purchaseId && p.PurchasedBy.Equals(user))
                 .FirstOrDefaultAsync();
             if (purchase == null)
             {
-                Log.Error("No purchase was found by Purchase Id: {Id} and User Id: {UId}", purchaseId, user.Id);
+                Log.Error(
+                    "No purchase was found by Purchase Id: {Id} and User Id: {UId}",
+                    purchaseId,
+                    user.Id
+                );
                 throw new EntityNotFoundException(
-                    $"No purchase was found by Purchase Id: {purchaseId} and User Id: {user.Id}");
+                    $"No purchase was found by Purchase Id: {purchaseId} and User Id: {user.Id}"
+                );
             }
 
-            var paymentDetails = await _mobilePayPaymentsService.GetPayment(Guid.Parse(purchase.ExternalTransactionId));
+            var paymentDetails = await _mobilePayPaymentsService.GetPayment(
+                Guid.Parse(purchase.ExternalTransactionId)
+            );
 
             return new SinglePurchaseResponse
             {
@@ -170,39 +217,48 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task<IEnumerable<SimplePurchaseResponse>> GetPurchases(User user)
         {
-            return await _context.Purchases
-                .Where(p => p.PurchasedBy.Equals(user))
-                .Select(p => new SimplePurchaseResponse
-                {
-                    Id = p.Id,
-                    DateCreated = p.DateCreated,
-                    ProductId = p.ProductId,
-                    ProductName = p.ProductName,
-                    NumberOfTickets = p.NumberOfTickets,
-                    TotalAmount = p.Price,
-                    PurchaseStatus = p.Status
-                })
+            return await _context
+                .Purchases.Where(p => p.PurchasedBy.Equals(user))
+                .Select(
+                    p =>
+                        new SimplePurchaseResponse
+                        {
+                            Id = p.Id,
+                            DateCreated = p.DateCreated,
+                            ProductId = p.ProductId,
+                            ProductName = p.ProductName,
+                            NumberOfTickets = p.NumberOfTickets,
+                            TotalAmount = p.Price,
+                            PurchaseStatus = p.Status
+                        }
+                )
                 .ToListAsync();
         }
 
         public async Task HandleMobilePayPaymentUpdate(MobilePayWebhook webhook)
         {
-            var purchase = await _context.Purchases
-                .Include(p => p.PurchasedBy)
+            var purchase = await _context
+                .Purchases.Include(p => p.PurchasedBy)
                 .Where(p => p.ExternalTransactionId.Equals(webhook.Data.Id))
                 .FirstOrDefaultAsync();
             if (purchase == null)
             {
-                Log.Error("No purchase was found by TransactionId: {Id} from Webhook request", webhook.Data.Id);
+                Log.Error(
+                    "No purchase was found by TransactionId: {Id} from Webhook request",
+                    webhook.Data.Id
+                );
                 throw new EntityNotFoundException(
-                    $"No purchase was found by Transaction Id: {webhook.Data.Id} from webhook request");
+                    $"No purchase was found by Transaction Id: {webhook.Data.Id} from webhook request"
+                );
             }
 
             if (purchase.Status == PurchaseStatus.Completed)
             {
                 Log.Warning(
                     "Purchase from Webhook request is already completed. Purchase Id: {PurchaseId}, Transaction Id: {TransactionId}",
-                    purchase.Id, webhook.Data.Id);
+                    purchase.Id,
+                    webhook.Data.Id
+                );
                 return;
             }
 
@@ -210,49 +266,64 @@ namespace CoffeeCard.Library.Services.v2
             switch (eventTypeLowerCase)
             {
                 case "payment.reserved":
-                    {
-                        await CompletePurchase(purchase);
-                        break;
-                    }
+                {
+                    await CompletePurchase(purchase);
+                    break;
+                }
                 case "payment.cancelled_by_user":
-                    {
-                        await CancelPurchase(purchase);
-                        break;
-                    }
+                {
+                    await CancelPurchase(purchase);
+                    break;
+                }
                 case "payment.expired":
-                    {
-                        await CancelPurchase(purchase);
-                        break;
-                    }
+                {
+                    await CancelPurchase(purchase);
+                    break;
+                }
                 default:
                     Log.Error(
                         "Unknown EventType from Webhook request. Event Type: {EventType}, Purchase Id: {PurchaseId}, Transaction Id: {TransactionId}",
-                        eventTypeLowerCase, purchase.Id, webhook.Data.Id);
+                        eventTypeLowerCase,
+                        purchase.Id,
+                        webhook.Data.Id
+                    );
                     throw new ArgumentException($"Event Type {eventTypeLowerCase} is not valid");
             }
         }
 
         private async Task CompletePurchase(Purchase purchase)
         {
-            await _mobilePayPaymentsService.CapturePayment(Guid.Parse(purchase.ExternalTransactionId), purchase.Price);
+            await _mobilePayPaymentsService.CapturePayment(
+                Guid.Parse(purchase.ExternalTransactionId),
+                purchase.Price
+            );
             await _ticketService.IssueTickets(purchase);
 
             purchase.Status = PurchaseStatus.Completed;
             await _context.SaveChangesAsync();
 
-            Log.Information("Completed purchase with Id {Id}, TransactionId {TransactionId}", purchase.Id, purchase.ExternalTransactionId);
+            Log.Information(
+                "Completed purchase with Id {Id}, TransactionId {TransactionId}",
+                purchase.Id,
+                purchase.ExternalTransactionId
+            );
 
             await _emailService.SendInvoiceAsyncV2(purchase, purchase.PurchasedBy);
         }
 
         private async Task CancelPurchase(Purchase purchase)
         {
-            await _mobilePayPaymentsService.CancelPayment(Guid.Parse(purchase.ExternalTransactionId));
+            await _mobilePayPaymentsService.CancelPayment(
+                Guid.Parse(purchase.ExternalTransactionId)
+            );
             purchase.Status = PurchaseStatus.Cancelled;
             await _context.SaveChangesAsync();
 
-            Log.Information("Purchase has been cancelled Purchase Id {PurchaseId}, Transaction Id {TransactionId}",
-                purchase.Id, purchase.ExternalTransactionId);
+            Log.Information(
+                "Purchase has been cancelled Purchase Id {PurchaseId}, Transaction Id {TransactionId}",
+                purchase.Id,
+                purchase.ExternalTransactionId
+            );
         }
 
         private async Task<Guid> GenerateUniqueOrderId()
@@ -261,9 +332,11 @@ namespace CoffeeCard.Library.Services.v2
             {
                 var newOrderId = Guid.NewGuid();
 
-                var orderIdAlreadyExists =
-                    await _context.Purchases.Where(p => p.OrderId.Equals(newOrderId.ToString())).AnyAsync();
-                if (orderIdAlreadyExists) continue;
+                var orderIdAlreadyExists = await _context
+                    .Purchases.Where(p => p.OrderId.Equals(newOrderId.ToString()))
+                    .AnyAsync();
+                if (orderIdAlreadyExists)
+                    continue;
 
                 return newOrderId;
             }
@@ -271,12 +344,14 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task<SimplePurchaseResponse> RedeemVoucher(string voucherCode, User user)
         {
-            var voucher = await _context.Vouchers
-                .Where(v => v.Code.Equals(voucherCode))
+            var voucher = await _context
+                .Vouchers.Where(v => v.Code.Equals(voucherCode))
                 .Include(v => v.Product)
                 .FirstOrDefaultAsync();
-            if (voucher == null) throw new EntityNotFoundException($"Voucher '{voucherCode}' does not exist");
-            if (voucher.UserId != null) throw new ConflictException($"Voucher '{voucherCode}' has already been redeemed");
+            if (voucher == null)
+                throw new EntityNotFoundException($"Voucher '{voucherCode}' does not exist");
+            if (voucher.UserId != null)
+                throw new ConflictException($"Voucher '{voucherCode}' has already been redeemed");
 
             var purchase = new Purchase
             {

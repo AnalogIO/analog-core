@@ -24,7 +24,12 @@ namespace CoffeeCard.Library.Services
         private readonly IStatisticService _statisticService;
         private readonly CoffeeCardContext _context;
 
-        public TicketService(CoffeeCardContext context, IAccountService accountService, IProductService productService, IStatisticService statisticService)
+        public TicketService(
+            CoffeeCardContext context,
+            IAccountService accountService,
+            IProductService productService,
+            IStatisticService statisticService
+        )
         {
             _context = context;
             _accountService = accountService;
@@ -35,15 +40,19 @@ namespace CoffeeCard.Library.Services
         public IEnumerable<Ticket> GetTickets(IEnumerable<Claim> claims, bool used)
         {
             var userId = claims.FirstOrDefault(x => x.Type == Constants.UserId);
-            if (userId == null) throw new ApiException("The token is invalid!", StatusCodes.Status401Unauthorized);
+            if (userId == null)
+                throw new ApiException("The token is invalid!", StatusCodes.Status401Unauthorized);
             var id = int.Parse(userId.Value);
-            return _context.Tickets.Include(p => p.Purchase).Where(x => x.Owner.Id == id && x.IsUsed == used);
+            return _context
+                .Tickets.Include(p => p.Purchase)
+                .Where(x => x.Owner.Id == id && x.IsUsed == used);
         }
 
         public async Task<Ticket> UseTicket(IEnumerable<Claim> claims, int productId)
         {
             var userIdClaim = claims.FirstOrDefault(x => x.Type == Constants.UserId);
-            if (userIdClaim == null) throw new ApiException("The token is invalid!", 401);
+            if (userIdClaim == null)
+                throw new ApiException("The token is invalid!", 401);
             var userId = int.Parse(userIdClaim.Value);
 
             Log.Information($"Using product with id, {productId}");
@@ -60,28 +69,36 @@ namespace CoffeeCard.Library.Services
             return usedTicket;
         }
 
-        public async Task<IEnumerable<Ticket>> UseMultipleTickets(IEnumerable<Claim> claims, UseMultipleTicketDto dto)
+        public async Task<IEnumerable<Ticket>> UseMultipleTickets(
+            IEnumerable<Claim> claims,
+            UseMultipleTicketDto dto
+        )
         {
             //Throws exception if the list is empty
-            if (!dto.ProductIds.Any()) throw new ApiException("The list is empty", StatusCodes.Status400BadRequest);
+            if (!dto.ProductIds.Any())
+                throw new ApiException("The list is empty", StatusCodes.Status400BadRequest);
 
             Log.Information($"Using multiple tickets {string.Join(",", dto.ProductIds)}");
             var userIdClaim = claims.FirstOrDefault(x => x.Type == Constants.UserId);
-            if (userIdClaim == null) throw new ApiException("The token is invalid!", StatusCodes.Status401Unauthorized);
+            if (userIdClaim == null)
+                throw new ApiException("The token is invalid!", StatusCodes.Status401Unauthorized);
             var userId = int.Parse(userIdClaim.Value);
 
             //Count number of each product
             var groupedProductIds = new Dictionary<int, int>();
             foreach (var productId in dto.ProductIds)
             {
-                if (!groupedProductIds.ContainsKey(productId)) groupedProductIds.Add(productId, 0);
+                if (!groupedProductIds.ContainsKey(productId))
+                    groupedProductIds.Add(productId, 0);
                 groupedProductIds[productId] += 1;
             }
 
             //First get the tickets from the products used
             var tickets = new List<Ticket>();
             foreach (var keyValue in groupedProductIds)
-                tickets.AddRange(GetMultipleTicketsFromProduct(keyValue.Key, userId, keyValue.Value));
+                tickets.AddRange(
+                    GetMultipleTicketsFromProduct(keyValue.Key, userId, keyValue.Value)
+                );
 
             //Use the tickets
             var usedTickets = new List<Ticket>();
@@ -105,14 +122,22 @@ namespace CoffeeCard.Library.Services
             if (usedTickets.Count == tickets.Count)
             {
                 // update user experience
-                usedTickets.ForEach(x => _accountService.UpdateExperience(userId, GetExperienceByTicket(x.ProductId)));
+                usedTickets.ForEach(
+                    x =>
+                        _accountService.UpdateExperience(userId, GetExperienceByTicket(x.ProductId))
+                );
                 _context.SaveChanges();
                 Log.Information("All tickets were successfully used, updated and saved!");
             }
             else
             {
-                Log.Error($"All tickets could not be used :-( ticketIds: {string.Join(",", tickets)}");
-                throw new ApiException("Could not use the supplied tickets - try again later or contact AnalogIO!", StatusCodes.Status400BadRequest);
+                Log.Error(
+                    $"All tickets could not be used :-( ticketIds: {string.Join(",", tickets)}"
+                );
+                throw new ApiException(
+                    "Could not use the supplied tickets - try again later or contact AnalogIO!",
+                    StatusCodes.Status400BadRequest
+                );
             }
 
             return usedTickets;
@@ -121,16 +146,19 @@ namespace CoffeeCard.Library.Services
         public IEnumerable<CoffeeCardDto> GetCoffeeCards(IEnumerable<Claim> claims)
         {
             var userIdClaim = claims.FirstOrDefault(x => x.Type == Constants.UserId);
-            if (userIdClaim == null) throw new ApiException("The token is invalid!", 401);
+            if (userIdClaim == null)
+                throw new ApiException("The token is invalid!", 401);
             var userId = int.Parse(userIdClaim.Value);
             var user = _context.Users.Find(userId);
 
-            var coffeeCards = _context.Tickets
-                .Include(p => p.Purchase)
-                .Join(_context.Products,
+            var coffeeCards = _context
+                .Tickets.Include(p => p.Purchase)
+                .Join(
+                    _context.Products,
                     ticket => ticket.ProductId,
                     product => product.Id,
-                    (ticket, product) => new { Ticket = ticket, Product = product })
+                    (ticket, product) => new { Ticket = ticket, Product = product }
+                )
                 .Where(tp => tp.Ticket.Owner.Id == userId && !tp.Ticket.IsUsed)
                 .AsEnumerable()
                 .GroupBy(
@@ -144,43 +172,70 @@ namespace CoffeeCard.Library.Services
                             Price = product.Price,
                             Quantity = product.NumberOfTickets,
                             TicketsLeft = tp.Count()
-                        }).ToList();
+                        }
+                )
+                .ToList();
 
-            var products = _productService.GetProductsForUserAsync(user).Result.Select(p => new Models.DataTransferObjects.CoffeeCard.CoffeeCard
-            { ProductId = p.Id, Name = p.Name, Price = p.Price, Quantity = p.NumberOfTickets, TicketsLeft = 0 }).ToList();
+            var products = _productService
+                .GetProductsForUserAsync(user)
+                .Result.Select(
+                    p =>
+                        new Models.DataTransferObjects.CoffeeCard.CoffeeCard
+                        {
+                            ProductId = p.Id,
+                            Name = p.Name,
+                            Price = p.Price,
+                            Quantity = p.NumberOfTickets,
+                            TicketsLeft = 0
+                        }
+                )
+                .ToList();
 
             var unionCoffeeCards = coffeeCards.Union(products, new CoffeeCardComparer());
-            var toDto = unionCoffeeCards.Select(cc => new CoffeeCardDto()
-            {
-                ProductId = cc.ProductId,
-                Name = cc.Name,
-                Price = cc.Price,
-                Quantity = cc.Quantity,
-                TicketsLeft = cc.TicketsLeft
-            });
+            var toDto = unionCoffeeCards.Select(
+                cc =>
+                    new CoffeeCardDto()
+                    {
+                        ProductId = cc.ProductId,
+                        Name = cc.Name,
+                        Price = cc.Price,
+                        Quantity = cc.Quantity,
+                        TicketsLeft = cc.TicketsLeft
+                    }
+            );
             return toDto.ToList();
         }
 
         private int GetFirstTicketIdFromProduct(int productId, int userId)
         {
-            return _context.Tickets
-                .Include(p => p.Purchase)
-                .FirstOrDefault(x => x.Owner.Id == userId && x.ProductId == productId && !x.IsUsed).Id;
+            return _context
+                .Tickets.Include(p => p.Purchase)
+                .FirstOrDefault(x => x.Owner.Id == userId && x.ProductId == productId && !x.IsUsed)
+                .Id;
         }
 
-        private IEnumerable<Ticket> GetMultipleTicketsFromProduct(int productId, int userId, int count)
+        private IEnumerable<Ticket> GetMultipleTicketsFromProduct(
+            int productId,
+            int userId,
+            int count
+        )
         {
-            return _context.Tickets.Include(p => p.Purchase)
+            return _context
+                .Tickets.Include(p => p.Purchase)
                 .Where(x => x.Owner.Id == userId && x.ProductId == productId && !x.IsUsed)
                 .Take(count);
         }
 
         private Ticket ValidateTicket(int ticketId, int userId)
         {
-            Log.Information($"Validating that ticketId: {ticketId} belongs to userId: {userId} and is not used");
-            var ticket = _context.Tickets.Include(x => x.Purchase)
+            Log.Information(
+                $"Validating that ticketId: {ticketId} belongs to userId: {userId} and is not used"
+            );
+            var ticket = _context
+                .Tickets.Include(x => x.Purchase)
                 .FirstOrDefault(x => x.Id == ticketId && !x.IsUsed && x.Owner.Id == userId);
-            if (ticket == null) throw new ApiException("The ticket is invalid", StatusCodes.Status400BadRequest);
+            if (ticket == null)
+                throw new ApiException("The ticket is invalid", StatusCodes.Status400BadRequest);
             return ticket;
         }
 

@@ -46,14 +46,21 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Leaderboard
 #pragma warning disable CS1591
         public bool Equals(LeaderboardEntry? other)
         {
-            return other != null && Id == other.Id && Name == other.Name && Rank == other.Rank && Score == other.Score;
+            return other != null
+                && Id == other.Id
+                && Name == other.Name
+                && Rank == other.Rank
+                && Score == other.Score;
         }
 
         public override bool Equals(object? obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (ReferenceEquals(null, obj))
+                return false;
+            if (ReferenceEquals(this, obj))
+                return true;
+            if (obj.GetType() != this.GetType())
+                return false;
             return Equals((LeaderboardEntry)obj);
         }
 

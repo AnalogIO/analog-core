@@ -20,24 +20,29 @@ namespace CoffeeCard.WebApi.Pages
             _tokenService = tokenService;
         }
 
-        [BindProperty] public NewPinCodeModel PinCode { get; set; }
+        [BindProperty]
+        public NewPinCodeModel PinCode { get; set; }
 
-        [BindProperty(SupportsGet = true)] public string Token { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public string Token { get; set; }
 
         private bool IsTokenValid { get; set; }
 
         public async Task<IActionResult> OnGet()
         {
-            Func<Task<IActionResult>> func = async delegate ()
+            Func<Task<IActionResult>> func = async delegate()
             {
                 IsTokenValid = await _tokenService.ValidateTokenIsUnusedAsync(Token);
 
-                if (IsTokenValid) return Page();
+                if (IsTokenValid)
+                    return Page();
                 else
                 {
-                    PageUtils.setMessage("Error",
+                    PageUtils.setMessage(
+                        "Error",
                         "Looks like the link you used has expired or already been used. Request a new password in the app to verify your email.",
-                        this);
+                        this
+                    );
                     return RedirectToPage("result");
                 }
             };
@@ -47,10 +52,10 @@ namespace CoffeeCard.WebApi.Pages
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid) return Page();
+            if (!ModelState.IsValid)
+                return Page();
 
-
-            Func<Task<IActionResult>> func = async delegate ()
+            Func<Task<IActionResult>> func = async delegate()
             {
                 if (await _accountService.RecoverUserAsync(Token, PinCode.NewPinCode))
                 {
@@ -58,7 +63,11 @@ namespace CoffeeCard.WebApi.Pages
                 }
                 else
                 {
-                    PageUtils.setMessage("Error", "An error occured while updating your pin code. Please try again later or contact us at support@analogio.dk for further support", this);
+                    PageUtils.setMessage(
+                        "Error",
+                        "An error occured while updating your pin code. Please try again later or contact us at support@analogio.dk for further support",
+                        this
+                    );
                 }
                 return RedirectToPage("result");
             };

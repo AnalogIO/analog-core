@@ -7,13 +7,10 @@ namespace CoffeeCard.Common.Errors
     [Serializable]
     public class EntityNotFoundException : ApiException
     {
-        public EntityNotFoundException(string message) : base(message, statusCode: StatusCodes.Status404NotFound)
-        {
-        }
+        public EntityNotFoundException(string message)
+            : base(message, statusCode: StatusCodes.Status404NotFound) { }
 
         protected EntityNotFoundException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
+            : base(info, context) { }
     }
 }

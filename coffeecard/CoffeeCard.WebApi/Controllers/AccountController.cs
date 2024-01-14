@@ -1,12 +1,12 @@
+using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Services;
+using CoffeeCard.Models.DataTransferObjects;
+using CoffeeCard.Models.DataTransferObjects.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
-using System.Threading.Tasks;
-using CoffeeCard.Models.DataTransferObjects;
-using CoffeeCard.Models.DataTransferObjects.User;
 
 namespace CoffeeCard.WebApi.Controllers
 {
@@ -25,7 +25,10 @@ namespace CoffeeCard.WebApi.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
         /// </summary>
-        public AccountController(IAccountService accountService, IHttpContextAccessor httpContextAccessor)
+        public AccountController(
+            IAccountService accountService,
+            IHttpContextAccessor httpContextAccessor
+        )
         {
             _accountService = accountService;
             _httpContextAccessor = httpContextAccessor;
@@ -41,14 +44,23 @@ namespace CoffeeCard.WebApi.Controllers
         [AllowAnonymous]
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status409Conflict)]
-        public async Task<ActionResult<MessageResponseDto>> Register([FromBody] RegisterDto registerDto)
+        public async Task<ActionResult<MessageResponseDto>> Register(
+            [FromBody] RegisterDto registerDto
+        )
         {
-            await _accountService.RegisterAccountAsync(registerDto.Name, registerDto.Email, registerDto.Password);
-            return Created(nameof(Get), new MessageResponseDto()
-            {
-                Message =
-                    "Your user has been created! Please check your email to verify your account.\n(Check your spam folder!)"
-            });
+            await _accountService.RegisterAccountAsync(
+                registerDto.Name,
+                registerDto.Email,
+                registerDto.Password
+            );
+            return Created(
+                nameof(Get),
+                new MessageResponseDto()
+                {
+                    Message =
+                        "Your user has been created! Please check your email to verify your account.\n(Check your spam folder!)"
+                }
+            );
         }
 
         /// <summary>
@@ -70,8 +82,11 @@ namespace CoffeeCard.WebApi.Controllers
             var token = _accountService.Login(loginDto.Email, loginDto.Password, loginDto.Version);
             if (token == null)
             {
-                Log.Information("Unsuccessful login for e-mail = {Email} from IP = {Ipaddress} ", loginDto.Email,
-                    _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
+                Log.Information(
+                    "Unsuccessful login for e-mail = {Email} from IP = {Ipaddress} ",
+                    loginDto.Email,
+                    _httpContextAccessor.HttpContext.Connection.RemoteIpAddress
+                );
                 return Unauthorized();
             }
 
@@ -119,13 +134,15 @@ namespace CoffeeCard.WebApi.Controllers
         {
             await _accountService.ForgotPasswordAsync(emailDTO.Email);
 
-            Log.Information("Password reset requested for e-mail = {Email} from IP = {Ipaddress}", emailDTO.Email,
-                _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
+            Log.Information(
+                "Password reset requested for e-mail = {Email} from IP = {Ipaddress}",
+                emailDTO.Email,
+                _httpContextAccessor.HttpContext.Connection.RemoteIpAddress
+            );
 
-            return Ok(new MessageResponseDto()
-            {
-                Message = "We have sent you a confirmation email"
-            });
+            return Ok(
+                new MessageResponseDto() { Message = "We have sent you a confirmation email" }
+            );
         }
     }
 }

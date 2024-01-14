@@ -1,15 +1,15 @@
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
+using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.DataTransferObjects;
-using CoffeeCard.Models.DataTransferObjects.v2.User;
 using CoffeeCard.Models.DataTransferObjects.v2.Programme;
+using CoffeeCard.Models.DataTransferObjects.v2.User;
+using CoffeeCard.Models.Entities;
+using CoffeeCard.WebApi.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using CoffeeCard.Library.Services.v2;
-using CoffeeCard.Models.Entities;
-using CoffeeCard.WebApi.Helpers;
 
 namespace CoffeeCard.WebApi.Controllers.v2
 {
@@ -29,8 +29,11 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
         /// </summary>
-        public AccountController(IAccountService accountService, ClaimsUtilities claimsUtilities,
-            ILeaderboardService leaderboardService)
+        public AccountController(
+            IAccountService accountService,
+            ClaimsUtilities claimsUtilities,
+            ILeaderboardService leaderboardService
+        )
         {
             _accountService = accountService;
             _claimsUtilities = claimsUtilities;
@@ -47,16 +50,25 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [AllowAnonymous]
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status409Conflict)]
-        public async Task<ActionResult<MessageResponseDto>> Register([FromBody] RegisterAccountRequest registerRequest)
+        public async Task<ActionResult<MessageResponseDto>> Register(
+            [FromBody] RegisterAccountRequest registerRequest
+        )
         {
-            await _accountService.RegisterAccountAsync(registerRequest.Name, registerRequest.Email,
-                registerRequest.Password, registerRequest.ProgrammeId);
+            await _accountService.RegisterAccountAsync(
+                registerRequest.Name,
+                registerRequest.Email,
+                registerRequest.Password,
+                registerRequest.ProgrammeId
+            );
 
-            return Created("/api/v2/account/Get", new MessageResponseDto
-            {
-                Message =
-                    "Your user has been created! Please check your email to verify your account.\n(Check your spam folder!)"
-            });
+            return Created(
+                "/api/v2/account/Get",
+                new MessageResponseDto
+                {
+                    Message =
+                        "Your user has been created! Please check your email to verify your account.\n(Check your spam folder!)"
+                }
+            );
         }
 
         /// <summary>
@@ -76,7 +88,6 @@ namespace CoffeeCard.WebApi.Controllers.v2
 
             return StatusCode(StatusCodes.Status202Accepted);
         }
-
 
         /// <summary>
         /// Returns basic data about the account
@@ -106,14 +117,15 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [HttpPut]
         [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<UserResponse>> Update([FromBody] UpdateUserRequest updateUserRequest)
+        public async Task<ActionResult<UserResponse>> Update(
+            [FromBody] UpdateUserRequest updateUserRequest
+        )
         {
             var user = await _claimsUtilities.ValidateAndReturnUserFromEmailClaimAsync(User.Claims);
             var updatedUser = await _accountService.UpdateAccountAsync(user, updateUserRequest);
 
             return Ok(await UserWithRanking(updatedUser));
         }
-
 
         /// <summary>
         /// Check if a given email is in use
@@ -127,13 +139,12 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [AllowAnonymous]
         [Route("email-exists")]
-        public async Task<ActionResult<EmailExistsResponse>> EmailExists([FromBody] EmailExistsRequest request)
+        public async Task<ActionResult<EmailExistsResponse>> EmailExists(
+            [FromBody] EmailExistsRequest request
+        )
         {
             var emailInUse = await _accountService.EmailExistsAsync(request.Email);
-            return Ok(new EmailExistsResponse
-            {
-                EmailExists = emailInUse
-            });
+            return Ok(new EmailExistsResponse { EmailExists = emailInUse });
         }
 
         /// <summary>
@@ -151,7 +162,10 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
         [Route("{id:int}/user-group")]
-        public async Task<ActionResult> UpdateAccountUserGroup([FromRoute] int id, [FromBody] UpdateUserGroupRequest updateUserGroupRequest)
+        public async Task<ActionResult> UpdateAccountUserGroup(
+            [FromRoute] int id,
+            [FromBody] UpdateUserGroupRequest updateUserGroupRequest
+        )
         {
             await _accountService.UpdateUserGroup(updateUserGroupRequest.UserGroup, id);
 
@@ -172,7 +186,8 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status409Conflict)]
         [Route("resend-verification-email")]
         public async Task<ActionResult> ResendVerificationEmail(
-            [FromBody] ResendAccountVerificationEmailRequest request)
+            [FromBody] ResendAccountVerificationEmailRequest request
+        )
         {
             await _accountService.ResendAccountVerificationEmail(request);
 

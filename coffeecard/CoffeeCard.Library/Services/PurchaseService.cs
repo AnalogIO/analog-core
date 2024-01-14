@@ -26,15 +26,27 @@ namespace CoffeeCard.Library.Services
         public async Task<Purchase> RedeemVoucher(string voucherCode, IEnumerable<Claim> claims)
         {
             var userId = claims.FirstOrDefault(x => x.Type == Constants.UserId);
-            if (userId == null) throw new ApiException("The token is invalid!", StatusCodes.Status401Unauthorized);
+            if (userId == null)
+                throw new ApiException("The token is invalid!", StatusCodes.Status401Unauthorized);
             var id = int.Parse(userId.Value);
 
             var user = _context.Users.FirstOrDefault(x => x.Id == id);
-            if (user == null) throw new ApiException("The user could not be found");
+            if (user == null)
+                throw new ApiException("The user could not be found");
 
-            var voucher = _context.Vouchers.Include(x => x.Product).FirstOrDefault(x => x.Code.Equals(voucherCode));
-            if (voucher == null) throw new ApiException($"Voucher '{voucherCode}' does not exist!", StatusCodes.Status404NotFound);
-            if (voucher.UserId != null) throw new ApiException("Voucher has already been redeemed!", StatusCodes.Status409Conflict);
+            var voucher = _context
+                .Vouchers.Include(x => x.Product)
+                .FirstOrDefault(x => x.Code.Equals(voucherCode));
+            if (voucher == null)
+                throw new ApiException(
+                    $"Voucher '{voucherCode}' does not exist!",
+                    StatusCodes.Status404NotFound
+                );
+            if (voucher.UserId != null)
+                throw new ApiException(
+                    "Voucher has already been redeemed!",
+                    StatusCodes.Status409Conflict
+                );
 
             var purchase = new Purchase
             {
@@ -70,9 +82,11 @@ namespace CoffeeCard.Library.Services
             {
                 var newOrderId = Guid.NewGuid();
 
-                var orderIdAlreadyExists =
-                    await _context.Purchases.Where(p => p.OrderId.Equals(newOrderId.ToString())).AnyAsync();
-                if (orderIdAlreadyExists) continue;
+                var orderIdAlreadyExists = await _context
+                    .Purchases.Where(p => p.OrderId.Equals(newOrderId.ToString()))
+                    .AnyAsync();
+                if (orderIdAlreadyExists)
+                    continue;
 
                 return newOrderId;
             }
@@ -81,10 +95,13 @@ namespace CoffeeCard.Library.Services
         public Purchase DeliverProductToUser(Purchase purchase, User user, string transactionId)
         {
             Log.Information(
-                $"Delivering product ({purchase.ProductId}) to userId: {user.Id} with orderId: {purchase.OrderId}");
+                $"Delivering product ({purchase.ProductId}) to userId: {user.Id} with orderId: {purchase.OrderId}"
+            );
             var product = _context.Products.FirstOrDefault(x => x.Id == purchase.ProductId);
             if (product == null)
-                throw new ApiException($"The product with id {purchase.ProductId} could not be found!");
+                throw new ApiException(
+                    $"The product with id {purchase.ProductId} could not be found!"
+                );
             for (var i = 0; i < purchase.NumberOfTickets; i++)
             {
                 var ticket = new Ticket { ProductId = product.Id, Purchase = purchase };
@@ -98,7 +115,8 @@ namespace CoffeeCard.Library.Services
             _context.SaveChanges();
 
             Log.Information(
-                $"Delivery of product ({purchase.ProductId}) to userId: {user.Id} with orderId: {purchase.OrderId} succeeded!");
+                $"Delivery of product ({purchase.ProductId}) to userId: {user.Id} with orderId: {purchase.OrderId} succeeded!"
+            );
             return purchase;
         }
 

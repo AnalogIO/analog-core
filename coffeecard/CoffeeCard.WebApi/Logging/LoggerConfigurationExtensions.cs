@@ -9,9 +9,12 @@ namespace CoffeeCard.WebApi.Logging
         /**
          * Add CorrelationId and UserId to log messages
          */
-        public static LoggerConfiguration WithEnrichers(this LoggerEnrichmentConfiguration enrichmentConfiguration)
+        public static LoggerConfiguration WithEnrichers(
+            this LoggerEnrichmentConfiguration enrichmentConfiguration
+        )
         {
-            if (enrichmentConfiguration == null) throw new ArgumentNullException(nameof(enrichmentConfiguration));
+            if (enrichmentConfiguration == null)
+                throw new ArgumentNullException(nameof(enrichmentConfiguration));
             return enrichmentConfiguration.With<Enricher>();
         }
     }

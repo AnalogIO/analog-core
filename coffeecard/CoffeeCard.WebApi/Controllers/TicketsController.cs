@@ -29,7 +29,12 @@ namespace CoffeeCard.WebApi.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="TicketsController"/> class.
         /// </summary>
-        public TicketsController(ITicketService ticketService, IMapperService mapperService, Library.Services.v2.ITicketService ticketServiceV2, ClaimsUtilities claimsUtilities)
+        public TicketsController(
+            ITicketService ticketService,
+            IMapperService mapperService,
+            Library.Services.v2.ITicketService ticketServiceV2,
+            ClaimsUtilities claimsUtilities
+        )
         {
             _ticketService = ticketService;
             _mapperService = mapperService;
@@ -65,7 +70,9 @@ namespace CoffeeCard.WebApi.Controllers
         [ProducesResponseType(typeof(List<TicketDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<List<TicketDto>>> UseMultipleTickets([FromBody] UseMultipleTicketDto dto)
+        public async Task<ActionResult<List<TicketDto>>> UseMultipleTickets(
+            [FromBody] UseMultipleTicketDto dto
+        )
         {
             var usedTickets = await _ticketService.UseMultipleTickets(User.Claims, dto);
             return Ok(_mapperService.Map(usedTickets));

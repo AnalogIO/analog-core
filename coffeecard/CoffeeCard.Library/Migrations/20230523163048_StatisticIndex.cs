@@ -12,7 +12,8 @@ namespace CoffeeCard.Library.Migrations
                 name: "IX_Statistics_Preset_ExpiryDate",
                 schema: "dbo",
                 table: "Statistics",
-                columns: new[] { "Preset", "ExpiryDate" });
+                columns: new[] { "Preset", "ExpiryDate" }
+            );
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -20,7 +21,8 @@ namespace CoffeeCard.Library.Migrations
             migrationBuilder.DropIndex(
                 name: "IX_Statistics_Preset_ExpiryDate",
                 schema: "dbo",
-                table: "Statistics");
+                table: "Statistics"
+            );
         }
     }
 }

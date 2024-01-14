@@ -8,10 +8,7 @@ namespace CoffeeCard.Library.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Completed",
-                schema: "dbo",
-                table: "Purchases");
+            migrationBuilder.DropColumn(name: "Completed", schema: "dbo", table: "Purchases");
 
             migrationBuilder.AlterColumn<string>(
                 name: "Status",
@@ -22,7 +19,8 @@ namespace CoffeeCard.Library.Migrations
                 defaultValue: "",
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)",
-                oldNullable: true);
+                oldNullable: true
+            );
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -34,7 +32,8 @@ namespace CoffeeCard.Library.Migrations
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(max)");
+                oldType: "nvarchar(max)"
+            );
 
             migrationBuilder.AddColumn<bool>(
                 name: "Completed",
@@ -42,10 +41,15 @@ namespace CoffeeCard.Library.Migrations
                 table: "Purchases",
                 type: "bit",
                 nullable: false,
-                defaultValue: false);
+                defaultValue: false
+            );
 
-            migrationBuilder.Sql("UPDATE dbo.Purchases SET Completed = 0 WHERE Status != 'Completed'");
-            migrationBuilder.Sql("UPDATE dbo.Purchases SET Completed = 1 WHERE Status = 'Completed'");
+            migrationBuilder.Sql(
+                "UPDATE dbo.Purchases SET Completed = 0 WHERE Status != 'Completed'"
+            );
+            migrationBuilder.Sql(
+                "UPDATE dbo.Purchases SET Completed = 1 WHERE Status = 'Completed'"
+            );
         }
     }
 }

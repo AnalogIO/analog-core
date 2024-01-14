@@ -15,21 +15,20 @@ namespace CoffeeCard.Library.Migrations
                 type: "nvarchar(450)",
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(max)");
+                oldType: "nvarchar(max)"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Email",
                 schema: "dbo",
                 table: "Users",
-                column: "Email");
+                column: "Email"
+            );
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
-                name: "IX_Users_Email",
-                schema: "dbo",
-                table: "Users");
+            migrationBuilder.DropIndex(name: "IX_Users_Email", schema: "dbo", table: "Users");
 
             migrationBuilder.AlterColumn<string>(
                 name: "Email",
@@ -38,7 +37,8 @@ namespace CoffeeCard.Library.Migrations
                 type: "nvarchar(max)",
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(450)");
+                oldType: "nvarchar(450)"
+            );
         }
     }
 }

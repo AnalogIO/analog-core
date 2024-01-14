@@ -1,7 +1,7 @@
-using Newtonsoft.Json;
-using NJsonSchema.Converters;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
+using NJsonSchema.Converters;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
 {
@@ -44,7 +44,12 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <summary>
         /// Creates a new instance of <see cref="MobilePayPaymentDetails"/>
         /// </summary>
-        public MobilePayPaymentDetails(string orderId, string mobilePayAppRedirectUri, string paymentId, string? state)
+        public MobilePayPaymentDetails(
+            string orderId,
+            string mobilePayAppRedirectUri,
+            string paymentId,
+            string? state
+        )
         {
             PaymentType = PaymentType.MobilePay;
             OrderId = orderId;

@@ -16,7 +16,8 @@ namespace CoffeeCard.Library.Migrations
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)",
-                oldNullable: true);
+                oldNullable: true
+            );
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -28,7 +29,8 @@ namespace CoffeeCard.Library.Migrations
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(max)");
+                oldType: "nvarchar(max)"
+            );
         }
     }
 }

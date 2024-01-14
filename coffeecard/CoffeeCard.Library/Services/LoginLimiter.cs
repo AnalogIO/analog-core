@@ -28,8 +28,11 @@ namespace CoffeeCard.Library.Services
         /// </returns>
         private (DateTime, int) UpdateAndGetLoginAttemptCount(string email)
         {
-            return _loginAttempts.AddOrUpdate(email, (DateTime.UtcNow, 0),
-                (key, value) => (value.Item1, value.Item2 + 1));
+            return _loginAttempts.AddOrUpdate(
+                email,
+                (DateTime.UtcNow, 0),
+                (key, value) => (value.Item1, value.Item2 + 1)
+            );
         }
 
         /// <summary>
@@ -38,9 +41,13 @@ namespace CoffeeCard.Library.Services
         /// <param name="email"></param>
         private void ResetUsersTimeoutPeriod(string email)
         {
-            if (!_loginAttempts.TryGetValue(email, out var oldEntry)) return;
+            if (!_loginAttempts.TryGetValue(email, out var oldEntry))
+                return;
             if (_loginAttempts.TryUpdate(email, (DateTime.UtcNow, oldEntry.Item2), oldEntry))
-                Log.Warning("The lockout period for {username} was reset, possible brute force attack", email);
+                Log.Warning(
+                    "The lockout period for {username} was reset, possible brute force attack",
+                    email
+                );
         }
 
         /// <summary>
@@ -54,13 +61,18 @@ namespace CoffeeCard.Library.Services
             var timeOutPeriod = new TimeSpan(0, 0, _loginLimiterSettings.TimeOutPeriodInSeconds);
             var timeSinceFirstFailedLogin = DateTime.UtcNow.Subtract(firstFailedLogin);
 
-            var maximumLoginAttemptsWithinTimeOut = _loginLimiterSettings.MaximumLoginAttemptsWithinTimeOut;
+            var maximumLoginAttemptsWithinTimeOut =
+                _loginLimiterSettings.MaximumLoginAttemptsWithinTimeOut;
 
-            if (loginAttemptsMade % maximumLoginAttemptsWithinTimeOut == 0 && timeSinceFirstFailedLogin > timeOutPeriod) //If the timeout period is exceeded it will reset it whenever loginAttemptsMade % x = 0, where x is the maximum login attempts made. I.e. x number of logins will be allowed before the timer is reset again
+            if (
+                loginAttemptsMade % maximumLoginAttemptsWithinTimeOut == 0
+                && timeSinceFirstFailedLogin > timeOutPeriod
+            ) //If the timeout period is exceeded it will reset it whenever loginAttemptsMade % x = 0, where x is the maximum login attempts made. I.e. x number of logins will be allowed before the timer is reset again
                 ResetUsersTimeoutPeriod(user.Email);
 
-            return loginAttemptsMade < maximumLoginAttemptsWithinTimeOut || //If the amount of login attempts made exceeds the allowed amount, it returns false
-                   timeSinceFirstFailedLogin > timeOutPeriod; //If the time since first failed login exceeds the timeout period, returns true. This also means if the timeSinceFirstFailedLogin is never reset, all login attempts made after the initial timeout period will be allowed
+            return loginAttemptsMade < maximumLoginAttemptsWithinTimeOut
+                || //If the amount of login attempts made exceeds the allowed amount, it returns false
+                timeSinceFirstFailedLogin > timeOutPeriod; //If the time since first failed login exceeds the timeout period, returns true. This also means if the timeSinceFirstFailedLogin is never reset, all login attempts made after the initial timeout period will be allowed
         }
 
         /// <summary>

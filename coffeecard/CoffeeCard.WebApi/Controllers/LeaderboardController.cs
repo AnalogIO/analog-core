@@ -16,9 +16,7 @@ namespace CoffeeCard.WebApi.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="LeaderboardController"/> class.
         /// </summary>
-        public LeaderboardController()
-        {
-        }
+        public LeaderboardController() { }
 
         /// <summary>
         /// Gets the leaderboard by the specified preset
@@ -29,7 +27,10 @@ namespace CoffeeCard.WebApi.Controllers
         /// <response code="410">Deprecated</response>
         [HttpGet]
         [ProducesResponseType(typeof(void), StatusCodes.Status410Gone)]
-        public ActionResult<List<LeaderboardDto>> Get([FromQuery] int preset, [FromQuery] int top = 10)
+        public ActionResult<List<LeaderboardDto>> Get(
+            [FromQuery] int preset,
+            [FromQuery] int top = 10
+        )
         {
             return StatusCode(StatusCodes.Status410Gone);
         }

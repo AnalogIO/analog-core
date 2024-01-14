@@ -11,7 +11,8 @@ namespace CoffeeCard.Library.Utils
         public static DateTime GetSemesterStart(DateTime currentTime)
         {
             // Autumn semester: Get first day of July.
-            if (currentTime.Month >= 7) return new DateTime(currentTime.Year, 7, 1);
+            if (currentTime.Month >= 7)
+                return new DateTime(currentTime.Year, 7, 1);
 
             // Spring semester: Get last Monday of January.
             var lastDayOfJan = new DateTime(currentTime.Year, 1, 31);

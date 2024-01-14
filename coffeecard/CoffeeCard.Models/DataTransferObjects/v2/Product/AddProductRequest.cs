@@ -71,6 +71,5 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
         /// <example> Manager, Board </example>
         [Required]
         public IEnumerable<UserGroup> AllowedUserGroups { get; set; } = new List<UserGroup>();
-
     }
 }

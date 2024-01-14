@@ -16,12 +16,17 @@ namespace CoffeeCard.MobilePay.Utils
         /// </summary>
         /// <param name="services">Services collection</param>
         /// <param name="mobilePaySettings">Settings class with MobilePayApi configuration</param>
-        public static void AddMobilePayHttpClients(this IServiceCollection services,
-            MobilePaySettingsV2 mobilePaySettings)
+        public static void AddMobilePayHttpClients(
+            this IServiceCollection services,
+            MobilePaySettingsV2 mobilePaySettings
+        )
         {
             mobilePaySettings.Validate();
 
-            var apiKeyAuthentication = new AuthenticationHeaderValue("Bearer", mobilePaySettings.ApiKey);
+            var apiKeyAuthentication = new AuthenticationHeaderValue(
+                "Bearer",
+                mobilePaySettings.ApiKey
+            );
 
             services.AddHttpClient<PaymentsApi>(client =>
             {

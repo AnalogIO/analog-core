@@ -5,13 +5,14 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
     {
         /// Normal user for customers
         Customer,
+
         /// Active Barista in Analog
         Barista,
+
         /// Active Manager in Analog
         Manager,
+
         /// Active board member in Analog
         Board
     }
-
-
 }

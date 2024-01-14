@@ -85,7 +85,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.MobilePay
         /// <example>payment</example>
         public string Type { get; set; }
 
-
         /// <inheritdoc />
         public override string ToString()
         {

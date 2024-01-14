@@ -21,7 +21,8 @@ namespace CoffeeCard.Models.Entities
 
         public override bool Equals(object? obj)
         {
-            if (obj is Token newToken) return TokenHash.Equals(newToken.TokenHash);
+            if (obj is Token newToken)
+                return TokenHash.Equals(newToken.TokenHash);
             return false;
         }
 

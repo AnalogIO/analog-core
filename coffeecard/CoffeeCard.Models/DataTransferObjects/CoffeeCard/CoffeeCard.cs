@@ -3,7 +3,7 @@
 namespace CoffeeCard.Models.DataTransferObjects.CoffeeCard
 {
     /// <summary>
-    /// A CoffeeCard is a union datatype of a product and unused tickets associated with the product. 
+    /// A CoffeeCard is a union datatype of a product and unused tickets associated with the product.
     /// </summary>
     /// <example>
     /// {
@@ -63,7 +63,8 @@ namespace CoffeeCard.Models.DataTransferObjects.CoffeeCard
         public bool Equals(CoffeeCard? x, CoffeeCard? y)
         {
             //Check whether the compared objects reference the same data.
-            if (ReferenceEquals(x, y)) return true;
+            if (ReferenceEquals(x, y))
+                return true;
 
             //Check whether any of the compared objects is null.
             if (ReferenceEquals(x, null) || ReferenceEquals(y, null))
@@ -72,16 +73,15 @@ namespace CoffeeCard.Models.DataTransferObjects.CoffeeCard
             return x.ProductId == y.ProductId;
         }
 
-
-
         /// <summary>
-        /// If Equals() returns true for a pair of objects 
+        /// If Equals() returns true for a pair of objects
         /// then GetHashCode() must return the same value for these objects.
         /// </summary>
         public int GetHashCode(CoffeeCard coffeeCard)
         {
             //Check whether the object is null
-            if (ReferenceEquals(coffeeCard, null)) return 0;
+            if (ReferenceEquals(coffeeCard, null))
+                return 0;
 
             //Get hash code for the ProductId field.
             var hashProductCode = coffeeCard.ProductId.GetHashCode();

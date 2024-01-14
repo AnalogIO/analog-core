@@ -16,11 +16,12 @@ namespace CoffeeCard.WebApi.Pages
             _accountService = accountService;
         }
 
-        [BindProperty(SupportsGet = true)] public string Token { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public string Token { get; set; }
 
         public async Task<IActionResult> OnGet()
         {
-            Func<Task<IActionResult>> func = async delegate ()
+            Func<Task<IActionResult>> func = async delegate()
             {
                 await _accountService.AnonymizeAccountAsync(Token);
 
