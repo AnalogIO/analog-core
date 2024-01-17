@@ -217,11 +217,11 @@ namespace CoffeeCard.Library.Services.v2
             IQueryable<User> query = _context.Users;
             bool isNumeric = int.TryParse(search, out int searchId);
 
-            query = query.Where(u => 
-                (isNumeric && u.Id == searchId) || 
-                (!isNumeric && (EF.Functions.Like(u.Name, $"%{search}%") ||  
-                                EF.Functions.Like(u.Email, $"%{search}%")))); 
-            
+            query = query.Where(u =>
+                (isNumeric && u.Id == searchId) ||
+                (!isNumeric && (EF.Functions.Like(u.Name, $"%{search}%") ||
+                                EF.Functions.Like(u.Email, $"%{search}%"))));
+
             int totalUsers = await query.CountAsync();
 
             var userByPage = await query

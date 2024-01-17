@@ -29,7 +29,7 @@ public class UserSearchResponse
     /// <example>1</example>
     [Required]
     public int TotalUsers { get; set; }
-    
+
     /// <summary>
     /// The users that match the query
     /// </summary>
