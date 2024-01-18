@@ -30,6 +30,7 @@ namespace CoffeeCard.Library.Persistence
         public DbSet<Statistic> Statistics { get; set; }
         public DbSet<ProductUserGroup> ProductUserGroups { get; set; }
         public DbSet<WebhookConfiguration> WebhookConfigurations { get; set; }
+        public DbSet<MenuItem> MenuItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

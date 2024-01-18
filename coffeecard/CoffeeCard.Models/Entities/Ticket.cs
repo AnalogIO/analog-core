@@ -24,5 +24,14 @@ namespace CoffeeCard.Models.Entities
         public int PurchaseId { get; set; }
 
         public Purchase Purchase { get; set; }
+
+        /// <summary>
+        /// The id of the menuItem that was consumed
+        /// </summary>
+        public int? UsedOnMenuItemId { get; set; }
+        /// <summary>
+        /// The menuItem that was consumed by using the ticket
+        /// </summary>
+        public MenuItem? UsedOnMenuItem { get; set; }
     }
 }

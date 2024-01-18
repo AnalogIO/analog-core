@@ -24,6 +24,11 @@ namespace CoffeeCard.Models.Entities
 
         public ICollection<ProductUserGroup> ProductUserGroup { get; set; }
 
+        /// <summary>
+        /// The menu items the product is eligible to redeem
+        /// </summary>
+        public ICollection<MenuItem> MenuItems { get; set; }
+
         public bool Equals(Product? other)
         {
             return other != null && Id == other.Id && Price == other.Price && NumberOfTickets == other.NumberOfTickets &&
