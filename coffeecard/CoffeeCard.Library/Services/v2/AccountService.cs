@@ -214,6 +214,7 @@ namespace CoffeeCard.Library.Services.v2
         {
             int skip = pageNum * pageLength;
 
+<<<<<<< HEAD
             IQueryable<User> query = _context.Users;
             bool isNumeric = int.TryParse(search, out int searchId);
 
@@ -223,6 +224,22 @@ namespace CoffeeCard.Library.Services.v2
                                 EF.Functions.Like(u.Email, $"%{search}%"))));
 
             int totalUsers = await query.CountAsync();
+=======
+            IQueryable<User> query;
+            if (string.IsNullOrEmpty(search))
+            {
+                query = _context.Users;
+            }
+            else
+            {
+                query = _context.Users
+                .Where(u => EF.Functions.Like(u.Id.ToString(), $"%{search}%") ||
+                    EF.Functions.Like(u.Name, $"%{search}%") ||
+                    EF.Functions.Like(u.Email, $"%{search}%"));
+            }
+>>>>>>> 58c5691 (Count should return result set count, not total users)
+
+            var totalUsers = await query.CountAsync();
 
             var userByPage = await query
                 .OrderBy(u => u.Id)
