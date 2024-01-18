@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Utils;
@@ -10,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Models.Entities;
 using CoffeeCard.WebApi.Helpers;
+using System.ComponentModel.DataAnnotations;
 
 namespace CoffeeCard.WebApi.Controllers.v2
 {
@@ -200,6 +204,25 @@ namespace CoffeeCard.WebApi.Controllers.v2
                 },
                 PrivacyActivated = user.PrivacyActivated,
             };
+        }
+
+        /// <summary>
+        /// Searches a user in the database
+        /// </summary>
+        /// <param name="filter">A filter to search by Id, Name or Email. When an empty string is given, all users will be returned</param>
+        /// <param name="pageNum">The page number</param>
+        /// <param name="pageLength">The length of a page</param>
+        /// <returns> A collection of User objects that match the search criteria </returns>
+        /// <response code="200">Users, possible with filter applied</response>
+        /// <response code="401"> Invalid credentials </response>
+        [HttpGet]
+        [AuthorizeRoles(UserGroup.Board)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(SimpleUserResponse), StatusCodes.Status200OK)]
+        [Route("search")]
+        public async Task<ActionResult<IEnumerable<SimpleUserResponse>>> SearchUsers([FromQuery][Range(0, int.MaxValue)] int pageNum, [FromQuery] string filter = "", [FromQuery][Range(1, 100)] int pageLength = 30)
+        {
+            return Ok(await _accountService.SearchUsers(filter, pageNum, pageLength));
         }
     }
 }

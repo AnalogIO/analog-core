@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace CoffeeCard.Models.Entities
 {
     [Index(nameof(Email))]
+    [Index(nameof(Name))]
     public class User
     {
         public int Id { get; set; }
