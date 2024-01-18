@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.DataTransferObjects.v2.Product;
 using CoffeeCard.Models.DataTransferObjects.v2.Products;
@@ -21,7 +20,6 @@ namespace CoffeeCard.WebApi.Controllers.v2
     [Authorize]
     [ApiVersion("2")]
     [Route("api/v{version:apiVersion}/products")]
-
     public class ProductsController : ControllerBase
     {
         private readonly IProductService _productService;
@@ -49,7 +47,6 @@ namespace CoffeeCard.WebApi.Controllers.v2
         {
             return Ok(await _productService.AddProduct(addProductRequest));
         }
-
 
         /// <summary>
         /// Updates a product with the specified changes.
@@ -92,7 +89,10 @@ namespace CoffeeCard.WebApi.Controllers.v2
                 Price = product.Price,
                 IsPerk = product.IsPerk(),
                 Visible = product.Visible,
-                AllowedUserGroups = product.ProductUserGroup.Select(e => e.UserGroup)
+                AllowedUserGroups = product.ProductUserGroup.Select(e => e.UserGroup),
+                MenuItems = product.MenuItems.Select(
+                    item => new MenuItemResponse { Id = item.Id, Name = item.Name }
+                )
             };
         }
 

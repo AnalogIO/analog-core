@@ -6,7 +6,6 @@ using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Models.DataTransferObjects.v2.Product;
 using CoffeeCard.Models.Entities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -32,6 +31,7 @@ namespace CoffeeCard.Library.Services.v2
                 .Where(p => p.ProductUserGroup.Any(pug => pug.UserGroup == userGroup))
                 .Where(p => p.Visible).OrderBy(p => p.Id)
                 .Include(p => p.ProductUserGroup)
+                .Include(p => p.MenuItems)
                 .ToListAsync();
         }
 
@@ -40,6 +40,7 @@ namespace CoffeeCard.Library.Services.v2
             return await _context.Products
                 .OrderBy(p => p.Id)
                 .Include(p => p.ProductUserGroup)
+                .Include(p => p.MenuItems)
                 .ToListAsync();
         }
 
@@ -47,6 +48,7 @@ namespace CoffeeCard.Library.Services.v2
         {
             var product = await _context.Products
                 .Include(p => p.ProductUserGroup)
+                .Include(p => p.MenuItems)
                 .FirstOrDefaultAsync(p => p.Id == productId);
 
             if (product == null)

@@ -44,8 +44,16 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Ticket
         /// Name of product a ticket is for
         /// </summary>
         /// <value>Product name</value>
-        /// <example>Coffee</example>
+        /// <example>Small drink</example>
         [Required]
         public string ProductName { get; set; }
+
+        /// <summary>
+        /// Name of the menu item that this ticket was used on
+        /// </summary>
+        /// <value>Menu item name</value>
+        /// <example>Cappuccino</example>
+        /// <remarks>Null if ticket was not used on a menu item</remarks>
+        public string? MenuItemName { get; set; }
     }
 }

@@ -19,5 +19,13 @@ namespace CoffeeCard.Models.DataTransferObjects.Ticket
         /// <example>1</example>
         [Required]
         public int ProductId { get; set; }
+
+        /// <summary>
+        /// Id of an eligible menu item to use the ticket on
+        /// </summary>
+        /// <value>Menu item Id</value>
+        /// <example>1</example>
+        /// <remarks>Optional for backwards compatibility</remarks>
+        public int? MenuItemId { get; set; }
     }
 }
