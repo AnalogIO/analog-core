@@ -632,7 +632,7 @@ namespace CoffeeCard.Tests.Unit.Services
             };
             var identitySettings = new IdentitySettings
             {
-                TokenKey = "This is a long test token key"
+                TokenKey = "SuperLongSigningKeySuperLongSigningKey"
             };
             var tokenService = new TokenService(identitySettings, new ClaimsUtilities(context));
 
@@ -697,7 +697,7 @@ namespace CoffeeCard.Tests.Unit.Services
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("This is a long test token key"));
+                Encoding.UTF8.GetBytes("SuperLongSigningKeySuperLongSigningKey"));
 
             var jwt = new JwtSecurityToken("AnalogIO",
                 "Everyone",
