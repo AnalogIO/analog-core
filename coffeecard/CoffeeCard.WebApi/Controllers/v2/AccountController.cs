@@ -218,9 +218,9 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [HttpGet]
         [AuthorizeRoles(UserGroup.Board)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(SimpleUserResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<UserSearchResponse>), StatusCodes.Status200OK)]
         [Route("search")]
-        public async Task<ActionResult<IEnumerable<SimpleUserResponse>>> SearchUsers([FromQuery][Range(0, int.MaxValue)] int pageNum, [FromQuery] string filter = "", [FromQuery][Range(1, 100)] int pageLength = 30)
+        public async Task<ActionResult<IEnumerable<UserSearchResponse>>> SearchUsers([FromQuery][Range(0, int.MaxValue)] int pageNum, [FromQuery] string filter = "", [FromQuery][Range(1, 100)] int pageLength = 30)
         {
             return Ok(await _accountService.SearchUsers(filter, pageNum, pageLength));
         }
