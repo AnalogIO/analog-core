@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 
 namespace CoffeeCard.Models.Entities;
+
 /// <summary>
-/// An entry representing an item on the Analog menu
-/// e.g. cortado, black coffee, and tea-shirt, etc.
+/// An item or good that Analog offers, such as a cappuccino or a t-shirt.
 /// </summary>
 public class MenuItem
 {
@@ -13,12 +13,12 @@ public class MenuItem
     public int Id { get; set; }
 
     /// <summary>
-    ///  The name of this menuItem
+    /// The name of this menu item
     /// </summary>
     public string Name { get; set; }
 
     /// <summary>
-    /// The products that can consume this menuitem
+    /// The product(s) that are eligible to redeem this menu item
     /// </summary>
     public ICollection<Product> Products { get; set; }
 }
