@@ -1,50 +1,50 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace CoffeeCard.Models.DataTransferObjects.v2.User
+namespace CoffeeCard.Models.DataTransferObjects.v2.User;
+
+/// <summary>
+/// Represents a search result
+/// </summary>
+/// <example>
+/// {
+///  "users": [
+///    {
+///      "id": 12232,
+///      "name": "John Doe",
+///      "email": "johndoe@itu.dk",
+///      "userGroup": "Barista",
+///      "state": "Active"
+///    }
+///  ],
+///  "totalUsers": 1
+/// }
+/// </example>
+public class UserSearchResponse
 {
     /// <summary>
-    /// User information that is returned when searching
+    /// The number of users that match the query
     /// </summary>
+    /// <value> Users number </value>
+    /// <example>1</example>
+    [Required]
+    public int TotalUsers { get; set; }
+
+    /// <summary>
+    /// The users that match the query
+    /// </summary>
+    /// <value> Users List </value>
     /// <example>
-    /// {
-    ///     "id": 123,
-    ///     "name": "John Doe",
-    ///     "email": "john@doe.com",
-    ///     "role": "Barista"
-    /// }
+    /// [
+    ///    {
+    ///      "id": 12232,
+    ///      "name": "John Doe",
+    ///      "email": "johndoe@itu.dk",
+    ///      "userGroup": "Barista",
+    ///      "state": "Active"
+    ///    }
+    ///  ],
     /// </example>
-    public class UserSearchResponse
-    {
-        /// <summary>
-        /// User Id
-        /// </summary>
-        /// <value>User Id</value>
-        /// <example>123</example>
-        [Required]
-        public int Id { get; set; }
-
-        /// <summary>
-        /// Full Name of user
-        /// </summary>
-        /// <value>Full Name</value>
-        /// <example>John Doe</example>
-        [Required]
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Email of user
-        /// </summary>
-        /// <value>Email</value>
-        /// <example>john@doe.com</example>
-        [Required]
-        public string Email { get; set; }
-
-        /// <summary>
-        /// User's role
-        /// </summary>
-        /// <value>Role</value>
-        /// <example>Barista</example>
-        [Required]
-        public UserRole Role { get; set; } = UserRole.Customer;
-    }
+    [Required]
+    public IEnumerable<SimpleUserResponse> Users;
 }

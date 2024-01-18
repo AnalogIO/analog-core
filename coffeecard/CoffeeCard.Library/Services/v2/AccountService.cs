@@ -8,7 +8,6 @@ using CoffeeCard.Library.Persistence;
 using CoffeeCard.Models.DataTransferObjects.v2.User;
 using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -210,35 +209,44 @@ namespace CoffeeCard.Library.Services.v2
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<User>> SearchUsers(String search, int pageNum, int pageLength)
-        {
-            List<User> users = new List<User>();
 
+        public async Task<UserSearchResponse> SearchUsers(String search, int pageNum, int pageLength)
+        {
             int skip = pageNum * pageLength;
 
-            if (int.TryParse(search, out int id))
+            IQueryable<User> query;
+            if (string.IsNullOrEmpty(search))
             {
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
-                if (user != null)
-                {
-                    users.Add(user);
-                    return users;
-                }
+                query = _context.Users;
+            }
+            else
+            {
+                query = _context.Users
+                .Where(u => EF.Functions.Like(u.Id.ToString(), $"%{search}%") ||
+                    EF.Functions.Like(u.Name, $"%{search}%") ||
+                    EF.Functions.Like(u.Email, $"%{search}%"));
             }
 
-            users = await _context.Users
-                .Where(u => u.Email.ToLower().StartsWith(search.ToLower()) || u.Name.ToLower().StartsWith(search.ToLower()))
+            var totalUsers = await query.CountAsync();
+
+            var userByPage = await query
                 .OrderBy(u => u.Id)
                 .Skip(skip).Take(pageLength)
+                .Select(u => new SimpleUserResponse
+                {
+                    Id = u.Id,
+                    Name = u.Name,
+                    Email = u.Email,
+                    UserGroup = u.UserGroup,
+                    State = u.UserState
+                })
                 .ToListAsync();
 
-
-            if (users.Count == 0)
+            return new UserSearchResponse
             {
-                throw new EntityNotFoundException("No users match the search");
-            }
-
-            return users;
+                TotalUsers = totalUsers,
+                Users = userByPage
+            };
         }
 
 
