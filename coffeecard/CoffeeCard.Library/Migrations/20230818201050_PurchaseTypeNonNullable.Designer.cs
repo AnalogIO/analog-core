@@ -4,6 +4,7 @@ using CoffeeCard.Library.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoffeeCard.Library.Migrations
 {
     [DbContext(typeof(CoffeeCardContext))]
-    partial class CoffeeCardContextModelSnapshot : ModelSnapshot
+    [Migration("20230818201050_PurchaseTypeNonNullable")]
+    partial class PurchaseTypeNonNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,14 +48,22 @@ namespace CoffeeCard.Library.Migrations
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.PosPurhase", b =>
                 {
-                    b.Property<int>("PurchaseId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("BaristaInitials")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("PurchaseId");
+                    b.Property<int>("PurchaseId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PurchaseId");
 
                     b.ToTable("PosPurchases", "dbo");
                 });
@@ -304,7 +314,7 @@ namespace CoffeeCard.Library.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -331,8 +341,6 @@ namespace CoffeeCard.Library.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Email");
-
-                    b.HasIndex("Name");
 
                     b.HasIndex("ProgrammeId");
 
