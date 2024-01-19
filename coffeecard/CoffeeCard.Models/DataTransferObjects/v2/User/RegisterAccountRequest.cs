@@ -10,7 +10,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
     ///     "name": "John Doe",
     ///     "email": "john@doe.com",
     ///     "password": "[no example provided]",
-    ///     "programme": 1
+    ///     "programmeId": 1
     /// }
     /// </example>
     public class RegisterAccountRequest

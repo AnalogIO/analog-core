@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -63,5 +64,13 @@ namespace CoffeeCard.Library.Services.v2
         /// <param name="userGroup"> The user group that will be updated </param>
         /// <param name="id"> id of the user </param>
         Task UpdateUserGroup(UserGroup userGroup, int id);
+
+        /// <summary>
+        /// Search a user from the database
+        /// </summary>
+        /// <param name="search"> The search string from a search bar </param>
+        /// <param name="pageNum"> The page number </param>
+        /// <param name="pageLength"> The length of a page </param>
+        Task<UserSearchResponse> SearchUsers(String search, int pageNum, int pageLength);
     }
 }

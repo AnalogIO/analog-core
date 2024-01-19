@@ -8,7 +8,6 @@ using CoffeeCard.Library.Persistence;
 using CoffeeCard.Models.DataTransferObjects.v2.User;
 using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -209,6 +208,47 @@ namespace CoffeeCard.Library.Services.v2
 
             await _context.SaveChangesAsync();
         }
+
+
+        public async Task<UserSearchResponse> SearchUsers(String search, int pageNum, int pageLength)
+        {
+            int skip = pageNum * pageLength;
+
+            IQueryable<User> query;
+            if (string.IsNullOrEmpty(search))
+            {
+                query = _context.Users;
+            }
+            else
+            {
+                query = _context.Users
+                .Where(u => EF.Functions.Like(u.Id.ToString(), $"%{search}%") ||
+                    EF.Functions.Like(u.Name, $"%{search}%") ||
+                    EF.Functions.Like(u.Email, $"%{search}%"));
+            }
+
+            var totalUsers = await query.CountAsync();
+
+            var userByPage = await query
+                .OrderBy(u => u.Id)
+                .Skip(skip).Take(pageLength)
+                .Select(u => new SimpleUserResponse
+                {
+                    Id = u.Id,
+                    Name = u.Name,
+                    Email = u.Email,
+                    UserGroup = u.UserGroup,
+                    State = u.UserState
+                })
+                .ToListAsync();
+
+            return new UserSearchResponse
+            {
+                TotalUsers = totalUsers,
+                Users = userByPage
+            };
+        }
+
 
         private async Task<User> GetUserByIdAsync(int id)
         {
