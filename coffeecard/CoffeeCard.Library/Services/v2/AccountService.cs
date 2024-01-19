@@ -229,6 +229,11 @@ namespace CoffeeCard.Library.Services.v2
 
             var totalUsers = await query.CountAsync();
 
+            if (totalUsers < skip)
+            {
+                throw new ArgumentException($"The value of {nameof(pageNum)} is outside of the range of total users");
+            }
+
             var userByPage = await query
                 .OrderBy(u => u.Id)
                 .Skip(skip).Take(pageLength)
