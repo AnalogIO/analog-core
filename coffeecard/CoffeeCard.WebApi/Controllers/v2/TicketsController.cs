@@ -55,8 +55,9 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <param name="menuItemId">The id of the menu item to use the ticket on</param>
         /// <returns>The ticket that was used</returns>
         /// <response code="200">Successful request</response>
-        /// <response code="400">No ticket on account or invalid menu item</response>
         /// <response code="401">Invalid credentials</response>
+        /// <response code="403">Menu item cannot be redeemed by this ticket</response>
+        /// <response code="404">No ticket on account or menu item not found</response>
         [ProducesResponseType(typeof(UsedTicketResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
