@@ -60,7 +60,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(UsedTicketResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-        [HttpPost("use/{ticketId}/{menuItemId}")]
+        [HttpPost("use/{ticketId:int}/{menuItemId:int}")]
         public async Task<ActionResult<UsedTicketResponse>> UseTicket(int ticketId, int menuItemId)
         {
             var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
