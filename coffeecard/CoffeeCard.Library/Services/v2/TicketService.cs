@@ -132,11 +132,18 @@ namespace CoffeeCard.Library.Services.v2
         {
             var menuItem = await _context.MenuItems
                 .Include(m => m.Products)
-                .FirstOrDefaultAsync(m => m.Id == menuItemId && m.Products.Any(p => p.Id == productId));
+                .FirstOrDefaultAsync(m => m.Id == menuItemId);
 
             if (menuItem == null)
             {
-                throw new EntityNotFoundException("The product is not eligible for this menu item");
+                throw new EntityNotFoundException("The menu item was not found");
+            }
+
+            if (!menuItem.Products.Any(p => p.Id == productId))
+            {
+                throw new IllegalUserOperationException(
+                    $"Product is not eligible to redeem the menu item '{menuItem.Name}'"
+                );
             }
 
             return menuItem;
