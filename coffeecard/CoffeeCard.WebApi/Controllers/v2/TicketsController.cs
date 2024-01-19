@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.DataTransferObjects.v2.Ticket;
 using Microsoft.AspNetCore.Authorization;
@@ -45,6 +46,26 @@ namespace CoffeeCard.WebApi.Controllers.v2
             var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
 
             return Ok(await _ticketService.GetTickets(user, includeUsed));
+        }
+
+        /// <summary>
+        /// Uses the ticket on the specified menu item
+        /// </summary>
+        /// <param name="ticketId">The id of the ticket to be used</param>
+        /// <param name="menuItemId">The id of the menu item to use the ticket on</param>
+        /// <returns>The ticket that was used</returns>
+        /// <response code="200">Successful request</response>
+        /// <response code="400">No ticket on account or invalid menu item</response>
+        /// <response code="401">Invalid credentials</response>
+        [ProducesResponseType(typeof(UsedTicketResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+        [HttpPost("use/{ticketId}/{menuItemId}")]
+        public async Task<ActionResult<UsedTicketResponse>> UseTicket(int ticketId, int menuItemId)
+        {
+            var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
+
+            return Ok(await _ticketService.UseTicketAsync(user, ticketId, menuItemId));
         }
     }
 }

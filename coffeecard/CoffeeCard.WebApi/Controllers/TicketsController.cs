@@ -87,11 +87,6 @@ namespace CoffeeCard.WebApi.Controllers
         {
             var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
 
-            if (dto.MenuItemId != null)
-            {
-                return await _ticketServiceV2.UseTicketAsync(user, dto.ProductId, dto.MenuItemId.Value);
-            }
-
             return await _ticketServiceV2.UseTicketAsync(user, dto.ProductId);
         }
     }
