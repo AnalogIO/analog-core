@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Utils;
+using CoffeeCard.Models.DataTransferObjects;
 using CoffeeCard.Models.DataTransferObjects.v2.Ticket;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -59,8 +59,9 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <response code="403">Menu item cannot be redeemed by this ticket</response>
         /// <response code="404">No ticket on account or menu item not found</response>
         [ProducesResponseType(typeof(UsedTicketResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status404NotFound)]
         [HttpPost("use/{ticketId:int}/{menuItemId:int}")]
         public async Task<ActionResult<UsedTicketResponse>> UseTicket(int ticketId, int menuItemId)
         {
