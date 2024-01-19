@@ -5,21 +5,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User;
 
 /// <summary>
 /// Represents a search result
-/// </summary>
-/// <example>
-/// {
-///  "users": [
-///    {
-///      "id": 12232,
-///      "name": "John Doe",
-///      "email": "johndoe@itu.dk",
-///      "userGroup": "Barista",
-///      "state": "Active"
-///    }
-///  ],
-///  "totalUsers": 1
-/// }
-/// </example>
+/// </summary>  
 public class UserSearchResponse
 {
     /// <summary>
@@ -43,7 +29,7 @@ public class UserSearchResponse
     ///      "userGroup": "Barista",
     ///      "state": "Active"
     ///    }
-    ///  ],
+    ///  ]
     /// </example>
     [Required]
     public IEnumerable<SimpleUserResponse> Users;
