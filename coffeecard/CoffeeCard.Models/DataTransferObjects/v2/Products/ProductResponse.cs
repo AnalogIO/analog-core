@@ -88,7 +88,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Products
         /// <value> Product User Groups </value>
         /// <example> Manager, Board </example>
         [Required]
-        public IEnumerable<UserGroup> AllowedUserGroups { get; set; } = new List<UserGroup>();
+        public IEnumerable<UserGroup> AllowedUserGroups { get; set; }
 
         /// <summary>
         /// The menu items that this product can be used on.

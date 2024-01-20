@@ -27,6 +27,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Products
         /// <value>Menu item name</value>
         /// <example>Cappuccino</example>
         [Required]
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; }
     }
 }
