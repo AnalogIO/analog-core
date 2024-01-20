@@ -64,7 +64,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Ticket
         /// <value>Menu item Id</value>
         /// <example>Cappuccino</example>
         /// <remarks>Null if ticket was not used on a menu item</remarks>
-        [JsonProperty(Required = Required.Default)]
         public string? UsedOnMenuItemName { get; set; }
     }
 }
