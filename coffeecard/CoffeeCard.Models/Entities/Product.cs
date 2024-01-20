@@ -27,7 +27,7 @@ namespace CoffeeCard.Models.Entities
         /// <summary>
         /// The menu item(s) that this product is eligible to redeem
         /// </summary>
-        public ICollection<MenuItem> MenuItems { get; set; }
+        public ICollection<MenuItem> EligibleMenuItems { get; set; }
 
         public bool Equals(Product? other)
         {

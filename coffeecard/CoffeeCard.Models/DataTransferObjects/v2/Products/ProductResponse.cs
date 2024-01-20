@@ -17,7 +17,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Products
     ///     "description": "Coffee clip card of 10 clips",
     ///     "isPerk": true,
     ///     "visible": true,
-    ///     "AllowedUserGroups": ["Manager", "Board"],
+    ///     "allowedUserGroups": ["Manager", "Board"],
     ///     "menuItems": [
     ///         { "id": 1, "name": "Cappuccino" },
     ///         { "id": 2, "name": "Caffe Latte" }
@@ -96,6 +96,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Products
         /// <value>Menu items</value>
         /// <example>Cappuccino, Caffe Latte</example>
         /// <remarks>Optional for backwards compatibility</remarks>
-        public IEnumerable<MenuItemResponse> MenuItems { get; set; } = new List<MenuItemResponse>();
+        public IEnumerable<MenuItemResponse> EligibleMenuItems { get; set; } = new List<MenuItemResponse>();
     }
 }

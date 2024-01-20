@@ -1,10 +1,12 @@
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace CoffeeCard.Models.Entities;
 
 /// <summary>
 /// An item or good that Analog offers, such as a cappuccino or a t-shirt.
 /// </summary>
+[Index(nameof(Name), IsUnique = true)] 
 public class MenuItem
 {
     /// <summary>
@@ -20,5 +22,5 @@ public class MenuItem
     /// <summary>
     /// The product(s) that are eligible to redeem this menu item
     /// </summary>
-    public ICollection<Product> Products { get; set; }
+    public ICollection<Product> AssociatedProducts { get; set; }
 }
