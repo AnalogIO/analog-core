@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Models.DataTransferObjects.v2.Product;
+using CoffeeCard.Models.DataTransferObjects.v2.Products;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -87,7 +88,8 @@ namespace CoffeeCard.Library.Services.v2
                 ProductUserGroup = newProduct.AllowedUserGroups.Select(userGroup => new ProductUserGroup
                 {
                     UserGroup = userGroup
-                }).ToList()
+                }).ToList(),
+                MenuItems = _context.MenuItems.Where(item => newProduct.MenuItemIds.Contains(item.Id)).ToList()
             };
 
             _context.Products.Add(product);
@@ -100,7 +102,12 @@ namespace CoffeeCard.Library.Services.v2
                 Name = product.Name,
                 NumberOfTickets = product.NumberOfTickets,
                 Visible = product.Visible,
-                AllowedUserGroups = newProduct.AllowedUserGroups
+                AllowedUserGroups = newProduct.AllowedUserGroups,
+                MenuItems = product.MenuItems.Select(item => new MenuItemResponse
+                {
+                    Id = item.Id,
+                    Name = item.Name
+                })
             };
 
             return result;
@@ -119,6 +126,7 @@ namespace CoffeeCard.Library.Services.v2
                 ProductId = changedProduct.Id,
                 UserGroup = userGroup
             }).ToList();
+            product.MenuItems = _context.MenuItems.Where(item => changedProduct.MenuItemIds.Contains(item.Id)).ToList();
 
             await _context.SaveChangesAsync();
 
@@ -129,7 +137,12 @@ namespace CoffeeCard.Library.Services.v2
                 Name = product.Name,
                 NumberOfTickets = product.NumberOfTickets,
                 Visible = product.Visible,
-                AllowedUserGroups = changedProduct.AllowedUserGroups
+                AllowedUserGroups = changedProduct.AllowedUserGroups,
+                MenuItems = product.MenuItems.Select(item => new MenuItemResponse
+                {
+                    Id = item.Id,
+                    Name = item.Name
+                })
             };
 
             return result;

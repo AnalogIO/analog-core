@@ -78,6 +78,7 @@ namespace CoffeeCard.WebApi
             services.AddScoped<IProgrammeService, ProgrammeService>();
             services.AddScoped<Library.Services.IProductService, Library.Services.ProductService>();
             services.AddScoped<Library.Services.v2.IProductService, Library.Services.v2.ProductService>();
+            services.AddScoped<IMenuItemService, MenuItemService>();
             services.AddScoped<ITicketService, TicketService>();
             services.AddScoped<ClaimsUtilities>();
             services.AddSingleton(_environment.ContentRootFileProvider);

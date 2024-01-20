@@ -15,7 +15,8 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
     ///     "NumberOfTickets": 10,
     ///     "Description": "xxx",
     ///     "Visible": true,
-    ///     "AllowedUserGroups": ["Manager", "Board"]
+    ///     "AllowedUserGroups": ["Manager", "Board"],
+    ///     "MenuItemIds": [1, 2]
     /// }
     /// </example>
     public class AddProductRequest
@@ -72,5 +73,12 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
         [Required]
         public IEnumerable<UserGroup> AllowedUserGroups { get; set; } = new List<UserGroup>();
 
+        /// <summary>
+        /// Gets or sets the menu items that are eligible for the product.
+        /// </summary>
+        /// <value> Product Menu Item Ids </value>
+        /// <example> 1, 2 </example>
+        [Required]
+        public IEnumerable<int> MenuItemIds { get; set; } = new List<int>();
     }
 }

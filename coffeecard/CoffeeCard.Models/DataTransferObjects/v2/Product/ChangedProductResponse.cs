@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using CoffeeCard.Models.DataTransferObjects.v2.Products;
 using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.Product
@@ -60,5 +61,13 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
         /// <example> Manager, Board </example>
         [Required]
         public IEnumerable<UserGroup> AllowedUserGroups { get; set; } = new List<UserGroup>();
+
+        /// <summary>
+        /// Gets or sets the eligibible menu items for the product.
+        /// </summary>
+        /// <value> Product Menu Items </value>
+        /// <example> Espresso, Cappuccino </example>
+        [Required]
+        public IEnumerable<MenuItemResponse> MenuItems { get; set; } = new List<MenuItemResponse>();
     }
 }
