@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using CoffeeCard.Models.DataTransferObjects.v2.Products;
 using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.Products
@@ -16,7 +17,11 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Products
     ///     "description": "Coffee clip card of 10 clips",
     ///     "isPerk": true,
     ///     "visible": true,
-    ///     "AllowedUserGroups": ["Manager", "Board"]
+    ///     "allowedUserGroups": ["Manager", "Board"],
+    ///     "eligibleMenuItems": [
+    ///         { "id": 1, "name": "Cappuccino" },
+    ///         { "id": 2, "name": "Caffe Latte" }
+    ///     ]
     /// }
     /// </example>
     public class ProductResponse
@@ -83,6 +88,14 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Products
         /// <value> Product User Groups </value>
         /// <example> Manager, Board </example>
         [Required]
-        public IEnumerable<UserGroup> AllowedUserGroups { get; set; } = new List<UserGroup>();
+        public IEnumerable<UserGroup> AllowedUserGroups { get; set; }
+
+        /// <summary>
+        /// The menu items that this product can be used on.
+        /// </summary>
+        /// <value>Menu items</value>
+        /// <example>Cappuccino, Caffe Latte</example>
+        /// <remarks>Optional for backwards compatibility</remarks>
+        public IEnumerable<MenuItemResponse> EligibleMenuItems { get; set; }
     }
 }

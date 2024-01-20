@@ -57,5 +57,13 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Ticket
         /// <example>Coffee</example>
         [Required]
         public string ProductName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The name of the menu item that this ticket was used on
+        /// </summary>
+        /// <value>Menu item Id</value>
+        /// <example>Cappuccino</example>
+        /// <remarks>Null if ticket was not used on a menu item</remarks>
+        public string? UsedOnMenuItemName { get; set; }
     }
 }

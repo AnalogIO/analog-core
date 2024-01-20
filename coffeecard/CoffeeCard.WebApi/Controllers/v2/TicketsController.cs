@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using CoffeeCard.Library.Services;
+using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Utils;
-using CoffeeCard.Models.DataTransferObjects.Ticket;
+using CoffeeCard.Models.DataTransferObjects;
 using CoffeeCard.Models.DataTransferObjects.v2.Ticket;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -49,6 +47,27 @@ namespace CoffeeCard.WebApi.Controllers.v2
             var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
 
             return Ok(await _ticketService.GetTickets(user, includeUsed));
+        }
+
+        /// <summary>
+        /// Uses a ticket (for the given product) on the given menu item
+        /// </summary>
+        /// <param name="request">The product id and menu item id to use a ticket for</param>
+        /// <returns>The ticket that was used</returns>
+        /// <response code="200">Successful request</response>
+        /// <response code="401">Invalid credentials</response>
+        /// <response code="403">User has no tickets for the product or the menu item is not eligible for the ticket</response>
+        /// <response code="404">The product or menu item could not be found</response>
+        [ProducesResponseType(typeof(UsedTicketResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
+        [HttpPost("use")]
+        public async Task<ActionResult<UsedTicketResponse>> UseTicket([FromBody] UseTicketRequest request)
+        {
+            var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
+
+            return Ok(await _ticketService.UseTicketAsync(user, request.ProductId, request.MenuItemId));
         }
     }
 }
