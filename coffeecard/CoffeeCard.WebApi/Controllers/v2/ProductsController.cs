@@ -92,7 +92,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ProductResponse>> GetProduct(int id)
+        public async Task<ActionResult<ProductResponse>> GetProduct([FromRoute(Name = "id")] int id)
         {
             await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
             var product = await _productService.GetProductAsync(id);
