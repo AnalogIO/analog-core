@@ -6,7 +6,7 @@ namespace CoffeeCard.Models.Entities;
 /// <summary>
 /// An item or good that Analog offers, such as a cappuccino or a t-shirt.
 /// </summary>
-[Index(nameof(Name), IsUnique = true)] 
+[Index(nameof(Name), IsUnique = true)]
 public class MenuItem
 {
     /// <summary>
