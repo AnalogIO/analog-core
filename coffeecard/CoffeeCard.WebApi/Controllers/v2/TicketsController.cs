@@ -49,25 +49,25 @@ namespace CoffeeCard.WebApi.Controllers.v2
         }
 
         /// <summary>
-        /// Uses the ticket on the specified menu item
+        /// Uses a ticket (for the given product) on the given menu item
         /// </summary>
-        /// <param name="ticketId">The id of the ticket to be used</param>
+        /// <param name="productId">The id of the product the ticket is for</param>
         /// <param name="menuItemId">The id of the menu item to use the ticket on</param>
         /// <returns>The ticket that was used</returns>
         /// <response code="200">Successful request</response>
         /// <response code="401">Invalid credentials</response>
-        /// <response code="403">Menu item cannot be redeemed by this ticket</response>
-        /// <response code="404">No ticket on account or menu item not found</response>
+        /// <response code="403">User has no tickets for the product or the menu item is not eligible for the ticket</response>
+        /// <response code="404">The product or menu item could not be found</response>
         [ProducesResponseType(typeof(UsedTicketResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status404NotFound)]
         [HttpPost("use/{ticketId:int}/{menuItemId:int}")]
-        public async Task<ActionResult<UsedTicketResponse>> UseTicket(int ticketId, int menuItemId)
+        public async Task<ActionResult<UsedTicketResponse>> UseTicket(int productId, int menuItemId)
         {
             var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
 
-            return Ok(await _ticketService.UseTicketAsync(user, ticketId, menuItemId));
+            return Ok(await _ticketService.UseTicketAsync(user, productId, menuItemId));
         }
     }
 }

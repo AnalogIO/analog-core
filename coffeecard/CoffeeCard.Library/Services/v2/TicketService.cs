@@ -133,7 +133,7 @@ namespace CoffeeCard.Library.Services.v2
             var ticket = await _context.Tickets
                 .Include(t => t.Purchase)
                 .FirstOrDefaultAsync(t => t.Owner.Id == user.Id && t.ProductId == product.Id && !t.IsUsed)
-                ?? throw new EntityNotFoundException("User has no tickets for this product");
+                ?? throw new IllegalUserOperationException("User has no tickets for this product");
 
             return ticket;
         }
@@ -144,9 +144,9 @@ namespace CoffeeCard.Library.Services.v2
                 .FirstOrDefaultAsync(m => m.Id == menuItemId)
                 ?? throw new EntityNotFoundException("Menu item not found");
 
-            if (!product.MenuItems.Contains(menuItem))
+            if (!product.EligibleMenuItems.Contains(menuItem))
             {
-                throw new EntityNotFoundException("This ticket cannot be used on this menu item");
+                throw new IllegalUserOperationException("This ticket cannot be used on this menu item");
             }
 
             return menuItem;
