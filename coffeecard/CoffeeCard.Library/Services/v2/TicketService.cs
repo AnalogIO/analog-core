@@ -64,7 +64,8 @@ namespace CoffeeCard.Library.Services.v2
         {
             Log.Information("UserId {UserId} uses a ticket for ProductId {ProductId}", user.Id, productId);
 
-            var ticket = await GetFirstTicketFromProductAsync(productId, user.Id);
+            var product = await GetProductFromIdAsync(productId);
+            var ticket = await GetFirstTicketFromProductAsync(product, user.Id);
 
             ticket.IsUsed = true;
             var timeUsed = DateTime.UtcNow;
@@ -90,8 +91,9 @@ namespace CoffeeCard.Library.Services.v2
         {
             Log.Information($"UserId {user.Id} uses a ticket for MenuItemId {menuItemId} via ProductId {productId}");
 
-            var ticket = await GetFirstTicketFromProductAsync(productId, user.Id);
-            var menuItem = await GetMenuItemFromProductAsync(menuItemId, productId);
+            var product = await GetProductFromIdAsync(productId);
+            var ticket = await GetFirstTicketFromProductAsync(product, user.Id);
+            var menuItem = await GetMenuItemFromProductAsync(product, menuItemId);
 
             ticket.IsUsed = true;
             var timeUsed = DateTime.UtcNow;
@@ -115,35 +117,36 @@ namespace CoffeeCard.Library.Services.v2
             };
         }
 
-        private async Task<Ticket> GetFirstTicketFromProductAsync(int productId, int userId)
+        private async Task<Product> GetProductFromIdAsync(int productId)
         {
+            return await _context.Products
+                .FirstOrDefaultAsync(p => p.Id == productId)
+                ?? throw new EntityNotFoundException("Product not found");
+        }
+
+        private async Task<Ticket> GetFirstTicketFromProductAsync(Product product, int userId)
+        {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Id == userId)
+                ?? throw new EntityNotFoundException("User not found");
+
             var ticket = await _context.Tickets
                 .Include(t => t.Purchase)
-                .FirstOrDefaultAsync(t => t.Owner.Id == userId && t.ProductId == productId && !t.IsUsed);
+                .FirstOrDefaultAsync(t => t.Owner.Id == user.Id && t.ProductId == product.Id && !t.IsUsed)
+                ?? throw new EntityNotFoundException("User has no tickets for this product");
 
-            if (ticket == null)
-            {
-                throw new EntityNotFoundException("No tickets found for the given product with this user");
-            }
             return ticket;
         }
 
-        private async Task<MenuItem> GetMenuItemFromProductAsync(int menuItemId, int productId)
+        private async Task<MenuItem> GetMenuItemFromProductAsync(Product product, int menuItemId)
         {
             var menuItem = await _context.MenuItems
-                .Include(m => m.Products)
-                .FirstOrDefaultAsync(m => m.Id == menuItemId);
+                .FirstOrDefaultAsync(m => m.Id == menuItemId)
+                ?? throw new EntityNotFoundException("Menu item not found");
 
-            if (menuItem == null)
+            if (!product.MenuItems.Contains(menuItem))
             {
-                throw new EntityNotFoundException("The menu item was not found");
-            }
-
-            if (!menuItem.Products.Any(p => p.Id == productId))
-            {
-                throw new IllegalUserOperationException(
-                    $"Product is not eligible to redeem the menu item '{menuItem.Name}'"
-                );
+                throw new EntityNotFoundException("This ticket cannot be used on this menu item");
             }
 
             return menuItem;
