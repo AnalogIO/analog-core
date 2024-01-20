@@ -37,7 +37,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <response code="200">Successful request</response>
         /// <response code="401">Invalid credentials</response>
         /// <response code="403">User not allowed to access menu items</response>
-        [HttpGet("")]
+        [HttpGet]
         [AuthorizeRoles(UserGroup.Board)]
         [ProducesResponseType(typeof(IEnumerable<MenuItemResponse>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<MenuItemResponse>>> GetAllMenuItems()
@@ -52,7 +52,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <returns>Menu item</returns>
         /// <response code="200">Menu item successfully added</response>
         /// <response code="401">Invalid credentials</response>
-        [HttpPost("")]
+        [HttpPost]
         [AuthorizeRoles(UserGroup.Board)]
         [ProducesResponseType(typeof(MenuItemResponse), StatusCodes.Status200OK)]
         public async Task<ActionResult<MenuItemResponse>> AddMenuItem(AddMenuItemRequest menuItem)
@@ -69,12 +69,12 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <response code="401">Invalid credentials</response>
         /// <response code="404">Menu item not found</response>
         /// 
-        [HttpPut("")]
+        [HttpPut("{id}")]
         [AuthorizeRoles(UserGroup.Board)]
         [ProducesResponseType(typeof(MenuItemResponse), StatusCodes.Status200OK)]
-        public async Task<ActionResult<ChangedMenuItemResponse>> UpdateMenuItem(UpdateMenuItemRequest menuItem)
+        public async Task<ActionResult<MenuItemResponse>> UpdateMenuItem([FromRoute] int id, UpdateMenuItemRequest menuItem)
         {
-            return Ok(await _productService.UpdateMenuItem(menuItem));
+            return Ok(await _productService.UpdateMenuItem(id, menuItem));
         }
     }
 }

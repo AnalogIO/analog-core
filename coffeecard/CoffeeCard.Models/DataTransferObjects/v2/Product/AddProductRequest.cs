@@ -10,13 +10,13 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
     /// </summary>
     /// <example>
     /// {
-    ///     "Name": "Latte",
-    ///     "Price": 25,
-    ///     "NumberOfTickets": 10,
-    ///     "Description": "xxx",
-    ///     "Visible": true,
-    ///     "AllowedUserGroups": ["Manager", "Board"],
-    ///     "MenuItemIds": [1, 2]
+    ///     "name": "Latte",
+    ///     "price": 25,
+    ///     "numberOfTickets": 10,
+    ///     "description": "xxx",
+    ///     "visible": true,
+    ///     "allowedUserGroups": ["Manager", "Board"],
+    ///     "menuItemIds": [1, 2]
     /// }
     /// </example>
     public class AddProductRequest
@@ -79,6 +79,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
         /// <value> Product Menu Item Ids </value>
         /// <example> 1, 2 </example>
         [Required]
-        public IEnumerable<int> MenuItemIds { get; set; } = new List<int>();
+        public IEnumerable<int> MenuItemIds { get; set; }
     }
 }

@@ -10,6 +10,6 @@ namespace CoffeeCard.Library.Services.v2
     {
         Task<IEnumerable<MenuItemResponse>> GetAllMenuItemsAsync();
         Task<MenuItemResponse> AddMenuItem(AddMenuItemRequest newMenuItem);
-        Task<ChangedMenuItemResponse> UpdateMenuItem(UpdateMenuItemRequest changedMenuItem);
+        Task<MenuItemResponse> UpdateMenuItem(int id, UpdateMenuItemRequest changedMenuItem);
     }
 }

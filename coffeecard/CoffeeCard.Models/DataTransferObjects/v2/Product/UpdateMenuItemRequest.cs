@@ -10,19 +10,11 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
     /// </summary>
     /// <example>
     /// {
-    ///   "Id": 1,
     ///   "Name": "Espresso",
     /// }
     /// </example>
     public class UpdateMenuItemRequest
     {
-        /// <summary>
-        /// Gets or sets the ID of the product to update.
-        /// </summary>
-        /// <value> Product Id </value>
-        /// <example> 1 </example>
-        [Required]
-        public int Id { get; set; }
 
         /// <summary>
         /// Gets or sets the updated name of the product.

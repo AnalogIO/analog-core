@@ -88,6 +88,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
         /// <value> Product Menu Item Ids </value>
         /// <example> 1, 2 </example>
         [Required]
-        public IEnumerable<int> MenuItemIds { get; set; } = new List<int>();
+        public IEnumerable<int> MenuItemIds { get; set; }
     }
 }

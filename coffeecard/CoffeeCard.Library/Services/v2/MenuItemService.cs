@@ -67,28 +67,29 @@ namespace CoffeeCard.Library.Services.v2
             return result;
         }
 
-        public async Task<ChangedMenuItemResponse> UpdateMenuItem(UpdateMenuItemRequest changedMenuItem)
+        public async Task<MenuItemResponse> UpdateMenuItem(int id, UpdateMenuItemRequest changedMenuItem)
         {
-            var unique = await CheckMenuItemUniquenessAsync(changedMenuItem.Name, changedMenuItem.Id);
-            if (!unique)
-            {
-                throw new ConflictException($"Menu item already exists with name {changedMenuItem.Name}");
-            }
-
-            var menuItem = await _context.MenuItems.FirstOrDefaultAsync(p => p.Id == changedMenuItem.Id);
+            var menuItem = await _context.MenuItems.FirstOrDefaultAsync(p => p.Id == id);
 
             if (menuItem == null)
             {
-                Log.Error("No menu item was found by Menu Item Id: {Id}", changedMenuItem.Id);
-                throw new EntityNotFoundException($"No menu item was found by Menu Item Id: {changedMenuItem.Id}");
+                Log.Error("No menu item was found by Menu Item Id: {Id}", id);
+                throw new EntityNotFoundException($"No menu item was found by Menu Item Id: {id}");
+            }
+
+            var unique = await CheckMenuItemUniquenessAsync(changedMenuItem.Name, id);
+            if (!unique)
+            {
+                throw new ConflictException($"Menu item already exists with name {changedMenuItem.Name}");
             }
 
             menuItem.Name = changedMenuItem.Name;
 
             await _context.SaveChangesAsync();
 
-            var result = new ChangedMenuItemResponse
+            var result = new MenuItemResponse
             {
+                Id = id,
                 Name = menuItem.Name
             };
 
