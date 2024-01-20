@@ -51,8 +51,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <summary>
         /// Uses a ticket (for the given product) on the given menu item
         /// </summary>
-        /// <param name="productId">The id of the product the ticket is for</param>
-        /// <param name="menuItemId">The id of the menu item to use the ticket on</param>
+        /// <param name="request">The product id and menu item id to use a ticket for</param>
         /// <returns>The ticket that was used</returns>
         /// <response code="200">Successful request</response>
         /// <response code="401">Invalid credentials</response>
@@ -62,12 +61,12 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status404NotFound)]
-        [HttpPost("use/{productId:int}/{menuItemId:int}")]
-        public async Task<ActionResult<UsedTicketResponse>> UseTicket(int productId, int menuItemId)
+        [HttpPost("use")]
+        public async Task<ActionResult<UsedTicketResponse>> UseTicket([FromBody] UseTicketRequest request)
         {
             var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
 
-            return Ok(await _ticketService.UseTicketAsync(user, productId, menuItemId));
+            return Ok(await _ticketService.UseTicketAsync(user, request.ProductId, request.MenuItemId));
         }
     }
 }
