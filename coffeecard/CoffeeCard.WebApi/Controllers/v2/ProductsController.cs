@@ -90,7 +90,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
                 IsPerk = product.IsPerk(),
                 Visible = product.Visible,
                 AllowedUserGroups = product.ProductUserGroup.Select(e => e.UserGroup),
-                MenuItems = product.MenuItems.Select(
+                EligibleMenuItems = product.EligibleMenuItems.Select(
                     item => new MenuItemResponse { Id = item.Id, Name = item.Name }
                 )
             };
