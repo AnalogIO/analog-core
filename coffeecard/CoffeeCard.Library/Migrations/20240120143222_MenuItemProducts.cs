@@ -4,7 +4,7 @@
 
 namespace CoffeeCard.Library.Migrations
 {
-    public partial class AddedMenuItem : Migration
+    public partial class MenuItemProducts : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -22,7 +22,7 @@ namespace CoffeeCard.Library.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -30,26 +30,26 @@ namespace CoffeeCard.Library.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MenuItemProduct",
+                name: "MenuItemProducts",
                 schema: "dbo",
                 columns: table => new
                 {
-                    MenuItemsId = table.Column<int>(type: "int", nullable: false),
-                    ProductsId = table.Column<int>(type: "int", nullable: false)
+                    MenuItemId = table.Column<int>(type: "int", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MenuItemProduct", x => new { x.MenuItemsId, x.ProductsId });
+                    table.PrimaryKey("PK_MenuItemProducts", x => new { x.MenuItemId, x.ProductId });
                     table.ForeignKey(
-                        name: "FK_MenuItemProduct_MenuItems_MenuItemsId",
-                        column: x => x.MenuItemsId,
+                        name: "FK_MenuItemProducts_MenuItems_MenuItemId",
+                        column: x => x.MenuItemId,
                         principalSchema: "dbo",
                         principalTable: "MenuItems",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_MenuItemProduct_Products_ProductsId",
-                        column: x => x.ProductsId,
+                        name: "FK_MenuItemProducts_Products_ProductId",
+                        column: x => x.ProductId,
                         principalSchema: "dbo",
                         principalTable: "Products",
                         principalColumn: "Id",
@@ -63,10 +63,17 @@ namespace CoffeeCard.Library.Migrations
                 column: "UsedOnMenuItemId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MenuItemProduct_ProductsId",
+                name: "IX_MenuItemProducts_ProductId",
                 schema: "dbo",
-                table: "MenuItemProduct",
-                column: "ProductsId");
+                table: "MenuItemProducts",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MenuItems_Name",
+                schema: "dbo",
+                table: "MenuItems",
+                column: "Name",
+                unique: true);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Tickets_MenuItems_UsedOnMenuItemId",
@@ -86,7 +93,7 @@ namespace CoffeeCard.Library.Migrations
                 table: "Tickets");
 
             migrationBuilder.DropTable(
-                name: "MenuItemProduct",
+                name: "MenuItemProducts",
                 schema: "dbo");
 
             migrationBuilder.DropTable(

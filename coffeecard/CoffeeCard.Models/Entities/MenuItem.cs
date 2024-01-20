@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoffeeCard.Models.Entities;
@@ -23,4 +24,9 @@ public class MenuItem
     /// The product(s) that are eligible to redeem this menu item
     /// </summary>
     public ICollection<Product> AssociatedProducts { get; set; }
+
+    /// <summary>
+    /// Navigational property for the join table between Menu Items and Products
+    /// </summary>
+    public ICollection<MenuItemProduct> MenuItemProducts { get; set; }
 }
