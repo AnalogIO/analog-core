@@ -40,13 +40,13 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <response code="200">Successful request</response>
         /// <response code="401">Invalid credentials</response>
         [HttpGet]
-        [ProducesResponseType(typeof(List<TicketResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<TicketResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<List<TicketResponse>>> Get([FromQuery] bool includeUsed)
+        public async Task<ActionResult<IEnumerable<TicketResponse>>> Get([FromQuery] bool includeUsed)
         {
             var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
 
-            return Ok(await _ticketService.GetTickets(user, includeUsed));
+            return Ok(await _ticketService.GetTicketsAsync(user, includeUsed));
         }
 
         /// <summary>

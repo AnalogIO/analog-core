@@ -94,7 +94,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Products
         /// The menu items that this product can be used on.
         /// </summary>
         /// <value>Menu items</value>
-        /// <example>Cappuccino, Caffe Latte</example>
+        /// <example>["Cappuccino", "Caffe Latte"]</example>
         /// <remarks>Optional for backwards compatibility</remarks>
         public IEnumerable<MenuItemResponse> EligibleMenuItems { get; set; }
     }
