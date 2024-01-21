@@ -32,6 +32,8 @@ namespace CoffeeCard.Library.Persistence
         public DbSet<WebhookConfiguration> WebhookConfigurations { get; set; }
         public DbSet<MenuItem> MenuItems { get; set; }
 
+        public DbSet<MenuItemProduct> MenuItemProducts { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema(_databaseSettings.SchemaName);
@@ -43,6 +45,14 @@ namespace CoffeeCard.Library.Persistence
                     pug.ProductId,
                     pug.UserGroup
                 });
+
+            modelBuilder.Entity<MenuItemProduct>()
+                .HasKey(mip => new { mip.MenuItemId, mip.ProductId });
+
+            modelBuilder.Entity<MenuItem>()
+                .HasMany(mi => mi.AssociatedProducts)
+                .WithMany(p => p.EligibleMenuItems)
+                .UsingEntity<MenuItemProduct>();
 
             // Use Enum to Int for UserGroups
             var userGroupIntConverter = new EnumToNumberConverter<UserGroup, int>();

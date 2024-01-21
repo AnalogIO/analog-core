@@ -54,11 +54,29 @@ namespace CoffeeCard.Library.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.ToTable("MenuItems", "dbo");
+                });
+
+            modelBuilder.Entity("CoffeeCard.Models.Entities.MenuItemProduct", b =>
+                {
+                    b.Property<int>("MenuItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("MenuItemId", "ProductId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("MenuItemProducts", "dbo");
                 });
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.PosPurhase", b =>
@@ -462,6 +480,25 @@ namespace CoffeeCard.Library.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("CoffeeCard.Models.Entities.MenuItemProduct", b =>
+                {
+                    b.HasOne("CoffeeCard.Models.Entities.MenuItem", "MenuItem")
+                        .WithMany("MenuItemProducts")
+                        .HasForeignKey("MenuItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CoffeeCard.Models.Entities.Product", "Product")
+                        .WithMany("MenuItemProducts")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MenuItem");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("CoffeeCard.Models.Entities.PosPurhase", b =>
                 {
                     b.HasOne("CoffeeCard.Models.Entities.Purchase", "Purchase")
@@ -582,23 +619,15 @@ namespace CoffeeCard.Library.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("MenuItemProduct", b =>
+            modelBuilder.Entity("CoffeeCard.Models.Entities.MenuItem", b =>
                 {
-                    b.HasOne("CoffeeCard.Models.Entities.MenuItem", null)
-                        .WithMany()
-                        .HasForeignKey("MenuItemsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CoffeeCard.Models.Entities.Product", null)
-                        .WithMany()
-                        .HasForeignKey("ProductsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("MenuItemProducts");
                 });
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.Product", b =>
                 {
+                    b.Navigation("MenuItemProducts");
+
                     b.Navigation("ProductUserGroup");
                 });
 

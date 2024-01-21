@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.DataTransferObjects;
 using CoffeeCard.Models.DataTransferObjects.v2.Ticket;
@@ -59,8 +60,8 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <response code="404">The product or menu item could not be found</response>
         [ProducesResponseType(typeof(UsedTicketResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
         [HttpPost("use")]
         public async Task<ActionResult<UsedTicketResponse>> UseTicket([FromBody] UseTicketRequest request)
         {

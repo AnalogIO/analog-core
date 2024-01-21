@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.DataTransferObjects.v2.Product;
 using CoffeeCard.Models.DataTransferObjects.v2.Products;
@@ -76,6 +77,26 @@ namespace CoffeeCard.WebApi.Controllers.v2
             var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
             var products = await _productService.GetProductsForUserAsync(user);
             return Ok(products.Select(MapProductToDto).ToList());
+        }
+
+        /// <summary>
+        /// Returns a product with the specified id
+        /// </summary>
+        /// <param name="id">The id of the product to be returned</param>
+        /// <returns>The product with the specified id</returns>
+        /// <response code="200">Successful request</response>
+        /// <response code="401">Invalid credentials</response>
+        /// <response code="404">The product with the specified id could not be found</response>
+        /// <response code="403">The user is not allowed to access the product</response>
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<ProductResponse>> GetProduct([FromRoute(Name = "id")] int id)
+        {
+            await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
+            var product = await _productService.GetProductAsync(id);
+            return Ok(MapProductToDto(product));
         }
 
         private static ProductResponse MapProductToDto(Product product)

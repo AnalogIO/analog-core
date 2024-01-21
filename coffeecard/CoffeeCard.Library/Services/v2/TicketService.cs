@@ -64,7 +64,7 @@ namespace CoffeeCard.Library.Services.v2
         {
             Log.Information("UserId {UserId} uses a ticket for ProductId {ProductId}", user.Id, productId);
 
-            var product = await GetProductFromIdAsync(productId);
+            var product = await GetProductIncludingMenuItemsFromIdAsync(productId);
             var ticket = await GetFirstTicketFromProductAsync(product, user.Id);
 
             ticket.IsUsed = true;
@@ -91,9 +91,14 @@ namespace CoffeeCard.Library.Services.v2
         {
             Log.Information($"UserId {user.Id} uses a ticket for MenuItemId {menuItemId} via ProductId {productId}");
 
-            var product = await GetProductFromIdAsync(productId);
+            var product = await GetProductIncludingMenuItemsFromIdAsync(productId);
             var ticket = await GetFirstTicketFromProductAsync(product, user.Id);
-            var menuItem = await GetMenuItemFromProductAsync(product, menuItemId);
+            var menuItem = await GetMenuItemByIdAsync(menuItemId);
+
+            if (!product.EligibleMenuItems.Any(mi => mi.Id == menuItem.Id))
+            {
+                throw new IllegalUserOperationException("This ticket cannot be used on this menu item");
+            }
 
             ticket.IsUsed = true;
             var timeUsed = DateTime.UtcNow;
@@ -117,9 +122,10 @@ namespace CoffeeCard.Library.Services.v2
             };
         }
 
-        private async Task<Product> GetProductFromIdAsync(int productId)
+        private async Task<Product> GetProductIncludingMenuItemsFromIdAsync(int productId)
         {
             return await _context.Products
+                .Include(p => p.EligibleMenuItems)
                 .FirstOrDefaultAsync(p => p.Id == productId)
                 ?? throw new EntityNotFoundException("Product not found");
         }
@@ -138,16 +144,11 @@ namespace CoffeeCard.Library.Services.v2
             return ticket;
         }
 
-        private async Task<MenuItem> GetMenuItemFromProductAsync(Product product, int menuItemId)
+        private async Task<MenuItem> GetMenuItemByIdAsync(int menuItemId)
         {
             var menuItem = await _context.MenuItems
                 .FirstOrDefaultAsync(m => m.Id == menuItemId)
                 ?? throw new EntityNotFoundException("Menu item not found");
-
-            if (!product.EligibleMenuItems.Contains(menuItem))
-            {
-                throw new IllegalUserOperationException("This ticket cannot be used on this menu item");
-            }
 
             return menuItem;
         }
