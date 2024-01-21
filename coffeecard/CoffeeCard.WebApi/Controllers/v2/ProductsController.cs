@@ -21,7 +21,6 @@ namespace CoffeeCard.WebApi.Controllers.v2
     [Authorize]
     [ApiVersion("2")]
     [Route("api/v{version:apiVersion}/products")]
-
     public class ProductsController : ControllerBase
     {
         private readonly IProductService _productService;
@@ -49,7 +48,6 @@ namespace CoffeeCard.WebApi.Controllers.v2
         {
             return Ok(await _productService.AddProduct(addProductRequest));
         }
-
 
         /// <summary>
         /// Updates a product with the specified changes.
@@ -81,6 +79,26 @@ namespace CoffeeCard.WebApi.Controllers.v2
             return Ok(products.Select(MapProductToDto).ToList());
         }
 
+        /// <summary>
+        /// Returns a product with the specified id
+        /// </summary>
+        /// <param name="id">The id of the product to be returned</param>
+        /// <returns>The product with the specified id</returns>
+        /// <response code="200">Successful request</response>
+        /// <response code="401">Invalid credentials</response>
+        /// <response code="404">The product with the specified id could not be found</response>
+        /// <response code="403">The user is not allowed to access the product</response>
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<ProductResponse>> GetProduct([FromRoute(Name = "id")] int id)
+        {
+            await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
+            var product = await _productService.GetProductAsync(id);
+            return Ok(MapProductToDto(product));
+        }
+
         private static ProductResponse MapProductToDto(Product product)
         {
             return new ProductResponse
@@ -92,7 +110,10 @@ namespace CoffeeCard.WebApi.Controllers.v2
                 Price = product.Price,
                 IsPerk = product.IsPerk(),
                 Visible = product.Visible,
-                AllowedUserGroups = product.ProductUserGroup.Select(e => e.UserGroup)
+                AllowedUserGroups = product.ProductUserGroup.Select(e => e.UserGroup),
+                EligibleMenuItems = product.EligibleMenuItems.Select(
+                    item => new MenuItemResponse { Id = item.Id, Name = item.Name }
+                )
             };
         }
 

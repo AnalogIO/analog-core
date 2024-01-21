@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Models.DataTransferObjects.v2.Product;
+using CoffeeCard.Models.DataTransferObjects.v2.Products;
 using CoffeeCard.Models.Entities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -32,6 +32,7 @@ namespace CoffeeCard.Library.Services.v2
                 .Where(p => p.ProductUserGroup.Any(pug => pug.UserGroup == userGroup))
                 .Where(p => p.Visible).OrderBy(p => p.Id)
                 .Include(p => p.ProductUserGroup)
+                .Include(p => p.EligibleMenuItems)
                 .ToListAsync();
         }
 
@@ -40,6 +41,7 @@ namespace CoffeeCard.Library.Services.v2
             return await _context.Products
                 .OrderBy(p => p.Id)
                 .Include(p => p.ProductUserGroup)
+                .Include(p => p.EligibleMenuItems)
                 .ToListAsync();
         }
 
@@ -47,6 +49,7 @@ namespace CoffeeCard.Library.Services.v2
         {
             var product = await _context.Products
                 .Include(p => p.ProductUserGroup)
+                .Include(p => p.EligibleMenuItems)
                 .FirstOrDefaultAsync(p => p.Id == productId);
 
             if (product == null)
@@ -82,10 +85,15 @@ namespace CoffeeCard.Library.Services.v2
                 NumberOfTickets = newProduct.NumberOfTickets,
                 ExperienceWorth = 0,
                 Visible = newProduct.Visible,
-                ProductUserGroup = newProduct.AllowedUserGroups.Select(userGroup => new ProductUserGroup
-                {
-                    UserGroup = userGroup
-                }).ToList()
+                ProductUserGroup = newProduct.AllowedUserGroups
+                    .Select(userGroup => new ProductUserGroup
+                    {
+                        UserGroup = userGroup
+                    }).ToList(),
+                EligibleMenuItems = _context.MenuItems
+                    .Where(mi => newProduct.MenuItemIds
+                        .Contains(mi.Id))
+                    .ToList()
             };
 
             _context.Products.Add(product);
@@ -98,7 +106,13 @@ namespace CoffeeCard.Library.Services.v2
                 Name = product.Name,
                 NumberOfTickets = product.NumberOfTickets,
                 Visible = product.Visible,
-                AllowedUserGroups = newProduct.AllowedUserGroups
+                AllowedUserGroups = newProduct.AllowedUserGroups,
+                MenuItems = product.EligibleMenuItems
+                    .Select(mi => new MenuItemResponse
+                    {
+                        Id = mi.Id,
+                        Name = mi.Name
+                    })
             };
 
             return result;
@@ -107,16 +121,23 @@ namespace CoffeeCard.Library.Services.v2
         public async Task<ChangedProductResponse> UpdateProduct(UpdateProductRequest changedProduct)
         {
             var product = await GetProductAsync(changedProduct.Id);
+
             product.Price = changedProduct.Price;
             product.Description = changedProduct.Description;
             product.NumberOfTickets = changedProduct.NumberOfTickets;
             product.Name = changedProduct.Name;
             product.Visible = changedProduct.Visible;
-            product.ProductUserGroup = changedProduct.AllowedUserGroups.Select(userGroup => new ProductUserGroup
-            {
-                ProductId = changedProduct.Id,
-                UserGroup = userGroup
-            }).ToList();
+            product.ProductUserGroup = changedProduct.AllowedUserGroups
+                .Select(userGroup => new ProductUserGroup
+                {
+                    ProductId = changedProduct.Id,
+                    UserGroup = userGroup
+                })
+                .ToList();
+            product.EligibleMenuItems = _context.MenuItems
+                .Where(mi => changedProduct.MenuItemIds
+                    .Contains(mi.Id))
+                .ToList();
 
             await _context.SaveChangesAsync();
 
@@ -127,7 +148,13 @@ namespace CoffeeCard.Library.Services.v2
                 Name = product.Name,
                 NumberOfTickets = product.NumberOfTickets,
                 Visible = product.Visible,
-                AllowedUserGroups = changedProduct.AllowedUserGroups
+                AllowedUserGroups = changedProduct.AllowedUserGroups,
+                MenuItems = product.EligibleMenuItems
+                    .Select(item => new MenuItemResponse
+                    {
+                        Id = item.Id,
+                        Name = item.Name
+                    })
             };
 
             return result;

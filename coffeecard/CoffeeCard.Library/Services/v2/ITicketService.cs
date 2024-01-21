@@ -10,8 +10,10 @@ namespace CoffeeCard.Library.Services.v2
     {
         Task IssueTickets(Purchase purchase);
 
-        Task<List<TicketResponse>> GetTickets(User user, bool includeUsed);
+        Task<IEnumerable<TicketResponse>> GetTicketsAsync(User user, bool includeUsed);
 
         public Task<UsedTicketResponse> UseTicketAsync(User user, int productId);
+
+        public Task<UsedTicketResponse> UseTicketAsync(User user, int productId, int menuItemId);
     }
 }

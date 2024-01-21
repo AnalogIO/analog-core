@@ -6,7 +6,6 @@ using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Models.DataTransferObjects.v2.Ticket;
 using CoffeeCard.Models.Entities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -44,24 +43,30 @@ namespace CoffeeCard.Library.Services.v2
             Log.Information("Issued {NoTickets} Tickets for ProductId {ProductId}, PurchaseId {PurchaseId}", purchase.NumberOfTickets, purchase.ProductId, purchase.Id);
         }
 
-        public Task<List<TicketResponse>> GetTickets(User user, bool includeUsed)
+        public async Task<IEnumerable<TicketResponse>> GetTicketsAsync(User user, bool includeUsed)
         {
-            return _context.Tickets.Where(t => t.Owner.Equals(user) && t.IsUsed == includeUsed).Include(t => t.Purchase)
+            return await _context.Tickets
+                .Where(t => t.Owner.Equals(user) && t.IsUsed == includeUsed)
+                .Include(t => t.Purchase)
+                .Include(t => t.UsedOnMenuItem)
                 .Select(t => new TicketResponse
                 {
                     Id = t.Id,
                     DateCreated = t.DateCreated,
                     DateUsed = t.DateUsed,
                     ProductId = t.ProductId,
-                    ProductName = t.Purchase.ProductName
-                }).ToListAsync();
+                    ProductName = t.Purchase.ProductName,
+                    UsedOnMenuItemName = t.UsedOnMenuItem != null ? t.UsedOnMenuItem.Name : null
+                })
+                .ToListAsync();
         }
 
         public async Task<UsedTicketResponse> UseTicketAsync(User user, int productId)
         {
             Log.Information("UserId {UserId} uses a ticket for ProductId {ProductId}", user.Id, productId);
 
-            var ticket = await GetFirstTicketFromProductAsync(productId, user.Id);
+            var product = await GetProductIncludingMenuItemsFromIdAsync(productId);
+            var ticket = await GetFirstTicketFromProductAsync(product, user.Id);
 
             ticket.IsUsed = true;
             var timeUsed = DateTime.UtcNow;
@@ -83,17 +88,70 @@ namespace CoffeeCard.Library.Services.v2
             };
         }
 
-        private async Task<Ticket> GetFirstTicketFromProductAsync(int productId, int userId)
+        public async Task<UsedTicketResponse> UseTicketAsync(User user, int productId, int menuItemId)
         {
+            Log.Information($"UserId {user.Id} uses a ticket for MenuItemId {menuItemId} via ProductId {productId}");
+
+            var product = await GetProductIncludingMenuItemsFromIdAsync(productId);
+            var ticket = await GetFirstTicketFromProductAsync(product, user.Id);
+            var menuItem = await GetMenuItemByIdAsync(menuItemId);
+
+            if (!product.EligibleMenuItems.Any(mi => mi.Id == menuItem.Id))
+            {
+                throw new IllegalUserOperationException("This ticket cannot be used on this menu item");
+            }
+
+            ticket.IsUsed = true;
+            var timeUsed = DateTime.UtcNow;
+            ticket.DateUsed = timeUsed;
+            ticket.UsedOnMenuItemId = menuItemId;
+
+            if (ticket.Purchase.Price > 0) //Paid products increases your rank on the leaderboard
+            {
+                await _statisticService.IncreaseStatisticsBy(user.Id, 1);
+            }
+
+            await _context.SaveChangesAsync();
+
+            return new UsedTicketResponse
+            {
+                Id = ticket.Id,
+                DateCreated = ticket.DateCreated,
+                DateUsed = timeUsed,
+                ProductName = ticket.Purchase.ProductName,
+                MenuItemName = menuItem.Name
+            };
+        }
+
+        private async Task<Product> GetProductIncludingMenuItemsFromIdAsync(int productId)
+        {
+            return await _context.Products
+                .Include(p => p.EligibleMenuItems)
+                .FirstOrDefaultAsync(p => p.Id == productId)
+                ?? throw new EntityNotFoundException("Product not found");
+        }
+
+        private async Task<Ticket> GetFirstTicketFromProductAsync(Product product, int userId)
+        {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Id == userId)
+                ?? throw new EntityNotFoundException("User not found");
+
             var ticket = await _context.Tickets
                 .Include(t => t.Purchase)
-                .FirstOrDefaultAsync(t => t.Owner.Id == userId && t.ProductId == productId && !t.IsUsed);
+                .FirstOrDefaultAsync(t => t.Owner.Id == user.Id && t.ProductId == product.Id && !t.IsUsed)
+                ?? throw new IllegalUserOperationException("User has no tickets for this product");
 
-            if (ticket == null)
-            {
-                throw new EntityNotFoundException("No tickets found for the given product with this user");
-            }
             return ticket;
+        }
+
+        private async Task<MenuItem> GetMenuItemByIdAsync(int menuItemId)
+        {
+            var menuItem = await _context.MenuItems
+                .FirstOrDefaultAsync(m => m.Id == menuItemId)
+                ?? throw new EntityNotFoundException("Menu item not found");
+
+            return menuItem;
         }
 
         public void Dispose()

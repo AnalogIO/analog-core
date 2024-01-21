@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CoffeeCard.Models.Entities
 {
@@ -23,6 +24,16 @@ namespace CoffeeCard.Models.Entities
         public bool Visible { get; set; } = true;
 
         public ICollection<ProductUserGroup> ProductUserGroup { get; set; }
+
+        /// <summary>
+        /// The menu item(s) that this product is eligible to redeem
+        /// </summary>
+        public ICollection<MenuItem> EligibleMenuItems { get; set; }
+
+        /// <summary>
+        /// Navigational property for the join table between Menu Items and Products
+        /// </summary>
+        public ICollection<MenuItemProduct> MenuItemProducts { get; set; }
 
         public bool Equals(Product? other)
         {

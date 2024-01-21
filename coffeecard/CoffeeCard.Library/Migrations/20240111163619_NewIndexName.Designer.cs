@@ -4,6 +4,7 @@ using CoffeeCard.Library.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoffeeCard.Library.Migrations
 {
     [DbContext(typeof(CoffeeCardContext))]
-    partial class CoffeeCardContextModelSnapshot : ModelSnapshot
+    [Migration("20240111163619_NewIndexName")]
+    partial class NewIndexName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,41 +44,6 @@ namespace CoffeeCard.Library.Migrations
                     b.HasIndex("User_Id");
 
                     b.ToTable("LoginAttempts", "dbo");
-                });
-
-            modelBuilder.Entity("CoffeeCard.Models.Entities.MenuItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("MenuItems", "dbo");
-                });
-
-            modelBuilder.Entity("CoffeeCard.Models.Entities.MenuItemProduct", b =>
-                {
-                    b.Property<int>("MenuItemId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.HasKey("MenuItemId", "ProductId");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("MenuItemProducts", "dbo");
                 });
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.PosPurhase", b =>
@@ -281,16 +248,11 @@ namespace CoffeeCard.Library.Migrations
                         .HasColumnType("int")
                         .HasColumnName("Purchase_Id");
 
-                    b.Property<int?>("UsedOnMenuItemId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("OwnerId");
 
                     b.HasIndex("PurchaseId");
-
-                    b.HasIndex("UsedOnMenuItemId");
 
                     b.ToTable("Tickets", "dbo");
                 });
@@ -465,25 +427,6 @@ namespace CoffeeCard.Library.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("CoffeeCard.Models.Entities.MenuItemProduct", b =>
-                {
-                    b.HasOne("CoffeeCard.Models.Entities.MenuItem", "MenuItem")
-                        .WithMany("MenuItemProducts")
-                        .HasForeignKey("MenuItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CoffeeCard.Models.Entities.Product", "Product")
-                        .WithMany("MenuItemProducts")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("MenuItem");
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("CoffeeCard.Models.Entities.PosPurhase", b =>
                 {
                     b.HasOne("CoffeeCard.Models.Entities.Purchase", "Purchase")
@@ -550,15 +493,9 @@ namespace CoffeeCard.Library.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CoffeeCard.Models.Entities.MenuItem", "UsedOnMenuItem")
-                        .WithMany()
-                        .HasForeignKey("UsedOnMenuItemId");
-
                     b.Navigation("Owner");
 
                     b.Navigation("Purchase");
-
-                    b.Navigation("UsedOnMenuItem");
                 });
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.Token", b =>
@@ -604,15 +541,8 @@ namespace CoffeeCard.Library.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("CoffeeCard.Models.Entities.MenuItem", b =>
-                {
-                    b.Navigation("MenuItemProducts");
-                });
-
             modelBuilder.Entity("CoffeeCard.Models.Entities.Product", b =>
                 {
-                    b.Navigation("MenuItemProducts");
-
                     b.Navigation("ProductUserGroup");
                 });
 
