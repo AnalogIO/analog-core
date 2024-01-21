@@ -454,21 +454,6 @@ namespace CoffeeCard.Library.Migrations
                     b.ToTable("WebhookConfigurations", "dbo");
                 });
 
-            modelBuilder.Entity("MenuItemProduct", b =>
-                {
-                    b.Property<int>("MenuItemsId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("MenuItemsId", "ProductsId");
-
-                    b.HasIndex("ProductsId");
-
-                    b.ToTable("MenuItemProduct", "dbo");
-                });
-
             modelBuilder.Entity("CoffeeCard.Models.Entities.LoginAttempt", b =>
                 {
                     b.HasOne("CoffeeCard.Models.Entities.User", "User")
