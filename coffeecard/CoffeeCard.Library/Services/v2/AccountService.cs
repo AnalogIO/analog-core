@@ -234,7 +234,7 @@ namespace CoffeeCard.Library.Services.v2
                 throw new ArgumentException($"The value of {nameof(pageNum)} is outside of the range of total users");
             }
 
-            var userByPage = await query
+            var usersByPage = await query
                 .OrderBy(u => u.Id)
                 .Skip(skip).Take(pageLength)
                 .Select(u => new SimpleUserResponse
@@ -250,7 +250,7 @@ namespace CoffeeCard.Library.Services.v2
             return new UserSearchResponse
             {
                 TotalUsers = totalUsers,
-                Users = userByPage
+                Users = usersByPage
             };
         }
 

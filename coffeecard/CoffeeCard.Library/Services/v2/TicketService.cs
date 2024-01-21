@@ -43,9 +43,9 @@ namespace CoffeeCard.Library.Services.v2
             Log.Information("Issued {NoTickets} Tickets for ProductId {ProductId}, PurchaseId {PurchaseId}", purchase.NumberOfTickets, purchase.ProductId, purchase.Id);
         }
 
-        public Task<List<TicketResponse>> GetTickets(User user, bool includeUsed)
+        public async Task<IEnumerable<TicketResponse>> GetTicketsAsync(User user, bool includeUsed)
         {
-            return _context.Tickets
+            return await _context.Tickets
                 .Where(t => t.Owner.Equals(user) && t.IsUsed == includeUsed)
                 .Include(t => t.Purchase)
                 .Include(t => t.UsedOnMenuItem)
@@ -57,7 +57,8 @@ namespace CoffeeCard.Library.Services.v2
                     ProductId = t.ProductId,
                     ProductName = t.Purchase.ProductName,
                     UsedOnMenuItemName = t.UsedOnMenuItem != null ? t.UsedOnMenuItem.Name : null
-                }).ToListAsync();
+                })
+                .ToListAsync();
         }
 
         public async Task<UsedTicketResponse> UseTicketAsync(User user, int productId)

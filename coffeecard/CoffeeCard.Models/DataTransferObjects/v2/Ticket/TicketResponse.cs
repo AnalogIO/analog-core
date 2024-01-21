@@ -7,15 +7,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Ticket
     /// <summary>
     /// Representing a ticket for a product
     /// </summary>
-    /// <example>
-    /// {
-    ///     "id": 122,
-    ///     "dateCreated": "2022-01-09T21:03:52.2283208Z",
-    ///     "dateUsed": "2022-01-09T21:03:52.2283208Z",
-    ///     "productId": 1,
-    ///     "productName: "Coffee"
-    /// }
-    /// </example>
     public class TicketResponse
     {
         /// <summary>
