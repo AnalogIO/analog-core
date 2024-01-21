@@ -20,14 +20,14 @@ namespace CoffeeCard.WebApi.Controllers.v2
     [Route("api/v{version:apiVersion}/menuitems")]
     public class MenuItemsController : ControllerBase
     {
-        private readonly IMenuItemService _productService;
+        private readonly IMenuItemService _menuItemService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MenuItemsController"/> class.
         /// </summary>
-        public MenuItemsController(IMenuItemService productService)
+        public MenuItemsController(IMenuItemService menuItemsService)
         {
-            _productService = productService;
+            _menuItemService = menuItemsService;
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(IEnumerable<MenuItemResponse>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<MenuItemResponse>>> GetAllMenuItems()
         {
-            return Ok(await _productService.GetAllMenuItemsAsync());
+            return Ok(await _menuItemService.GetAllMenuItemsAsync());
         }
 
         /// <summary>
@@ -50,14 +50,14 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// </summary>
         /// <param name="menuItem">Menu item to add</param>
         /// <returns>Menu item</returns>
-        /// <response code="200">Menu item successfully added</response>
+        /// <response code="201">Menu item successfully added</response>
         /// <response code="401">Invalid credentials</response>
         [HttpPost]
         [AuthorizeRoles(UserGroup.Board)]
-        [ProducesResponseType(typeof(MenuItemResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(MenuItemResponse), StatusCodes.Status201Created)]
         public async Task<ActionResult<MenuItemResponse>> AddMenuItem(AddMenuItemRequest menuItem)
         {
-            return Ok(await _productService.AddMenuItem(menuItem));
+            return CreatedAtAction(nameof(GetAllMenuItems), await _menuItemService.AddMenuItemAsync(menuItem));
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(MenuItemResponse), StatusCodes.Status200OK)]
         public async Task<ActionResult<MenuItemResponse>> UpdateMenuItem([FromRoute] int id, UpdateMenuItemRequest menuItem)
         {
-            return Ok(await _productService.UpdateMenuItem(id, menuItem));
+            return Ok(await _menuItemService.UpdateMenuItemAsync(id, menuItem));
         }
     }
 }

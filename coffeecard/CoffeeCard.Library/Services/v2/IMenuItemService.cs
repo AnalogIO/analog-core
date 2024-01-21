@@ -9,7 +9,7 @@ namespace CoffeeCard.Library.Services.v2
     public interface IMenuItemService : IDisposable
     {
         Task<IEnumerable<MenuItemResponse>> GetAllMenuItemsAsync();
-        Task<MenuItemResponse> AddMenuItem(AddMenuItemRequest newMenuItem);
-        Task<MenuItemResponse> UpdateMenuItem(int id, UpdateMenuItemRequest changedMenuItem);
+        Task<MenuItemResponse> AddMenuItemAsync(AddMenuItemRequest newMenuItem);
+        Task<MenuItemResponse> UpdateMenuItemAsync(int menuItemid, UpdateMenuItemRequest changedMenuItem);
     }
 }

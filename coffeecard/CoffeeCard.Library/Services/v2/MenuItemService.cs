@@ -33,19 +33,10 @@ namespace CoffeeCard.Library.Services.v2
                 .ToListAsync();
         }
 
-
-        private async Task<bool> CheckMenuItemUniquenessAsync(string name)
+        public async Task<MenuItemResponse> AddMenuItemAsync(AddMenuItemRequest newMenuItem)
         {
-            var menuItem = await _context.MenuItems
-                .FirstOrDefaultAsync(p => p.Name == name);
-
-            return menuItem == null;
-        }
-
-        public async Task<MenuItemResponse> AddMenuItem(AddMenuItemRequest newMenuItem)
-        {
-            var unique = await CheckMenuItemUniquenessAsync(newMenuItem.Name);
-            if (!unique)
+            var nameExists = await CheckMenuItemNameExists(newMenuItem.Name);
+            if (nameExists)
             {
                 throw new ConflictException($"Menu item already exists with name {newMenuItem.Name}");
             }
@@ -67,18 +58,24 @@ namespace CoffeeCard.Library.Services.v2
             return result;
         }
 
-        public async Task<MenuItemResponse> UpdateMenuItem(int id, UpdateMenuItemRequest changedMenuItem)
+        private async Task<bool> CheckMenuItemNameExists(string name)
+        {
+            return await _context.MenuItems
+                .AnyAsync(p => p.Name == name);
+        }
+
+        public async Task<MenuItemResponse> UpdateMenuItemAsync(int id, UpdateMenuItemRequest changedMenuItem)
         {
             var menuItem = await _context.MenuItems.FirstOrDefaultAsync(p => p.Id == id);
 
             if (menuItem == null)
             {
-                Log.Error("No menu item was found by Menu Item Id: {Id}", id);
-                throw new EntityNotFoundException($"No menu item was found by Menu Item Id: {id}");
+                Log.Warning("No menu item was found by Menu Item Id: {Id}", id);
+                throw new EntityNotFoundException($"No menu item was found by Menu Item Id {id}");
             }
 
-            var unique = await CheckMenuItemUniquenessAsync(changedMenuItem.Name);
-            if (!unique)
+            var nameExists = await CheckMenuItemNameExists(changedMenuItem.Name);
+            if (nameExists)
             {
                 throw new ConflictException($"Menu item already exists with name {changedMenuItem.Name}");
             }
