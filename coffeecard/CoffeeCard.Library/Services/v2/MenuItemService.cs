@@ -34,10 +34,10 @@ namespace CoffeeCard.Library.Services.v2
         }
 
 
-        private async Task<bool> CheckMenuItemUniquenessAsync(string name, int id = 0)
+        private async Task<bool> CheckMenuItemUniquenessAsync(string name)
         {
             var menuItem = await _context.MenuItems
-                .FirstOrDefaultAsync(p => p.Name == name && p.Id != id);
+                .FirstOrDefaultAsync(p => p.Name == name);
 
             return menuItem == null;
         }
@@ -77,7 +77,7 @@ namespace CoffeeCard.Library.Services.v2
                 throw new EntityNotFoundException($"No menu item was found by Menu Item Id: {id}");
             }
 
-            var unique = await CheckMenuItemUniquenessAsync(changedMenuItem.Name, id);
+            var unique = await CheckMenuItemUniquenessAsync(changedMenuItem.Name);
             if (!unique)
             {
                 throw new ConflictException($"Menu item already exists with name {changedMenuItem.Name}");
