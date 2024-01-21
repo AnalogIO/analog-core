@@ -10,7 +10,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
     /// </summary>
     /// <example>
     /// {
-    ///     "Name": "Latte",
+    ///     "name": "Latte",
     /// }
     /// </example>
     public class AddMenuItemRequest

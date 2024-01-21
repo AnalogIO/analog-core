@@ -10,14 +10,14 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
     /// </summary>
     /// <example>
     /// {
-    ///   "Id": 1,
-    ///   "Price": 150,
-    ///   "NumberOfTickets": 10,
-    ///   "Name": "Espresso",
-    ///   "Description": "A coffee made by forcing steam through ground coffee beans.",
-    ///   "Visible": false,
-    ///   "AllowedUserGroups": ["Manager", "Board"],
-    ///   "MenuItemIds": [1, 2]
+    ///   "id": 1,
+    ///   "price": 150,
+    ///   "numberOfTickets": 10,
+    ///   "name": "Espresso",
+    ///   "description": "A coffee made by forcing steam through ground coffee beans.",
+    ///   "visible": false,
+    ///   "allowedUserGroups": ["Manager", "Board"],
+    ///   "menuItemIds": [1, 2]
     /// }
     /// </example>
     public class UpdateProductRequest
