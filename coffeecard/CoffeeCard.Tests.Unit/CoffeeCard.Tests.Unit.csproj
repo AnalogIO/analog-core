@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <IsPackable>false</IsPackable>
-    <LangVersion>8</LangVersion>
+    <LangVersion>default</LangVersion>
     <ProjectGuid>24274C8F-678F-4E4D-98A0-2899163BCCBA</ProjectGuid>
   </PropertyGroup>
   <ItemGroup>

@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
-    <LangVersion>8</LangVersion>
+    <LangVersion>default</LangVersion>
     <ProjectGuid>5562C898-513F-493A-A335-417C39476714</ProjectGuid>
     <UserSecretsId>d3bbf778-c5fe-4240-b2ca-dfa64082cc0e</UserSecretsId>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
