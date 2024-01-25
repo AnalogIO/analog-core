@@ -39,14 +39,14 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// Adds a new product to the database.
         /// </summary>
         /// <param name="addProductRequest">The request containing the details of the product to be added and allowed user groups.</param>
-        /// <returns> The newly added product wrapped in a InitiateProductResponse object.</returns>
+        /// <returns> The newly added product.</returns>
         /// <response code="200">The request was successful, and the product was added.</response>
         [HttpPost("")]
         [AuthorizeRoles(UserGroup.Board)]
-        [ProducesResponseType(typeof(ChangedProductResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> AddProduct(AddProductRequest addProductRequest)
         {
-            return Ok(await _productService.AddProduct(addProductRequest));
+            return Ok(MapProductToDto(await _productService.AddProduct(addProductRequest)));
         }
 
         /// <summary>
@@ -57,10 +57,10 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <response code="200">The request was successful, and the product was updated.</response>
         [HttpPut("")]
         [AuthorizeRoles(UserGroup.Board)]
-        [ProducesResponseType(typeof(ChangedProductResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateProduct(UpdateProductRequest product)
         {
-            return Ok(await _productService.UpdateProduct(product));
+            return Ok(MapProductToDto(await _productService.UpdateProduct(product)));
         }
 
         /// <summary>

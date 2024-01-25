@@ -69,7 +69,7 @@ namespace CoffeeCard.Library.Services.v2
             return product == null;
         }
 
-        public async Task<ChangedProductResponse> AddProduct(AddProductRequest newProduct)
+        public async Task<Product> AddProduct(AddProductRequest newProduct)
         {
             var unique = await CheckProductUniquenessAsync(newProduct.Name, newProduct.Price);
             if (!unique)
@@ -99,26 +99,10 @@ namespace CoffeeCard.Library.Services.v2
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
-            var result = new ChangedProductResponse
-            {
-                Price = product.Price,
-                Description = product.Description,
-                Name = product.Name,
-                NumberOfTickets = product.NumberOfTickets,
-                Visible = product.Visible,
-                AllowedUserGroups = newProduct.AllowedUserGroups,
-                MenuItems = product.EligibleMenuItems
-                    .Select(mi => new MenuItemResponse
-                    {
-                        Id = mi.Id,
-                        Name = mi.Name
-                    })
-            };
-
-            return result;
+            return product;
         }
 
-        public async Task<ChangedProductResponse> UpdateProduct(UpdateProductRequest changedProduct)
+        public async Task<Product> UpdateProduct(UpdateProductRequest changedProduct)
         {
             var product = await GetProductAsync(changedProduct.Id);
 
@@ -141,23 +125,7 @@ namespace CoffeeCard.Library.Services.v2
 
             await _context.SaveChangesAsync();
 
-            var result = new ChangedProductResponse
-            {
-                Price = product.Price,
-                Description = product.Description,
-                Name = product.Name,
-                NumberOfTickets = product.NumberOfTickets,
-                Visible = product.Visible,
-                AllowedUserGroups = changedProduct.AllowedUserGroups,
-                MenuItems = product.EligibleMenuItems
-                    .Select(item => new MenuItemResponse
-                    {
-                        Id = item.Id,
-                        Name = item.Name
-                    })
-            };
-
-            return result;
+            return product;
         }
 
         public void Dispose()
