@@ -11,14 +11,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
     public class UpdateProductRequest
     {
         /// <summary>
-        /// Gets or sets the ID of the product to update.
-        /// </summary>
-        /// <value>Product Id</value>
-        /// <example>1</example>
-        [Required]
-        public int Id { get; set; }
-
-        /// <summary>
         /// Gets or sets the updated price of the product.
         /// </summary>
         /// <value>Product Price</value>

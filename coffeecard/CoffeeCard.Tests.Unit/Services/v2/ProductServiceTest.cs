@@ -59,9 +59,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             using var productService = new ProductService(context);
 
-            await productService.UpdateProduct(new UpdateProductRequest()
+            await productService.UpdateProduct(1, new UpdateProductRequest()
             {
-                Id = 1,
                 Visible = true,
                 Price = 10,
                 NumberOfTickets = 10,
