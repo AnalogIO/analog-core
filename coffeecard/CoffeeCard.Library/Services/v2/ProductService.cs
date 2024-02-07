@@ -102,9 +102,9 @@ namespace CoffeeCard.Library.Services.v2
             return product;
         }
 
-        public async Task<Product> UpdateProduct(UpdateProductRequest changedProduct)
+        public async Task<Product> UpdateProduct(int productId, UpdateProductRequest changedProduct)
         {
-            var product = await GetProductAsync(changedProduct.Id);
+            var product = await GetProductAsync(productId);
 
             product.Price = changedProduct.Price;
             product.Description = changedProduct.Description;
@@ -114,7 +114,7 @@ namespace CoffeeCard.Library.Services.v2
             product.ProductUserGroup = changedProduct.AllowedUserGroups
                 .Select(userGroup => new ProductUserGroup
                 {
-                    ProductId = changedProduct.Id,
+                    ProductId = product.Id,
                     UserGroup = userGroup
                 })
                 .ToList();
