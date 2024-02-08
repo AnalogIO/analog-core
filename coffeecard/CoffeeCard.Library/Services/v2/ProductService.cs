@@ -9,6 +9,7 @@ using CoffeeCard.Models.DataTransferObjects.v2.Products;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using CoffeeCard.Library.Utils;
 
 namespace CoffeeCard.Library.Services.v2
 {
@@ -21,31 +22,33 @@ namespace CoffeeCard.Library.Services.v2
             _context = context;
         }
 
-        public async Task<IEnumerable<Product>> GetProductsForUserAsync(User user)
+        public async Task<IEnumerable<ProductResponse>> GetProductsForUserAsync(User user)
         {
             return await GetProductsAsync(user.UserGroup);
         }
 
-        private async Task<IEnumerable<Product>> GetProductsAsync(UserGroup userGroup)
+        private async Task<IEnumerable<ProductResponse>> GetProductsAsync(UserGroup userGroup)
         {
             return await _context.Products
                 .Where(p => p.ProductUserGroup.Any(pug => pug.UserGroup == userGroup))
                 .Where(p => p.Visible).OrderBy(p => p.Id)
                 .Include(p => p.ProductUserGroup)
                 .Include(p => p.EligibleMenuItems)
+                .Select(p => p.ToProductResponse())
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Product>> GetAllProductsAsync()
+        public async Task<IEnumerable<ProductResponse>> GetAllProductsAsync()
         {
             return await _context.Products
                 .OrderBy(p => p.Id)
                 .Include(p => p.ProductUserGroup)
                 .Include(p => p.EligibleMenuItems)
+                .Select(p => p.ToProductResponse())
                 .ToListAsync();
         }
 
-        public async Task<Product> GetProductAsync(int productId)
+        public async Task<ProductResponse> GetProductAsync(int productId)
         {
             var product = await _context.Products
                 .Include(p => p.ProductUserGroup)
@@ -58,7 +61,7 @@ namespace CoffeeCard.Library.Services.v2
                 throw new EntityNotFoundException($"No product was found by Product Id: {productId}");
             }
 
-            return product;
+            return product.ToProductResponse();
         }
 
         private async Task<bool> CheckProductUniquenessAsync(string name, int price)
@@ -69,7 +72,7 @@ namespace CoffeeCard.Library.Services.v2
             return product == null;
         }
 
-        public async Task<Product> AddProduct(AddProductRequest newProduct)
+        public async Task<ProductResponse> AddProduct(AddProductRequest newProduct)
         {
             var unique = await CheckProductUniquenessAsync(newProduct.Name, newProduct.Price);
             if (!unique)
@@ -99,12 +102,15 @@ namespace CoffeeCard.Library.Services.v2
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
-            return product;
+            return product.ToProductResponse();
         }
 
-        public async Task<Product> UpdateProduct(int productId, UpdateProductRequest changedProduct)
+        public async Task<ProductResponse> UpdateProduct(int productId, UpdateProductRequest changedProduct)
         {
-            var product = await GetProductAsync(productId);
+            var product = await _context.Products
+                .Include(p => p.ProductUserGroup)
+                .Include(p => p.EligibleMenuItems)
+                .FirstOrDefaultAsync(p => p.Id == productId);
 
             product.Price = changedProduct.Price;
             product.Description = changedProduct.Description;
@@ -125,7 +131,7 @@ namespace CoffeeCard.Library.Services.v2
 
             await _context.SaveChangesAsync();
 
-            return product;
+            return product.ToProductResponse();
         }
 
         public void Dispose()

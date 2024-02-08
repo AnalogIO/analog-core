@@ -48,7 +48,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         {
             var newproduct = await _productService.AddProduct(addProductRequest);
 
-            return CreatedAtAction(nameof(GetProduct), new { id = newproduct.Id }, MapProductToDto(newproduct));
+            return CreatedAtAction(nameof(GetProduct), new { id = newproduct.Id }, newproduct);
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
         public async Task<ActionResult<ProductResponse>> UpdateProduct([FromRoute(Name = "id")] int productId, UpdateProductRequest product)
         {
-            return Ok(MapProductToDto(await _productService.UpdateProduct(productId, product)));
+            return Ok(await _productService.UpdateProduct(productId, product));
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         {
             var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
             var products = await _productService.GetProductsForUserAsync(user);
-            return Ok(products.Select(MapProductToDto).ToList());
+            return Ok(products.ToList());
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         {
             await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
             var product = await _productService.GetProductAsync(productId);
-            return Ok(MapProductToDto(product));
+            return Ok(product);
         }
 
         /// <summary>
@@ -112,26 +112,8 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(IEnumerable<ProductResponse>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<ProductResponse>>> GetAllProducts()
         {
-            IEnumerable<Product> products = await _productService.GetAllProductsAsync();
-            return Ok(products.Select(MapProductToDto).ToList());
-        }
-
-        private static ProductResponse MapProductToDto(Product product)
-        {
-            return new ProductResponse
-            {
-                Id = product.Id,
-                Name = product.Name,
-                Description = product.Description,
-                NumberOfTickets = product.NumberOfTickets,
-                Price = product.Price,
-                IsPerk = product.IsPerk(),
-                Visible = product.Visible,
-                AllowedUserGroups = product.ProductUserGroup.Select(e => e.UserGroup),
-                EligibleMenuItems = product.EligibleMenuItems.Select(
-                    item => new MenuItemResponse { Id = item.Id, Name = item.Name }
-                )
-            };
+            IEnumerable<ProductResponse> products = await _productService.GetAllProductsAsync();
+            return Ok(products);
         }
     }
 }
