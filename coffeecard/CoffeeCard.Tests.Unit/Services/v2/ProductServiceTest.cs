@@ -163,8 +163,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var result = await productService.GetAllProductsAsync();
 
             Assert.Collection(result,
-                e => e.Visible.Equals(true),
-                e => e.Visible.Equals(false));
+                e => Assert.True(e.Visible),
+                e => Assert.False(e.Visible));
         }
 
         [Fact(DisplayName = "GetAllProducts returns products from all user groups")]
@@ -232,11 +232,27 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             var result = await productService.GetAllProductsAsync();
 
-            Assert.Collection<ProductResponse>(result,
-                e => e.AllowedUserGroups = new List<UserGroup> { UserGroup.Customer },
-                e => e.AllowedUserGroups = new List<UserGroup> { UserGroup.Barista },
-                e => e.AllowedUserGroups = new List<UserGroup> { UserGroup.Manager },
-                e => e.AllowedUserGroups = new List<UserGroup> { UserGroup.Board }
+            Assert.Collection(result,
+                e =>
+                {
+                    Assert.Single(e.AllowedUserGroups);
+                    Assert.Contains(UserGroup.Customer, e.AllowedUserGroups);
+                },
+                e =>
+                {
+                    Assert.Single(e.AllowedUserGroups);
+                    Assert.Contains(UserGroup.Barista, e.AllowedUserGroups);
+                },
+                e =>
+                {
+                    Assert.Single(e.AllowedUserGroups);
+                    Assert.Contains(UserGroup.Manager, e.AllowedUserGroups);
+                },
+                e =>
+                {
+                    Assert.Single(e.AllowedUserGroups);
+                    Assert.Contains(UserGroup.Board, e.AllowedUserGroups);
+                }
             );
         }
     }
