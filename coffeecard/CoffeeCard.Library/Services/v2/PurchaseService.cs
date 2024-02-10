@@ -6,6 +6,7 @@ using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
+using CoffeeCard.Models.DataTransferObjects.v2.Products;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
@@ -72,10 +73,10 @@ namespace CoffeeCard.Library.Services.v2
         /// <param name="product">Product</param>
         /// <exception cref="IllegalUserOperationException">User is not entitled to purchase product</exception>
         /// <exception cref="ArgumentException">PaymentType FreePurchase used for a non-free product</exception>
-        private static void CheckUserIsAllowedToPurchaseProduct(User user, InitiatePurchaseRequest initiateRequest, Product product)
+        private static void CheckUserIsAllowedToPurchaseProduct(User user, InitiatePurchaseRequest initiateRequest, ProductResponse product)
         {
             //Product does not belong to same userGroup as user
-            if (!product.ProductUserGroup.Any(pug => pug.UserGroup == user.UserGroup))
+            if (!product.AllowedUserGroups.Any(ug => ug == user.UserGroup))
             {
                 Log.Warning(
                     "User {UserId} is not authorized to purchase Product Id: {ProductId} as user is not in Product User Group",
@@ -92,7 +93,7 @@ namespace CoffeeCard.Library.Services.v2
             }
         }
 
-        private async Task<(Purchase purchase, PaymentDetails paymentDetails)> InitiatePaymentAsync(InitiatePurchaseRequest purchaseRequest, Product product, User user)
+        private async Task<(Purchase purchase, PaymentDetails paymentDetails)> InitiatePaymentAsync(InitiatePurchaseRequest purchaseRequest, ProductResponse product, User user)
         {
             var orderId = await GenerateUniqueOrderId();
             PaymentDetails paymentDetails;

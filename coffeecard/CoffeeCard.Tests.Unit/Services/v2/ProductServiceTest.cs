@@ -6,6 +6,7 @@ using CoffeeCard.Common.Configuration;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.Product;
+using CoffeeCard.Models.DataTransferObjects.v2.Products;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -59,9 +60,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             using var productService = new ProductService(context);
 
-            await productService.UpdateProduct(new UpdateProductRequest()
+            await productService.UpdateProduct(1, new UpdateProductRequest()
             {
-                Id = 1,
                 Visible = true,
                 Price = 10,
                 NumberOfTickets = 10,
@@ -72,13 +72,13 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             var result = await productService.GetProductAsync(1);
 
-            Assert.Collection<ProductUserGroup>(result.ProductUserGroup,
-                e => Assert.Equal(UserGroup.Customer, e.UserGroup),
-                e => Assert.Equal(UserGroup.Board, e.UserGroup));
+            Assert.Collection<UserGroup>(result.AllowedUserGroups,
+                e => Assert.Equal(UserGroup.Customer, e),
+                e => Assert.Equal(UserGroup.Board, e));
 
             // Explicitly check for exclusion of Barista and Manager, even though Assert.Collection implicitly covers it.
-            Assert.DoesNotContain(UserGroup.Barista, result.ProductUserGroup.Select(e => e.UserGroup));
-            Assert.DoesNotContain(UserGroup.Manager, result.ProductUserGroup.Select(e => e.UserGroup));
+            Assert.DoesNotContain(UserGroup.Barista, result.AllowedUserGroups);
+            Assert.DoesNotContain(UserGroup.Manager, result.AllowedUserGroups);
         }
 
         [Fact(DisplayName = "AddProduct adds only selected user groups")]
@@ -114,9 +114,9 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             var result = await productService.GetProductAsync(1);
 
-            Assert.Collection<ProductUserGroup>(result.ProductUserGroup,
-                e => Assert.Equal(UserGroup.Manager, e.UserGroup),
-                e => Assert.Equal(UserGroup.Board, e.UserGroup));
+            Assert.Collection<UserGroup>(result.AllowedUserGroups,
+                e => Assert.Equal(UserGroup.Manager, e),
+                e => Assert.Equal(UserGroup.Board, e));
         }
 
         [Fact(DisplayName = "GetAllProducts shows non-visible products")]
@@ -163,8 +163,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var result = await productService.GetAllProductsAsync();
 
             Assert.Collection(result,
-                e => e.Visible.Equals(true),
-                e => e.Visible.Equals(false));
+                e => Assert.True(e.Visible),
+                e => Assert.False(e.Visible));
         }
 
         [Fact(DisplayName = "GetAllProducts returns products from all user groups")]
@@ -232,11 +232,27 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             var result = await productService.GetAllProductsAsync();
 
-            Assert.Collection<Product>(result,
-                e => e.ProductUserGroup = new List<ProductUserGroup> { new ProductUserGroup { UserGroup = UserGroup.Customer } },
-                e => e.ProductUserGroup = new List<ProductUserGroup> { new ProductUserGroup { UserGroup = UserGroup.Barista } },
-                e => e.ProductUserGroup = new List<ProductUserGroup> { new ProductUserGroup { UserGroup = UserGroup.Manager } },
-                e => e.ProductUserGroup = new List<ProductUserGroup> { new ProductUserGroup { UserGroup = UserGroup.Board } }
+            Assert.Collection(result,
+                e =>
+                {
+                    Assert.Single(e.AllowedUserGroups);
+                    Assert.Contains(UserGroup.Customer, e.AllowedUserGroups);
+                },
+                e =>
+                {
+                    Assert.Single(e.AllowedUserGroups);
+                    Assert.Contains(UserGroup.Barista, e.AllowedUserGroups);
+                },
+                e =>
+                {
+                    Assert.Single(e.AllowedUserGroups);
+                    Assert.Contains(UserGroup.Manager, e.AllowedUserGroups);
+                },
+                e =>
+                {
+                    Assert.Single(e.AllowedUserGroups);
+                    Assert.Contains(UserGroup.Board, e.AllowedUserGroups);
+                }
             );
         }
     }
