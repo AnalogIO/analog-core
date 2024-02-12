@@ -9,23 +9,28 @@ using CoffeeCard.Models.DataTransferObjects.v2.User;
 using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Serilog;
 
 namespace CoffeeCard.Library.Services.v2
 {
     public class AccountService : IAccountService
     {
+        private const string AccountsWebhooksHashCacheKey = "AccountsWebhooksHash";
+
         private readonly CoffeeCardContext _context;
         private readonly IEmailService _emailService;
         private readonly IHashService _hashService;
         private readonly ITokenService _tokenService;
+        private readonly IMemoryCache _memoryCache;
 
-        public AccountService(CoffeeCardContext context, ITokenService tokenService, IEmailService emailService, IHashService hashService)
+        public AccountService(CoffeeCardContext context, ITokenService tokenService, IEmailService emailService, IHashService hashService, IMemoryCache memoryCache)
         {
             _context = context;
             _tokenService = tokenService;
             _emailService = emailService;
             _hashService = hashService;
+            _memoryCache = memoryCache;
         }
 
         public async Task<User> RegisterAccountAsync(string name, string email, string password, int programme)
@@ -274,6 +279,39 @@ namespace CoffeeCard.Library.Services.v2
         private static string EscapeName(string name)
         {
             return name.Trim('<', '>', '{', '}');
+        }
+
+        public async Task UpdatePriviligedUserGroups(WebhookUpdateUserGroupRequest request)
+        {
+            if (!_memoryCache.TryGetValue(AccountsWebhooksHashCacheKey, out string cachedHash))
+            {
+                cachedHash = request.Hash;
+
+                var cacheExpiryOptions = new MemoryCacheEntryOptions
+                {
+                    AbsoluteExpiration = DateTime.UtcNow.AddHours(48),
+                    SlidingExpiration = TimeSpan.FromHours(24)
+                };
+
+                Log.Information("Set {AccountsWebhooksHashCacheKey} in Cache", AccountsWebhooksHashCacheKey);
+                _memoryCache.Set(AccountsWebhooksHashCacheKey, cachedHash, cacheExpiryOptions);
+            }
+
+            if (cachedHash.Equals(request.Hash)) {
+                return;
+            }
+
+            // TODO: Fix Bulk Update in EFCore 6
+            await _context.Users
+                .Where(u => u.UserGroup != UserGroup.Customer)
+                .ExecuteUpdateAsync(u => u.SetProperty(u => u.UserGroup, UserGroup.Customer));
+
+            foreach (var item in request.PrivilegedUsers)
+            {
+                await _context.Users
+                    .Where(u => u.Id == item.AccountId)
+                    .ExecuteUpdateAsync(u => u.SetProperty(u => u.UserGroup, item.UserGroup));
+            }
         }
     }
 }
