@@ -1,6 +1,4 @@
 using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
-using NJsonSchema.Converters;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
 {
@@ -14,7 +12,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
     /// }
     /// </example>
     [KnownType(typeof(FreePurchasePaymentDetails))]
-    [JsonConverter(typeof(JsonInheritanceConverter<PaymentDetails>))]
     public class FreePurchasePaymentDetails : PaymentDetails
     {
         /// <summary>
