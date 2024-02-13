@@ -93,6 +93,33 @@ namespace CoffeeCard.Library.Services.v2
             return result;
         }
 
+        public async Task<MenuItemResponse> DisableMenuItemAsync(int id)
+        {
+            var menuItem = await _context.MenuItems.FirstOrDefaultAsync(p => p.Id == id);
+
+            if (menuItem == null)
+            {
+                Log.Warning("No menu item was found by Menu Item Id: {Id}", id);
+                throw new EntityNotFoundException($"No menu item was found by Menu Item Id {id}");
+            }
+
+            if (await _context.Products.AnyAsync(p => p.EligibleMenuItems.Any(menuItem => menuItem.Id == id)))
+            {
+                throw new ConflictException("Menu item is in use and cannot be disabled");
+            }
+
+            menuItem.Active = false;
+            await _context.SaveChangesAsync();
+            var result = new MenuItemResponse
+            {
+                Id = id,
+                Name = menuItem.Name,
+                Active = false
+            };
+            return result;
+
+        }
+
         public void Dispose()
         {
             _context?.Dispose();

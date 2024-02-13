@@ -68,13 +68,22 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <response code="200">Menu item successfully updated</response>
         /// <response code="401">Invalid credentials</response>
         /// <response code="404">Menu item not found</response>
-        /// 
+        ///
         [HttpPut("{id}")]
         [AuthorizeRoles(UserGroup.Board)]
         [ProducesResponseType(typeof(MenuItemResponse), StatusCodes.Status200OK)]
         public async Task<ActionResult<MenuItemResponse>> UpdateMenuItem([FromRoute] int id, UpdateMenuItemRequest menuItem)
         {
             return Ok(await _menuItemService.UpdateMenuItemAsync(id, menuItem));
+        }
+
+        [HttpDelete("{id}")]
+        [AuthorizeRoles(UserGroup.Board)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<ActionResult> DisableMenuItem([FromRoute] int id)
+        {
+            await _menuItemService.DisableMenuItemAsync(id);
+            return NoContent();
         }
     }
 }
