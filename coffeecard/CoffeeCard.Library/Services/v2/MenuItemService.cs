@@ -28,7 +28,8 @@ namespace CoffeeCard.Library.Services.v2
                 .Select(p => new MenuItemResponse
                 {
                     Id = p.Id,
-                    Name = p.Name
+                    Name = p.Name,
+                    Active = p.Active
                 })
                 .ToListAsync();
         }
