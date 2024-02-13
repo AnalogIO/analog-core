@@ -28,5 +28,12 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Products
         /// <example>Cappuccino</example>
         [Required]
         public string Name { get; set; }
+
+        /// <summary>
+        /// Whether or not this menu item is active
+        /// </summary>
+        /// <value>Menu item active</value>
+        /// <example>true</example>
+        public bool Active { get; set; }
     }
 }
