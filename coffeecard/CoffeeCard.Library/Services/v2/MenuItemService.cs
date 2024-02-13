@@ -80,44 +80,25 @@ namespace CoffeeCard.Library.Services.v2
                 throw new ConflictException($"Menu item already exists with name {changedMenuItem.Name}");
             }
 
-            menuItem.Name = changedMenuItem.Name;
-
-            await _context.SaveChangesAsync();
-
-            var result = new MenuItemResponse
-            {
-                Id = id,
-                Name = menuItem.Name
-            };
-
-            return result;
-        }
-
-        public async Task<MenuItemResponse> DisableMenuItemAsync(int id)
-        {
-            var menuItem = await _context.MenuItems.FirstOrDefaultAsync(p => p.Id == id);
-
-            if (menuItem == null)
-            {
-                Log.Warning("No menu item was found by Menu Item Id: {Id}", id);
-                throw new EntityNotFoundException($"No menu item was found by Menu Item Id {id}");
-            }
-
-            if (await _context.Products.AnyAsync(p => p.EligibleMenuItems.Any(menuItem => menuItem.Id == id)))
+            if (!changedMenuItem.Active &&
+                await _context.Products.AnyAsync(p => p.EligibleMenuItems.Any(menuItem => menuItem.Id == id)))
             {
                 throw new ConflictException("Menu item is in use and cannot be disabled");
             }
 
-            menuItem.Active = false;
+            menuItem.Name = changedMenuItem.Name;
+            menuItem.Active = changedMenuItem.Active;
+
             await _context.SaveChangesAsync();
+
             var result = new MenuItemResponse
             {
                 Id = id,
                 Name = menuItem.Name,
-                Active = false
+                Active = menuItem.Active
             };
-            return result;
 
+            return result;
         }
 
         public void Dispose()
