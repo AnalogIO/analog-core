@@ -75,7 +75,7 @@ namespace CoffeeCard.Library.Services.v2
             }
 
             var nameExists = await CheckMenuItemNameExists(changedMenuItem.Name);
-            if (nameExists)
+            if (changedMenuItem.Name != menuItem.Name && nameExists)
             {
                 throw new ConflictException($"Menu item already exists with name {changedMenuItem.Name}");
             }
