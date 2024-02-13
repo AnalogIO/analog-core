@@ -22,7 +22,7 @@ namespace CoffeeCard.Tests.Unit.Services
             _identity = new IdentitySettings();
 
             //creates the key for signing the token
-            const string keyForHmacSha256 = "signingKey";
+            const string keyForHmacSha256 = "SuperLongSigningKey";
             _identity.TokenKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(keyForHmacSha256)).ToString();
         }
 
@@ -99,7 +99,7 @@ namespace CoffeeCard.Tests.Unit.Services
             await using (context)
             {
                 var key = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes("Invalid signing key"));
+                    Encoding.UTF8.GetBytes("Super long invalid signing key, longer than 256bytes"));
 
                 var jwt = new JwtSecurityToken("AnalogIO",
                     "Everyone",

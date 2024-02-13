@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29806.167
@@ -13,11 +13,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoffeeCard.MobilePay", "Cof
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoffeeCard.Common", "CoffeeCard.Common\CoffeeCard.Common.csproj", "{2CCAF827-E341-48FC-ABCE-7EDFA3E84E65}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeeCard.Library", "CoffeeCard.Library\CoffeeCard.Library.csproj", "{F05C6E90-C02D-43BF-8BBB-615785C465DF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoffeeCard.Library", "CoffeeCard.Library\CoffeeCard.Library.csproj", "{F05C6E90-C02D-43BF-8BBB-615785C465DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeeCard.Models", "CoffeeCard.Models\CoffeeCard.Models.csproj", "{0BF48733-C3DF-4006-BD25-F5340710B5FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoffeeCard.Models", "CoffeeCard.Models\CoffeeCard.Models.csproj", "{0BF48733-C3DF-4006-BD25-F5340710B5FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeeCard.MobilePay.GenerateApi", "CoffeeCard.MobilePay.GenerateApi\CoffeeCard.MobilePay.GenerateApi.csproj", "{D295CCD7-DDB7-477D-82B6-53AFA97F5749}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoffeeCard.MobilePay.GenerateApi", "CoffeeCard.MobilePay.GenerateApi\CoffeeCard.MobilePay.GenerateApi.csproj", "{D295CCD7-DDB7-477D-82B6-53AFA97F5749}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoffeeCard.Common.Test", "CoffeeCard.Tests.Common\CoffeeCard.Tests.Common.csproj", "{938E0AD9-C1C8-4C10-B9FB-DD279DAD4D0B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeeCard.Generators", "CoffeeCard.Generators\CoffeeCard.Generators.csproj", "{BE332D7E-FD07-4878-B7E3-A06988F0C382}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +61,14 @@ Global
 		{D295CCD7-DDB7-477D-82B6-53AFA97F5749}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D295CCD7-DDB7-477D-82B6-53AFA97F5749}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D295CCD7-DDB7-477D-82B6-53AFA97F5749}.Release|Any CPU.Build.0 = Release|Any CPU
+		{938E0AD9-C1C8-4C10-B9FB-DD279DAD4D0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{938E0AD9-C1C8-4C10-B9FB-DD279DAD4D0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{938E0AD9-C1C8-4C10-B9FB-DD279DAD4D0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{938E0AD9-C1C8-4C10-B9FB-DD279DAD4D0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE332D7E-FD07-4878-B7E3-A06988F0C382}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE332D7E-FD07-4878-B7E3-A06988F0C382}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE332D7E-FD07-4878-B7E3-A06988F0C382}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE332D7E-FD07-4878-B7E3-A06988F0C382}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
