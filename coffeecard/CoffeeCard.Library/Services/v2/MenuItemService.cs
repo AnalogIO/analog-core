@@ -80,8 +80,9 @@ namespace CoffeeCard.Library.Services.v2
                 throw new ConflictException($"Menu item already exists with name {changedMenuItem.Name}");
             }
 
-            if (!changedMenuItem.Active &&
-                await _context.Products.AnyAsync(p => p.EligibleMenuItems.Any(menuItem => menuItem.Id == id)))
+
+            var menuItemIsUsed = await _context.Products.AnyAsync(p => p.EligibleMenuItems.Any(menuItem => menuItem.Id == id));
+            if (!changedMenuItem.Active && menuItemIsUsed)
             {
                 throw new ConflictException("Menu item is in use and cannot be disabled");
             }
