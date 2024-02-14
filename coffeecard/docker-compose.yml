@@ -19,8 +19,14 @@ services:
       dockerfile: CoffeeCard.WebApi/Dockerfile
     depends_on: [ mssql ]
     ports:
-      - 8080:80
-      - 8001:443
+      - 8080:8080
+      - 8001:8001
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      # - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_HTTPS_PORTS=8001
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/CoffeeCard.WebApi.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=crypticpassword
     volumes:
-      - ./CoffeeCard.WebApi/appsettings.json:/app/appsettings.json
+      - ./CoffeeCard.WebApi/appsettings.json:/app/appsettings.json:z
       - ~/.aspnet/https:/https:ro
