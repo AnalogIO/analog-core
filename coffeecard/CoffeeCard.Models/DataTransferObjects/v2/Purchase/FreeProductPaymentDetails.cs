@@ -1,4 +1,5 @@
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
 {
@@ -12,6 +13,9 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
     /// }
     /// </example>
     [KnownType(typeof(FreePurchasePaymentDetails))]
+    [JsonPolymorphic(TypeDiscriminatorPropertyName = "discriminator")]
+    [JsonDerivedType(typeof(FreePurchasePaymentDetails), typeDiscriminator: "FreePurchasePaymentDetails")]
+
     public class FreePurchasePaymentDetails : PaymentDetails
     {
         /// <summary>

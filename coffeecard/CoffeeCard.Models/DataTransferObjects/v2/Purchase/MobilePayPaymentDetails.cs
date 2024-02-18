@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
 {
@@ -16,6 +17,8 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
     /// }
     /// </example>
     [KnownType(typeof(MobilePayPaymentDetails))]
+    [JsonPolymorphic(TypeDiscriminatorPropertyName = "discriminator")]
+    [JsonDerivedType(typeof(MobilePayPaymentDetails), typeDiscriminator: "MobilePayPaymentDetails")]
     public class MobilePayPaymentDetails : PaymentDetails
     {
         /// <summary>
