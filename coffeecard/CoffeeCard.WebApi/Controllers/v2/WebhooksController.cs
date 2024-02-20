@@ -24,10 +24,13 @@ namespace CoffeeCard.WebApi.Controllers.v2
             _accountService = accountService;
         }
 
-        [HttpPut("/accounts/user-group")]
+        [HttpPut("accounts/user-group")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateUserGroupsAsync([FromBody][Required] WebhookUpdateUserGroupRequest request)
         {
+
             await _accountService.UpdatePriviligedUserGroups(request);
             return NoContent();
         }

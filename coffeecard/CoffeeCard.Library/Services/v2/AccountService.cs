@@ -285,8 +285,6 @@ namespace CoffeeCard.Library.Services.v2
         {
             if (!_memoryCache.TryGetValue(AccountsWebhooksHashCacheKey, out string cachedHash))
             {
-                cachedHash = request.Hash;
-
                 var cacheExpiryOptions = new MemoryCacheEntryOptions
                 {
                     AbsoluteExpiration = DateTime.UtcNow.AddHours(48),
@@ -294,14 +292,15 @@ namespace CoffeeCard.Library.Services.v2
                 };
 
                 Log.Information("Set {AccountsWebhooksHashCacheKey} in Cache", AccountsWebhooksHashCacheKey);
-                _memoryCache.Set(AccountsWebhooksHashCacheKey, cachedHash, cacheExpiryOptions);
+                _memoryCache.Set(AccountsWebhooksHashCacheKey, request.Hash, cacheExpiryOptions);
             }
 
-            if (cachedHash.Equals(request.Hash)) {
+            if (request.Hash.Equals(cachedHash))
+            {
+                Log.Information($"Hash seen before: {request.Hash}");
                 return;
             }
 
-            // TODO: Fix Bulk Update in EFCore 6
             await _context.Users
                 .Where(u => u.UserGroup != UserGroup.Customer)
                 .ExecuteUpdateAsync(u => u.SetProperty(u => u.UserGroup, UserGroup.Customer));
