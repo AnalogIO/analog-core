@@ -1,5 +1,7 @@
 using System;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using AspNetCore.Authentication.ApiKey;
 using CoffeeCard.Common.Configuration;
@@ -103,11 +105,14 @@ namespace CoffeeCard.WebApi
                     options.Filters.Add(new ApiExceptionFilter());
                     options.Filters.Add(new ReadableBodyFilter());
                 })
-                // Setup Json Serializing
-                .AddNewtonsoftJson(options =>
+                .AddJsonOptions(options =>
                 {
-                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
-                    options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+                    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.Never;
+                    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+                    options.JsonSerializerOptions.WriteIndented = true;
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                    options.JsonSerializerOptions.IncludeFields = true;
                 });
 
             services.AddCors(options => options.AddDefaultPolicy(builder =>
@@ -198,6 +203,7 @@ namespace CoffeeCard.WebApi
                 // Add an OpenApi document per API version
                 services.AddOpenApiDocument(config =>
                 {
+                    config.DefaultResponseReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull;
                     config.Title = apiVersion.GroupName;
                     config.Version = apiVersion.ApiVersion.ToString();
                     config.DocumentName = apiVersion.GroupName;

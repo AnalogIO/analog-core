@@ -1,7 +1,5 @@
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
-using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
 {
@@ -16,9 +14,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
     ///     "paymentId": "186d2b31-ff25-4414-9fd1-bfe9807fa8b7"
     /// }
     /// </example>
-    [KnownType(typeof(MobilePayPaymentDetails))]
-    [JsonPolymorphic(TypeDiscriminatorPropertyName = "discriminator")]
-    [JsonDerivedType(typeof(MobilePayPaymentDetails), typeDiscriminator: "MobilePayPaymentDetails")]
     public class MobilePayPaymentDetails : PaymentDetails
     {
         /// <summary>
@@ -39,7 +34,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// MobilePay state
         /// </summary>
         /// <example>Initiated</example>
-        [JsonProperty(Required = Required.AllowNull)]
         public string? State { get; }
 
         /// <summary>
@@ -54,4 +48,3 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
             State = state;
         }
     }
-}
