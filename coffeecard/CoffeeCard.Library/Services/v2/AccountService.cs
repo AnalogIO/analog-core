@@ -297,7 +297,7 @@ namespace CoffeeCard.Library.Services.v2
 
             if (request.Hash.Equals(cachedHash))
             {
-                Log.Information($"Hash seen before: {request.Hash}");
+                Log.Information($"Duplicate update usergroup request detected: {request.Hash}");
                 return;
             }
 
