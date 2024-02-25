@@ -1,4 +1,3 @@
-using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
@@ -31,20 +30,14 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         public string PaymentId { get; }
 
         /// <summary>
-        /// MobilePay state
-        /// </summary>
-        /// <example>Initiated</example>
-        public string? State { get; }
-
-        /// <summary>
         /// Creates a new instance of <see cref="MobilePayPaymentDetails"/>
         /// </summary>
-        public MobilePayPaymentDetails(string orderId, string mobilePayAppRedirectUri, string paymentId, string? state)
+        public MobilePayPaymentDetails(string orderId, string mobilePayAppRedirectUri, string paymentId)
         {
             PaymentType = PaymentType.MobilePay;
             OrderId = orderId;
             MobilePayAppRedirectUri = mobilePayAppRedirectUri;
             PaymentId = paymentId;
-            State = state;
         }
     }
+}

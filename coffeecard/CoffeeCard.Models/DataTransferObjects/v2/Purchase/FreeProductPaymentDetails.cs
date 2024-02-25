@@ -1,6 +1,3 @@
-using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
-
 namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
 {
     /// <summary>
@@ -23,3 +20,4 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
             OrderId = orderId;
         }
     }
+}
