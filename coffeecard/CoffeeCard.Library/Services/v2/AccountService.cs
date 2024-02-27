@@ -275,5 +275,19 @@ namespace CoffeeCard.Library.Services.v2
         {
             return name.Trim('<', '>', '{', '}');
         }
+
+        public async Task UpdatePriviligedUserGroups(WebhookUpdateUserGroupRequest request)
+        {
+            await _context.Users
+                .Where(u => u.UserGroup != UserGroup.Customer)
+                .ExecuteUpdateAsync(u => u.SetProperty(u => u.UserGroup, UserGroup.Customer));
+
+            foreach (var item in request.PrivilegedUsers)
+            {
+                await _context.Users
+                    .Where(u => u.Id == item.AccountId)
+                    .ExecuteUpdateAsync(u => u.SetProperty(u => u.UserGroup, item.UserGroup));
+            }
+        }
     }
 }
