@@ -1,7 +1,4 @@
-using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
-using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
 {
@@ -16,9 +13,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
     ///     "paymentId": "186d2b31-ff25-4414-9fd1-bfe9807fa8b7"
     /// }
     /// </example>
-    [KnownType(typeof(MobilePayPaymentDetails))]
-    [JsonPolymorphic(TypeDiscriminatorPropertyName = "discriminator")]
-    [JsonDerivedType(typeof(MobilePayPaymentDetails), typeDiscriminator: "MobilePayPaymentDetails")]
     public class MobilePayPaymentDetails : PaymentDetails
     {
         /// <summary>
@@ -36,22 +30,14 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         public string PaymentId { get; }
 
         /// <summary>
-        /// MobilePay state
-        /// </summary>
-        /// <example>Initiated</example>
-        [JsonProperty(Required = Required.AllowNull)]
-        public string? State { get; }
-
-        /// <summary>
         /// Creates a new instance of <see cref="MobilePayPaymentDetails"/>
         /// </summary>
-        public MobilePayPaymentDetails(string orderId, string mobilePayAppRedirectUri, string paymentId, string? state)
+        public MobilePayPaymentDetails(string orderId, string mobilePayAppRedirectUri, string paymentId)
         {
             PaymentType = PaymentType.MobilePay;
             OrderId = orderId;
             MobilePayAppRedirectUri = mobilePayAppRedirectUri;
             PaymentId = paymentId;
-            State = state;
         }
     }
 }
