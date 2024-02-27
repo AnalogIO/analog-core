@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
@@ -11,28 +9,23 @@ using CoffeeCard.Models.DataTransferObjects.v2.User;
 using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using Serilog;
 
 namespace CoffeeCard.Library.Services.v2
 {
     public class AccountService : IAccountService
     {
-        private const string AccountsWebhooksHashCacheKey = "AccountsWebhooksHash";
-
         private readonly CoffeeCardContext _context;
         private readonly IEmailService _emailService;
         private readonly IHashService _hashService;
         private readonly ITokenService _tokenService;
-        private readonly IMemoryCache _memoryCache;
 
-        public AccountService(CoffeeCardContext context, ITokenService tokenService, IEmailService emailService, IHashService hashService, IMemoryCache memoryCache)
+        public AccountService(CoffeeCardContext context, ITokenService tokenService, IEmailService emailService, IHashService hashService)
         {
             _context = context;
             _tokenService = tokenService;
             _emailService = emailService;
             _hashService = hashService;
-            _memoryCache = memoryCache;
         }
 
         public async Task<User> RegisterAccountAsync(string name, string email, string password, int programme)
@@ -283,51 +276,8 @@ namespace CoffeeCard.Library.Services.v2
             return name.Trim('<', '>', '{', '}');
         }
 
-        private static string GetHash(HashAlgorithm hashAlgorithm, WebhookUpdateUserGroupRequest input)
-        {
-            var sBuilder = new StringBuilder();
-            foreach (var user in input.PrivilegedUsers)
-            {
-                // Convert the input string to a byte array and compute the hash.
-                byte[] data = hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes($"{user.AccountId}:{user.UserGroup}"));
-
-                // Loop through each byte of the hashed data
-                // and format each one as a hexadecimal string.
-                for (int i = 0; i < data.Length; i++)
-                {
-                    sBuilder.Append(data[i].ToString("x2"));
-                }
-            }
-
-            // Return the hexadecimal string.
-            return sBuilder.ToString();
-        }
-
-
         public async Task UpdatePriviligedUserGroups(WebhookUpdateUserGroupRequest request)
         {
-            using (SHA256 sha256Hash = SHA256.Create())
-            {
-                string hash = GetHash(sha256Hash, request);
-                if (!_memoryCache.TryGetValue(AccountsWebhooksHashCacheKey, out string cachedHash))
-                {
-                    var cacheExpiryOptions = new MemoryCacheEntryOptions
-                    {
-                        AbsoluteExpiration = DateTime.UtcNow.AddHours(48),
-                        SlidingExpiration = TimeSpan.FromHours(24)
-                    };
-
-                    Log.Information("Set {AccountsWebhooksHashCacheKey} in Cache", AccountsWebhooksHashCacheKey);
-                    _memoryCache.Set(AccountsWebhooksHashCacheKey, hash, cacheExpiryOptions);
-                }
-
-                if (hash.Equals(cachedHash))
-                {
-                    Log.Information("Duplicate update user group request detected: {hash}", hash);
-                    return;
-                }
-            }
-
             await _context.Users
                 .Where(u => u.UserGroup != UserGroup.Customer)
                 .ExecuteUpdateAsync(u => u.SetProperty(u => u.UserGroup, UserGroup.Customer));
