@@ -1,12 +1,12 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace CoffeeCard.Models.DataTransferObjects.v2.UserStatistics
+namespace CoffeeCard.Models.DataTransferObjects.v2.AdminStatistics
 {
     /// <summary>
     /// Initialize an request for data with unused clips 
     /// </summary>
-    public class UnusedClipsRequest
+    public class RevenuedClipsRequest
     {
         /// <summary>
         /// The start date of unused tickets query

@@ -3,7 +3,7 @@ using CoffeeCard.Common.Errors;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using CoffeeCard.Library.Services.v2;
-using CoffeeCard.Models.DataTransferObjects.v2.UserStatistics;
+using CoffeeCard.Models.DataTransferObjects.v2.AdminStatistics;
 using CoffeeCard.Models.Entities;
 using CoffeeCard.WebApi.Helpers;
 using Microsoft.AspNetCore.Http;

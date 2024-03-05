@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CoffeeCard.Library.Persistence;
-using CoffeeCard.Models.DataTransferObjects.v2.UserStatistics;
+using CoffeeCard.Models.DataTransferObjects.v2.AdminStatistics;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoffeeCard.Library.Services.v2
@@ -23,20 +23,16 @@ namespace CoffeeCard.Library.Services.v2
 
             var tickets = await _context.Tickets
                 .Where(t => t.DateCreated >= startDate && t.DateCreated <= endDate && t.IsUsed == false)
-                .Join(_context.Purchases,
-                    ticket => ticket.PurchaseId,
-                    purchase => purchase.Id,
-                    (ticket, purchase) => new { ticket, purchase })
-                .GroupBy(combined => combined.purchase.ProductId)
+                .Include(p => p.Purchase)
+                .GroupBy(ticket => ticket.ProductId)
                 .Select(group => new UnusedClipsResponse
                 {
                     ProductId = group.Key,
-                    ProductName = group.First().purchase.ProductName,
+                    ProductName = group.First().Purchase.ProductName,
                     TicketsLeft = group.Count(),
-                    UnusedPurchasesValue = group.Sum(item => (1 / (decimal)item.purchase.NumberOfTickets) * item.purchase.Price),
+                    UnusedPurchasesValue = group.Sum(item => (1 / (decimal)item.Purchase.NumberOfTickets) * item.Purchase.Price),
                 })
                 .ToListAsync();
-
 
             return tickets;
         }

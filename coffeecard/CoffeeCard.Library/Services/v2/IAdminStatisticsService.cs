@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CoffeeCard.Models.DataTransferObjects.v2.UserStatistics;
+using CoffeeCard.Models.DataTransferObjects.v2.AdminStatistics;
 
 namespace CoffeeCard.Library.Services.v2
 {

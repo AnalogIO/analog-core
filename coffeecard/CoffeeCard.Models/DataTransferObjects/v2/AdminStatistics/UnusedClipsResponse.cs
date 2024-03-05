@@ -1,8 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace CoffeeCard.Models.DataTransferObjects.v2.UserStatistics
+namespace CoffeeCard.Models.DataTransferObjects.v2.AdminStatistics
 {
     /// <summary>
     /// Initialize a response with unused clips data
