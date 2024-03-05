@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,4 +31,9 @@ public class MenuItem
     /// Navigational property for the join table between Menu Items and Products
     /// </summary>
     public ICollection<MenuItemProduct> MenuItemProducts { get; set; }
+
+    /// <summary>
+    /// Whether or not this menu item is active
+    /// </summary>
+    public bool Active { get; set; } = true;
 }

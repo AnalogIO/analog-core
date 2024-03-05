@@ -28,7 +28,8 @@ namespace CoffeeCard.Library.Services.v2
                 .Select(p => new MenuItemResponse
                 {
                     Id = p.Id,
-                    Name = p.Name
+                    Name = p.Name,
+                    Active = p.Active
                 })
                 .ToListAsync();
         }
@@ -52,7 +53,8 @@ namespace CoffeeCard.Library.Services.v2
             var result = new MenuItemResponse
             {
                 Id = menuItem.Id,
-                Name = menuItem.Name
+                Name = menuItem.Name,
+                Active = true
             };
 
             return result;
@@ -75,19 +77,28 @@ namespace CoffeeCard.Library.Services.v2
             }
 
             var nameExists = await CheckMenuItemNameExists(changedMenuItem.Name);
-            if (nameExists)
+            if (changedMenuItem.Name != menuItem.Name && nameExists)
             {
                 throw new ConflictException($"Menu item already exists with name {changedMenuItem.Name}");
             }
 
+
+            var menuItemIsUsed = await _context.Products.AnyAsync(p => p.EligibleMenuItems.Any(menuItem => menuItem.Id == id));
+            if (!changedMenuItem.Active && menuItemIsUsed)
+            {
+                throw new ConflictException("Menu item is in use and cannot be disabled");
+            }
+
             menuItem.Name = changedMenuItem.Name;
+            menuItem.Active = changedMenuItem.Active;
 
             await _context.SaveChangesAsync();
 
             var result = new MenuItemResponse
             {
                 Id = id,
-                Name = menuItem.Name
+                Name = menuItem.Name,
+                Active = menuItem.Active
             };
 
             return result;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using CoffeeCard.Models.DataTransferObjects.v2.Products;
 using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Library.Utils
@@ -20,6 +21,24 @@ namespace CoffeeCard.Library.Utils
             }
 
             return product.ProductUserGroup.All(pug => pug.UserGroup != UserGroup.Customer);
+        }
+
+        public static ProductResponse ToProductResponse(this Product product)
+        {
+            return new ProductResponse
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                NumberOfTickets = product.NumberOfTickets,
+                Price = product.Price,
+                IsPerk = product.IsPerk(),
+                Visible = product.Visible,
+                AllowedUserGroups = product.ProductUserGroup.Select(pug => pug.UserGroup),
+                EligibleMenuItems = product.EligibleMenuItems.Select(
+                    mi => new MenuItemResponse { Id = mi.Id, Name = mi.Name }
+                )
+            };
         }
     }
 }

@@ -9,6 +9,7 @@ namespace CoffeeCard.Models.Entities
 {
     [Index(nameof(Email))]
     [Index(nameof(Name))]
+    [Index(nameof(UserGroup))]
     public class User
     {
         public int Id { get; set; }

@@ -1,13 +1,11 @@
 using System.ComponentModel.DataAnnotations;
-using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
-using NJsonSchema.Converters;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
 {
-    [KnownType(typeof(MobilePayPaymentDetails))]
-    [KnownType(typeof(FreePurchasePaymentDetails))]
-    [JsonConverter(typeof(JsonInheritanceConverter))]
+    [JsonPolymorphic(TypeDiscriminatorPropertyName = "discriminator")]
+    [JsonDerivedType(typeof(MobilePayPaymentDetails), typeDiscriminator: "MobilePayPaymentDetails")]
+    [JsonDerivedType(typeof(FreePurchasePaymentDetails), typeDiscriminator: "FreePurchasePaymentDetails")]
     public abstract class PaymentDetails
     {
         /// <summary>

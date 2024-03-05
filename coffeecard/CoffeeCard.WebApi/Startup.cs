@@ -1,5 +1,7 @@
 using System;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using AspNetCore.Authentication.ApiKey;
 using CoffeeCard.Common.Configuration;
@@ -104,11 +106,11 @@ namespace CoffeeCard.WebApi
                     options.Filters.Add(new ApiExceptionFilter());
                     options.Filters.Add(new ReadableBodyFilter());
                 })
-                // Setup Json Serializing
-                .AddNewtonsoftJson(options =>
+                .AddJsonOptions(options =>
                 {
-                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
-                    options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+                    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.Never;
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                 });
 
             services.AddCors(options => options.AddDefaultPolicy(builder =>
@@ -199,6 +201,7 @@ namespace CoffeeCard.WebApi
                 // Add an OpenApi document per API version
                 services.AddOpenApiDocument(config =>
                 {
+                    config.DefaultResponseReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull;
                     config.Title = apiVersion.GroupName;
                     config.Version = apiVersion.ApiVersion.ToString();
                     config.DocumentName = apiVersion.GroupName;
@@ -242,7 +245,7 @@ namespace CoffeeCard.WebApi
                     config.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("apikey"));
 
                     // Assume not null as default unless parameter is marked as nullable
-                    config.DefaultReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull;
+                    // config.DefaultReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull;
                 });
             }
         }
@@ -261,7 +264,7 @@ namespace CoffeeCard.WebApi
                 app.UseHsts();
 
             app.UseOpenApi();
-            app.UseSwaggerUi3();
+            app.UseSwaggerUi();
 
             app.UseHttpsRedirection();
 

@@ -19,5 +19,13 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
         [Required]
         [MinLength(1, ErrorMessage = "Name cannot be an empty string")]
         public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the updated active status of the product.
+        /// </summary>
+        /// <value>Product Active</value>
+        /// <example>true</example>
+        [Required]
+        public bool Active { get; set; }
     }
 }

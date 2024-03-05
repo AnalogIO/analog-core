@@ -37,7 +37,7 @@ namespace CoffeeCard.MobilePay.Service.v2
                 Log.Information("Initiated Payment with MobilePay PaymentId {TransactionId} of {OrerAmount} Oerer kr.", response.PaymentId.ToString(), paymentRequest.Amount);
 
                 return new MobilePayPaymentDetails(paymentRequest.OrderId.ToString(), response.MobilePayAppRedirectUri,
-                    response.PaymentId.ToString(), null);
+                    response.PaymentId.ToString());
             }
             catch (ApiException<ErrorResponse> e)
             {
@@ -64,7 +64,7 @@ namespace CoffeeCard.MobilePay.Service.v2
                 var response = await _paymentsApi.GetSinglePaymentAsync(paymentId, null);
 
                 return new MobilePayPaymentDetails(response.Reference, response.RedirectUri,
-                    response.PaymentId.ToString(), response.State.ToString());
+                    response.PaymentId.ToString());
             }
             catch (ApiException<ErrorResponse> e)
             {

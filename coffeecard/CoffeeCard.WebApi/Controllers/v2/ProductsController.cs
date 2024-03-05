@@ -36,31 +36,34 @@ namespace CoffeeCard.WebApi.Controllers.v2
         }
 
         /// <summary>
-        /// Adds a new product to the database.
+        /// Adds a new product
         /// </summary>
-        /// <param name="addProductRequest">The request containing the details of the product to be added and allowed user groups.</param>
-        /// <returns> The newly added product wrapped in a InitiateProductResponse object.</returns>
-        /// <response code="200">The request was successful, and the product was added.</response>
-        [HttpPost("")]
+        /// <param name="addProductRequest">The request containing the details of the product to be added and allowed user groups</param>
+        /// <returns> The newly added product</returns>
+        /// <response code="200">The product was created</response>
+        [HttpPost]
         [AuthorizeRoles(UserGroup.Board)]
-        [ProducesResponseType(typeof(ChangedProductResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status201Created)]
         public async Task<IActionResult> AddProduct(AddProductRequest addProductRequest)
         {
-            return Ok(await _productService.AddProduct(addProductRequest));
+            var newproduct = await _productService.AddProduct(addProductRequest);
+
+            return CreatedAtAction(nameof(GetProduct), new { id = newproduct.Id }, newproduct);
         }
 
         /// <summary>
         /// Updates a product with the specified changes.
         /// </summary>
-        /// <param name="product">The request containing the changes to be applied to the product.</param>
-        /// <returns>A response indicating the result of the update operation.</returns>
-        /// <response code="200">The request was successful, and the product was updated.</response>
-        [HttpPut("")]
+        /// <param name="productId">Product Id</param>
+        /// <param name="product">The request containing the changes to be applied to the product</param>
+        /// <returns>A response indicating the result of the update operation</returns>
+        /// <response code="200">The product was updated</response>
+        [HttpPut("{id}")]
         [AuthorizeRoles(UserGroup.Board)]
-        [ProducesResponseType(typeof(ChangedProductResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> UpdateProduct(UpdateProductRequest product)
+        [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
+        public async Task<ActionResult<ProductResponse>> UpdateProduct([FromRoute(Name = "id")] int productId, UpdateProductRequest product)
         {
-            return Ok(await _productService.UpdateProduct(product));
+            return Ok(await _productService.UpdateProduct(productId, product));
         }
 
         /// <summary>
@@ -76,13 +79,13 @@ namespace CoffeeCard.WebApi.Controllers.v2
         {
             var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
             var products = await _productService.GetProductsForUserAsync(user);
-            return Ok(products.Select(MapProductToDto).ToList());
+            return Ok(products.ToList());
         }
 
         /// <summary>
         /// Returns a product with the specified id
         /// </summary>
-        /// <param name="id">The id of the product to be returned</param>
+        /// <param name="productId">The id of the product to be returned</param>
         /// <returns>The product with the specified id</returns>
         /// <response code="200">Successful request</response>
         /// <response code="401">Invalid credentials</response>
@@ -92,29 +95,11 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ProductResponse>> GetProduct([FromRoute(Name = "id")] int id)
+        public async Task<ActionResult<ProductResponse>> GetProduct([FromRoute(Name = "id")] int productId)
         {
             await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
-            var product = await _productService.GetProductAsync(id);
-            return Ok(MapProductToDto(product));
-        }
-
-        private static ProductResponse MapProductToDto(Product product)
-        {
-            return new ProductResponse
-            {
-                Id = product.Id,
-                Name = product.Name,
-                Description = product.Description,
-                NumberOfTickets = product.NumberOfTickets,
-                Price = product.Price,
-                IsPerk = product.IsPerk(),
-                Visible = product.Visible,
-                AllowedUserGroups = product.ProductUserGroup.Select(e => e.UserGroup),
-                EligibleMenuItems = product.EligibleMenuItems.Select(
-                    item => new MenuItemResponse { Id = item.Id, Name = item.Name }
-                )
-            };
+            var product = await _productService.GetProductAsync(productId);
+            return Ok(product);
         }
 
         /// <summary>
@@ -127,8 +112,8 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(IEnumerable<ProductResponse>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<ProductResponse>>> GetAllProducts()
         {
-            IEnumerable<Product> products = await _productService.GetAllProductsAsync();
-            return Ok(products.Select(MapProductToDto).ToList());
+            IEnumerable<ProductResponse> products = await _productService.GetAllProductsAsync();
+            return Ok(products);
         }
     }
 }

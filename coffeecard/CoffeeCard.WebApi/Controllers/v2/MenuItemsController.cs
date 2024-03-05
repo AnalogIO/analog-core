@@ -63,12 +63,14 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <summary>
         /// Updates a menu item
         /// </summary>
+        /// <param name="id">Menu item id to update</param>
         /// <param name="menuItem">Menu item to update</param>
         /// <returns>Menu item</returns>
         /// <response code="200">Menu item successfully updated</response>
         /// <response code="401">Invalid credentials</response>
         /// <response code="404">Menu item not found</response>
-        /// 
+        /// <response code="409">Menu item is in use and cannot be disabled</response>
+        /// <response code="409">Menu item with the same name already exists</response>
         [HttpPut("{id}")]
         [AuthorizeRoles(UserGroup.Board)]
         [ProducesResponseType(typeof(MenuItemResponse), StatusCodes.Status200OK)]
