@@ -5,12 +5,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Products
     /// <summary>
     /// Represents a menu item that can be redeemed with a ticket
     /// </summary>
-    /// <example>
-    /// {
-    ///    "id": 1,
-    ///    "name": "Cappuccino",
-    /// }
-    /// </example>
     public class MenuItemResponse
     {
         /// <summary>

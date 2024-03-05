@@ -53,7 +53,8 @@ namespace CoffeeCard.Library.Services.v2
             var result = new MenuItemResponse
             {
                 Id = menuItem.Id,
-                Name = menuItem.Name
+                Name = menuItem.Name,
+                Active = true
             };
 
             return result;
