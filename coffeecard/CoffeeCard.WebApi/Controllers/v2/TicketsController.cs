@@ -1,12 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.DataTransferObjects;
 using CoffeeCard.Models.DataTransferObjects.v2.Ticket;
+using CoffeeCard.Models.Entities;
+using CoffeeCard.WebApi.Helpers;
+using CoffeeCard.WebApi.Hubs;
+using CoffeeCard.WebApi.Notifiers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using ITicketService = CoffeeCard.Library.Services.v2.ITicketService;
 
 namespace CoffeeCard.WebApi.Controllers.v2
@@ -22,14 +28,16 @@ namespace CoffeeCard.WebApi.Controllers.v2
     {
         private readonly ClaimsUtilities _claimsUtilities;
         private readonly ITicketService _ticketService;
+        private readonly IUsedTicketNotifier _usedTicketNotifier;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TicketsController"/> class.
         /// </summary>
-        public TicketsController(ITicketService ticketService, ClaimsUtilities claimsUtilities)
+        public TicketsController(ITicketService ticketService, ClaimsUtilities claimsUtilities, IUsedTicketNotifier usedTicketNotifier)
         {
             _ticketService = ticketService;
             _claimsUtilities = claimsUtilities;
+            _usedTicketNotifier = usedTicketNotifier;
         }
 
         /// <summary>
@@ -67,7 +75,32 @@ namespace CoffeeCard.WebApi.Controllers.v2
         {
             var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
 
-            return Ok(await _ticketService.UseTicketAsync(user, request.ProductId, request.MenuItemId));
+            var response = await _ticketService.UseTicketAsync(user, request.ProductId, request.MenuItemId);
+            await _usedTicketNotifier.NotifyClientsOfSwipe(user.Name, response);
+            
+            return Ok(response);
+        }
+        
+        /// <summary>
+        /// Gets recently used tickets
+        /// </summary>
+        /// <param name="limit"></param>
+        /// <returns>A list of recently used tickets</returns>
+        /// <response code="200">Successful request</response>
+        [AuthorizeRoles(UserGroup.Board)]
+        [ProducesResponseType(typeof(IEnumerable<UsedTicketEvent>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
+        [ProducesDefaultResponseType]
+        [HttpGet("recent")]
+        public async Task<ActionResult<List<UsedTicketEvent>>> GetRecentlyUsedTickets([FromQuery] int limit = 10)
+        {
+            if (limit > 100)
+            {
+                return BadRequest(new ApiError("Limit cannot be higher than 100"));
+            }
+            
+            var tickets = await _ticketService.GetRecentlyUsedTicketsAsync(limit);
+            return Ok(tickets);
         }
     }
 }

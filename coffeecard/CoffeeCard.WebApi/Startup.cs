@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -12,6 +13,8 @@ using CoffeeCard.Library.Utils;
 using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.MobilePay.Utils;
 using CoffeeCard.WebApi.Helpers;
+using CoffeeCard.WebApi.Hubs;
+using CoffeeCard.WebApi.Notifiers;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -19,6 +22,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -45,6 +49,7 @@ namespace CoffeeCard.WebApi
     {
         private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _environment;
+        private static readonly string[] ResponseCompressionType = new[] { "application/octet-stream" };
 
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
@@ -85,6 +90,7 @@ namespace CoffeeCard.WebApi
             services.AddScoped<ITicketService, TicketService>();
             services.AddScoped<ClaimsUtilities>();
             services.AddSingleton(_environment.ContentRootFileProvider);
+            services.AddScoped<IUsedTicketNotifier, UsedTicketNotifier>();
 
             services.AddScoped<Library.Services.v2.IPurchaseService, Library.Services.v2.PurchaseService>();
             services.AddScoped<Library.Services.v2.ITicketService, Library.Services.v2.TicketService>();
@@ -97,6 +103,12 @@ namespace CoffeeCard.WebApi
             services.AddScoped<IDateTimeProvider, DateTimeProvider>();
             services.AddScoped<IAdminStatisticsService, AdminStatisticsService>();
             services.AddFeatureManagement();
+            
+            services.AddResponseCompression(opts =>
+            {
+                opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+                    ResponseCompressionType);
+            });
 
             // Azure Application Insights
             services.AddApplicationInsightsTelemetry();
@@ -279,13 +291,16 @@ namespace CoffeeCard.WebApi
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseResponseCompression();
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
                 endpoints.MapRazorPages();
+                endpoints.MapHub<UsedTicketsHub>("/used_tickets");
                 endpoints.MapFallbackToPage("/result");
             });
-
+            
             // Enable Request Buffering so that a raw request body can be read after aspnet model binding
             app.Use(next => context =>
             {
