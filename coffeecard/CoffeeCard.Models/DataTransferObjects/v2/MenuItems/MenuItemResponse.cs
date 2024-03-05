@@ -34,6 +34,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Products
         /// </summary>
         /// <value>Menu item active</value>
         /// <example>true</example>
+        [Required]
         public bool Active { get; set; }
     }
 }
