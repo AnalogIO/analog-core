@@ -154,6 +154,22 @@ namespace CoffeeCard.Library.Services.v2
             return menuItem;
         }
 
+        public Task<List<UsedTicketEvent>> GetRecentlyUsedTicketsAsync(int limit)
+        {
+            return _context.Tickets
+                .Where(t => t.IsUsed)
+                .OrderByDescending(t => t.DateUsed)
+                .Take(limit)
+                .Select(t => new UsedTicketEvent
+                {
+                    UserName = t.Owner.Name,
+                    ProductName = t.Purchase.ProductName,
+                    DateUsed = t.DateUsed ?? DateTime.MinValue,
+                    MenuItemName = t.UsedOnMenuItem.Name
+                })
+                .ToListAsync();
+        }
+
         public void Dispose()
         {
             _context?.Dispose();
