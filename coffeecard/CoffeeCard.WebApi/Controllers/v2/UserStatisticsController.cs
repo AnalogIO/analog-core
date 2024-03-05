@@ -30,11 +30,11 @@ namespace CoffeeCard.WebApi.Controllers.v2
         }
 
         /// <summary>
-        /// Sum unused clip cards within a given period
+        /// Sum unused clip cards within a given period per productId
         /// </summary>
         /// <param name="unusedClipsRequest"> Request object containing start and end date of the query</param>
         /// <returns> A collection of UnusedClipsResponse objects that match the search criteria </returns>
-        /// <response code="200"> Tickets that match the criteria </response>
+        /// <response code="200"> Products with tickets that match the criteria </response>
         /// <response code="401"> Invalid credentials </response>
         [HttpPost("unused-clips")]
         [AuthorizeRoles(UserGroup.Board)]

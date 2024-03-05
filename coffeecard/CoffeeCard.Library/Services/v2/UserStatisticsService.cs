@@ -23,22 +23,18 @@ namespace CoffeeCard.Library.Services.v2
 
             var tickets = await _context.Tickets
                 .Where(t => t.DateCreated >= startDate && t.DateCreated <= endDate && t.IsUsed == false)
-                .GroupBy(t => t.PurchaseId)
-                .Select(g => new
-                {
-                    PurchaseId = g.Key,
-                    Count = g.Count()
-                })
                 .Join(_context.Purchases,
-                    ticketGroup => ticketGroup.PurchaseId,
+                    ticket => ticket.PurchaseId,
                     purchase => purchase.Id,
-                    (ticketGroup, purchase) => new UnusedClipsResponse
-                    {
-                        PurchaseId = ticketGroup.PurchaseId,
-                        TicketsLeft = ticketGroup.Count,
-                        ToRefund = (ticketGroup.Count / (float)purchase.NumberOfTickets) * purchase.Price,
-
-                    })
+                    (ticket, purchase) => new { ticket, purchase })
+                .GroupBy(combined => combined.purchase.ProductId)
+                .Select(group => new UnusedClipsResponse
+                {
+                    ProductId = group.Key,
+                    ProductName = group.First().purchase.ProductName,
+                    TicketsLeft = group.Count(),
+                    ToRefund = group.Sum(item => (1 / (decimal)item.purchase.NumberOfTickets) * item.purchase.Price),
+                })
                 .ToListAsync();
 
 

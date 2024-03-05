@@ -10,12 +10,21 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.UserStatistics
     public class UnusedClipsResponse
     {
         /// <summary>
-        /// The id of the purchase
+        /// The id of the product
         /// </summary>
-        /// <value> Purchase Id </value>
+        /// <value> Product Id </value>
         /// <example> 1 </example>
         [Required]
-        public int PurchaseId { get; set; }
+        public int ProductId { get; set; }
+
+
+        /// <summary>
+        /// The name of the product
+        /// </summary>
+        /// <value> Product Name </value>
+        /// <example> Americano </example>
+        [Required]
+        public string ProductName { get; set; }
 
         /// <summary>
         /// The number of tickets unused in a purchase
@@ -31,7 +40,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.UserStatistics
         /// <value> Amount to refund </value>
         /// <example> 40.2 </example>
         [Required]
-        public float ToRefund { get; set; }
+        public decimal ToRefund { get; set; }
     }
 }
 

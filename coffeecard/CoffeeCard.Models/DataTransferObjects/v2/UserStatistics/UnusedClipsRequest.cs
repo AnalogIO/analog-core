@@ -21,7 +21,8 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.UserStatistics
         /// </summary>
         /// <value> End Date </value>
         /// <example> 2024-02-08 </example>
-        public DateTime EndDate { get; set; } = DateTime.Now;
+        [Required]
+        public DateTime EndDate { get; set; }
     }
 }
 
