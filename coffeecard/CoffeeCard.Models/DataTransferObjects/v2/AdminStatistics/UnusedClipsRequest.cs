@@ -6,7 +6,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.AdminStatistics
     /// <summary>
     /// Initialize an request for data with unused clips 
     /// </summary>
-    public class RevenuedClipsRequest
+    public class UnusedClipsRequest
     {
         /// <summary>
         /// The start date of unused tickets query
