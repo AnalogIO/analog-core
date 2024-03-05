@@ -35,12 +35,12 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.UserStatistics
         public int TicketsLeft { get; set; }
 
         /// <summary>
-        /// The amount that should be refunded
+        /// The value of the unused purchases of a given product
         /// </summary>
-        /// <value> Amount to refund </value>
+        /// <value> Value of the unused purchases </value>
         /// <example> 40.2 </example>
         [Required]
-        public decimal ToRefund { get; set; }
+        public decimal UnusedPurchasesValue { get; set; }
     }
 }
 

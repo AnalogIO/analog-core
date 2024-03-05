@@ -4,7 +4,7 @@ using CoffeeCard.Models.DataTransferObjects.v2.UserStatistics;
 
 namespace CoffeeCard.Library.Services.v2
 {
-    public interface IUserStatisticsService
+    public interface IAdminStatisticsService
     {
         public Task<List<UnusedClipsResponse>> GetUnusedClips(UnusedClipsRequest unusedClipsRequest);
     }

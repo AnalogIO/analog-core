@@ -17,16 +17,16 @@ namespace CoffeeCard.WebApi.Controllers.v2
     [ApiVersion("2")]
     [Route("api/v{version:apiVersion}/statistics")]
     [Authorize]
-    public class UserStatisticsController : ControllerBase
+    public class AdminStatisticsController : ControllerBase
     {
-        private readonly IUserStatisticsService _userStatisticsService;
+        private readonly IAdminStatisticsService _adminStatisticsService;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UserStatisticsController"/> class.
+        /// <summary> 
+        /// Initializes a new instance of the <see cref="AdminStatisticsController"/> class.
         /// </summary>
-        public UserStatisticsController(IUserStatisticsService userStatisticsService)
+        public AdminStatisticsController(IAdminStatisticsService adminStatisticsService)
         {
-            _userStatisticsService = userStatisticsService;
+            _adminStatisticsService = adminStatisticsService;
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<UnusedClipsResponse>> GetUnusedClips([FromBody] UnusedClipsRequest unusedClipsRequest)
         {
-            var tickets = await _userStatisticsService.GetUnusedClips(unusedClipsRequest);
+            var tickets = await _adminStatisticsService.GetUnusedClips(unusedClipsRequest);
             return Ok(tickets);
         }
     }

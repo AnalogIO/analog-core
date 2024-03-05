@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CoffeeCard.Library.Services.v2
 {
-    public class UserStatisticsService : IUserStatisticsService
+    public class AdminStatisticsService : IAdminStatisticsService
     {
         private readonly CoffeeCardContext _context;
 
-        public UserStatisticsService(CoffeeCardContext context)
+        public AdminStatisticsService(CoffeeCardContext context)
         {
             _context = context;
         }
@@ -33,7 +33,7 @@ namespace CoffeeCard.Library.Services.v2
                     ProductId = group.Key,
                     ProductName = group.First().purchase.ProductName,
                     TicketsLeft = group.Count(),
-                    ToRefund = group.Sum(item => (1 / (decimal)item.purchase.NumberOfTickets) * item.purchase.Price),
+                    UnusedPurchasesValue = group.Sum(item => (1 / (decimal)item.purchase.NumberOfTickets) * item.purchase.Price),
                 })
                 .ToListAsync();
 
