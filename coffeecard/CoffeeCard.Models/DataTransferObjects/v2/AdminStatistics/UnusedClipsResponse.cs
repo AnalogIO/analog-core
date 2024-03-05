@@ -12,8 +12,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.AdminStatistics
         /// </summary>
         /// <value> Product Id </value>
         /// <example> 1 </example>
-        [Required]
-        public int ProductId { get; set; }
+        public required int ProductId { get; set; }
 
 
         /// <summary>
@@ -21,24 +20,21 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.AdminStatistics
         /// </summary>
         /// <value> Product Name </value>
         /// <example> Americano </example>
-        [Required]
-        public string ProductName { get; set; }
+        public required string ProductName { get; set; }
 
         /// <summary>
         /// The number of tickets unused in a purchase
         /// </summary>
         /// <value> Tickets left </value>
         /// <example> 8 </example>
-        [Required]
-        public int TicketsLeft { get; set; }
+        public required int TicketsLeft { get; set; }
 
         /// <summary>
         /// The value of the unused purchases of a given product
         /// </summary>
         /// <value> Value of the unused purchases </value>
         /// <example> 40.2 </example>
-        [Required]
-        public decimal UnusedPurchasesValue { get; set; }
+        public required decimal UnusedPurchasesValue { get; set; }
     }
 }
 

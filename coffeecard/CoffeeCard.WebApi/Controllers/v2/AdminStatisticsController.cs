@@ -37,7 +37,8 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <response code="200"> Products with tickets that match the criteria </response>
         /// <response code="401"> Invalid credentials </response>
         [HttpPost("unused-clips")]
-        [AuthorizeRoles(UserGroup.Board)]
+        //[AuthorizeRoles(UserGroup.Board)]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(UnusedClipsResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<UnusedClipsResponse>> GetUnusedClips([FromBody] UnusedClipsRequest unusedClipsRequest)
