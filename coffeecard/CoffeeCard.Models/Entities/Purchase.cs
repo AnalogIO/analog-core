@@ -1,8 +1,8 @@
+using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
-using Microsoft.EntityFrameworkCore;
 
 namespace CoffeeCard.Models.Entities
 {

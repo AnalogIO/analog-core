@@ -1,19 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using CoffeeCard.Common;
+﻿using CoffeeCard.Common;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services.v2;
-using CoffeeCard.Models.DataTransferObjects;
 using CoffeeCard.Models.DataTransferObjects.CoffeeCard;
 using CoffeeCard.Models.DataTransferObjects.Ticket;
 using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.Library.Services
 {
@@ -55,7 +54,7 @@ namespace CoffeeCard.Library.Services
             UpdateTicket(usedTicket);
             await UpdateUserRank(userId, 1);
 
-            _context.SaveChanges();
+            _ = _context.SaveChanges();
 
             return usedTicket;
         }
@@ -106,7 +105,7 @@ namespace CoffeeCard.Library.Services
             {
                 // update user experience
                 usedTickets.ForEach(x => _accountService.UpdateExperience(userId, GetExperienceByTicket(x.ProductId)));
-                _context.SaveChanges();
+                _ = _context.SaveChanges();
                 Log.Information("All tickets were successfully used, updated and saved!");
             }
             else

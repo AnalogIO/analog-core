@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Models.DataTransferObjects.v2.User;
@@ -10,6 +5,11 @@ using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.Library.Services.v2
 {
@@ -56,8 +56,8 @@ namespace CoffeeCard.Library.Services.v2
                 UserGroup = UserGroup.Customer
             };
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            _ = _context.Users.Add(user);
+            _ = await _context.SaveChangesAsync();
 
             await SendAccountVerificationEmail(user);
 
@@ -117,7 +117,7 @@ namespace CoffeeCard.Library.Services.v2
                 Log.Information("User changed password");
             }
 
-            await _context.SaveChangesAsync();
+            _ = await _context.SaveChangesAsync();
             return user;
         }
 
@@ -187,7 +187,7 @@ namespace CoffeeCard.Library.Services.v2
             user.DateUpdated = DateTime.Now;
             user.PrivacyActivated = true;
             user.UserState = UserState.Deleted;
-            await _context.SaveChangesAsync();
+            _ = await _context.SaveChangesAsync();
         }
 
         private async Task<User> GetAccountByEmailAsync(string email)
@@ -206,7 +206,7 @@ namespace CoffeeCard.Library.Services.v2
 
             user.UserGroup = userGroup;
 
-            await _context.SaveChangesAsync();
+            _ = await _context.SaveChangesAsync();
         }
 
 
@@ -278,13 +278,13 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task UpdatePriviligedUserGroups(WebhookUpdateUserGroupRequest request)
         {
-            await _context.Users
+            _ = await _context.Users
                 .Where(u => u.UserGroup != UserGroup.Customer)
                 .ExecuteUpdateAsync(u => u.SetProperty(u => u.UserGroup, UserGroup.Customer));
 
             foreach (var item in request.PrivilegedUsers)
             {
-                await _context.Users
+                _ = await _context.Users
                     .Where(u => u.Id == item.AccountId)
                     .ExecuteUpdateAsync(u => u.SetProperty(u => u.UserGroup, item.UserGroup));
             }

@@ -1,10 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Net.Http;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Models.Entities;
@@ -12,6 +5,13 @@ using CoffeeCard.WebApi;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace CoffeeCard.Tests.Integration.WebApplication
@@ -87,8 +87,8 @@ namespace CoffeeCard.Tests.Integration.WebApplication
             var context = scopedServices.GetRequiredService<CoffeeCardContext>();
 
             // Ensure the database is cleaned for each test run
-            context.Database.EnsureDeleted();
-            context.Database.EnsureCreated();
+            _ = context.Database.EnsureDeleted();
+            _ = context.Database.EnsureCreated();
 
             return context;
         }
@@ -98,7 +98,7 @@ namespace CoffeeCard.Tests.Integration.WebApplication
         /// </summary>
         protected static async Task<T> DeserializeResponseAsync<T>(HttpResponseMessage response)
         {
-            response.EnsureSuccessStatusCode();
+            _ = response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<T>(content);
         }

@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using CoffeeCard.Common.Configuration;
+﻿using CoffeeCard.Common.Configuration;
+using System.ComponentModel.DataAnnotations;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.AppConfig
 {

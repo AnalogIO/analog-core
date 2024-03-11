@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.MobilePay.Service.v2;
@@ -9,9 +5,12 @@ using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.v2.Products;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 using CoffeeCard.Models.Entities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Purchase = CoffeeCard.Models.Entities.Purchase;
 
 namespace CoffeeCard.Library.Services.v2
@@ -43,8 +42,8 @@ namespace CoffeeCard.Library.Services.v2
 
             var (purchase, paymentDetails) = await InitiatePaymentAsync(initiateRequest, product, user);
 
-            await _context.Purchases.AddAsync(purchase);
-            await _context.SaveChangesAsync();
+            _ = await _context.Purchases.AddAsync(purchase);
+            _ = await _context.SaveChangesAsync();
 
             if (purchase.Status == PurchaseStatus.Completed)
             {
@@ -239,7 +238,7 @@ namespace CoffeeCard.Library.Services.v2
             await _ticketService.IssueTickets(purchase);
 
             purchase.Status = PurchaseStatus.Completed;
-            await _context.SaveChangesAsync();
+            _ = await _context.SaveChangesAsync();
 
             Log.Information("Completed purchase with Id {Id}, TransactionId {TransactionId}", purchase.Id, purchase.ExternalTransactionId);
 
@@ -250,7 +249,7 @@ namespace CoffeeCard.Library.Services.v2
         {
             await _mobilePayPaymentsService.CancelPayment(Guid.Parse(purchase.ExternalTransactionId));
             purchase.Status = PurchaseStatus.Cancelled;
-            await _context.SaveChangesAsync();
+            _ = await _context.SaveChangesAsync();
 
             Log.Information("Purchase has been cancelled Purchase Id {PurchaseId}, Transaction Id {TransactionId}",
                 purchase.Id, purchase.ExternalTransactionId);
@@ -303,9 +302,9 @@ namespace CoffeeCard.Library.Services.v2
             voucher.User = user;
             voucher.Purchase = purchase;
 
-            _context.Vouchers.Attach(voucher);
+            _ = _context.Vouchers.Attach(voucher);
             _context.Entry(voucher).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            _ = await _context.SaveChangesAsync();
 
             return new SimplePurchaseResponse
             {

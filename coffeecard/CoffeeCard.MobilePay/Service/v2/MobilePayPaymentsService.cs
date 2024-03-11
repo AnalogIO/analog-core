@@ -1,11 +1,11 @@
-﻿using System;
-using System.Threading.Tasks;
-using CoffeeCard.Common.Configuration;
+﻿using CoffeeCard.Common.Configuration;
 using CoffeeCard.MobilePay.Exception.v2;
 using CoffeeCard.MobilePay.Generated.Api.PaymentsApi;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 using Serilog;
+using System;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.MobilePay.Service.v2
 {

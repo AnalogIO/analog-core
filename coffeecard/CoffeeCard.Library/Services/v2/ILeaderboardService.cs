@@ -1,7 +1,7 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using CoffeeCard.Models.DataTransferObjects.v2.Leaderboard;
 using CoffeeCard.Models.Entities;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.Library.Services.v2
 {

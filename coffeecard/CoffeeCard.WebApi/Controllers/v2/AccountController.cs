@@ -1,19 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
+using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.DataTransferObjects;
-using CoffeeCard.Models.DataTransferObjects.v2.User;
 using CoffeeCard.Models.DataTransferObjects.v2.Programme;
+using CoffeeCard.Models.DataTransferObjects.v2.User;
+using CoffeeCard.Models.Entities;
+using CoffeeCard.WebApi.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using CoffeeCard.Library.Services.v2;
-using CoffeeCard.Models.Entities;
-using CoffeeCard.WebApi.Helpers;
+using System;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.WebApi.Controllers.v2
 {
@@ -53,7 +51,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status409Conflict)]
         public async Task<ActionResult<MessageResponseDto>> Register([FromBody] RegisterAccountRequest registerRequest)
         {
-            await _accountService.RegisterAccountAsync(registerRequest.Name, registerRequest.Email,
+            _ = await _accountService.RegisterAccountAsync(registerRequest.Name, registerRequest.Email,
                 registerRequest.Password, registerRequest.ProgrammeId);
 
             return Created("/api/v2/account/Get", new MessageResponseDto

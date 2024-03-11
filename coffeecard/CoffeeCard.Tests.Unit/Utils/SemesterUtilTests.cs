@@ -1,5 +1,5 @@
-using System;
 using CoffeeCard.Library.Utils;
+using System;
 using Xunit;
 
 namespace CoffeeCard.Tests.Unit.Utils

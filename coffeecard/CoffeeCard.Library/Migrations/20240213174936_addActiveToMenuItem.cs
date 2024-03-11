@@ -8,7 +8,7 @@ namespace CoffeeCard.Library.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<bool>(
+            _ = migrationBuilder.AddColumn<bool>(
                 name: "Active",
                 schema: "dbo",
                 table: "MenuItems",
@@ -19,7 +19,7 @@ namespace CoffeeCard.Library.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
+            _ = migrationBuilder.DropColumn(
                 name: "Active",
                 schema: "dbo",
                 table: "MenuItems");

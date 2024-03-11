@@ -8,7 +8,7 @@ namespace CoffeeCard.Library.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "IX_Statistics_Preset_ExpiryDate",
                 schema: "dbo",
                 table: "Statistics",
@@ -17,7 +17,7 @@ namespace CoffeeCard.Library.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
+            _ = migrationBuilder.DropIndex(
                 name: "IX_Statistics_Preset_ExpiryDate",
                 schema: "dbo",
                 table: "Statistics");

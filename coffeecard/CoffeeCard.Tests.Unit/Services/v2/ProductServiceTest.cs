@@ -1,14 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.Product;
-using CoffeeCard.Models.DataTransferObjects.v2.Products;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace CoffeeCard.Tests.Unit.Services.v2
@@ -41,33 +38,33 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 ExperienceWorth = 10,
                 Visible = true
             };
-            await context.AddAsync(p);
-            await context.SaveChangesAsync();
+            _ = await context.AddAsync(p);
+            _ = await context.SaveChangesAsync();
 
-            await context.AddAsync(new ProductUserGroup
+            _ = await context.AddAsync(new ProductUserGroup
             {
                 Product = p,
                 UserGroup = UserGroup.Barista
             });
 
-            await context.AddAsync(new ProductUserGroup
+            _ = await context.AddAsync(new ProductUserGroup
             {
                 Product = p,
                 UserGroup = UserGroup.Manager
             });
 
-            await context.SaveChangesAsync();
+            _ = await context.SaveChangesAsync();
 
             using var productService = new ProductService(context);
 
-            await productService.UpdateProduct(1, new UpdateProductRequest()
+            _ = await productService.UpdateProduct(1, new UpdateProductRequest()
             {
                 Visible = true,
                 Price = 10,
                 NumberOfTickets = 10,
                 Name = "Coffee",
                 Description = "Coffee Clip card",
-                AllowedUserGroups = new List<UserGroup>() { UserGroup.Customer, UserGroup.Board }
+                AllowedUserGroups = [UserGroup.Customer, UserGroup.Board]
             });
 
             var result = await productService.GetProductAsync(1);
@@ -107,10 +104,10 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 NumberOfTickets = 10,
                 Price = 10,
                 Visible = true,
-                AllowedUserGroups = new List<UserGroup> { UserGroup.Manager, UserGroup.Board }
+                AllowedUserGroups = [UserGroup.Manager, UserGroup.Board]
             };
 
-            await productService.AddProduct(p);
+            _ = await productService.AddProduct(p);
 
             var result = await productService.GetProductAsync(1);
 
@@ -147,7 +144,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 Visible = true,
                 AllowedUserGroups = Enum.GetValues<UserGroup>()
             };
-            await productService.AddProduct(p1);
+            _ = await productService.AddProduct(p1);
 
             var p2 = new AddProductRequest
             {
@@ -158,7 +155,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 Visible = false,
                 AllowedUserGroups = Enum.GetValues<UserGroup>()
             };
-            await productService.AddProduct(p2);
+            _ = await productService.AddProduct(p2);
 
             var result = await productService.GetAllProductsAsync();
 
@@ -193,9 +190,9 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 NumberOfTickets = 10,
                 Price = 10,
                 Visible = true,
-                AllowedUserGroups = new List<UserGroup> { UserGroup.Customer }
+                AllowedUserGroups = [UserGroup.Customer]
             };
-            await productService.AddProduct(p1);
+            _ = await productService.AddProduct(p1);
 
             var p2 = new AddProductRequest
             {
@@ -204,9 +201,9 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 NumberOfTickets = 10,
                 Price = 170,
                 Visible = true,
-                AllowedUserGroups = new List<UserGroup> { UserGroup.Barista }
+                AllowedUserGroups = [UserGroup.Barista]
             };
-            await productService.AddProduct(p2);
+            _ = await productService.AddProduct(p2);
 
             var p3 = new AddProductRequest
             {
@@ -215,9 +212,9 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 NumberOfTickets = 1,
                 Price = 35,
                 Visible = true,
-                AllowedUserGroups = new List<UserGroup> { UserGroup.Manager }
+                AllowedUserGroups = [UserGroup.Manager]
             };
-            await productService.AddProduct(p3);
+            _ = await productService.AddProduct(p3);
 
             var p4 = new AddProductRequest
             {
@@ -226,31 +223,31 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 NumberOfTickets = 1,
                 Price = 19,
                 Visible = true,
-                AllowedUserGroups = new List<UserGroup> { UserGroup.Board }
+                AllowedUserGroups = [UserGroup.Board]
             };
-            await productService.AddProduct(p4);
+            _ = await productService.AddProduct(p4);
 
             var result = await productService.GetAllProductsAsync();
 
             Assert.Collection(result,
                 e =>
                 {
-                    Assert.Single(e.AllowedUserGroups);
+                    _ = Assert.Single(e.AllowedUserGroups);
                     Assert.Contains(UserGroup.Customer, e.AllowedUserGroups);
                 },
                 e =>
                 {
-                    Assert.Single(e.AllowedUserGroups);
+                    _ = Assert.Single(e.AllowedUserGroups);
                     Assert.Contains(UserGroup.Barista, e.AllowedUserGroups);
                 },
                 e =>
                 {
-                    Assert.Single(e.AllowedUserGroups);
+                    _ = Assert.Single(e.AllowedUserGroups);
                     Assert.Contains(UserGroup.Manager, e.AllowedUserGroups);
                 },
                 e =>
                 {
-                    Assert.Single(e.AllowedUserGroups);
+                    _ = Assert.Single(e.AllowedUserGroups);
                     Assert.Contains(UserGroup.Board, e.AllowedUserGroups);
                 }
             );

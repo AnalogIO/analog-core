@@ -1,7 +1,7 @@
-using System;
 using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System;
 
 namespace CoffeeCard.WebApi.Helpers
 {

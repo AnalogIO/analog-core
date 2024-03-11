@@ -16,15 +16,15 @@ namespace CoffeeCard.WebApi.Helpers
         /// <param name="configuration">Reference to configuration file</param>
         public static void AddConfigurationSettings(this IServiceCollection services, IConfiguration configuration)
         {
-            services.UseConfigurationValidation();
+            _ = services.UseConfigurationValidation();
 
             // Parse and setup settings from configuration
-            services.ConfigureValidatableSetting<DatabaseSettings>(configuration.GetSection("DatabaseSettings"));
-            services.ConfigureValidatableSetting<EnvironmentSettings>(configuration.GetSection("EnvironmentSettings"));
-            services.ConfigureValidatableSetting<LoginLimiterSettings>(configuration.GetSection("LoginLimiterSettings"));
-            services.ConfigureValidatableSetting<IdentitySettings>(configuration.GetSection("IdentitySettings"));
-            services.ConfigureValidatableSetting<MailgunSettings>(configuration.GetSection("MailgunSettings"));
-            services.ConfigureValidatableSetting<MobilePaySettingsV2>(configuration.GetSection("MobilePaySettingsV2"));
+            _ = services.ConfigureValidatableSetting<DatabaseSettings>(configuration.GetSection("DatabaseSettings"));
+            _ = services.ConfigureValidatableSetting<EnvironmentSettings>(configuration.GetSection("EnvironmentSettings"));
+            _ = services.ConfigureValidatableSetting<LoginLimiterSettings>(configuration.GetSection("LoginLimiterSettings"));
+            _ = services.ConfigureValidatableSetting<IdentitySettings>(configuration.GetSection("IdentitySettings"));
+            _ = services.ConfigureValidatableSetting<MailgunSettings>(configuration.GetSection("MailgunSettings"));
+            _ = services.ConfigureValidatableSetting<MobilePaySettingsV2>(configuration.GetSection("MobilePaySettingsV2"));
         }
     }
 }

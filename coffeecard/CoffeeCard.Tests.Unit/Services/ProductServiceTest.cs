@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using CoffeeCard.Common.Configuration;
+﻿using CoffeeCard.Common.Configuration;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace CoffeeCard.Tests.Unit.Services
@@ -37,7 +37,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 ExperienceWorth = 10,
                 Visible = true
             };
-            await context.AddAsync(p1);
+            _ = await context.AddAsync(p1);
 
             var p2 = new Product
             {
@@ -49,20 +49,20 @@ namespace CoffeeCard.Tests.Unit.Services
                 ExperienceWorth = 20,
                 Visible = false
             };
-            await context.AddAsync(p2);
-            await context.SaveChangesAsync();
+            _ = await context.AddAsync(p2);
+            _ = await context.SaveChangesAsync();
 
-            await context.AddAsync(new ProductUserGroup
+            _ = await context.AddAsync(new ProductUserGroup
             {
                 Product = p1,
                 UserGroup = UserGroup.Barista
             });
-            await context.AddAsync(new ProductUserGroup
+            _ = await context.AddAsync(new ProductUserGroup
             {
                 Product = p2,
                 UserGroup = UserGroup.Barista
             });
-            await context.SaveChangesAsync();
+            _ = await context.SaveChangesAsync();
 
             using var productService = new ProductService(context);
             var expected = new List<Product>
@@ -115,7 +115,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 ExperienceWorth = 10,
                 Visible = true
             };
-            await context.AddAsync(p1);
+            _ = await context.AddAsync(p1);
 
             var p2 = new Product
             {
@@ -127,7 +127,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 ExperienceWorth = 20,
                 Visible = true
             };
-            await context.AddAsync(p2);
+            _ = await context.AddAsync(p2);
 
             var p3 = new Product
             {
@@ -139,25 +139,25 @@ namespace CoffeeCard.Tests.Unit.Services
                 ExperienceWorth = 10,
                 Visible = true
             };
-            await context.AddAsync(p3);
-            await context.SaveChangesAsync();
+            _ = await context.AddAsync(p3);
+            _ = await context.SaveChangesAsync();
 
-            await context.AddAsync(new ProductUserGroup
+            _ = await context.AddAsync(new ProductUserGroup
             {
                 Product = p1,
                 UserGroup = UserGroup.Barista
             });
-            await context.AddAsync(new ProductUserGroup
+            _ = await context.AddAsync(new ProductUserGroup
             {
                 Product = p2,
                 UserGroup = UserGroup.Barista
             });
-            await context.AddAsync(new ProductUserGroup
+            _ = await context.AddAsync(new ProductUserGroup
             {
                 Product = p3,
                 UserGroup = UserGroup.Barista
             });
-            await context.SaveChangesAsync();
+            _ = await context.SaveChangesAsync();
 
             using (var productService = new ProductService(context))
             {
@@ -233,7 +233,7 @@ namespace CoffeeCard.Tests.Unit.Services
                     ExperienceWorth = 10,
                     Visible = true
                 };
-                await context.AddAsync(p1);
+                _ = await context.AddAsync(p1);
 
                 var p2 = new Product
                 {
@@ -245,20 +245,20 @@ namespace CoffeeCard.Tests.Unit.Services
                     ExperienceWorth = 20,
                     Visible = false
                 };
-                await context.AddAsync(p2);
-                await context.SaveChangesAsync();
+                _ = await context.AddAsync(p2);
+                _ = await context.SaveChangesAsync();
 
-                await context.AddAsync(new ProductUserGroup
+                _ = await context.AddAsync(new ProductUserGroup
                 {
                     Product = p1,
                     UserGroup = UserGroup.Customer
                 });
-                await context.AddAsync(new ProductUserGroup
+                _ = await context.AddAsync(new ProductUserGroup
                 {
                     Product = p2,
                     UserGroup = UserGroup.Customer
                 });
-                await context.SaveChangesAsync();
+                _ = await context.SaveChangesAsync();
 
                 using var productService = new ProductService(context);
                 var expected = new List<Product>
@@ -308,7 +308,7 @@ namespace CoffeeCard.Tests.Unit.Services
                     ExperienceWorth = 10,
                     Visible = true
                 };
-                await context.AddAsync(p1);
+                _ = await context.AddAsync(p1);
 
                 var p2 = new Product
                 {
@@ -320,7 +320,7 @@ namespace CoffeeCard.Tests.Unit.Services
                     ExperienceWorth = 20,
                     Visible = true
                 };
-                await context.AddAsync(p2);
+                _ = await context.AddAsync(p2);
 
                 var p3 = new Product
                 {
@@ -332,25 +332,25 @@ namespace CoffeeCard.Tests.Unit.Services
                     ExperienceWorth = 10,
                     Visible = true
                 };
-                await context.AddAsync(p3);
-                await context.SaveChangesAsync();
+                _ = await context.AddAsync(p3);
+                _ = await context.SaveChangesAsync();
 
-                await context.AddAsync(new ProductUserGroup
+                _ = await context.AddAsync(new ProductUserGroup
                 {
                     Product = p1,
                     UserGroup = UserGroup.Customer
                 });
-                await context.AddAsync(new ProductUserGroup
+                _ = await context.AddAsync(new ProductUserGroup
                 {
                     Product = p2,
                     UserGroup = UserGroup.Customer
                 });
-                await context.AddAsync(new ProductUserGroup
+                _ = await context.AddAsync(new ProductUserGroup
                 {
                     Product = p3,
                     UserGroup = UserGroup.Barista
                 });
-                await context.SaveChangesAsync();
+                _ = await context.SaveChangesAsync();
 
                 using var productService = new ProductService(context);
                 var expected = new List<Product>

@@ -1,6 +1,6 @@
-using System;
 using Serilog;
 using Serilog.Configuration;
+using System;
 
 namespace CoffeeCard.WebApi.Logging
 {

@@ -1,8 +1,8 @@
-using System;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Serilog.Core;
 using Serilog.Events;
+using System;
+using System.Linq;
 using Constants = CoffeeCard.Common.Constants;
 
 namespace CoffeeCard.WebApi.Logging

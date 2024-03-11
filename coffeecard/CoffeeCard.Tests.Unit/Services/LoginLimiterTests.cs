@@ -1,8 +1,8 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Library.Services;
 using CoffeeCard.Models.Entities;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace CoffeeCard.Tests.Unit.Services
@@ -37,11 +37,11 @@ namespace CoffeeCard.Tests.Unit.Services
 
             // Act
             //Triggers the lockout by attempting login 5 times in a row
-            loginLimiter.LoginAllowed(user);
-            loginLimiter.LoginAllowed(user);
-            loginLimiter.LoginAllowed(user);
-            loginLimiter.LoginAllowed(user);
-            loginLimiter.LoginAllowed(user);
+            _ = loginLimiter.LoginAllowed(user);
+            _ = loginLimiter.LoginAllowed(user);
+            _ = loginLimiter.LoginAllowed(user);
+            _ = loginLimiter.LoginAllowed(user);
+            _ = loginLimiter.LoginAllowed(user);
 
             var lockedOutActual = loginLimiter.LoginAllowed(user); //Checks that you are actually locked after the initial attempts
             await Task.Delay(1100);

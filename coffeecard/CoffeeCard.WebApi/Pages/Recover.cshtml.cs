@@ -1,11 +1,10 @@
-using System;
-using System.Threading.Tasks;
 using CoffeeCard.Library.Services;
 using CoffeeCard.Models.PagesModels;
 using CoffeeCard.WebApi.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Serilog;
+using System;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.WebApi.Pages
 {

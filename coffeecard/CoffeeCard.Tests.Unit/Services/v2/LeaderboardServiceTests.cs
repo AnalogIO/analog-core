@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services.v2;
@@ -10,6 +6,9 @@ using CoffeeCard.Models.DataTransferObjects.v2.Leaderboard;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace CoffeeCard.Tests.Unit.Services.v2
@@ -51,7 +50,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 UserGroup = UserGroup.Customer,
                 UserState = UserState.Active
             };
-            context.Add(user1);
+            _ = context.Add(user1);
 
             var user2 = new User
             {
@@ -66,7 +65,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 UserGroup = UserGroup.Customer,
                 UserState = UserState.Active
             };
-            context.Add(user2);
+            _ = context.Add(user2);
 
             var user1Statistics = new Statistic
             {
@@ -77,7 +76,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 ExpiryDate = new DateTime(year: 2020, month: 11, day: 11),
                 User = user1
             };
-            context.Add(user1Statistics);
+            _ = context.Add(user1Statistics);
 
             var user2Statistics = new Statistic
             {
@@ -88,12 +87,12 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 ExpiryDate = new DateTime(year: 2020, month: 11, day: 11),
                 User = user2
             };
-            context.Add(user2Statistics);
+            _ = context.Add(user2Statistics);
 
-            await context.SaveChangesAsync();
+            _ = await context.SaveChangesAsync();
 
             var dateTimeProvider = new Mock<IDateTimeProvider>();
-            dateTimeProvider.Setup(dtp => dtp.UtcNow()).Returns(new DateTime(2020, 11, 11));
+            _ = dateTimeProvider.Setup(dtp => dtp.UtcNow()).Returns(new DateTime(2020, 11, 11));
 
             var leaderboardService = new LeaderboardService(context, dateTimeProvider.Object);
 
@@ -147,8 +146,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 UserGroup = UserGroup.Customer,
                 UserState = UserState.Active
             };
-            context.Add(user1);
-            await context.SaveChangesAsync();
+            _ = context.Add(user1);
+            _ = await context.SaveChangesAsync();
 
             var dateTimeProvider = new Mock<IDateTimeProvider>();
             var leaderboardService = new LeaderboardService(context, dateTimeProvider.Object);
@@ -201,7 +200,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 UserGroup = UserGroup.Customer,
                 UserState = UserState.Active
             };
-            context.Add(user1);
+            _ = context.Add(user1);
 
             var user2 = new User
             {
@@ -216,7 +215,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 UserGroup = UserGroup.Customer,
                 UserState = UserState.Active
             };
-            context.Add(user2);
+            _ = context.Add(user2);
 
             var user1Statistics = new Statistic
             {
@@ -227,7 +226,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 ExpiryDate = new DateTime(year: 2020, month: 11, day: 11),
                 User = user1
             };
-            context.Add(user1Statistics);
+            _ = context.Add(user1Statistics);
 
             var user2Statistics = new Statistic
             {
@@ -238,12 +237,12 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 ExpiryDate = new DateTime(year: 2020, month: 11, day: 11),
                 User = user2
             };
-            context.Add(user2Statistics);
+            _ = context.Add(user2Statistics);
 
-            await context.SaveChangesAsync();
+            _ = await context.SaveChangesAsync();
 
             var dateTimeProvider = new Mock<IDateTimeProvider>();
-            dateTimeProvider.Setup(dtp => dtp.UtcNow()).Returns(new DateTime(2020, 11, 11));
+            _ = dateTimeProvider.Setup(dtp => dtp.UtcNow()).Returns(new DateTime(2020, 11, 11));
 
             var leaderboardService = new LeaderboardService(context, dateTimeProvider.Object);
 
@@ -251,8 +250,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var result = await leaderboardService.GetTopLeaderboardEntries(inputPreset, 10);
 
             // Assert
-            Assert.Equal(new List<LeaderboardEntry>
-            {
+            Assert.Equal(
+            [
                 new LeaderboardEntry
                 {
                     Id = user2.Id,
@@ -267,7 +266,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                     Rank = 2,
                     Score = 10
                 }
-            }, result.ToList());
+            ], result.ToList());
         }
 
         [Theory(DisplayName = "GetTopLeaderboardEntries given preset when statistics are expired returns empty list")]
@@ -304,7 +303,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 UserGroup = UserGroup.Customer,
                 UserState = UserState.Active
             };
-            context.Add(user1);
+            _ = context.Add(user1);
 
             var user2 = new User
             {
@@ -319,7 +318,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 UserGroup = UserGroup.Customer,
                 UserState = UserState.Active
             };
-            context.Add(user2);
+            _ = context.Add(user2);
 
             var user1Statistics = new Statistic
             {
@@ -330,7 +329,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 ExpiryDate = new DateTime(year: 2020, month: 11, day: 11),
                 User = user1
             };
-            context.Add(user1Statistics);
+            _ = context.Add(user1Statistics);
 
             var user2Statistics = new Statistic
             {
@@ -341,12 +340,12 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 ExpiryDate = new DateTime(year: 2020, month: 11, day: 11),
                 User = user2
             };
-            context.Add(user2Statistics);
+            _ = context.Add(user2Statistics);
 
-            await context.SaveChangesAsync();
+            _ = await context.SaveChangesAsync();
 
             var dateTimeProvider = new Mock<IDateTimeProvider>();
-            dateTimeProvider.Setup(dtp => dtp.UtcNow()).Returns(new DateTime(2021, 12, 31));
+            _ = dateTimeProvider.Setup(dtp => dtp.UtcNow()).Returns(new DateTime(2021, 12, 31));
 
             var leaderboardService = new LeaderboardService(context, dateTimeProvider.Object);
 
@@ -423,7 +422,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 UserGroup = UserGroup.Customer,
                 UserState = UserState.Active
             };
-            context.Add(user1);
+            _ = context.Add(user1);
 
             var user2 = new User
             {
@@ -438,7 +437,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 UserGroup = UserGroup.Customer,
                 UserState = UserState.Active
             };
-            context.Add(user2);
+            _ = context.Add(user2);
 
             var user1Statistics = new Statistic
             {
@@ -449,7 +448,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 ExpiryDate = new DateTime(year: 2000, month: 11, day: 11),
                 User = user1
             };
-            context.Add(user1Statistics);
+            _ = context.Add(user1Statistics);
 
             var user2Statistics = new Statistic
             {
@@ -460,11 +459,11 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 ExpiryDate = new DateTime(year: 2000, month: 11, day: 11),
                 User = user2
             };
-            context.Add(user2Statistics);
-            await context.SaveChangesAsync();
+            _ = context.Add(user2Statistics);
+            _ = await context.SaveChangesAsync();
 
             var dateTimeProvider = new Mock<IDateTimeProvider>();
-            dateTimeProvider.Setup(dtp => dtp.UtcNow()).Returns(new DateTime(2020, 11, 12));
+            _ = dateTimeProvider.Setup(dtp => dtp.UtcNow()).Returns(new DateTime(2020, 11, 12));
             var leaderboardService = new LeaderboardService(context, dateTimeProvider.Object);
 
             // Act

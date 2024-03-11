@@ -1,5 +1,3 @@
-using System.ComponentModel;
-using System.Linq;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
@@ -7,6 +5,7 @@ using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.Voucher;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using Xunit;
 
 namespace CoffeeCard.Tests.Unit.Services.v2
@@ -37,8 +36,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
 
             var product = new Product { Id = 1, Name = "product", Description = "desc" };
-            await context.Products.AddAsync(product);
-            await context.SaveChangesAsync();
+            _ = await context.Products.AddAsync(product);
+            _ = await context.SaveChangesAsync();
             var voucherService = new VoucherService(context);
 
             // Act
@@ -72,7 +71,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             // Act
             var request = new IssueVoucherRequest { ProductId = 1, Amount = 10 };
 
-            await Assert.ThrowsAsync<EntityNotFoundException>(() => voucherService.CreateVouchers(request));
+            _ = await Assert.ThrowsAsync<EntityNotFoundException>(() => voucherService.CreateVouchers(request));
         }
 
         [Fact(DisplayName = "CreateVouchers have length of 8 + 4 from userPrefix")]
@@ -93,8 +92,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
 
             var product = new Product { Id = 1, Name = "product", Description = "desc" };
-            await context.Products.AddAsync(product);
-            await context.SaveChangesAsync();
+            _ = await context.Products.AddAsync(product);
+            _ = await context.SaveChangesAsync();
             var voucherService = new VoucherService(context);
 
             // Act
@@ -124,8 +123,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
 
             var product = new Product { Id = 1, Name = "product", Description = "desc" };
-            await context.Products.AddAsync(product);
-            await context.SaveChangesAsync();
+            _ = await context.Products.AddAsync(product);
+            _ = await context.SaveChangesAsync();
             var voucherService = new VoucherService(context);
 
             // Act
@@ -153,8 +152,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
 
             var product = new Product { Id = 1, Name = "product", Description = "desc" };
-            await context.Products.AddAsync(product);
-            await context.SaveChangesAsync();
+            _ = await context.Products.AddAsync(product);
+            _ = await context.SaveChangesAsync();
             var voucherService = new VoucherService(context);
 
             //Act

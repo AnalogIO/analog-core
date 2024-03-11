@@ -1,15 +1,14 @@
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
+using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.DataTransferObjects.v2.Product;
 using CoffeeCard.Models.DataTransferObjects.v2.Products;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using CoffeeCard.Library.Utils;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.Library.Services.v2
 {
@@ -99,8 +98,8 @@ namespace CoffeeCard.Library.Services.v2
                     .ToList()
             };
 
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
+            _ = _context.Products.Add(product);
+            _ = await _context.SaveChangesAsync();
 
             return product.ToProductResponse();
         }
@@ -129,7 +128,7 @@ namespace CoffeeCard.Library.Services.v2
                     .Contains(mi.Id))
                 .ToList();
 
-            await _context.SaveChangesAsync();
+            _ = await _context.SaveChangesAsync();
 
             return product.ToProductResponse();
         }

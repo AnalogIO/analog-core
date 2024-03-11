@@ -1,13 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Models.DataTransferObjects.v2.Ticket;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.Library.Services.v2
 {
@@ -38,7 +38,7 @@ namespace CoffeeCard.Library.Services.v2
             }
 
             await _context.Tickets.AddRangeAsync(tickets);
-            await _context.SaveChangesAsync();
+            _ = await _context.SaveChangesAsync();
 
             Log.Information("Issued {NoTickets} Tickets for ProductId {ProductId}, PurchaseId {PurchaseId}", purchase.NumberOfTickets, purchase.ProductId, purchase.Id);
         }
@@ -77,7 +77,7 @@ namespace CoffeeCard.Library.Services.v2
                 await _statisticService.IncreaseStatisticsBy(user.Id, 1);
             }
 
-            await _context.SaveChangesAsync();
+            _ = await _context.SaveChangesAsync();
 
             return new UsedTicketResponse
             {
@@ -111,7 +111,7 @@ namespace CoffeeCard.Library.Services.v2
                 await _statisticService.IncreaseStatisticsBy(user.Id, 1);
             }
 
-            await _context.SaveChangesAsync();
+            _ = await _context.SaveChangesAsync();
 
             return new UsedTicketResponse
             {

@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
@@ -11,6 +8,9 @@ using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 using PurchaseService = CoffeeCard.Library.Services.v2.PurchaseService;
 
@@ -55,7 +55,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 UserGroup = UserGroup.Customer,
                 UserState = UserState.Active
             };
-            context.Add(user);
+            _ = context.Add(user);
 
             var product1 = new Product
             {
@@ -64,14 +64,14 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 Description = "desc",
                 Price = 100
             };
-            context.Add(product1);
+            _ = context.Add(product1);
 
             var pug1 = new ProductUserGroup
             {
                 UserGroup = UserGroup.Customer,
                 Product = product1
             };
-            context.Add(pug1);
+            _ = context.Add(pug1);
 
             var product2 = new Product
             {
@@ -80,16 +80,16 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 Description = "desc",
                 Price = 100
             };
-            context.Add(product2);
+            _ = context.Add(product2);
 
             var pug2 = new ProductUserGroup
             {
                 UserGroup = UserGroup.Barista,
                 Product = product2
             };
-            context.Add(pug2);
+            _ = context.Add(pug2);
 
-            await context.SaveChangesAsync();
+            _ = await context.SaveChangesAsync();
 
             var mobilePayService = new Mock<IMobilePayPaymentsService>();
             var mailService = new Mock<Library.Services.IEmailService>();
@@ -106,7 +106,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             };
 
             // Act, Assert
-            await Assert.ThrowsAsync(exceptionType, () => purchaseService.InitiatePurchase(request, user));
+            _ = await Assert.ThrowsAsync(exceptionType, () => purchaseService.InitiatePurchase(request, user));
         }
 
         [Fact(DisplayName = "InitiatePurchase for PaymentType MobilePay")]
@@ -135,7 +135,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 Salt = "salt",
                 UserGroup = UserGroup.Customer,
             };
-            context.Add(user);
+            _ = context.Add(user);
 
             var product1 = new Product
             {
@@ -144,16 +144,16 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 Description = "desc",
                 Price = 100
             };
-            context.Add(product1);
+            _ = context.Add(product1);
 
             var pug1 = new ProductUserGroup
             {
                 UserGroup = UserGroup.Customer,
                 Product = product1
             };
-            context.Add(pug1);
+            _ = context.Add(pug1);
 
-            await context.SaveChangesAsync();
+            _ = await context.SaveChangesAsync();
 
             var mobilePayService = new Mock<IMobilePayPaymentsService>();
             var mailService = new Mock<Library.Services.IEmailService>();
@@ -172,7 +172,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var mobilepayPaymentId = Guid.NewGuid().ToString();
             var orderId = Guid.NewGuid().ToString();
             var mpDeepLink = "mobilepay://merchant_payments?payment_id=186d2b31-ff25-4414-9fd1-bfe9807fa8b7";
-            mobilePayService.Setup(mps => mps.InitiatePayment(It.IsAny<MobilePayPaymentRequest>()))
+            _ = mobilePayService.Setup(mps => mps.InitiatePayment(It.IsAny<MobilePayPaymentRequest>()))
                 .ReturnsAsync(new MobilePayPaymentDetails(orderId, mpDeepLink, mobilepayPaymentId));
 
             // Act
@@ -234,9 +234,9 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 UserGroup = UserGroup.Customer,
                 UserState = UserState.Active
             };
-            context.Add(user);
-            context.Add(product);
-            await context.SaveChangesAsync();
+            _ = context.Add(user);
+            _ = context.Add(product);
+            _ = await context.SaveChangesAsync();
 
             var mobilePayService = new Mock<IMobilePayPaymentsService>();
             var mailService = new Mock<Library.Services.IEmailService>();

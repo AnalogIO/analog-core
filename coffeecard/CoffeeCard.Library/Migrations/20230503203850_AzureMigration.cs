@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 #nullable disable
 
@@ -9,10 +9,10 @@ namespace CoffeeCard.Library.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.EnsureSchema(
+            _ = migrationBuilder.EnsureSchema(
                 name: "dbo");
 
-            migrationBuilder.CreateTable(
+            _ = migrationBuilder.CreateTable(
                 name: "Products",
                 schema: "dbo",
                 columns: table => new
@@ -28,10 +28,10 @@ namespace CoffeeCard.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Products", x => x.Id);
+                    _ = table.PrimaryKey("PK_Products", x => x.Id);
                 });
 
-            migrationBuilder.CreateTable(
+            _ = migrationBuilder.CreateTable(
                 name: "Programmes",
                 schema: "dbo",
                 columns: table => new
@@ -44,10 +44,10 @@ namespace CoffeeCard.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Programmes", x => x.Id);
+                    _ = table.PrimaryKey("PK_Programmes", x => x.Id);
                 });
 
-            migrationBuilder.CreateTable(
+            _ = migrationBuilder.CreateTable(
                 name: "WebhookConfigurations",
                 schema: "dbo",
                 columns: table => new
@@ -60,10 +60,10 @@ namespace CoffeeCard.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WebhookConfigurations", x => x.Id);
+                    _ = table.PrimaryKey("PK_WebhookConfigurations", x => x.Id);
                 });
 
-            migrationBuilder.CreateTable(
+            _ = migrationBuilder.CreateTable(
                 name: "ProductUserGroups",
                 schema: "dbo",
                 columns: table => new
@@ -73,8 +73,8 @@ namespace CoffeeCard.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProductUserGroups", x => new { x.ProductId, x.UserGroup });
-                    table.ForeignKey(
+                    _ = table.PrimaryKey("PK_ProductUserGroups", x => new { x.ProductId, x.UserGroup });
+                    _ = table.ForeignKey(
                         name: "FK_ProductUserGroups_Products_ProductId",
                         column: x => x.ProductId,
                         principalSchema: "dbo",
@@ -83,7 +83,7 @@ namespace CoffeeCard.Library.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
+            _ = migrationBuilder.CreateTable(
                 name: "Users",
                 schema: "dbo",
                 columns: table => new
@@ -105,8 +105,8 @@ namespace CoffeeCard.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.Id);
-                    table.ForeignKey(
+                    _ = table.PrimaryKey("PK_Users", x => x.Id);
+                    _ = table.ForeignKey(
                         name: "FK_Users_Programmes_Programme_Id",
                         column: x => x.Programme_Id,
                         principalSchema: "dbo",
@@ -115,7 +115,7 @@ namespace CoffeeCard.Library.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
+            _ = migrationBuilder.CreateTable(
                 name: "LoginAttempts",
                 schema: "dbo",
                 columns: table => new
@@ -127,8 +127,8 @@ namespace CoffeeCard.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LoginAttempts", x => x.Id);
-                    table.ForeignKey(
+                    _ = table.PrimaryKey("PK_LoginAttempts", x => x.Id);
+                    _ = table.ForeignKey(
                         name: "FK_LoginAttempts_Users_User_Id",
                         column: x => x.User_Id,
                         principalSchema: "dbo",
@@ -137,7 +137,7 @@ namespace CoffeeCard.Library.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
+            _ = migrationBuilder.CreateTable(
                 name: "Purchases",
                 schema: "dbo",
                 columns: table => new
@@ -157,15 +157,15 @@ namespace CoffeeCard.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Purchases", x => x.Id);
-                    table.ForeignKey(
+                    _ = table.PrimaryKey("PK_Purchases", x => x.Id);
+                    _ = table.ForeignKey(
                         name: "FK_Purchases_Products_ProductId",
                         column: x => x.ProductId,
                         principalSchema: "dbo",
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
+                    _ = table.ForeignKey(
                         name: "FK_Purchases_Users_PurchasedBy_Id",
                         column: x => x.PurchasedBy_Id,
                         principalSchema: "dbo",
@@ -174,7 +174,7 @@ namespace CoffeeCard.Library.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
+            _ = migrationBuilder.CreateTable(
                 name: "Statistics",
                 schema: "dbo",
                 columns: table => new
@@ -189,8 +189,8 @@ namespace CoffeeCard.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Statistics", x => x.Id);
-                    table.ForeignKey(
+                    _ = table.PrimaryKey("PK_Statistics", x => x.Id);
+                    _ = table.ForeignKey(
                         name: "FK_Statistics_Users_User_Id",
                         column: x => x.User_Id,
                         principalSchema: "dbo",
@@ -199,7 +199,7 @@ namespace CoffeeCard.Library.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
+            _ = migrationBuilder.CreateTable(
                 name: "Tokens",
                 schema: "dbo",
                 columns: table => new
@@ -211,8 +211,8 @@ namespace CoffeeCard.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tokens", x => x.Id);
-                    table.ForeignKey(
+                    _ = table.PrimaryKey("PK_Tokens", x => x.Id);
+                    _ = table.ForeignKey(
                         name: "FK_Tokens_Users_User_Id",
                         column: x => x.User_Id,
                         principalSchema: "dbo",
@@ -220,7 +220,7 @@ namespace CoffeeCard.Library.Migrations
                         principalColumn: "Id");
                 });
 
-            migrationBuilder.CreateTable(
+            _ = migrationBuilder.CreateTable(
                 name: "Vouchers",
                 schema: "dbo",
                 columns: table => new
@@ -237,15 +237,15 @@ namespace CoffeeCard.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Vouchers", x => x.Id);
-                    table.ForeignKey(
+                    _ = table.PrimaryKey("PK_Vouchers", x => x.Id);
+                    _ = table.ForeignKey(
                         name: "FK_Vouchers_Products_Product_Id",
                         column: x => x.Product_Id,
                         principalSchema: "dbo",
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
+                    _ = table.ForeignKey(
                         name: "FK_Vouchers_Users_User_Id",
                         column: x => x.User_Id,
                         principalSchema: "dbo",
@@ -253,7 +253,7 @@ namespace CoffeeCard.Library.Migrations
                         principalColumn: "Id");
                 });
 
-            migrationBuilder.CreateTable(
+            _ = migrationBuilder.CreateTable(
                 name: "Tickets",
                 schema: "dbo",
                 columns: table => new
@@ -269,15 +269,15 @@ namespace CoffeeCard.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tickets", x => x.Id);
-                    table.ForeignKey(
+                    _ = table.PrimaryKey("PK_Tickets", x => x.Id);
+                    _ = table.ForeignKey(
                         name: "FK_Tickets_Purchases_Purchase_Id",
                         column: x => x.Purchase_Id,
                         principalSchema: "dbo",
                         principalTable: "Purchases",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
+                    _ = table.ForeignKey(
                         name: "FK_Tickets_Users_Owner_Id",
                         column: x => x.Owner_Id,
                         principalSchema: "dbo",
@@ -285,80 +285,80 @@ namespace CoffeeCard.Library.Migrations
                         principalColumn: "Id");
                 });
 
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "IX_LoginAttempts_User_Id",
                 schema: "dbo",
                 table: "LoginAttempts",
                 column: "User_Id");
 
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "IX_Purchases_OrderId",
                 schema: "dbo",
                 table: "Purchases",
                 column: "OrderId");
 
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "IX_Purchases_ProductId",
                 schema: "dbo",
                 table: "Purchases",
                 column: "ProductId");
 
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "IX_Purchases_PurchasedBy_Id",
                 schema: "dbo",
                 table: "Purchases",
                 column: "PurchasedBy_Id");
 
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "IX_Purchases_TransactionId",
                 schema: "dbo",
                 table: "Purchases",
                 column: "TransactionId");
 
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "IX_Statistics_User_Id",
                 schema: "dbo",
                 table: "Statistics",
                 column: "User_Id");
 
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "IX_Tickets_Owner_Id",
                 schema: "dbo",
                 table: "Tickets",
                 column: "Owner_Id");
 
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "IX_Tickets_Purchase_Id",
                 schema: "dbo",
                 table: "Tickets",
                 column: "Purchase_Id");
 
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "IX_Tokens_User_Id",
                 schema: "dbo",
                 table: "Tokens",
                 column: "User_Id");
 
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "IX_Users_Programme_Id",
                 schema: "dbo",
                 table: "Users",
                 column: "Programme_Id");
 
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "IX_Vouchers_Code",
                 schema: "dbo",
                 table: "Vouchers",
                 column: "Code",
                 unique: true);
 
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "IX_Vouchers_Product_Id",
                 schema: "dbo",
                 table: "Vouchers",
                 column: "Product_Id");
 
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "IX_Vouchers_User_Id",
                 schema: "dbo",
                 table: "Vouchers",
@@ -367,47 +367,47 @@ namespace CoffeeCard.Library.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
+            _ = migrationBuilder.DropTable(
                 name: "LoginAttempts",
                 schema: "dbo");
 
-            migrationBuilder.DropTable(
+            _ = migrationBuilder.DropTable(
                 name: "ProductUserGroups",
                 schema: "dbo");
 
-            migrationBuilder.DropTable(
+            _ = migrationBuilder.DropTable(
                 name: "Statistics",
                 schema: "dbo");
 
-            migrationBuilder.DropTable(
+            _ = migrationBuilder.DropTable(
                 name: "Tickets",
                 schema: "dbo");
 
-            migrationBuilder.DropTable(
+            _ = migrationBuilder.DropTable(
                 name: "Tokens",
                 schema: "dbo");
 
-            migrationBuilder.DropTable(
+            _ = migrationBuilder.DropTable(
                 name: "Vouchers",
                 schema: "dbo");
 
-            migrationBuilder.DropTable(
+            _ = migrationBuilder.DropTable(
                 name: "WebhookConfigurations",
                 schema: "dbo");
 
-            migrationBuilder.DropTable(
+            _ = migrationBuilder.DropTable(
                 name: "Purchases",
                 schema: "dbo");
 
-            migrationBuilder.DropTable(
+            _ = migrationBuilder.DropTable(
                 name: "Products",
                 schema: "dbo");
 
-            migrationBuilder.DropTable(
+            _ = migrationBuilder.DropTable(
                 name: "Users",
                 schema: "dbo");
 
-            migrationBuilder.DropTable(
+            _ = migrationBuilder.DropTable(
                 name: "Programmes",
                 schema: "dbo");
         }

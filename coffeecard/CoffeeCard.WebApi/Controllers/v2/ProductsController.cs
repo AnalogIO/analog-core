@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.DataTransferObjects.v2.Product;
@@ -10,6 +7,9 @@ using CoffeeCard.WebApi.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using IProductService = CoffeeCard.Library.Services.v2.IProductService;
 
 namespace CoffeeCard.WebApi.Controllers.v2
@@ -97,7 +97,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ProductResponse>> GetProduct([FromRoute(Name = "id")] int productId)
         {
-            await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
+            _ = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
             var product = await _productService.GetProductAsync(productId);
             return Ok(product);
         }

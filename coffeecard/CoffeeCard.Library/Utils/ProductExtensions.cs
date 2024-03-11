@@ -1,7 +1,8 @@
-﻿using System;
-using System.Linq;
-using CoffeeCard.Models.DataTransferObjects.v2.Products;
+﻿using CoffeeCard.Models.DataTransferObjects.v2.Products;
 using CoffeeCard.Models.Entities;
+using System;
+using System.Linq;
+using CoffeeCard.Models.DataTransferObjects.v2.MenuItems;
 
 namespace CoffeeCard.Library.Utils
 {

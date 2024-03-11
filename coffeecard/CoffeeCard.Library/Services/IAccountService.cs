@@ -1,8 +1,8 @@
+using CoffeeCard.Models.DataTransferObjects.User;
+using CoffeeCard.Models.Entities;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using CoffeeCard.Models.DataTransferObjects.User;
-using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Library.Services
 {

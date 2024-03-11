@@ -1,5 +1,5 @@
-using System;
 using CoffeeCard.Models.Entities;
+using System;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
 {

@@ -1,10 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Utils;
@@ -12,6 +5,13 @@ using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.Library.Services
 {
@@ -72,7 +72,7 @@ namespace CoffeeCard.Library.Services
                     ClockSkew = TimeSpan.Zero //the default for this setting is 5 minutes
                 };
 
-                securityTokenHandler.ValidateToken(tokenString, validationParameters, out _); // Throws exception if token is invalid
+                _ = securityTokenHandler.ValidateToken(tokenString, validationParameters, out _); // Throws exception if token is invalid
             }
             catch (Exception e) when (e is ArgumentException ||
                                       e is SecurityTokenException)

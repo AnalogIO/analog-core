@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
@@ -12,6 +6,11 @@ using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.Library.Services
 {
@@ -129,8 +128,8 @@ namespace CoffeeCard.Library.Services
                 UserGroup = UserGroup.Customer
             };
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            _ = _context.Users.Add(user);
+            _ = await _context.SaveChangesAsync();
 
             var claims = new[]
             {
@@ -198,7 +197,7 @@ namespace CoffeeCard.Library.Services
                 Log.Information("User changed password");
             }
 
-            _context.SaveChanges();
+            _ = _context.SaveChanges();
             return user;
         }
 
@@ -221,7 +220,7 @@ namespace CoffeeCard.Library.Services
 
             user.Experience += exp;
 
-            _context.SaveChanges();
+            _ = _context.SaveChanges();
         }
 
         public async Task ForgotPasswordAsync(string email)
@@ -237,7 +236,7 @@ namespace CoffeeCard.Library.Services
             };
             var verificationToken = _tokenService.GenerateToken(claims);
             user.Tokens.Add(new Token(verificationToken));
-            _context.SaveChanges();
+            _ = _context.SaveChanges();
             await _emailService.SendVerificationEmailForLostPwAsync(user, verificationToken);
         }
 
@@ -260,7 +259,7 @@ namespace CoffeeCard.Library.Services
             user.Password = hashedPassword;
             user.IsVerified = true;
             user.Tokens.Clear();
-            await _context.SaveChangesAsync();
+            _ = await _context.SaveChangesAsync();
             return true;
         }
 

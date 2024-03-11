@@ -1,12 +1,11 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using CoffeeCard.Models.DataTransferObjects.v2.Product;
-using CoffeeCard.Models.DataTransferObjects.v2.Products;
+using CoffeeCard.Models.DataTransferObjects.v2.MenuItems;
 using CoffeeCard.Models.Entities;
 using CoffeeCard.WebApi.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using IMenuItemService = CoffeeCard.Library.Services.v2.IMenuItemService;
 
 namespace CoffeeCard.WebApi.Controllers.v2

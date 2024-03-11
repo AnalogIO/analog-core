@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace CoffeeCard.Models.DataTransferObjects.v2.Products
+namespace CoffeeCard.Models.DataTransferObjects.v2.MenuItems
 {
     /// <summary>
     /// Represents a menu item that can be redeemed with a ticket

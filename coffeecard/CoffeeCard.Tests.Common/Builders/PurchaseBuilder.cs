@@ -10,8 +10,8 @@ namespace CoffeeCard.Tests.Common.Builders
             var purchasedBy = UserBuilder.Simple().Build();
             return new PurchaseBuilder().WithPurchasedBy(purchasedBy)
                 .WithProductName(f => f.Commerce.ProductName())
-                .WithTickets(new List<Ticket>())
-                .WithTickets(new List<Ticket>())
+                .WithTickets([])
+                .WithTickets([])
                 .WithNumberOfTickets(0);
         }
 

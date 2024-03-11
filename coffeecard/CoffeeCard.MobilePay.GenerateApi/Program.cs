@@ -1,8 +1,8 @@
-﻿using System;
+﻿using NSwag;
+using NSwag.CodeGeneration.CSharp;
+using System;
 using System.IO;
 using System.Threading.Tasks;
-using NSwag;
-using NSwag.CodeGeneration.CSharp;
 
 namespace CoffeeCard.MobilePay.GenerateApi
 {

@@ -1,12 +1,12 @@
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Services;
+using CoffeeCard.Models.DataTransferObjects;
+using CoffeeCard.Models.DataTransferObjects.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using System.Threading.Tasks;
-using CoffeeCard.Models.DataTransferObjects;
-using CoffeeCard.Models.DataTransferObjects.User;
 
 namespace CoffeeCard.WebApi.Controllers
 {
@@ -43,7 +43,7 @@ namespace CoffeeCard.WebApi.Controllers
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status409Conflict)]
         public async Task<ActionResult<MessageResponseDto>> Register([FromBody] RegisterDto registerDto)
         {
-            await _accountService.RegisterAccountAsync(registerDto.Name, registerDto.Email, registerDto.Password);
+            _ = await _accountService.RegisterAccountAsync(registerDto.Name, registerDto.Email, registerDto.Password);
             return Created(nameof(Get), new MessageResponseDto()
             {
                 Message =

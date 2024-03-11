@@ -1,8 +1,8 @@
-using System;
-using System.Collections.Concurrent;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Models.Entities;
 using Serilog;
+using System;
+using System.Collections.Concurrent;
 
 namespace CoffeeCard.Library.Services
 {
@@ -69,7 +69,7 @@ namespace CoffeeCard.Library.Services
         /// <param name="user"></param>
         public void ResetLoginAttemptsForUser(User user)
         {
-            _loginAttempts.TryRemove(user.Email, out var value);
+            _ = _loginAttempts.TryRemove(user.Email, out _);
         }
     }
 }

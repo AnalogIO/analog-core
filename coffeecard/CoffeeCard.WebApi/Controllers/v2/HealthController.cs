@@ -1,12 +1,12 @@
-﻿using System;
-using System.Threading.Tasks;
-using CoffeeCard.Library.Persistence;
+﻿using CoffeeCard.Library.Persistence;
 using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.Models.DataTransferObjects.v2;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
+using System;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.WebApi.Controllers.v2
 {

@@ -1,10 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using CoffeeCard.Library.Persistence;
+﻿using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.Library.Services.v2
 {

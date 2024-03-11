@@ -36,20 +36,20 @@ namespace CoffeeCard.Library.Persistence
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasDefaultSchema(_databaseSettings.SchemaName);
+            _ = modelBuilder.HasDefaultSchema(_databaseSettings.SchemaName);
 
             // Setup PUG compound primary key
-            modelBuilder.Entity<ProductUserGroup>()
+            _ = modelBuilder.Entity<ProductUserGroup>()
                 .HasKey(pug => new
                 {
                     pug.ProductId,
                     pug.UserGroup
                 });
 
-            modelBuilder.Entity<MenuItemProduct>()
+            _ = modelBuilder.Entity<MenuItemProduct>()
                 .HasKey(mip => new { mip.MenuItemId, mip.ProductId });
 
-            modelBuilder.Entity<MenuItem>()
+            _ = modelBuilder.Entity<MenuItem>()
                 .HasMany(mi => mi.AssociatedProducts)
                 .WithMany(p => p.EligibleMenuItems)
                 .UsingEntity<MenuItemProduct>();
@@ -59,29 +59,29 @@ namespace CoffeeCard.Library.Persistence
             // Use Enum to String for PurchaseTypes
             var purchaseTypeStringConverter = new EnumToStringConverter<PurchaseType>();
 
-            modelBuilder.Entity<User>()
+            _ = modelBuilder.Entity<User>()
                 .Property(u => u.UserGroup)
                 .HasConversion(userGroupIntConverter);
 
-            modelBuilder.Entity<Purchase>()
+            _ = modelBuilder.Entity<Purchase>()
                 .Property(p => p.Type)
                 .HasConversion(purchaseTypeStringConverter);
 
-            modelBuilder.Entity<User>().Property(u => u.UserState).HasConversion<string>();
+            _ = modelBuilder.Entity<User>().Property(u => u.UserState).HasConversion<string>();
 
-            modelBuilder.Entity<ProductUserGroup>()
+            _ = modelBuilder.Entity<ProductUserGroup>()
                 .Property(pug => pug.UserGroup)
                 .HasConversion(userGroupIntConverter);
 
-            modelBuilder.Entity<WebhookConfiguration>()
+            _ = modelBuilder.Entity<WebhookConfiguration>()
                 .Property(w => w.Status)
                 .HasConversion<string>();
 
-            modelBuilder.Entity<Purchase>()
+            _ = modelBuilder.Entity<Purchase>()
                 .Property(p => p.Status)
                 .HasConversion<string>();
 
-            modelBuilder.Entity<Ticket>()
+            _ = modelBuilder.Entity<Ticket>()
                 .HasOne<User>(t => t.Owner)
                 .WithMany(u => u.Tickets)
                 .HasForeignKey(t => t.OwnerId)

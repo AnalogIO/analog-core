@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using CoffeeCard.Common.Errors;
+﻿using CoffeeCard.Common.Errors;
 using CoffeeCard.MobilePay.Exception.v2;
 using CoffeeCard.MobilePay.Generated.Api.WebhooksApi;
 using Serilog;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using ApiException = CoffeeCard.MobilePay.Generated.Api.PaymentsApi.ApiException;
 
 namespace CoffeeCard.MobilePay.Service.v2

@@ -1,7 +1,7 @@
-using System;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.DataTransferObjects.v2.Products;
 using CoffeeCard.Models.Entities;
+using System;
 using Xunit;
 
 namespace CoffeeCard.Tests.Unit.Utils
@@ -38,7 +38,7 @@ namespace CoffeeCard.Tests.Unit.Utils
                 ProductUserGroup = null
             };
 
-            Assert.Throws<ArgumentNullException>(() => product.IsPerk());
+            _ = Assert.Throws<ArgumentNullException>(() => product.IsPerk());
         }
 
         [Fact(DisplayName = "ToProductResponse returns a ProductResponse with the correct values")]
@@ -59,7 +59,7 @@ namespace CoffeeCard.Tests.Unit.Utils
 
             var productResponse = product.ToProductResponse();
 
-            Assert.IsType<ProductResponse>(productResponse);
+            _ = Assert.IsType<ProductResponse>(productResponse);
         }
 
         [Fact(DisplayName = "ToProductResponse converts ProductUserGroup to list of allowed user groups")]

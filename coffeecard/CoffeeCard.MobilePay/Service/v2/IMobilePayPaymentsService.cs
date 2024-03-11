@@ -1,9 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-using CoffeeCard.MobilePay.Exception.v2;
-using CoffeeCard.MobilePay.Generated.Api.WebhooksApi;
+﻿using CoffeeCard.MobilePay.Exception.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
+using System;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.MobilePay.Service.v2
 {

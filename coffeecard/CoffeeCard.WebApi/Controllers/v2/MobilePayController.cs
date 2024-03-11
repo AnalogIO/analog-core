@@ -1,16 +1,15 @@
-﻿using System;
+﻿using CoffeeCard.Common.Configuration;
+using CoffeeCard.Library.Services.v2;
+using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Serilog;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using CoffeeCard.Common.Configuration;
-using CoffeeCard.Library.Services.v2;
-using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
-using Serilog;
 
 namespace CoffeeCard.WebApi.Controllers.v2
 {
@@ -74,7 +73,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
                 Request.EnableBuffering();
             }
 
-            HttpContext.Request.Body.Seek(0, SeekOrigin.Begin);
+            _ = HttpContext.Request.Body.Seek(0, SeekOrigin.Begin);
 
             string rawRequestBody;
             using (var stream = new StreamReader(HttpContext.Request.Body))

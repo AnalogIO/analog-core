@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using CoffeeCard.Common.Configuration;
+﻿using CoffeeCard.Common.Configuration;
 using CoffeeCard.Models.DataTransferObjects.Purchase;
 using CoffeeCard.Models.DataTransferObjects.User;
 using CoffeeCard.Models.Entities;
@@ -10,6 +7,9 @@ using MimeKit;
 using RestSharp;
 using RestSharp.Authenticators;
 using Serilog;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 using TimeZoneConverter;
 
 namespace CoffeeCard.Library.Services
@@ -159,12 +159,12 @@ namespace CoffeeCard.Library.Services
             };
 
             var request = new RestRequest();
-            request.AddParameter("domain", _mailgunSettings.Domain, ParameterType.UrlSegment);
+            _ = request.AddParameter("domain", _mailgunSettings.Domain, ParameterType.UrlSegment);
             request.Resource = "{domain}/messages";
-            request.AddParameter("from", "Cafe Analog <mailgun@cafeanalog.dk>");
-            request.AddParameter("to", mail.To[0].ToString());
-            request.AddParameter("subject", mail.Subject);
-            request.AddParameter("html", mail.HtmlBody);
+            _ = request.AddParameter("from", "Cafe Analog <mailgun@cafeanalog.dk>");
+            _ = request.AddParameter("to", mail.To[0].ToString());
+            _ = request.AddParameter("subject", mail.Subject);
+            _ = request.AddParameter("html", mail.HtmlBody);
             request.Method = Method.Post;
 
             var response = await client.ExecutePostAsync(request);

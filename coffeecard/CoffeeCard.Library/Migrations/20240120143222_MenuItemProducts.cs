@@ -8,14 +8,14 @@ namespace CoffeeCard.Library.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
+            _ = migrationBuilder.AddColumn<int>(
                 name: "UsedOnMenuItemId",
                 schema: "dbo",
                 table: "Tickets",
                 type: "int",
                 nullable: true);
 
-            migrationBuilder.CreateTable(
+            _ = migrationBuilder.CreateTable(
                 name: "MenuItems",
                 schema: "dbo",
                 columns: table => new
@@ -26,10 +26,10 @@ namespace CoffeeCard.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MenuItems", x => x.Id);
+                    _ = table.PrimaryKey("PK_MenuItems", x => x.Id);
                 });
 
-            migrationBuilder.CreateTable(
+            _ = migrationBuilder.CreateTable(
                 name: "MenuItemProducts",
                 schema: "dbo",
                 columns: table => new
@@ -39,15 +39,15 @@ namespace CoffeeCard.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MenuItemProducts", x => new { x.MenuItemId, x.ProductId });
-                    table.ForeignKey(
+                    _ = table.PrimaryKey("PK_MenuItemProducts", x => new { x.MenuItemId, x.ProductId });
+                    _ = table.ForeignKey(
                         name: "FK_MenuItemProducts_MenuItems_MenuItemId",
                         column: x => x.MenuItemId,
                         principalSchema: "dbo",
                         principalTable: "MenuItems",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
+                    _ = table.ForeignKey(
                         name: "FK_MenuItemProducts_Products_ProductId",
                         column: x => x.ProductId,
                         principalSchema: "dbo",
@@ -56,26 +56,26 @@ namespace CoffeeCard.Library.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "IX_Tickets_UsedOnMenuItemId",
                 schema: "dbo",
                 table: "Tickets",
                 column: "UsedOnMenuItemId");
 
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "IX_MenuItemProducts_ProductId",
                 schema: "dbo",
                 table: "MenuItemProducts",
                 column: "ProductId");
 
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "IX_MenuItems_Name",
                 schema: "dbo",
                 table: "MenuItems",
                 column: "Name",
                 unique: true);
 
-            migrationBuilder.AddForeignKey(
+            _ = migrationBuilder.AddForeignKey(
                 name: "FK_Tickets_MenuItems_UsedOnMenuItemId",
                 schema: "dbo",
                 table: "Tickets",
@@ -87,25 +87,25 @@ namespace CoffeeCard.Library.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
+            _ = migrationBuilder.DropForeignKey(
                 name: "FK_Tickets_MenuItems_UsedOnMenuItemId",
                 schema: "dbo",
                 table: "Tickets");
 
-            migrationBuilder.DropTable(
+            _ = migrationBuilder.DropTable(
                 name: "MenuItemProducts",
                 schema: "dbo");
 
-            migrationBuilder.DropTable(
+            _ = migrationBuilder.DropTable(
                 name: "MenuItems",
                 schema: "dbo");
 
-            migrationBuilder.DropIndex(
+            _ = migrationBuilder.DropIndex(
                 name: "IX_Tickets_UsedOnMenuItemId",
                 schema: "dbo",
                 table: "Tickets");
 
-            migrationBuilder.DropColumn(
+            _ = migrationBuilder.DropColumn(
                 name: "UsedOnMenuItemId",
                 schema: "dbo",
                 table: "Tickets");

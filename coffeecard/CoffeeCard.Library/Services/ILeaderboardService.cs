@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using CoffeeCard.Models.DataTransferObjects;
+﻿using CoffeeCard.Models.DataTransferObjects;
 using CoffeeCard.Models.Entities;
+using System.Collections.Generic;
 
 namespace CoffeeCard.Library.Services
 {

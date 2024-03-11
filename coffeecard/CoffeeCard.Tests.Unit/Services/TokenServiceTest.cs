@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services;
@@ -11,6 +5,12 @@ using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace CoffeeCard.Tests.Unit.Services
@@ -77,8 +77,8 @@ namespace CoffeeCard.Tests.Unit.Services
                 var token = tokenService.GenerateToken(claims);
                 var userTokens = new List<Token> { new Token(token) };
                 var user = GenerateTestUser(tokens: userTokens);
-                await context.AddAsync(user);
-                await context.SaveChangesAsync();
+                _ = await context.AddAsync(user);
+                _ = await context.SaveChangesAsync();
 
                 // Act
                 result = await tokenService.ValidateTokenIsUnusedAsync(token);
@@ -153,8 +153,8 @@ namespace CoffeeCard.Tests.Unit.Services
 
                     var userTokens = new List<Token> { new Token(token) };
                     var user = GenerateTestUser(tokens: userTokens);
-                    await context.AddAsync(user);
-                    await context.SaveChangesAsync();
+                    _ = await context.AddAsync(user);
+                    _ = await context.SaveChangesAsync();
 
                     // Act
                     result = await tokenService.ValidateTokenIsUnusedAsync(token);
@@ -185,8 +185,8 @@ namespace CoffeeCard.Tests.Unit.Services
                 var userTokens =
                     new List<Token>(); //No tokens are added to the users list, therefore all tokens with a claim for this user will be assumed to be expired
                 var user = GenerateTestUser(tokens: userTokens);
-                await context.AddAsync(user);
-                await context.SaveChangesAsync();
+                _ = await context.AddAsync(user);
+                _ = await context.SaveChangesAsync();
 
                 // Act
                 result = await tokenService.ValidateTokenIsUnusedAsync(token);

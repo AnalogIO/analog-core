@@ -1,6 +1,6 @@
-﻿using System.Linq;
-using NSwag.Generation.Processors;
+﻿using NSwag.Generation.Processors;
 using NSwag.Generation.Processors.Contexts;
+using System.Linq;
 
 namespace CoffeeCard.WebApi.Helpers.Swagger
 {
@@ -24,7 +24,7 @@ namespace CoffeeCard.WebApi.Helpers.Swagger
             {
                 foreach (var parameter in versionParameter)
                 {
-                    context.OperationDescription.Operation.Parameters.Remove(parameter);
+                    _ = context.OperationDescription.Operation.Parameters.Remove(parameter);
                 }
 
                 return true;

@@ -1,7 +1,7 @@
-using System.Collections.Generic;
 using CoffeeCard.Models.DataTransferObjects;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace CoffeeCard.WebApi.Controllers
 {

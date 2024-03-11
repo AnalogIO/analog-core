@@ -1,7 +1,7 @@
-using System.Threading.Tasks;
 using CoffeeCard.Models.DataTransferObjects.Purchase;
 using CoffeeCard.Models.DataTransferObjects.User;
 using CoffeeCard.Models.Entities;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.Library.Services
 {

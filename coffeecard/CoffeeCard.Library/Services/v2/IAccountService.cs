@@ -1,11 +1,10 @@
+using CoffeeCard.Common.Errors;
+using CoffeeCard.Models.DataTransferObjects.v2.User;
+using CoffeeCard.Models.Entities;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using CoffeeCard.Common.Errors;
-using CoffeeCard.Models.DataTransferObjects.v2.User;
-using CoffeeCard.Models.Entities;
-using Microsoft.AspNetCore.Mvc;
 
 namespace CoffeeCard.Library.Services.v2
 {

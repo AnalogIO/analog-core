@@ -1,14 +1,12 @@
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
-using CoffeeCard.Models.DataTransferObjects.v2.Product;
-using CoffeeCard.Models.DataTransferObjects.v2.Products;
+using CoffeeCard.Models.DataTransferObjects.v2.MenuItems;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.Library.Services.v2
 {
@@ -47,8 +45,8 @@ namespace CoffeeCard.Library.Services.v2
                 Name = newMenuItem.Name
             };
 
-            _context.MenuItems.Add(menuItem);
-            await _context.SaveChangesAsync();
+            _ = _context.MenuItems.Add(menuItem);
+            _ = await _context.SaveChangesAsync();
 
             var result = new MenuItemResponse
             {
@@ -92,7 +90,7 @@ namespace CoffeeCard.Library.Services.v2
             menuItem.Name = changedMenuItem.Name;
             menuItem.Active = changedMenuItem.Active;
 
-            await _context.SaveChangesAsync();
+            _ = await _context.SaveChangesAsync();
 
             var result = new MenuItemResponse
             {

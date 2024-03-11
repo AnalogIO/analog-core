@@ -1,8 +1,3 @@
-using System;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using AspNetCore.Authentication.ApiKey;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Library.Persistence;
@@ -23,13 +18,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.FeatureManagement;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Net.Http.Headers;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using NJsonSchema.Generation;
 using NSwag;
 using NSwag.Generation.Processors.Security;
+using System;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using AccountService = CoffeeCard.Library.Services.AccountService;
 using IAccountService = CoffeeCard.Library.Services.IAccountService;
 using IPurchaseService = CoffeeCard.Library.Services.IPurchaseService;
@@ -58,49 +56,50 @@ namespace CoffeeCard.WebApi
 
             // Setup database connection
             var databaseSettings = _configuration.GetSection(nameof(DatabaseSettings)).Get<DatabaseSettings>();
-            services.AddDbContext<CoffeeCardContext>(opt =>
+            _ = services.AddDbContext<CoffeeCardContext>(opt =>
                 opt.UseSqlServer(databaseSettings.ConnectionString,
                     c => c.MigrationsHistoryTable("__EFMigrationsHistory", databaseSettings.SchemaName)));
 
             // Setup cache
-            services.AddMemoryCache();
+            _ = services.AddMemoryCache();
 
             // Setup Dependency Injection
-            services.AddSingleton(_environment);
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddScoped<IHashService, HashService>();
-            services.AddTransient<ITokenService, TokenService>();
-            services.AddSingleton<ILoginLimiter, LoginLimiter>();
-            services.AddScoped<IAccountService, AccountService>();
-            services.AddScoped<Library.Services.v2.IAccountService, Library.Services.v2.AccountService>();
-            services.AddScoped<IPurchaseService, PurchaseService>();
-            services.AddScoped<IMapperService, MapperService>();
-            services.AddScoped<IEmailService, EmailService>();
-            services.AddScoped<IVoucherService, VoucherService>();
-            services.AddScoped<IProgrammeService, ProgrammeService>();
-            services.AddScoped<Library.Services.IProductService, Library.Services.ProductService>();
-            services.AddScoped<Library.Services.v2.IProductService, Library.Services.v2.ProductService>();
-            services.AddScoped<IMenuItemService, MenuItemService>();
-            services.AddScoped<ITicketService, TicketService>();
-            services.AddScoped<ClaimsUtilities>();
-            services.AddSingleton(_environment.ContentRootFileProvider);
+            _ = services.AddSingleton(_environment);
+            _ = services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            _ = services.AddScoped<IHashService, HashService>();
+            _ = services.AddTransient<ITokenService, TokenService>();
+            _ = services.AddSingleton<ILoginLimiter, LoginLimiter>();
+            _ = services.AddScoped<IAccountService, AccountService>();
+            _ = services.AddScoped<Library.Services.v2.IAccountService, Library.Services.v2.AccountService>();
+            _ = services.AddScoped<IPurchaseService, PurchaseService>();
+            _ = services.AddScoped<IMapperService, MapperService>();
+            _ = services.AddScoped<IEmailService, EmailService>();
+            _ = services.AddScoped<IVoucherService, VoucherService>();
+            _ = services.AddScoped<IProgrammeService, ProgrammeService>();
+            _ = services.AddScoped<Library.Services.IProductService, Library.Services.ProductService>();
+            _ = services.AddScoped<Library.Services.v2.IProductService, Library.Services.v2.ProductService>();
+            _ = services.AddScoped<IMenuItemService, MenuItemService>();
+            _ = services.AddScoped<ITicketService, TicketService>();
+            _ = services.AddScoped<ClaimsUtilities>();
+            _ = services.AddSingleton(_environment.ContentRootFileProvider);
 
-            services.AddScoped<Library.Services.v2.IPurchaseService, Library.Services.v2.PurchaseService>();
-            services.AddScoped<Library.Services.v2.ITicketService, Library.Services.v2.TicketService>();
+            _ = services.AddScoped<Library.Services.v2.IPurchaseService, Library.Services.v2.PurchaseService>();
+            _ = services.AddScoped<Library.Services.v2.ITicketService, Library.Services.v2.TicketService>();
             services.AddMobilePayHttpClients(_configuration.GetSection("MobilePaySettingsV2").Get<MobilePaySettingsV2>());
-            services.AddScoped<IMobilePayPaymentsService, MobilePayPaymentsService>();
-            services.AddScoped<IMobilePayWebhooksService, MobilePayWebhooksService>();
-            services.AddScoped<IWebhookService, WebhookService>();
-            services.AddScoped<Library.Services.v2.ILeaderboardService, Library.Services.v2.LeaderboardService>();
-            services.AddScoped<IStatisticService, StatisticService>();
-            services.AddScoped<IDateTimeProvider, DateTimeProvider>();
+            _ = services.AddScoped<IMobilePayPaymentsService, MobilePayPaymentsService>();
+            _ = services.AddScoped<IMobilePayWebhooksService, MobilePayWebhooksService>();
+            _ = services.AddScoped<IWebhookService, WebhookService>();
+            _ = services.AddScoped<Library.Services.v2.ILeaderboardService, Library.Services.v2.LeaderboardService>();
+            _ = services.AddScoped<IStatisticService, StatisticService>();
+            _ = services.AddScoped<IDateTimeProvider, DateTimeProvider>();
+            _ = services.AddFeatureManagement();
 
             // Azure Application Insights
-            services.AddApplicationInsightsTelemetry();
-            services.AddSingleton<TelemetryClient>();
+            _ = services.AddApplicationInsightsTelemetry();
+            _ = services.AddSingleton<TelemetryClient>();
 
             // Setup filter to catch outgoing exceptions
-            services.AddControllers(options =>
+            _ = services.AddControllers(options =>
                 {
                     options.Filters.Add(new ApiExceptionFilter());
                     options.Filters.Add(new ReadableBodyFilter());
@@ -112,21 +111,21 @@ namespace CoffeeCard.WebApi
                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                 });
 
-            services.AddCors(options => options.AddDefaultPolicy(builder =>
+            _ = services.AddCors(options => options.AddDefaultPolicy(builder =>
                 builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
-            services.AddApiVersioning(config =>
+            _ = services.AddApiVersioning(config =>
             {
                 config.DefaultApiVersion = new ApiVersion(1, 0);
                 config.AssumeDefaultVersionWhenUnspecified = true;
                 config.ReportApiVersions = true;
             });
-            services.AddVersionedApiExplorer(setup =>
+            _ = services.AddVersionedApiExplorer(setup =>
             {
                 setup.GroupNameFormat = "'v'VVV";
                 setup.SubstituteApiVersionInUrl = true;
             });
-            services.Configure<ApiBehaviorOptions>(config =>
+            _ = services.Configure<ApiBehaviorOptions>(config =>
             {
                 config.SuppressMapClientErrors = true;
             });
@@ -134,12 +133,12 @@ namespace CoffeeCard.WebApi
             GenerateOpenApiDocument(services);
 
             // Setup razor pages
-            services.AddRazorPages();
-            services.AddServerSideBlazor();
+            _ = services.AddRazorPages();
+            _ = services.AddServerSideBlazor();
 
             // Setup Authentication
             var identitySettings = _configuration.GetSection("IdentitySettings").Get<IdentitySettings>();
-            services.AddAuthentication(options =>
+            _ = services.AddAuthentication(options =>
                 {
                     options.DefaultAuthenticateScheme = "jwt";
                     options.DefaultChallengeScheme = "jwt";
@@ -198,7 +197,7 @@ namespace CoffeeCard.WebApi
             foreach (var apiVersion in apiVersions.ApiVersionDescriptions)
             {
                 // Add an OpenApi document per API version
-                services.AddOpenApiDocument(config =>
+                _ = services.AddOpenApiDocument(config =>
                 {
                     config.DefaultResponseReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull;
                     config.Title = apiVersion.GroupName;
@@ -255,36 +254,36 @@ namespace CoffeeCard.WebApi
             // Important note!
             // The order of the below app configuration is sensitive and should be changed with care
             // UsePathBase must be first as several subsequent configuration depends on it
-            app.UsePathBase("/coffeecard");
+            _ = app.UsePathBase("/coffeecard");
 
             if (env.IsDevelopment())
-                app.UseDeveloperExceptionPage();
+                _ = app.UseDeveloperExceptionPage();
             else
-                app.UseHsts();
+                _ = app.UseHsts();
 
-            app.UseOpenApi();
-            app.UseSwaggerUi();
+            _ = app.UseOpenApi();
+            _ = app.UseSwaggerUi();
 
-            app.UseHttpsRedirection();
+            _ = app.UseHttpsRedirection();
 
-            app.UseStaticFiles();
+            _ = app.UseStaticFiles();
 
-            app.UseRouting();
+            _ = app.UseRouting();
 
-            app.UseCors();
+            _ = app.UseCors();
 
-            app.UseAuthentication();
-            app.UseAuthorization();
+            _ = app.UseAuthentication();
+            _ = app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
+            _ = app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
-                endpoints.MapRazorPages();
-                endpoints.MapFallbackToPage("/result");
+                _ = endpoints.MapControllers();
+                _ = endpoints.MapRazorPages();
+                _ = endpoints.MapFallbackToPage("/result");
             });
 
             // Enable Request Buffering so that a raw request body can be read after aspnet model binding
-            app.Use(next => context =>
+            _ = app.Use(next => context =>
             {
                 context.Request.EnableBuffering();
                 return next(context);

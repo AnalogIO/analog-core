@@ -1,13 +1,13 @@
+using CoffeeCard.Models.DataTransferObjects.User;
+using CoffeeCard.Tests.Common.Builders;
+using CoffeeCard.Tests.Integration.WebApplication;
+using CoffeeCard.WebApi;
 using System;
 using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using CoffeeCard.Models.DataTransferObjects.User;
-using CoffeeCard.Tests.Common.Builders;
-using CoffeeCard.Tests.Integration.WebApplication;
-using CoffeeCard.WebApi;
 using Xunit;
 
 namespace CoffeeCard.Tests.Integration.Controllers.Account
@@ -42,8 +42,8 @@ namespace CoffeeCard.Tests.Integration.Controllers.Account
             var plaintextPassword = user.Password;
             user.Password = HashPassword(plaintextPassword + user.Salt);
 
-            await Context.Users.AddAsync(user);
-            await Context.SaveChangesAsync();
+            _ = await Context.Users.AddAsync(user);
+            _ = await Context.SaveChangesAsync();
 
             var loginRequest = new LoginDto
             {

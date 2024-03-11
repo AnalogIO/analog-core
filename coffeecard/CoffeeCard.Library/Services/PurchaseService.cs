@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using CoffeeCard.Common;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
@@ -11,6 +6,11 @@ using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.Library.Services
 {
@@ -51,15 +51,15 @@ namespace CoffeeCard.Library.Services
 
             user.Purchases.Add(purchase);
 
-            DeliverProductToUser(purchase, user, $"VOUCHER: {voucher.Id}");
+            _ = DeliverProductToUser(purchase, user, $"VOUCHER: {voucher.Id}");
 
             voucher.DateUsed = DateTime.UtcNow;
             voucher.User = user;
             voucher.Purchase = purchase;
 
-            _context.Vouchers.Attach(voucher);
+            _ = _context.Vouchers.Attach(voucher);
             _context.Entry(voucher).State = EntityState.Modified;
-            _context.SaveChanges();
+            _ = _context.SaveChanges();
 
             return purchase;
         }
@@ -93,9 +93,9 @@ namespace CoffeeCard.Library.Services
 
             purchase.ExternalTransactionId = transactionId;
 
-            _context.Users.Attach(user);
+            _ = _context.Users.Attach(user);
             _context.Entry(user).State = EntityState.Modified;
-            _context.SaveChanges();
+            _ = _context.SaveChanges();
 
             Log.Information(
                 $"Delivery of product ({purchase.ProductId}) to userId: {user.Id} with orderId: {purchase.OrderId} succeeded!");

@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using CoffeeCard.Common.Errors;
+﻿using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Utils;
-using CoffeeCard.Models.DataTransferObjects;
 using CoffeeCard.Models.DataTransferObjects.v2.Ticket;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using ITicketService = CoffeeCard.Library.Services.v2.ITicketService;
 
 namespace CoffeeCard.WebApi.Controllers.v2
