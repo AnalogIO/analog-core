@@ -10,6 +10,7 @@ using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.FeatureManagement;
 using Serilog;
 
 namespace CoffeeCard.Library.Services.v2
@@ -25,6 +26,7 @@ namespace CoffeeCard.Library.Services.v2
         private readonly IMobilePayWebhooksService _mobilePayWebhooksService;
         private readonly MobilePaySettingsV2 _mobilePaySettings;
         private readonly IMemoryCache _memoryCache;
+        private readonly IFeatureManager _featureManager;
 
         public WebhookService(CoffeeCardContext context, IMobilePayWebhooksService mobilePayWebhooksService,
             MobilePaySettingsV2 mobilePaySettings, IMemoryCache memoryCache)
@@ -86,16 +88,6 @@ namespace CoffeeCard.Library.Services.v2
                     await DisableAndRegisterNewWebhook(webhook);
                     return;
                 }
-
-                mobilePayWebhook = await _mobilePayWebhooksService.UpdateWebhook(mobilePayWebhook.WebhookId,
-                    _mobilePaySettings.WebhookUrl, DefaultEvents);
-
-                webhook.Url = mobilePayWebhook.Url;
-                webhook.SignatureKey = mobilePayWebhook.SignatureKey;
-                webhook.Status = WebhookStatus.Active;
-                webhook.LastUpdated = DateTime.UtcNow;
-
-                await _context.SaveChangesAsync();
             }
             catch (EntityNotFoundException)
             {
