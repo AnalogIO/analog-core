@@ -26,7 +26,6 @@ namespace CoffeeCard.Library.Services.v2
         private readonly IMobilePayWebhooksService _mobilePayWebhooksService;
         private readonly MobilePaySettingsV2 _mobilePaySettings;
         private readonly IMemoryCache _memoryCache;
-        private readonly IFeatureManager _featureManager;
 
         public WebhookService(CoffeeCardContext context, IMobilePayWebhooksService mobilePayWebhooksService,
             MobilePaySettingsV2 mobilePaySettings, IMemoryCache memoryCache)
