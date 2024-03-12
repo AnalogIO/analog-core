@@ -1,10 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using CoffeeCard.Library.Persistence;
+﻿using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.Library.Services.v2
 {
@@ -19,16 +19,16 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task IncreaseStatisticsBy(int userId, int increaseBy)
         {
-            var user = await _context.Users
+            User user = await _context.Users
                 .Where(u => u.Id == userId)
                 .Include(u => u.Statistics)
                 .Include(u => u.Tickets)
                 .FirstOrDefaultAsync();
 
-            var utcNow = DateTime.UtcNow;
+            DateTime utcNow = DateTime.UtcNow;
 
             // total statistics
-            var totalStatistics = user.Statistics.FirstOrDefault(x => x.Preset == StatisticPreset.Total);
+            Statistic totalStatistics = user.Statistics.FirstOrDefault(x => x.Preset == StatisticPreset.Total);
             if (totalStatistics == null)
             {
                 totalStatistics = new Statistic
@@ -45,9 +45,9 @@ namespace CoffeeCard.Library.Services.v2
             totalStatistics.LastSwipe = utcNow;
 
             // semester statistics
-            var semesterStart = SemesterUtils.GetSemesterStart(utcNow);
-            var semesterEnd = SemesterUtils.GetSemesterEnd(utcNow);
-            var semesterStatistics = user.Statistics.FirstOrDefault(x => x.Preset == StatisticPreset.Semester);
+            DateTime semesterStart = SemesterUtils.GetSemesterStart(utcNow);
+            DateTime semesterEnd = SemesterUtils.GetSemesterEnd(utcNow);
+            Statistic semesterStatistics = user.Statistics.FirstOrDefault(x => x.Preset == StatisticPreset.Semester);
 
             if (semesterStatistics == null)
             {
@@ -77,9 +77,9 @@ namespace CoffeeCard.Library.Services.v2
 
 
             // monthly statistics
-            var monthStart = new DateTime(utcNow.Year, utcNow.Month, 1);
-            var monthEnd = new DateTime(utcNow.Year, utcNow.Month, 1, 23, 59, 59).AddMonths(1).AddDays(-1);
-            var monthStatistics = user.Statistics.FirstOrDefault(x => x.Preset == StatisticPreset.Monthly);
+            DateTime monthStart = new DateTime(utcNow.Year, utcNow.Month, 1);
+            DateTime monthEnd = new DateTime(utcNow.Year, utcNow.Month, 1, 23, 59, 59).AddMonths(1).AddDays(-1);
+            Statistic monthStatistics = user.Statistics.FirstOrDefault(x => x.Preset == StatisticPreset.Monthly);
 
             if (monthStatistics == null)
             {

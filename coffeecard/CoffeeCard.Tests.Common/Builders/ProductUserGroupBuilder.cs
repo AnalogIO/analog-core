@@ -7,7 +7,7 @@ namespace CoffeeCard.Tests.Common.Builders
     {
         public static ProductUserGroupBuilder Simple()
         {
-            var product = ProductBuilder.Simple().Build();
+            Product product = ProductBuilder.Simple().Build();
             return new ProductUserGroupBuilder()
                 .WithProduct(product)
                 .WithUserGroup(f =>

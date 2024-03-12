@@ -1,7 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Library.Utils;
@@ -13,6 +9,8 @@ using CoffeeCard.WebApi.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.WebApi.Controllers.v2
 {
@@ -71,7 +69,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<SimplePurchaseResponse>> RedeemVoucher([FromRoute(Name = "voucher-code")] string voucherCode)
         {
-            var user = await _claimUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
+            User user = await _claimUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
             return Ok(await _purchaseService.RedeemVoucher(voucherCode, user));
         }
     }

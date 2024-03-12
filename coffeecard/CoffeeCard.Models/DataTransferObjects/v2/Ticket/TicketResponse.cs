@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.Ticket
 {

@@ -1,6 +1,6 @@
-﻿using System.Linq;
-using NSwag.Generation.Processors;
+﻿using NSwag.Generation.Processors;
 using NSwag.Generation.Processors.Contexts;
+using System.Linq;
 
 namespace CoffeeCard.WebApi.Helpers.Swagger
 {
@@ -17,14 +17,14 @@ namespace CoffeeCard.WebApi.Helpers.Swagger
         /// <returns>true if any matching parameters found, false if not</returns>
         public bool Process(OperationProcessorContext context)
         {
-            var operationDescription = context.OperationDescription;
-            var versionParameter = operationDescription.Operation.Parameters.Where(p => p.Name == "version").ToList();
+            NSwag.OpenApiOperationDescription operationDescription = context.OperationDescription;
+            System.Collections.Generic.List<NSwag.OpenApiParameter> versionParameter = operationDescription.Operation.Parameters.Where(p => p.Name == "version").ToList();
 
             if (versionParameter.Any())
             {
-                foreach (var parameter in versionParameter)
+                foreach (NSwag.OpenApiParameter parameter in versionParameter)
                 {
-                    context.OperationDescription.Operation.Parameters.Remove(parameter);
+                    _ = context.OperationDescription.Operation.Parameters.Remove(parameter);
                 }
 
                 return true;

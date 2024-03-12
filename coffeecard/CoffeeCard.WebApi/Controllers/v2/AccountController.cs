@@ -1,19 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
+using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.DataTransferObjects;
-using CoffeeCard.Models.DataTransferObjects.v2.User;
 using CoffeeCard.Models.DataTransferObjects.v2.Programme;
+using CoffeeCard.Models.DataTransferObjects.v2.User;
+using CoffeeCard.Models.Entities;
+using CoffeeCard.WebApi.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using CoffeeCard.Library.Services.v2;
-using CoffeeCard.Models.Entities;
-using CoffeeCard.WebApi.Helpers;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.WebApi.Controllers.v2
 {
@@ -53,7 +50,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status409Conflict)]
         public async Task<ActionResult<MessageResponseDto>> Register([FromBody] RegisterAccountRequest registerRequest)
         {
-            await _accountService.RegisterAccountAsync(registerRequest.Name, registerRequest.Email,
+            _ = await _accountService.RegisterAccountAsync(registerRequest.Name, registerRequest.Email,
                 registerRequest.Password, registerRequest.ProgrammeId);
 
             return Created("/api/v2/account/Get", new MessageResponseDto
@@ -75,7 +72,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status429TooManyRequests)]
         public async Task<ActionResult> Delete()
         {
-            var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
+            User user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
             await _accountService.RequestAnonymizationAsync(user);
 
             return StatusCode(StatusCodes.Status202Accepted);
@@ -93,7 +90,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<UserResponse>> Get()
         {
-            var user = await _claimsUtilities.ValidateAndReturnUserFromEmailClaimAsync(User.Claims);
+            User user = await _claimsUtilities.ValidateAndReturnUserFromEmailClaimAsync(User.Claims);
 
             return Ok(await UserWithRanking(user));
         }
@@ -112,8 +109,8 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<UserResponse>> Update([FromBody] UpdateUserRequest updateUserRequest)
         {
-            var user = await _claimsUtilities.ValidateAndReturnUserFromEmailClaimAsync(User.Claims);
-            var updatedUser = await _accountService.UpdateAccountAsync(user, updateUserRequest);
+            User user = await _claimsUtilities.ValidateAndReturnUserFromEmailClaimAsync(User.Claims);
+            User updatedUser = await _accountService.UpdateAccountAsync(user, updateUserRequest);
 
             return Ok(await UserWithRanking(updatedUser));
         }
@@ -133,7 +130,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [Route("email-exists")]
         public async Task<ActionResult<EmailExistsResponse>> EmailExists([FromBody] EmailExistsRequest request)
         {
-            var emailInUse = await _accountService.EmailExistsAsync(request.Email);
+            bool emailInUse = await _accountService.EmailExistsAsync(request.Email);
             return Ok(new EmailExistsResponse
             {
                 EmailExists = emailInUse
@@ -185,7 +182,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
 
         private async Task<UserResponse> UserWithRanking(User user)
         {
-            var (total, semester, month) = await _leaderboardService.GetLeaderboardPlacement(user);
+            (int total, int semester, int month) = await _leaderboardService.GetLeaderboardPlacement(user);
 
             return new UserResponse
             {

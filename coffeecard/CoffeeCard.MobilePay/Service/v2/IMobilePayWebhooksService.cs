@@ -1,7 +1,7 @@
-﻿using System;
+﻿using CoffeeCard.MobilePay.Generated.Api.WebhooksApi;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CoffeeCard.MobilePay.Generated.Api.WebhooksApi;
 
 namespace CoffeeCard.MobilePay.Service.v2
 {

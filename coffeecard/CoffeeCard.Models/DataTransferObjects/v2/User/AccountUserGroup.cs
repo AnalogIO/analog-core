@@ -1,6 +1,7 @@
+using CoffeeCard.Models.Entities;
 using System.ComponentModel.DataAnnotations;
 
-namespace CoffeeCard.Models.Entities;
+namespace CoffeeCard.Models.DataTransferObjects.v2.User;
 
 /// <summary>
 /// Represents an account user group update

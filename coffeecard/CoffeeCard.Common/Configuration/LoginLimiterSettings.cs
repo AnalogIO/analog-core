@@ -1,5 +1,5 @@
-using System.ComponentModel.DataAnnotations;
 using NetEscapades.Configuration.Validation;
+using System.ComponentModel.DataAnnotations;
 
 namespace CoffeeCard.Common.Configuration
 {

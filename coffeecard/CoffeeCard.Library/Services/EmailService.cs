@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using CoffeeCard.Common.Configuration;
+﻿using CoffeeCard.Common.Configuration;
 using CoffeeCard.Models.DataTransferObjects.Purchase;
 using CoffeeCard.Models.DataTransferObjects.User;
 using CoffeeCard.Models.Entities;
@@ -10,6 +7,9 @@ using MimeKit;
 using RestSharp;
 using RestSharp.Authenticators;
 using Serilog;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 using TimeZoneConverter;
 
 namespace CoffeeCard.Library.Services
@@ -32,11 +32,11 @@ namespace CoffeeCard.Library.Services
 
         public async Task SendInvoiceAsync(UserDto user, PurchaseDto purchase)
         {
-            var message = new MimeMessage();
-            var builder = RetrieveTemplate("invoice.html");
-            var utcTime = DateTime.UtcNow;
-            var dkTimeZone = TZConvert.GetTimeZoneInfo("Europe/Copenhagen");
-            var dkTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, dkTimeZone);
+            MimeMessage message = new MimeMessage();
+            BodyBuilder builder = RetrieveTemplate("invoice.html");
+            DateTime utcTime = DateTime.UtcNow;
+            TimeZoneInfo dkTimeZone = TZConvert.GetTimeZoneInfo("Europe/Copenhagen");
+            DateTime dkTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, dkTimeZone);
 
             builder.HtmlBody = builder.HtmlBody.Replace("{email}", user.Email);
             builder.HtmlBody = builder.HtmlBody.Replace("{name}", user.Name);
@@ -60,8 +60,8 @@ namespace CoffeeCard.Library.Services
         public async Task SendRegistrationVerificationEmailAsync(User user, string token)
         {
             Log.Information("Sending registration verification email to {email} {userid}", user.Email, user.Id);
-            var message = new MimeMessage();
-            var builder = RetrieveTemplate("email_verify_registration.html");
+            MimeMessage message = new MimeMessage();
+            BodyBuilder builder = RetrieveTemplate("email_verify_registration.html");
             const string endpoint = "verifyemail?token=";
 
             builder = BuildVerifyEmail(builder, token, user.Email, user.Name, endpoint);
@@ -76,8 +76,8 @@ namespace CoffeeCard.Library.Services
 
         public async Task SendVerificationEmailForLostPwAsync(User user, string token)
         {
-            var message = new MimeMessage();
-            var builder = RetrieveTemplate("email_verify_lostpassword.html");
+            MimeMessage message = new MimeMessage();
+            BodyBuilder builder = RetrieveTemplate("email_verify_lostpassword.html");
             const string endpoint = "recover?token=";
 
             builder = BuildVerifyEmail(builder, token, user.Email, user.Name, endpoint);
@@ -93,8 +93,8 @@ namespace CoffeeCard.Library.Services
         public async Task SendVerificationEmailForDeleteAccount(User user, string token)
         {
             Log.Information("Sending delete verification email to {email} {userid}", user.Email, user.Id);
-            var message = new MimeMessage();
-            var builder = RetrieveTemplate("email_verify_account_deletion.html");
+            MimeMessage message = new MimeMessage();
+            BodyBuilder builder = RetrieveTemplate("email_verify_account_deletion.html");
             const string endpoint = "verifydelete?token=";
 
             builder = BuildVerifyEmail(builder, token, user.Email, user.Name, endpoint);
@@ -109,15 +109,15 @@ namespace CoffeeCard.Library.Services
 
         public async Task SendInvoiceAsyncV2(Purchase purchase, User user)
         {
-            var purchaseDto = _mapperService.Map(purchase);
-            var userDto = _mapperService.Map(user);
+            PurchaseDto purchaseDto = _mapperService.Map(purchase);
+            UserDto userDto = _mapperService.Map(user);
 
             await SendInvoiceAsync(userDto, purchaseDto);
         }
 
         private BodyBuilder BuildVerifyEmail(BodyBuilder builder, string token, string email, string name, string endpoint)
         {
-            var baseUrl = _environmentSettings.DeploymentUrl;
+            string baseUrl = _environmentSettings.DeploymentUrl;
 
             builder.HtmlBody = builder.HtmlBody.Replace("{email}", email);
             builder.HtmlBody = builder.HtmlBody.Replace("{name}", name);
@@ -131,7 +131,7 @@ namespace CoffeeCard.Library.Services
 
         private BodyBuilder RetrieveTemplate(string templateName)
         {
-            var pathToTemplate = _env.WebRootPath
+            string pathToTemplate = _env.WebRootPath
                                  + Path.DirectorySeparatorChar
                                  + "Templates"
                                  + Path.DirectorySeparatorChar
@@ -141,9 +141,9 @@ namespace CoffeeCard.Library.Services
                                  + Path.DirectorySeparatorChar
                                  + templateName;
 
-            var builder = new BodyBuilder();
+            BodyBuilder builder = new BodyBuilder();
 
-            using (var sourceReader = File.OpenText(pathToTemplate))
+            using (StreamReader sourceReader = File.OpenText(pathToTemplate))
             {
                 builder.HtmlBody = sourceReader.ReadToEnd();
             }
@@ -153,21 +153,21 @@ namespace CoffeeCard.Library.Services
 
         private async Task SendEmailAsync(MimeMessage mail)
         {
-            var client = new RestClient(_mailgunSettings.MailgunApiUrl)
+            RestClient client = new RestClient(_mailgunSettings.MailgunApiUrl)
             {
                 Authenticator = new HttpBasicAuthenticator("api", _mailgunSettings.ApiKey)
             };
 
-            var request = new RestRequest();
-            request.AddParameter("domain", _mailgunSettings.Domain, ParameterType.UrlSegment);
+            RestRequest request = new RestRequest();
+            _ = request.AddParameter("domain", _mailgunSettings.Domain, ParameterType.UrlSegment);
             request.Resource = "{domain}/messages";
-            request.AddParameter("from", "Cafe Analog <mailgun@cafeanalog.dk>");
-            request.AddParameter("to", mail.To[0].ToString());
-            request.AddParameter("subject", mail.Subject);
-            request.AddParameter("html", mail.HtmlBody);
+            _ = request.AddParameter("from", "Cafe Analog <mailgun@cafeanalog.dk>");
+            _ = request.AddParameter("to", mail.To[0].ToString());
+            _ = request.AddParameter("subject", mail.Subject);
+            _ = request.AddParameter("html", mail.HtmlBody);
             request.Method = Method.Post;
 
-            var response = await client.ExecutePostAsync(request);
+            RestResponse response = await client.ExecutePostAsync(request);
 
             if (!response.IsSuccessful)
             {

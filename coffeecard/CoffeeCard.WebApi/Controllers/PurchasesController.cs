@@ -1,12 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Services;
 using CoffeeCard.Models.DataTransferObjects.Purchase;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.WebApi.Controllers
 {
@@ -61,7 +60,7 @@ namespace CoffeeCard.WebApi.Controllers
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<PurchaseDto>> RedeemVoucher([FromQuery] string voucherCode)
         {
-            var purchase = await _purchaseService.RedeemVoucher(voucherCode, User.Claims);
+            Models.Entities.Purchase purchase = await _purchaseService.RedeemVoucher(voucherCode, User.Claims);
             return Ok(_mapperService.Map(purchase));
         }
 

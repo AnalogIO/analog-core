@@ -14,8 +14,8 @@ namespace CoffeeCard.Library.Utils
             if (currentTime.Month >= 7) return new DateTime(currentTime.Year, 7, 1);
 
             // Spring semester: Get last Monday of January.
-            var lastDayOfJan = new DateTime(currentTime.Year, 1, 31);
-            var correctedLastDayOfWeek = (int)(lastDayOfJan.DayOfWeek + 6) % 7; // Mon=0, Tue=1, ..., Sun=6
+            DateTime lastDayOfJan = new DateTime(currentTime.Year, 1, 31);
+            int correctedLastDayOfWeek = (int)(lastDayOfJan.DayOfWeek + 6) % 7; // Mon=0, Tue=1, ..., Sun=6
             return lastDayOfJan.AddDays(-correctedLastDayOfWeek);
         }
 

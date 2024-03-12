@@ -8,7 +8,7 @@ namespace CoffeeCard.Tests.Common.Builders
         protected readonly AutoFaker<T> Faker = new();
         protected BaseBuilder()
         {
-            Faker.Configure(builder => builder.WithConventions());
+            _ = Faker.Configure(builder => builder.WithConventions());
         }
 
         /// <summary>

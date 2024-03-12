@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Services;
 using CoffeeCard.Library.Utils;
@@ -9,6 +6,9 @@ using CoffeeCard.Models.DataTransferObjects.v2.Ticket;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.WebApi.Controllers
 {
@@ -49,7 +49,7 @@ namespace CoffeeCard.WebApi.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         public ActionResult<List<TicketDto>> Get([FromQuery] bool used)
         {
-            var tickets = _ticketService.GetTickets(User.Claims, used);
+            IEnumerable<Models.Entities.Ticket> tickets = _ticketService.GetTickets(User.Claims, used);
             return Ok(_mapperService.Map(tickets).OrderBy(t => t.DateUsed).ToList());
         }
 
@@ -67,7 +67,7 @@ namespace CoffeeCard.WebApi.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<List<TicketDto>>> UseMultipleTickets([FromBody] UseMultipleTicketDto dto)
         {
-            var usedTickets = await _ticketService.UseMultipleTickets(User.Claims, dto);
+            IEnumerable<Models.Entities.Ticket> usedTickets = await _ticketService.UseMultipleTickets(User.Claims, dto);
             return Ok(_mapperService.Map(usedTickets));
         }
 
@@ -85,7 +85,7 @@ namespace CoffeeCard.WebApi.Controllers
         [HttpPost("use")]
         public async Task<ActionResult<UsedTicketResponse>> Use([FromBody] UseTicketDTO dto)
         {
-            var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
+            Models.Entities.User user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
 
             return await _ticketServiceV2.UseTicketAsync(user, dto.ProductId);
         }

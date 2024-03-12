@@ -1,14 +1,12 @@
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
-using CoffeeCard.Models.DataTransferObjects.v2.Product;
-using CoffeeCard.Models.DataTransferObjects.v2.Products;
+using CoffeeCard.Models.DataTransferObjects.v2.MenuItems;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.Library.Services.v2
 {
@@ -36,21 +34,21 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task<MenuItemResponse> AddMenuItemAsync(AddMenuItemRequest newMenuItem)
         {
-            var nameExists = await CheckMenuItemNameExists(newMenuItem.Name);
+            bool nameExists = await CheckMenuItemNameExists(newMenuItem.Name);
             if (nameExists)
             {
                 throw new ConflictException($"Menu item already exists with name {newMenuItem.Name}");
             }
 
-            var menuItem = new MenuItem()
+            MenuItem menuItem = new MenuItem()
             {
                 Name = newMenuItem.Name
             };
 
-            _context.MenuItems.Add(menuItem);
-            await _context.SaveChangesAsync();
+            _ = _context.MenuItems.Add(menuItem);
+            _ = await _context.SaveChangesAsync();
 
-            var result = new MenuItemResponse
+            MenuItemResponse result = new MenuItemResponse
             {
                 Id = menuItem.Id,
                 Name = menuItem.Name,
@@ -68,7 +66,7 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task<MenuItemResponse> UpdateMenuItemAsync(int id, UpdateMenuItemRequest changedMenuItem)
         {
-            var menuItem = await _context.MenuItems.FirstOrDefaultAsync(p => p.Id == id);
+            MenuItem menuItem = await _context.MenuItems.FirstOrDefaultAsync(p => p.Id == id);
 
             if (menuItem == null)
             {
@@ -76,14 +74,14 @@ namespace CoffeeCard.Library.Services.v2
                 throw new EntityNotFoundException($"No menu item was found by Menu Item Id {id}");
             }
 
-            var nameExists = await CheckMenuItemNameExists(changedMenuItem.Name);
+            bool nameExists = await CheckMenuItemNameExists(changedMenuItem.Name);
             if (changedMenuItem.Name != menuItem.Name && nameExists)
             {
                 throw new ConflictException($"Menu item already exists with name {changedMenuItem.Name}");
             }
 
 
-            var menuItemIsUsed = await _context.Products.AnyAsync(p => p.EligibleMenuItems.Any(menuItem => menuItem.Id == id));
+            bool menuItemIsUsed = await _context.Products.AnyAsync(p => p.EligibleMenuItems.Any(menuItem => menuItem.Id == id));
             if (!changedMenuItem.Active && menuItemIsUsed)
             {
                 throw new ConflictException("Menu item is in use and cannot be disabled");
@@ -92,9 +90,9 @@ namespace CoffeeCard.Library.Services.v2
             menuItem.Name = changedMenuItem.Name;
             menuItem.Active = changedMenuItem.Active;
 
-            await _context.SaveChangesAsync();
+            _ = await _context.SaveChangesAsync();
 
-            var result = new MenuItemResponse
+            MenuItemResponse result = new MenuItemResponse
             {
                 Id = id,
                 Name = menuItem.Name,

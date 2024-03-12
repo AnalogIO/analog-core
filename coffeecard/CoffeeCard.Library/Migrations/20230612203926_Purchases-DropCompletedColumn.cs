@@ -8,12 +8,12 @@ namespace CoffeeCard.Library.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
+            _ = migrationBuilder.DropColumn(
                 name: "Completed",
                 schema: "dbo",
                 table: "Purchases");
 
-            migrationBuilder.AlterColumn<string>(
+            _ = migrationBuilder.AlterColumn<string>(
                 name: "Status",
                 schema: "dbo",
                 table: "Purchases",
@@ -27,7 +27,7 @@ namespace CoffeeCard.Library.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<string>(
+            _ = migrationBuilder.AlterColumn<string>(
                 name: "Status",
                 schema: "dbo",
                 table: "Purchases",
@@ -36,7 +36,7 @@ namespace CoffeeCard.Library.Migrations
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)");
 
-            migrationBuilder.AddColumn<bool>(
+            _ = migrationBuilder.AddColumn<bool>(
                 name: "Completed",
                 schema: "dbo",
                 table: "Purchases",
@@ -44,8 +44,8 @@ namespace CoffeeCard.Library.Migrations
                 nullable: false,
                 defaultValue: false);
 
-            migrationBuilder.Sql("UPDATE dbo.Purchases SET Completed = 0 WHERE Status != 'Completed'");
-            migrationBuilder.Sql("UPDATE dbo.Purchases SET Completed = 1 WHERE Status = 'Completed'");
+            _ = migrationBuilder.Sql("UPDATE dbo.Purchases SET Completed = 0 WHERE Status != 'Completed'");
+            _ = migrationBuilder.Sql("UPDATE dbo.Purchases SET Completed = 1 WHERE Status = 'Completed'");
         }
     }
 }

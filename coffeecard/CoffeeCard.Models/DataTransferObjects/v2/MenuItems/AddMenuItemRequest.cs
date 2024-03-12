@@ -1,9 +1,6 @@
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using CoffeeCard.Models.Entities;
 
-namespace CoffeeCard.Models.DataTransferObjects.v2.Product
+namespace CoffeeCard.Models.DataTransferObjects.v2.MenuItems
 {
     /// <summary>
     /// Initiate a new menuitem add request.

@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.MobilePay.Service.v2;
@@ -9,9 +5,12 @@ using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.v2.Products;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 using CoffeeCard.Models.Entities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Purchase = CoffeeCard.Models.Entities.Purchase;
 
 namespace CoffeeCard.Library.Services.v2
@@ -36,15 +35,15 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task<InitiatePurchaseResponse> InitiatePurchase(InitiatePurchaseRequest initiateRequest, User user)
         {
-            var product = await _productService.GetProductAsync(initiateRequest.ProductId);
+            ProductResponse product = await _productService.GetProductAsync(initiateRequest.ProductId);
             CheckUserIsAllowedToPurchaseProduct(user, initiateRequest, product);
 
             Log.Information("Initiating purchase of ProductId {ProductId}, PaymentType {PurchaseType} by UserId {UserId}", initiateRequest.ProductId, initiateRequest.PaymentType, user.Id);
 
-            var (purchase, paymentDetails) = await InitiatePaymentAsync(initiateRequest, product, user);
+            (Purchase purchase, PaymentDetails paymentDetails) = await InitiatePaymentAsync(initiateRequest, product, user);
 
-            await _context.Purchases.AddAsync(purchase);
-            await _context.SaveChangesAsync();
+            _ = await _context.Purchases.AddAsync(purchase);
+            _ = await _context.SaveChangesAsync();
 
             if (purchase.Status == PurchaseStatus.Completed)
             {
@@ -95,7 +94,7 @@ namespace CoffeeCard.Library.Services.v2
 
         private async Task<(Purchase purchase, PaymentDetails paymentDetails)> InitiatePaymentAsync(InitiatePurchaseRequest purchaseRequest, ProductResponse product, User user)
         {
-            var orderId = await GenerateUniqueOrderId();
+            Guid orderId = await GenerateUniqueOrderId();
             PaymentDetails paymentDetails;
             PurchaseStatus purchaseStatus;
             string? transactionId;
@@ -125,7 +124,7 @@ namespace CoffeeCard.Library.Services.v2
                     throw new ArgumentException($"Payment Type '{purchaseRequest.PaymentType}' is not handled");
             }
 
-            var purchase = new Purchase
+            Purchase purchase = new Purchase
             {
                 ProductName = product.Name,
                 ProductId = product.Id,
@@ -144,7 +143,7 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task<SinglePurchaseResponse> GetPurchase(int purchaseId, User user)
         {
-            var purchase = await _context.Purchases
+            Purchase purchase = await _context.Purchases
                 .Include(p => p.PurchasedBy)
                 .Where(p => p.Id == purchaseId
                             && p.PurchasedBy.Equals(user))
@@ -156,7 +155,7 @@ namespace CoffeeCard.Library.Services.v2
                     $"No purchase was found by Purchase Id: {purchaseId} and User Id: {user.Id}");
             }
 
-            var paymentDetails = await _mobilePayPaymentsService.GetPayment(Guid.Parse(purchase.ExternalTransactionId));
+            MobilePayPaymentDetails paymentDetails = await _mobilePayPaymentsService.GetPayment(Guid.Parse(purchase.ExternalTransactionId));
 
             return new SinglePurchaseResponse
             {
@@ -188,7 +187,7 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task HandleMobilePayPaymentUpdate(MobilePayWebhook webhook)
         {
-            var purchase = await _context.Purchases
+            Purchase purchase = await _context.Purchases
                 .Include(p => p.PurchasedBy)
                 .Where(p => p.ExternalTransactionId.Equals(webhook.Data.Id))
                 .FirstOrDefaultAsync();
@@ -207,7 +206,7 @@ namespace CoffeeCard.Library.Services.v2
                 return;
             }
 
-            var eventTypeLowerCase = webhook.EventType.ToLower();
+            string eventTypeLowerCase = webhook.EventType.ToLower();
             switch (eventTypeLowerCase)
             {
                 case "payment.reserved":
@@ -239,7 +238,7 @@ namespace CoffeeCard.Library.Services.v2
             await _ticketService.IssueTickets(purchase);
 
             purchase.Status = PurchaseStatus.Completed;
-            await _context.SaveChangesAsync();
+            _ = await _context.SaveChangesAsync();
 
             Log.Information("Completed purchase with Id {Id}, TransactionId {TransactionId}", purchase.Id, purchase.ExternalTransactionId);
 
@@ -250,7 +249,7 @@ namespace CoffeeCard.Library.Services.v2
         {
             await _mobilePayPaymentsService.CancelPayment(Guid.Parse(purchase.ExternalTransactionId));
             purchase.Status = PurchaseStatus.Cancelled;
-            await _context.SaveChangesAsync();
+            _ = await _context.SaveChangesAsync();
 
             Log.Information("Purchase has been cancelled Purchase Id {PurchaseId}, Transaction Id {TransactionId}",
                 purchase.Id, purchase.ExternalTransactionId);
@@ -260,9 +259,9 @@ namespace CoffeeCard.Library.Services.v2
         {
             while (true)
             {
-                var newOrderId = Guid.NewGuid();
+                Guid newOrderId = Guid.NewGuid();
 
-                var orderIdAlreadyExists =
+                bool orderIdAlreadyExists =
                     await _context.Purchases.Where(p => p.OrderId.Equals(newOrderId.ToString())).AnyAsync();
                 if (orderIdAlreadyExists) continue;
 
@@ -272,14 +271,14 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task<SimplePurchaseResponse> RedeemVoucher(string voucherCode, User user)
         {
-            var voucher = await _context.Vouchers
+            Voucher voucher = await _context.Vouchers
                 .Where(v => v.Code.Equals(voucherCode))
                 .Include(v => v.Product)
                 .FirstOrDefaultAsync();
             if (voucher == null) throw new EntityNotFoundException($"Voucher '{voucherCode}' does not exist");
             if (voucher.UserId != null) throw new ConflictException($"Voucher '{voucherCode}' has already been redeemed");
 
-            var purchase = new Purchase
+            Purchase purchase = new Purchase
             {
                 DateCreated = DateTime.UtcNow,
                 NumberOfTickets = voucher.Product.NumberOfTickets,
@@ -303,9 +302,9 @@ namespace CoffeeCard.Library.Services.v2
             voucher.User = user;
             voucher.Purchase = purchase;
 
-            _context.Vouchers.Attach(voucher);
+            _ = _context.Vouchers.Attach(voucher);
             _context.Entry(voucher).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            _ = await _context.SaveChangesAsync();
 
             return new SimplePurchaseResponse
             {

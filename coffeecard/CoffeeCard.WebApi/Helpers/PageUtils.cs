@@ -1,10 +1,10 @@
-using System;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Serilog;
+using System;
+using System.Threading.Tasks;
 
 
 namespace CoffeeCard.WebApi.Helpers

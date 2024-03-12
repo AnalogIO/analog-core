@@ -1,5 +1,5 @@
-using System;
 using CoffeeCard.Library.Utils;
+using System;
 using Xunit;
 
 namespace CoffeeCard.Tests.Unit.Utils
@@ -18,10 +18,10 @@ namespace CoffeeCard.Tests.Unit.Utils
         [InlineData("2020/12/31", "2020/07/01")]
         public void TestGetSemesterStart(string currentDateStr, string expectedDateStr)
         {
-            var currentDate = DateTime.Parse(currentDateStr);
-            var expectedDate = DateTime.Parse(expectedDateStr);
+            DateTime currentDate = DateTime.Parse(currentDateStr);
+            DateTime expectedDate = DateTime.Parse(expectedDateStr);
 
-            var actualDate = SemesterUtils.GetSemesterStart(currentDate);
+            DateTime actualDate = SemesterUtils.GetSemesterStart(currentDate);
             Assert.Equal(expectedDate, actualDate);
         }
 
@@ -34,10 +34,10 @@ namespace CoffeeCard.Tests.Unit.Utils
         [InlineData("2020/12/31", "2020/12/23")]
         public void TestGetSemesterEnd(string currentDateStr, string expectedDateStr)
         {
-            var currentDate = DateTime.Parse(currentDateStr);
-            var expectedDate = DateTime.Parse(expectedDateStr);
+            DateTime currentDate = DateTime.Parse(currentDateStr);
+            DateTime expectedDate = DateTime.Parse(expectedDateStr);
 
-            var actualDate = SemesterUtils.GetSemesterEnd(currentDate);
+            DateTime actualDate = SemesterUtils.GetSemesterEnd(currentDate);
             Assert.Equal(expectedDate, actualDate);
         }
     }

@@ -1,9 +1,8 @@
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace CoffeeCard.Models.Entities
 {
@@ -42,15 +41,15 @@ namespace CoffeeCard.Models.Entities
 
         public Programme Programme { get; set; }
 
-        public virtual ICollection<LoginAttempt> LoginAttempts { get; set; } = new List<LoginAttempt>();
+        public virtual ICollection<LoginAttempt> LoginAttempts { get; set; } = [];
 
-        public virtual ICollection<Token> Tokens { get; set; } = new List<Token>();
+        public virtual ICollection<Token> Tokens { get; set; } = [];
 
-        public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
+        public virtual ICollection<Ticket> Tickets { get; set; } = [];
 
-        public virtual ICollection<Purchase> Purchases { get; set; } = new List<Purchase>();
+        public virtual ICollection<Purchase> Purchases { get; set; } = [];
 
-        public virtual ICollection<Statistic> Statistics { get; set; } = new List<Statistic>();
+        public virtual ICollection<Statistic> Statistics { get; set; } = [];
 
         public override string ToString()
         {

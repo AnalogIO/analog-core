@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services;
@@ -11,6 +5,12 @@ using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace CoffeeCard.Tests.Unit.Services
@@ -45,11 +45,11 @@ namespace CoffeeCard.Tests.Unit.Services
             // Arrange
             bool result;
 
-            var context = GenerateCoffeeCardContext(nameof(ValidateTokenGivenInvalidTokenReturnsFalse));
+            CoffeeCardContext context = GenerateCoffeeCardContext(nameof(ValidateTokenGivenInvalidTokenReturnsFalse));
             await using (context)
             {
-                var claimsUtility = new ClaimsUtilities(context);
-                var tokenService = new TokenService(_identity, claimsUtility);
+                ClaimsUtilities claimsUtility = new ClaimsUtilities(context);
+                TokenService tokenService = new TokenService(_identity, claimsUtility);
 
                 // Act
                 result = await tokenService.ValidateTokenIsUnusedAsync("Bogus token");
@@ -63,22 +63,22 @@ namespace CoffeeCard.Tests.Unit.Services
         public async Task ValidateTokenGivenValidTokenReturnsTrue()
         {
             // Arrange
-            var claim = new Claim(ClaimTypes.Email, "test@email.dk");
-            var claims = new List<Claim> { claim };
+            Claim claim = new Claim(ClaimTypes.Email, "test@email.dk");
+            List<Claim> claims = [claim];
 
             bool result;
 
-            var context = GenerateCoffeeCardContext(nameof(ValidateTokenGivenValidTokenReturnsTrue));
+            CoffeeCardContext context = GenerateCoffeeCardContext(nameof(ValidateTokenGivenValidTokenReturnsTrue));
             await using (context)
             {
-                var claimsUtility = new ClaimsUtilities(context);
-                var tokenService = new TokenService(_identity, claimsUtility);
+                ClaimsUtilities claimsUtility = new ClaimsUtilities(context);
+                TokenService tokenService = new TokenService(_identity, claimsUtility);
 
-                var token = tokenService.GenerateToken(claims);
-                var userTokens = new List<Token> { new Token(token) };
-                var user = GenerateTestUser(tokens: userTokens);
-                await context.AddAsync(user);
-                await context.SaveChangesAsync();
+                string token = tokenService.GenerateToken(claims);
+                List<Token> userTokens = [new Token(token)];
+                User user = GenerateTestUser(tokens: userTokens);
+                _ = await context.AddAsync(user);
+                _ = await context.SaveChangesAsync();
 
                 // Act
                 result = await tokenService.ValidateTokenIsUnusedAsync(token);
@@ -92,16 +92,16 @@ namespace CoffeeCard.Tests.Unit.Services
         public async Task ValidateTokenGivenInvalidSignedTokenReturnsFalse()
         {
             // Arrange
-            var claim = new Claim(ClaimTypes.Email, "test@email.dk");
-            var claims = new List<Claim> { claim };
+            Claim claim = new Claim(ClaimTypes.Email, "test@email.dk");
+            List<Claim> claims = [claim];
 
-            var context = GenerateCoffeeCardContext(nameof(ValidateTokenGivenInvalidSignedTokenReturnsFalse));
+            CoffeeCardContext context = GenerateCoffeeCardContext(nameof(ValidateTokenGivenInvalidSignedTokenReturnsFalse));
             await using (context)
             {
-                var key = new SymmetricSecurityKey(
+                SymmetricSecurityKey key = new SymmetricSecurityKey(
                     Encoding.UTF8.GetBytes("Super long invalid signing key, longer than 256bytes"));
 
-                var jwt = new JwtSecurityToken("AnalogIO",
+                JwtSecurityToken jwt = new JwtSecurityToken("AnalogIO",
                     "Everyone",
                     claims,
                     DateTime.UtcNow,
@@ -109,12 +109,12 @@ namespace CoffeeCard.Tests.Unit.Services
                     new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
                 );
 
-                var token = new JwtSecurityTokenHandler().WriteToken(jwt);
-                var claimsUtility = new ClaimsUtilities(context);
-                var tokenService = new TokenService(_identity, claimsUtility);
+                string token = new JwtSecurityTokenHandler().WriteToken(jwt);
+                ClaimsUtilities claimsUtility = new ClaimsUtilities(context);
+                TokenService tokenService = new TokenService(_identity, claimsUtility);
 
                 // Act
-                var result = tokenService.ValidateToken(token);
+                bool result = tokenService.ValidateToken(token);
 
                 // Assert
                 Assert.False(result);
@@ -125,23 +125,23 @@ namespace CoffeeCard.Tests.Unit.Services
         public async Task ValidateTokenGivenWelformedExpiredTokenReturnsFalse()
         {
             // Arrange
-            var claim = new Claim(ClaimTypes.Email, "test@email.dk");
-            var claims = new List<Claim> { claim };
+            Claim claim = new Claim(ClaimTypes.Email, "test@email.dk");
+            List<Claim> claims = [claim];
 
             bool result;
 
-            var context = GenerateCoffeeCardContext(nameof(ValidateTokenGivenWelformedExpiredTokenReturnsFalse));
+            CoffeeCardContext context = GenerateCoffeeCardContext(nameof(ValidateTokenGivenWelformedExpiredTokenReturnsFalse));
             {
                 await using (context)
                 {
-                    var claimsUtility = new ClaimsUtilities(context);
-                    var tokenService = new TokenService(_identity, claimsUtility);
+                    ClaimsUtilities claimsUtility = new ClaimsUtilities(context);
+                    TokenService tokenService = new TokenService(_identity, claimsUtility);
 
-                    var key = new SymmetricSecurityKey(
+                    SymmetricSecurityKey key = new SymmetricSecurityKey(
                         Encoding.UTF8.GetBytes(_identity.TokenKey));
 
                     //Creates the expired token
-                    var jwt = new JwtSecurityToken("AnalogIO",
+                    JwtSecurityToken jwt = new JwtSecurityToken("AnalogIO",
                         "Everyone",
                         claims,
                         DateTime.UtcNow.Subtract(new TimeSpan(1200)),
@@ -149,12 +149,12 @@ namespace CoffeeCard.Tests.Unit.Services
                         new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
                     );
 
-                    var token = new JwtSecurityTokenHandler().WriteToken(jwt);
+                    string token = new JwtSecurityTokenHandler().WriteToken(jwt);
 
-                    var userTokens = new List<Token> { new Token(token) };
-                    var user = GenerateTestUser(tokens: userTokens);
-                    await context.AddAsync(user);
-                    await context.SaveChangesAsync();
+                    List<Token> userTokens = [new Token(token)];
+                    User user = GenerateTestUser(tokens: userTokens);
+                    _ = await context.AddAsync(user);
+                    _ = await context.SaveChangesAsync();
 
                     // Act
                     result = await tokenService.ValidateTokenIsUnusedAsync(token);
@@ -169,24 +169,24 @@ namespace CoffeeCard.Tests.Unit.Services
         public async Task ValidateTokenGivenWelformedUsedTokenReturnsFalse()
         {
             // Arrange
-            var claim = new Claim(ClaimTypes.Email, "test@email.dk");
-            var claims = new List<Claim> { claim };
+            Claim claim = new Claim(ClaimTypes.Email, "test@email.dk");
+            List<Claim> claims = [claim];
 
             bool result;
 
-            var context = GenerateCoffeeCardContext(nameof(ValidateTokenGivenWelformedUsedTokenReturnsFalse));
+            CoffeeCardContext context = GenerateCoffeeCardContext(nameof(ValidateTokenGivenWelformedUsedTokenReturnsFalse));
             await using (context)
             {
-                var claimsUtility = new ClaimsUtilities(context);
-                var tokenService = new TokenService(_identity, claimsUtility);
+                ClaimsUtilities claimsUtility = new ClaimsUtilities(context);
+                TokenService tokenService = new TokenService(_identity, claimsUtility);
 
-                var token = tokenService.GenerateToken(claims);
+                string token = tokenService.GenerateToken(claims);
 
-                var userTokens =
-                    new List<Token>(); //No tokens are added to the users list, therefore all tokens with a claim for this user will be assumed to be expired
-                var user = GenerateTestUser(tokens: userTokens);
-                await context.AddAsync(user);
-                await context.SaveChangesAsync();
+                List<Token> userTokens =
+                    []; //No tokens are added to the users list, therefore all tokens with a claim for this user will be assumed to be expired
+                User user = GenerateTestUser(tokens: userTokens);
+                _ = await context.AddAsync(user);
+                _ = await context.SaveChangesAsync();
 
                 // Act
                 result = await tokenService.ValidateTokenIsUnusedAsync(token);
@@ -198,14 +198,14 @@ namespace CoffeeCard.Tests.Unit.Services
 
         private CoffeeCardContext GenerateCoffeeCardContext(string uniqueString)
         {
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
+            DbContextOptionsBuilder<CoffeeCardContext> builder = new DbContextOptionsBuilder<CoffeeCardContext>()
                 .UseInMemoryDatabase(uniqueString);
 
-            var databaseSettings = new DatabaseSettings
+            DatabaseSettings databaseSettings = new DatabaseSettings
             {
                 SchemaName = "test"
             };
-            var environmentSettings = new EnvironmentSettings()
+            EnvironmentSettings environmentSettings = new EnvironmentSettings()
             {
                 EnvironmentType = EnvironmentType.Test
             };

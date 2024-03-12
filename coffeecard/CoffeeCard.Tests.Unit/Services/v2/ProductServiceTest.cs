@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services.v2;
@@ -9,6 +5,9 @@ using CoffeeCard.Models.DataTransferObjects.v2.Product;
 using CoffeeCard.Models.DataTransferObjects.v2.Products;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace CoffeeCard.Tests.Unit.Services.v2
@@ -18,20 +17,20 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         [Fact(DisplayName = "UpdateProduct removes ommitted user groups and only adds selected user groups")]
         public async Task UpdateProduct_Removes_Omitted_UserGroups()
         {
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
+            DbContextOptionsBuilder<CoffeeCardContext> builder = new DbContextOptionsBuilder<CoffeeCardContext>()
                 .UseInMemoryDatabase(nameof(UpdateProduct_Removes_Omitted_UserGroups));
 
-            var databaseSettings = new DatabaseSettings
+            DatabaseSettings databaseSettings = new DatabaseSettings
             {
                 SchemaName = "test"
             };
-            var environmentSettings = new EnvironmentSettings()
+            EnvironmentSettings environmentSettings = new EnvironmentSettings()
             {
                 EnvironmentType = EnvironmentType.Test
             };
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
-            var p = new Product
+            await using CoffeeCardContext context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            Product p = new Product
             {
                 Id = 1,
                 Name = "Coffee",
@@ -41,36 +40,36 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 ExperienceWorth = 10,
                 Visible = true
             };
-            await context.AddAsync(p);
-            await context.SaveChangesAsync();
+            _ = await context.AddAsync(p);
+            _ = await context.SaveChangesAsync();
 
-            await context.AddAsync(new ProductUserGroup
+            _ = await context.AddAsync(new ProductUserGroup
             {
                 Product = p,
                 UserGroup = UserGroup.Barista
             });
 
-            await context.AddAsync(new ProductUserGroup
+            _ = await context.AddAsync(new ProductUserGroup
             {
                 Product = p,
                 UserGroup = UserGroup.Manager
             });
 
-            await context.SaveChangesAsync();
+            _ = await context.SaveChangesAsync();
 
-            using var productService = new ProductService(context);
+            using ProductService productService = new ProductService(context);
 
-            await productService.UpdateProduct(1, new UpdateProductRequest()
+            _ = await productService.UpdateProduct(1, new UpdateProductRequest()
             {
                 Visible = true,
                 Price = 10,
                 NumberOfTickets = 10,
                 Name = "Coffee",
                 Description = "Coffee Clip card",
-                AllowedUserGroups = new List<UserGroup>() { UserGroup.Customer, UserGroup.Board }
+                AllowedUserGroups = [UserGroup.Customer, UserGroup.Board]
             });
 
-            var result = await productService.GetProductAsync(1);
+            ProductResponse result = await productService.GetProductAsync(1);
 
             Assert.Collection<UserGroup>(result.AllowedUserGroups,
                 e => Assert.Equal(UserGroup.Customer, e),
@@ -84,35 +83,35 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         [Fact(DisplayName = "AddProduct adds only selected user groups")]
         public async Task AddProduct_Sets_Correct_UserGroups()
         {
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
+            DbContextOptionsBuilder<CoffeeCardContext> builder = new DbContextOptionsBuilder<CoffeeCardContext>()
                 .UseInMemoryDatabase(nameof(AddProduct_Sets_Correct_UserGroups));
 
-            var databaseSettings = new DatabaseSettings
+            DatabaseSettings databaseSettings = new DatabaseSettings
             {
                 SchemaName = "test"
             };
-            var environmentSettings = new EnvironmentSettings()
+            EnvironmentSettings environmentSettings = new EnvironmentSettings()
             {
                 EnvironmentType = EnvironmentType.Test
             };
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            await using CoffeeCardContext context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
 
-            using var productService = new ProductService(context);
+            using ProductService productService = new ProductService(context);
 
-            var p = new AddProductRequest
+            AddProductRequest p = new AddProductRequest
             {
                 Name = "Coffee",
                 Description = "Coffee Clip card",
                 NumberOfTickets = 10,
                 Price = 10,
                 Visible = true,
-                AllowedUserGroups = new List<UserGroup> { UserGroup.Manager, UserGroup.Board }
+                AllowedUserGroups = [UserGroup.Manager, UserGroup.Board]
             };
 
-            await productService.AddProduct(p);
+            _ = await productService.AddProduct(p);
 
-            var result = await productService.GetProductAsync(1);
+            ProductResponse result = await productService.GetProductAsync(1);
 
             Assert.Collection<UserGroup>(result.AllowedUserGroups,
                 e => Assert.Equal(UserGroup.Manager, e),
@@ -122,23 +121,23 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         [Fact(DisplayName = "GetAllProducts shows non-visible products")]
         public async Task GetAllProducts_Returns_Non_Visible_Products()
         {
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
+            DbContextOptionsBuilder<CoffeeCardContext> builder = new DbContextOptionsBuilder<CoffeeCardContext>()
                 .UseInMemoryDatabase(nameof(GetAllProducts_Returns_Non_Visible_Products));
 
-            var databaseSettings = new DatabaseSettings
+            DatabaseSettings databaseSettings = new DatabaseSettings
             {
                 SchemaName = "test"
             };
-            var environmentSettings = new EnvironmentSettings()
+            EnvironmentSettings environmentSettings = new EnvironmentSettings()
             {
                 EnvironmentType = EnvironmentType.Test
             };
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            await using CoffeeCardContext context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
 
-            using var productService = new ProductService(context);
+            using ProductService productService = new ProductService(context);
 
-            var p1 = new AddProductRequest
+            AddProductRequest p1 = new AddProductRequest
             {
                 Name = "Coffee",
                 Description = "Coffee Clip card",
@@ -147,9 +146,9 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 Visible = true,
                 AllowedUserGroups = Enum.GetValues<UserGroup>()
             };
-            await productService.AddProduct(p1);
+            _ = await productService.AddProduct(p1);
 
-            var p2 = new AddProductRequest
+            AddProductRequest p2 = new AddProductRequest
             {
                 Name = "Latte",
                 Description = "Fancy Drink Clip card",
@@ -158,9 +157,9 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 Visible = false,
                 AllowedUserGroups = Enum.GetValues<UserGroup>()
             };
-            await productService.AddProduct(p2);
+            _ = await productService.AddProduct(p2);
 
-            var result = await productService.GetAllProductsAsync();
+            IEnumerable<ProductResponse> result = await productService.GetAllProductsAsync();
 
             Assert.Collection(result,
                 e => Assert.True(e.Visible),
@@ -170,87 +169,87 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         [Fact(DisplayName = "GetAllProducts returns products from all user groups")]
         public async Task GetAllProducts_Returns_Products_For_All_UserGroups()
         {
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
+            DbContextOptionsBuilder<CoffeeCardContext> builder = new DbContextOptionsBuilder<CoffeeCardContext>()
                 .UseInMemoryDatabase(nameof(GetAllProducts_Returns_Products_For_All_UserGroups));
 
-            var databaseSettings = new DatabaseSettings
+            DatabaseSettings databaseSettings = new DatabaseSettings
             {
                 SchemaName = "test"
             };
-            var environmentSettings = new EnvironmentSettings()
+            EnvironmentSettings environmentSettings = new EnvironmentSettings()
             {
                 EnvironmentType = EnvironmentType.Test
             };
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            await using CoffeeCardContext context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
 
-            using var productService = new ProductService(context);
+            using ProductService productService = new ProductService(context);
 
-            var p1 = new AddProductRequest
+            AddProductRequest p1 = new AddProductRequest
             {
                 Name = "Coffee",
                 Description = "Coffee Clip card",
                 NumberOfTickets = 10,
                 Price = 10,
                 Visible = true,
-                AllowedUserGroups = new List<UserGroup> { UserGroup.Customer }
+                AllowedUserGroups = [UserGroup.Customer]
             };
-            await productService.AddProduct(p1);
+            _ = await productService.AddProduct(p1);
 
-            var p2 = new AddProductRequest
+            AddProductRequest p2 = new AddProductRequest
             {
                 Name = "Latte",
                 Description = "Fancy Drink Clip card",
                 NumberOfTickets = 10,
                 Price = 170,
                 Visible = true,
-                AllowedUserGroups = new List<UserGroup> { UserGroup.Barista }
+                AllowedUserGroups = [UserGroup.Barista]
             };
-            await productService.AddProduct(p2);
+            _ = await productService.AddProduct(p2);
 
-            var p3 = new AddProductRequest
+            AddProductRequest p3 = new AddProductRequest
             {
                 Name = "Frappuccino",
                 Description = "Blended ice with sugar",
                 NumberOfTickets = 1,
                 Price = 35,
                 Visible = true,
-                AllowedUserGroups = new List<UserGroup> { UserGroup.Manager }
+                AllowedUserGroups = [UserGroup.Manager]
             };
-            await productService.AddProduct(p3);
+            _ = await productService.AddProduct(p3);
 
-            var p4 = new AddProductRequest
+            AddProductRequest p4 = new AddProductRequest
             {
                 Name = "Cortado",
                 Description = "Some spanish coffee",
                 NumberOfTickets = 1,
                 Price = 19,
                 Visible = true,
-                AllowedUserGroups = new List<UserGroup> { UserGroup.Board }
+                AllowedUserGroups = [UserGroup.Board]
             };
-            await productService.AddProduct(p4);
+            _ = await productService.AddProduct(p4);
 
-            var result = await productService.GetAllProductsAsync();
+            IEnumerable<ProductResponse> result = await productService.GetAllProductsAsync();
 
             Assert.Collection(result,
                 e =>
                 {
-                    Assert.Single(e.AllowedUserGroups);
+                    _ = Assert.Single(e.AllowedUserGroups);
                     Assert.Contains(UserGroup.Customer, e.AllowedUserGroups);
                 },
                 e =>
                 {
-                    Assert.Single(e.AllowedUserGroups);
+                    _ = Assert.Single(e.AllowedUserGroups);
                     Assert.Contains(UserGroup.Barista, e.AllowedUserGroups);
                 },
                 e =>
                 {
-                    Assert.Single(e.AllowedUserGroups);
+                    _ = Assert.Single(e.AllowedUserGroups);
                     Assert.Contains(UserGroup.Manager, e.AllowedUserGroups);
                 },
                 e =>
                 {
-                    Assert.Single(e.AllowedUserGroups);
+                    _ = Assert.Single(e.AllowedUserGroups);
                     Assert.Contains(UserGroup.Board, e.AllowedUserGroups);
                 }
             );

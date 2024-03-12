@@ -84,7 +84,7 @@ namespace CoffeeCard.Models.DataTransferObjects.CoffeeCard
             if (ReferenceEquals(coffeeCard, null)) return 0;
 
             //Get hash code for the ProductId field.
-            var hashProductCode = coffeeCard.ProductId.GetHashCode();
+            int hashProductCode = coffeeCard.ProductId.GetHashCode();
 
             return hashProductCode;
         }

@@ -1,7 +1,7 @@
-﻿using System;
+﻿using CoffeeCard.Models.Entities;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Library.Services
 {

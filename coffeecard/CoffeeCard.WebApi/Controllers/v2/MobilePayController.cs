@@ -1,16 +1,15 @@
-﻿using System;
+﻿using CoffeeCard.Common.Configuration;
+using CoffeeCard.Library.Services.v2;
+using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Serilog;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using CoffeeCard.Common.Configuration;
-using CoffeeCard.Library.Services.v2;
-using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
-using Serilog;
 
 namespace CoffeeCard.WebApi.Controllers.v2
 {
@@ -50,7 +49,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesDefaultResponseType]
         public async Task<ActionResult> Webhook([FromBody] MobilePayWebhook request, [FromHeader(Name = "x-mobilepay-signature")][Required] string mpSignatureHeader)
         {
-            var isSignatureValid = await VerifySignature(mpSignatureHeader);
+            bool isSignatureValid = await VerifySignature(mpSignatureHeader);
             if (!isSignatureValid)
             {
                 Log.Warning("Signature did not match the computed signature for request '{Request}', header signature: {Signature}",
@@ -66,18 +65,18 @@ namespace CoffeeCard.WebApi.Controllers.v2
 
         private async Task<bool> VerifySignature(string mpSignatureHeader)
         {
-            var endpointUrl = _mobilePaySettings.WebhookUrl;
-            var signatureKey = await _webhookService.GetSignatureKey();
+            string endpointUrl = _mobilePaySettings.WebhookUrl;
+            string signatureKey = await _webhookService.GetSignatureKey();
 
             if (!Request.Body.CanSeek)
             {
                 Request.EnableBuffering();
             }
 
-            HttpContext.Request.Body.Seek(0, SeekOrigin.Begin);
+            _ = HttpContext.Request.Body.Seek(0, SeekOrigin.Begin);
 
             string rawRequestBody;
-            using (var stream = new StreamReader(HttpContext.Request.Body))
+            using (StreamReader stream = new StreamReader(HttpContext.Request.Body))
             {
                 rawRequestBody = await stream.ReadToEndAsync();
             }
@@ -85,9 +84,9 @@ namespace CoffeeCard.WebApi.Controllers.v2
             Log.Debug("Raw request body (trimmed): '{Body}'", rawRequestBody.Trim());
             Log.Debug("Endpoint Url '{EndpointUrl}', SignatureKey '{Signature}'", endpointUrl, signatureKey);
 
-            var hash = new HMACSHA1(Encoding.UTF8.GetBytes(signatureKey))
+            byte[] hash = new HMACSHA1(Encoding.UTF8.GetBytes(signatureKey))
                 .ComputeHash(Encoding.UTF8.GetBytes(endpointUrl + rawRequestBody.Trim()));
-            var computedSignature = Convert.ToBase64String(hash);
+            string computedSignature = Convert.ToBase64String(hash);
 
             Log.Debug("ComputedSignature: {Signature}", computedSignature);
             Log.Debug("mpSignatureHeader {mpSignatureHeader}", mpSignatureHeader);

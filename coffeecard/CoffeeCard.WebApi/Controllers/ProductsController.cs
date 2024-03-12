@@ -1,16 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using CoffeeCard.Common.Errors;
+﻿using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Services;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.DataTransferObjects.Product;
 using CoffeeCard.Models.Entities;
-using CoffeeCard.WebApi.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.WebApi.Controllers
 {
@@ -52,7 +50,7 @@ namespace CoffeeCard.WebApi.Controllers
             try
             {
                 // Try find user from potential login token
-                var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
+                User user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
                 products = await _productService.GetProductsForUserAsync(user);
             }
             catch (ApiException)
@@ -75,9 +73,9 @@ namespace CoffeeCard.WebApi.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<List<ProductDto>>> GetProductsForUser()
         {
-            var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
+            User user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
 
-            var products = await _productService.GetProductsForUserAsync(user);
+            IEnumerable<Product> products = await _productService.GetProductsForUserAsync(user);
             return Ok(_mapperService.Map(products));
         }
     }

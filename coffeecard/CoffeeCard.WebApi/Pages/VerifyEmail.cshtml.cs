@@ -1,9 +1,9 @@
-using System;
-using System.Threading.Tasks;
 using CoffeeCard.Library.Services;
 using CoffeeCard.WebApi.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.WebApi.Pages
 {
@@ -23,7 +23,7 @@ namespace CoffeeCard.WebApi.Pages
 
             Func<Task<IActionResult>> func = async delegate ()
             {
-                var emailVerified = await _accountService.VerifyRegistration(Token);
+                bool emailVerified = await _accountService.VerifyRegistration(Token);
                 if (emailVerified)
                 {
                     TempData["resultHeader"] = "Success";

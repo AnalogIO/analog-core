@@ -1,6 +1,6 @@
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Runtime.Serialization;
-using Microsoft.AspNetCore.Http;
 
 namespace CoffeeCard.Common.Errors
 {

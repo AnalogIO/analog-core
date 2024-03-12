@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using CoffeeCard.Models.Entities;
+﻿using CoffeeCard.Models.Entities;
+using System.Collections.Generic;
 
 namespace CoffeeCard.Library.Services
 {

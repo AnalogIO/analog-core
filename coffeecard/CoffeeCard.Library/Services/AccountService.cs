@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
@@ -12,6 +6,11 @@ using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.Library.Services
 {
@@ -47,7 +46,7 @@ namespace CoffeeCard.Library.Services
 
             ValidateVersion(version);
 
-            var user = _context.Users.FirstOrDefault(x => x.Email == email);
+            User user = _context.Users.FirstOrDefault(x => x.Email == email);
             if (user != null)
             {
                 if (user.UserState == UserState.Deleted)
@@ -76,17 +75,17 @@ namespace CoffeeCard.Library.Services
                       StatusCodes.Status429TooManyRequests);
                 }
 
-                var hashedPw = _hashService.Hash(password + user.Salt);
+                string hashedPw = _hashService.Hash(password + user.Salt);
                 if (user.Password.Equals(hashedPw))
                 {
-                    var claims = new[]
+                    Claim[] claims = new[]
                     {
                         new Claim(ClaimTypes.Email, email), new Claim(ClaimTypes.Name, user.Name),
                         new Claim("UserId", user.Id.ToString()),
                         new Claim(ClaimTypes.Role, user.UserGroup.ToString())
                     };
 
-                    var token = _tokenService.GenerateToken(claims);
+                    string token = _tokenService.GenerateToken(claims);
 
                     _loginLimiter.ResetLoginAttemptsForUser(user);
 
@@ -112,14 +111,14 @@ namespace CoffeeCard.Library.Services
                 StatusCodes.Status409Conflict);
             }
 
-            var salt = _hashService.GenerateSalt();
-            var hashedPassword = _hashService.Hash(password + salt);
+            string salt = _hashService.GenerateSalt();
+            string hashedPassword = _hashService.Hash(password + salt);
 
-            var chosenProgramme = _context.Programmes.FirstOrDefault(x => x.Id == programme);
+            Programme chosenProgramme = _context.Programmes.FirstOrDefault(x => x.Id == programme);
             if (chosenProgramme == null)
                 throw new ApiException($"No programme found with the id: {programme}", StatusCodes.Status400BadRequest);
 
-            var user = new User
+            User user = new User
             {
                 Name = EscapeName(name),
                 Email = email,
@@ -129,15 +128,15 @@ namespace CoffeeCard.Library.Services
                 UserGroup = UserGroup.Customer
             };
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            _ = _context.Users.Add(user);
+            _ = await _context.SaveChangesAsync();
 
-            var claims = new[]
+            Claim[] claims = new[]
             {
                 new Claim(ClaimTypes.Email, user.Email), new Claim(ClaimTypes.Name, user.Name),
                 new Claim(ClaimTypes.Role, "verification_token")
             };
-            var verificationToken = _tokenService.GenerateToken(claims);
+            string verificationToken = _tokenService.GenerateToken(claims);
 
             await _emailService.SendRegistrationVerificationEmailAsync(user, verificationToken);
 
@@ -148,8 +147,8 @@ namespace CoffeeCard.Library.Services
         {
             Log.Information("Trying to verify registration with token: {token}", token);
 
-            var email = _tokenService.ValidateVerificationTokenAndGetEmail(token);
-            var user = GetAccountByEmail(email);
+            string email = _tokenService.ValidateVerificationTokenAndGetEmail(token);
+            User user = GetAccountByEmail(email);
 
             user.IsVerified = true;
             return await _context.SaveChangesAsync() > 0;
@@ -157,7 +156,7 @@ namespace CoffeeCard.Library.Services
 
         public User UpdateAccount(IEnumerable<Claim> claims, UpdateUserDto userDto)
         {
-            var user = GetAccountByClaims(claims);
+            User user = GetAccountByClaims(claims);
 
             if (userDto.Email != null)
             {
@@ -182,7 +181,7 @@ namespace CoffeeCard.Library.Services
 
             if (userDto.ProgrammeId != null)
             {
-                var programme = _context.Programmes.FirstOrDefault(x => x.Id == userDto.ProgrammeId);
+                Programme programme = _context.Programmes.FirstOrDefault(x => x.Id == userDto.ProgrammeId);
                 if (programme == null)
                     throw new ApiException($"No programme with id {userDto.ProgrammeId} exists!", 400);
                 Log.Information($"Changing programme of user from {user.Programme.Id} to {programme.Id}");
@@ -191,23 +190,23 @@ namespace CoffeeCard.Library.Services
 
             if (userDto.Password != null)
             {
-                var salt = _hashService.GenerateSalt();
-                var hashedPassword = _hashService.Hash(userDto.Password + salt);
+                string salt = _hashService.GenerateSalt();
+                string hashedPassword = _hashService.Hash(userDto.Password + salt);
                 user.Salt = salt;
                 user.Password = hashedPassword;
                 Log.Information("User changed password");
             }
 
-            _context.SaveChanges();
+            _ = _context.SaveChanges();
             return user;
         }
 
         public User GetAccountByClaims(IEnumerable<Claim> claims)
         {
-            var emailClaim = claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
+            Claim emailClaim = claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
             if (emailClaim == null) throw new ApiException("The token is invalid!", 401);
 
-            var user = GetAccountByEmail(emailClaim.Value);
+            User user = GetAccountByEmail(emailClaim.Value);
             if (user == null) throw new ApiException("The user could not be found", 400);
 
             return user;
@@ -215,58 +214,58 @@ namespace CoffeeCard.Library.Services
 
         public void UpdateExperience(int userId, int exp)
         {
-            var user = _context.Users.FirstOrDefault(x => x.Id == userId);
+            User user = _context.Users.FirstOrDefault(x => x.Id == userId);
 
             if (user == null) throw new ApiException("Could not update user");
 
             user.Experience += exp;
 
-            _context.SaveChanges();
+            _ = _context.SaveChanges();
         }
 
         public async Task ForgotPasswordAsync(string email)
         {
-            var user = GetAccountWithTokensByEmail(email);
+            User user = GetAccountWithTokensByEmail(email);
             if (user == null)
                 throw new ApiException($"The user could not be found {email}", StatusCodes.Status404NotFound);
 
-            var claims = new[]
+            Claim[] claims = new[]
             {
                 new Claim(ClaimTypes.Email, user.Email), new Claim(ClaimTypes.Name, user.Name),
                 new Claim(ClaimTypes.Role, "verification_token")
             };
-            var verificationToken = _tokenService.GenerateToken(claims);
+            string verificationToken = _tokenService.GenerateToken(claims);
             user.Tokens.Add(new Token(verificationToken));
-            _context.SaveChanges();
+            _ = _context.SaveChanges();
             await _emailService.SendVerificationEmailForLostPwAsync(user, verificationToken);
         }
 
         public async Task<bool> RecoverUserAsync(string token, string newPassword)
         {
-            var tokenObj = _tokenService.ReadToken(token);
+            System.IdentityModel.Tokens.Jwt.JwtSecurityToken tokenObj = _tokenService.ReadToken(token);
             if (tokenObj == null) return false;
 
             Log.Information($"User tried to recover with token {token}");
             if (!await _tokenService.ValidateTokenIsUnusedAsync(token)) return false;
 
-            var user = GetAccountByClaims(tokenObj.Claims);
+            User user = GetAccountByClaims(tokenObj.Claims);
             if (user == null) return false;
 
             Log.Information($"{user.Email} tried to recover user");
-            var sha256Pw = _hashService.Hash(newPassword);
-            var salt = _hashService.GenerateSalt();
-            var hashedPassword = _hashService.Hash(sha256Pw + salt);
+            string sha256Pw = _hashService.Hash(newPassword);
+            string salt = _hashService.GenerateSalt();
+            string hashedPassword = _hashService.Hash(sha256Pw + salt);
             user.Salt = salt;
             user.Password = hashedPassword;
             user.IsVerified = true;
             user.Tokens.Clear();
-            await _context.SaveChangesAsync();
+            _ = await _context.SaveChangesAsync();
             return true;
         }
 
         private User GetAccountByEmail(string email)
         {
-            var user = _context.Users
+            User user = _context.Users
               .Where(u => u.Email == email)
               .Include(x => x.Programme)
               .FirstOrDefault();
@@ -277,7 +276,7 @@ namespace CoffeeCard.Library.Services
 
         private User GetAccountWithTokensByEmail(string email)
         {
-            var user = _context.Users.Include(x => x.Tokens).FirstOrDefault(x => x.Email == email);
+            User user = _context.Users.Include(x => x.Tokens).FirstOrDefault(x => x.Email == email);
 
             if (user == null) throw new ApiException("No user found with the given email", 401);
             return user;
@@ -290,18 +289,18 @@ namespace CoffeeCard.Library.Services
 
         private void ValidateVersion(string version)
         {
-            var regex = new Regex(@"(\d+.)(\d+.)(\d+)");
-            var match = regex.Match(version);
+            Regex regex = new Regex(@"(\d+.)(\d+.)(\d+)");
+            Match match = regex.Match(version);
 
             if (!match.Success || match.Groups.Count != 4)
                 throw new ApiException("Malformed version number", 400);
 
-            var major = int.Parse(match.Groups[1].Value.TrimEnd('.'));
-            var minor = int.Parse(match.Groups[2].Value.TrimEnd('.'));
+            int major = int.Parse(match.Groups[1].Value.TrimEnd('.'));
+            int minor = int.Parse(match.Groups[2].Value.TrimEnd('.'));
 
-            var requiredMatch = regex.Match(_environmentSettings.MinAppVersion);
-            var requiredMajor = int.Parse(requiredMatch.Groups[1].Value.TrimEnd('.'));
-            var requiredMinor = int.Parse(requiredMatch.Groups[2].Value.TrimEnd('.'));
+            Match requiredMatch = regex.Match(_environmentSettings.MinAppVersion);
+            int requiredMajor = int.Parse(requiredMatch.Groups[1].Value.TrimEnd('.'));
+            int requiredMinor = int.Parse(requiredMatch.Groups[2].Value.TrimEnd('.'));
 
             if (requiredMajor > major || requiredMinor > minor)
                 throw new ApiException("Your App is out of date - please update!", 409);
