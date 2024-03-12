@@ -6,6 +6,7 @@ using CoffeeCard.Library.Services;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.DataTransferObjects.Ticket;
 using CoffeeCard.Models.DataTransferObjects.v2.Ticket;
+using CoffeeCard.WebApi.Notifiers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,17 +25,19 @@ namespace CoffeeCard.WebApi.Controllers
         private readonly IMapperService _mapperService;
         private readonly ITicketService _ticketService;
         private readonly Library.Services.v2.ITicketService _ticketServiceV2;
+        private readonly IUsedTicketNotifier _usedTicketNotifier;
         private readonly ClaimsUtilities _claimsUtilities;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TicketsController"/> class.
         /// </summary>
-        public TicketsController(ITicketService ticketService, IMapperService mapperService, Library.Services.v2.ITicketService ticketServiceV2, ClaimsUtilities claimsUtilities)
+        public TicketsController(ITicketService ticketService, IMapperService mapperService, Library.Services.v2.ITicketService ticketServiceV2, ClaimsUtilities claimsUtilities, IUsedTicketNotifier usedTicketNotifier)
         {
             _ticketService = ticketService;
             _mapperService = mapperService;
             _ticketServiceV2 = ticketServiceV2;
             _claimsUtilities = claimsUtilities;
+            _usedTicketNotifier = usedTicketNotifier;
         }
 
         /// <summary>
@@ -87,7 +90,9 @@ namespace CoffeeCard.WebApi.Controllers
         {
             var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
 
-            return await _ticketServiceV2.UseTicketAsync(user, dto.ProductId);
+            var response = await _ticketServiceV2.UseTicketAsync(user, dto.ProductId);
+            await _usedTicketNotifier.NotifyClientsOfSwipe(user.Name, response);
+            return response;
         }
     }
 }
