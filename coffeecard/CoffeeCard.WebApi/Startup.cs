@@ -23,6 +23,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.FeatureManagement;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
@@ -95,6 +96,7 @@ namespace CoffeeCard.WebApi
             services.AddScoped<IStatisticService, StatisticService>();
             services.AddScoped<IDateTimeProvider, DateTimeProvider>();
             services.AddScoped<IAdminStatisticsService, AdminStatisticsService>();
+            services.AddFeatureManagement();
 
             // Azure Application Insights
             services.AddApplicationInsightsTelemetry();
