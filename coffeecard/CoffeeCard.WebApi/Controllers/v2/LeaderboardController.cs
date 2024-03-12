@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using CoffeeCard.Library.Services.v2;
+﻿using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.DataTransferObjects.v2.Leaderboard;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.WebApi.Controllers.v2
 {
@@ -56,7 +56,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<LeaderboardEntry>> Get([FromQuery] LeaderboardPreset preset = LeaderboardPreset.Semester)
         {
-            var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
+            Models.Entities.User user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
 
             return Ok(await _leaderboardService.GetLeaderboardEntry(user, preset));
         }

@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using CoffeeCard.Common.Errors;
+﻿using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Utils;
-using CoffeeCard.Models.DataTransferObjects;
 using CoffeeCard.Models.DataTransferObjects.v2.Ticket;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using ITicketService = CoffeeCard.Library.Services.v2.ITicketService;
 
 namespace CoffeeCard.WebApi.Controllers.v2
@@ -44,7 +43,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<IEnumerable<TicketResponse>>> Get([FromQuery] bool includeUsed)
         {
-            var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
+            Models.Entities.User user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
 
             return Ok(await _ticketService.GetTicketsAsync(user, includeUsed));
         }
@@ -65,7 +64,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [HttpPost("use")]
         public async Task<ActionResult<UsedTicketResponse>> UseTicket([FromBody] UseTicketRequest request)
         {
-            var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
+            Models.Entities.User user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
 
             return Ok(await _ticketService.UseTicketAsync(user, request.ProductId, request.MenuItemId));
         }

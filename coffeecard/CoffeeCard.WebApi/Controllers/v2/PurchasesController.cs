@@ -1,13 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using CoffeeCard.Library.Services.v2;
+﻿using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.DataTransferObjects;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.WebApi.Controllers.v2
 {
@@ -44,7 +43,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesDefaultResponseType]
         public async Task<ActionResult<IEnumerable<SimplePurchaseResponse>>> GetAllPurchases()
         {
-            var purchases = await _purchaseService.GetPurchases(await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims));
+            IEnumerable<SimplePurchaseResponse> purchases = await _purchaseService.GetPurchases(await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims));
 
             return Ok(purchases);
         }
@@ -63,7 +62,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<SinglePurchaseResponse>> GetPurchase([FromRoute] int id)
         {
-            var purchase = await _purchaseService.GetPurchase(id, await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims));
+            SinglePurchaseResponse purchase = await _purchaseService.GetPurchase(id, await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims));
 
             return Ok(purchase);
         }
@@ -82,8 +81,8 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<InitiatePurchaseResponse>> InitiatePurchase([FromBody] InitiatePurchaseRequest initiateRequest)
         {
-            var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
-            var purchaseResponse = await _purchaseService.InitiatePurchase(initiateRequest, user);
+            Models.Entities.User user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
+            InitiatePurchaseResponse purchaseResponse = await _purchaseService.InitiatePurchase(initiateRequest, user);
 
             // TODO Return CreatedAtAction
             return Ok(purchaseResponse);

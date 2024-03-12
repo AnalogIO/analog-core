@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
@@ -11,6 +8,9 @@ using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 using PurchaseService = CoffeeCard.Library.Services.v2.PurchaseService;
 
@@ -27,22 +27,22 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             int userId, int productId, Type exceptionType)
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
+            DbContextOptionsBuilder<CoffeeCardContext> builder = new DbContextOptionsBuilder<CoffeeCardContext>()
                 .UseInMemoryDatabase(
                     nameof(InitiatePurchaseCheckUserIsAllowedToPurchaseProductThrowsExceptionsInSeveralConditions) +
                     userId + productId);
 
-            var databaseSettings = new DatabaseSettings
+            DatabaseSettings databaseSettings = new DatabaseSettings
             {
                 SchemaName = "test"
             };
-            var environmentSettings = new EnvironmentSettings
+            EnvironmentSettings environmentSettings = new EnvironmentSettings
             {
                 EnvironmentType = EnvironmentType.Test
             };
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
-            var user = new User
+            await using CoffeeCardContext context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            User user = new User
             {
                 Id = 1,
                 Name = "User1",
@@ -55,78 +55,78 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 UserGroup = UserGroup.Customer,
                 UserState = UserState.Active
             };
-            context.Add(user);
+            _ = context.Add(user);
 
-            var product1 = new Product
+            Product product1 = new Product
             {
                 Id = 1,
                 Name = "Product1",
                 Description = "desc",
                 Price = 100
             };
-            context.Add(product1);
+            _ = context.Add(product1);
 
-            var pug1 = new ProductUserGroup
+            ProductUserGroup pug1 = new ProductUserGroup
             {
                 UserGroup = UserGroup.Customer,
                 Product = product1
             };
-            context.Add(pug1);
+            _ = context.Add(pug1);
 
-            var product2 = new Product
+            Product product2 = new Product
             {
                 Id = 2,
                 Name = "Product2",
                 Description = "desc",
                 Price = 100
             };
-            context.Add(product2);
+            _ = context.Add(product2);
 
-            var pug2 = new ProductUserGroup
+            ProductUserGroup pug2 = new ProductUserGroup
             {
                 UserGroup = UserGroup.Barista,
                 Product = product2
             };
-            context.Add(pug2);
+            _ = context.Add(pug2);
 
-            await context.SaveChangesAsync();
+            _ = await context.SaveChangesAsync();
 
-            var mobilePayService = new Mock<IMobilePayPaymentsService>();
-            var mailService = new Mock<Library.Services.IEmailService>();
+            Mock<IMobilePayPaymentsService> mobilePayService = new Mock<IMobilePayPaymentsService>();
+            Mock<Library.Services.IEmailService> mailService = new Mock<Library.Services.IEmailService>();
 
-            var productService = new ProductService(context);
-            var ticketService = new TicketService(context, new Mock<IStatisticService>().Object);
-            var purchaseService = new PurchaseService(context, mobilePayService.Object, ticketService,
+            ProductService productService = new ProductService(context);
+            TicketService ticketService = new TicketService(context, new Mock<IStatisticService>().Object);
+            PurchaseService purchaseService = new PurchaseService(context, mobilePayService.Object, ticketService,
                 mailService.Object, productService);
 
-            var request = new InitiatePurchaseRequest
+            InitiatePurchaseRequest request = new InitiatePurchaseRequest
             {
                 PaymentType = PaymentType.FreePurchase,
                 ProductId = productId
             };
 
             // Act, Assert
-            await Assert.ThrowsAsync(exceptionType, () => purchaseService.InitiatePurchase(request, user));
+            _ = await Assert.ThrowsAsync(exceptionType, () => purchaseService.InitiatePurchase(request, user));
         }
 
         [Fact(DisplayName = "InitiatePurchase for PaymentType MobilePay")]
         public async Task InitiatePurchasePaymentTypeMobilePay()
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
+            DbContextOptionsBuilder<CoffeeCardContext> builder = new DbContextOptionsBuilder<CoffeeCardContext>()
                 .UseInMemoryDatabase(nameof(InitiatePurchasePaymentTypeMobilePay));
 
-            var databaseSettings = new DatabaseSettings
+            DatabaseSettings databaseSettings = new DatabaseSettings
             {
                 SchemaName = "test"
             };
-            var environmentSettings = new EnvironmentSettings
+            EnvironmentSettings environmentSettings = new EnvironmentSettings
             {
                 EnvironmentType = EnvironmentType.Test
             };
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
-            var user = new User
+            await using CoffeeCardContext context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            User user = new User
             {
                 Id = 1,
                 Name = "User1",
@@ -135,49 +135,49 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 Salt = "salt",
                 UserGroup = UserGroup.Customer,
             };
-            context.Add(user);
+            _ = context.Add(user);
 
-            var product1 = new Product
+            Product product1 = new Product
             {
                 Id = 1,
                 Name = "Product1",
                 Description = "desc",
                 Price = 100
             };
-            context.Add(product1);
+            _ = context.Add(product1);
 
-            var pug1 = new ProductUserGroup
+            ProductUserGroup pug1 = new ProductUserGroup
             {
                 UserGroup = UserGroup.Customer,
                 Product = product1
             };
-            context.Add(pug1);
+            _ = context.Add(pug1);
 
-            await context.SaveChangesAsync();
+            _ = await context.SaveChangesAsync();
 
-            var mobilePayService = new Mock<IMobilePayPaymentsService>();
-            var mailService = new Mock<Library.Services.IEmailService>();
+            Mock<IMobilePayPaymentsService> mobilePayService = new Mock<IMobilePayPaymentsService>();
+            Mock<Library.Services.IEmailService> mailService = new Mock<Library.Services.IEmailService>();
 
-            var productService = new ProductService(context);
-            var ticketService = new TicketService(context, new Mock<IStatisticService>().Object);
-            var purchaseService = new PurchaseService(context, mobilePayService.Object, ticketService,
+            ProductService productService = new ProductService(context);
+            TicketService ticketService = new TicketService(context, new Mock<IStatisticService>().Object);
+            PurchaseService purchaseService = new PurchaseService(context, mobilePayService.Object, ticketService,
                 mailService.Object, productService);
 
-            var request = new InitiatePurchaseRequest
+            InitiatePurchaseRequest request = new InitiatePurchaseRequest
             {
                 PaymentType = PaymentType.MobilePay,
                 ProductId = product1.Id
             };
 
-            var mobilepayPaymentId = Guid.NewGuid().ToString();
-            var orderId = Guid.NewGuid().ToString();
-            var mpDeepLink = "mobilepay://merchant_payments?payment_id=186d2b31-ff25-4414-9fd1-bfe9807fa8b7";
-            mobilePayService.Setup(mps => mps.InitiatePayment(It.IsAny<MobilePayPaymentRequest>()))
+            string mobilepayPaymentId = Guid.NewGuid().ToString();
+            string orderId = Guid.NewGuid().ToString();
+            string mpDeepLink = "mobilepay://merchant_payments?payment_id=186d2b31-ff25-4414-9fd1-bfe9807fa8b7";
+            _ = mobilePayService.Setup(mps => mps.InitiatePayment(It.IsAny<MobilePayPaymentRequest>()))
                 .ReturnsAsync(new MobilePayPaymentDetails(orderId, mpDeepLink, mobilepayPaymentId));
 
             // Act
-            var result = await purchaseService.InitiatePurchase(request, user);
-            var purchaseInDatabase = await context.Purchases.FirstAsync();
+            InitiatePurchaseResponse result = await purchaseService.InitiatePurchase(request, user);
+            Purchase purchaseInDatabase = await context.Purchases.FirstAsync();
 
             // Assert
             // DB Contents
@@ -207,21 +207,21 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         public async Task InitiatePurchaseAddsTicketsToUserWhenFree(Product product)
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
+            DbContextOptionsBuilder<CoffeeCardContext> builder = new DbContextOptionsBuilder<CoffeeCardContext>()
                 .UseInMemoryDatabase(nameof(InitiatePurchaseAddsTicketsToUserWhenFree) +
                                      product.Name);
 
-            var databaseSettings = new DatabaseSettings
+            DatabaseSettings databaseSettings = new DatabaseSettings
             {
                 SchemaName = "test"
             };
-            var environmentSettings = new EnvironmentSettings()
+            EnvironmentSettings environmentSettings = new EnvironmentSettings()
             {
                 EnvironmentType = EnvironmentType.Test
             };
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
-            var user = new User
+            await using CoffeeCardContext context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            User user = new User
             {
                 Id = 1,
                 Name = "User1",
@@ -234,28 +234,28 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 UserGroup = UserGroup.Customer,
                 UserState = UserState.Active
             };
-            context.Add(user);
-            context.Add(product);
-            await context.SaveChangesAsync();
+            _ = context.Add(user);
+            _ = context.Add(product);
+            _ = await context.SaveChangesAsync();
 
-            var mobilePayService = new Mock<IMobilePayPaymentsService>();
-            var mailService = new Mock<Library.Services.IEmailService>();
-            var productService = new ProductService(context);
-            var ticketService = new TicketService(context, new Mock<IStatisticService>().Object);
-            var purchaseService = new PurchaseService(context, mobilePayService.Object, ticketService,
+            Mock<IMobilePayPaymentsService> mobilePayService = new Mock<IMobilePayPaymentsService>();
+            Mock<Library.Services.IEmailService> mailService = new Mock<Library.Services.IEmailService>();
+            ProductService productService = new ProductService(context);
+            TicketService ticketService = new TicketService(context, new Mock<IStatisticService>().Object);
+            PurchaseService purchaseService = new PurchaseService(context, mobilePayService.Object, ticketService,
                 mailService.Object, productService);
 
-            var request = new InitiatePurchaseRequest
+            InitiatePurchaseRequest request = new InitiatePurchaseRequest
             {
                 PaymentType = PaymentType.FreePurchase,
                 ProductId = product.Id
             };
 
             // Act
-            var purchaseResponse = await purchaseService.InitiatePurchase(request, user);
+            InitiatePurchaseResponse purchaseResponse = await purchaseService.InitiatePurchase(request, user);
 
             // Assert
-            var userUpdated = await context.Users.FindAsync(user.Id);
+            User userUpdated = await context.Users.FindAsync(user.Id);
 
             Assert.Equal(1, userUpdated.Purchases.Count);
             Assert.Equal(product.NumberOfTickets, userUpdated.Tickets.Count);
@@ -263,7 +263,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
         public static IEnumerable<object[]> ProductGenerator()
         {
-            var pug = new List<ProductUserGroup> { new ProductUserGroup { ProductId = 1 } };
+            List<ProductUserGroup> pug = [new ProductUserGroup { ProductId = 1 }];
             yield return new object[]
             {
                 new Product

@@ -1,12 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.DataTransferObjects.v2.Leaderboard;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.Library.Services.v2
 {
@@ -23,7 +22,7 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task<IEnumerable<LeaderboardEntry>> GetTopLeaderboardEntries(LeaderboardPreset preset, int top)
         {
-            var sortedStatistics = await GetSortedStatistics(preset)
+            List<Statistic> sortedStatistics = await GetSortedStatistics(preset)
                 .Take(top)
                 .Include(s => s.User)
                 .ToListAsync();
@@ -39,14 +38,14 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task<LeaderboardEntry> GetLeaderboardEntry(User user, LeaderboardPreset preset)
         {
-            var sortedStatistics = await GetSortedStatistics(preset).ToListAsync();
+            List<Statistic> sortedStatistics = await GetSortedStatistics(preset).ToListAsync();
 
-            var rank = sortedStatistics
+            int rank = sortedStatistics
                 .FindIndex(s => s.UserId == user.Id) + 1;
-            var userStatistic = sortedStatistics
+            Statistic userStatistic = sortedStatistics
                 .FirstOrDefault(s => s.UserId == user.Id);
 
-            var swipeCount = userStatistic?.SwipeCount ?? 0;
+            int swipeCount = userStatistic?.SwipeCount ?? 0;
 
             return new LeaderboardEntry
             {
@@ -60,13 +59,13 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task<(int Total, int Semester, int Month)> GetLeaderboardPlacement(User user)
         {
-            var leaderBoardPlacement = (Total: 0, Semester: 0, Month: 0);
+            (int Total, int Semester, int Month) leaderBoardPlacement = (Total: 0, Semester: 0, Month: 0);
 
-            var totalSwipe = await GetLeaderboardEntry(user, LeaderboardPreset.Total);
+            LeaderboardEntry totalSwipe = await GetLeaderboardEntry(user, LeaderboardPreset.Total);
 
-            var semesterSwipe = await GetLeaderboardEntry(user, LeaderboardPreset.Semester);
+            LeaderboardEntry semesterSwipe = await GetLeaderboardEntry(user, LeaderboardPreset.Semester);
 
-            var monthSwipe = await GetLeaderboardEntry(user, LeaderboardPreset.Month);
+            LeaderboardEntry monthSwipe = await GetLeaderboardEntry(user, LeaderboardPreset.Month);
 
             leaderBoardPlacement.Total = totalSwipe.Rank;
             leaderBoardPlacement.Semester = semesterSwipe.Rank;
@@ -77,7 +76,7 @@ namespace CoffeeCard.Library.Services.v2
 
         private IOrderedQueryable<Statistic> GetSortedStatistics(LeaderboardPreset preset)
         {
-            var statPreset = preset.ToStatisticPreset();
+            StatisticPreset statPreset = preset.ToStatisticPreset();
 
             return _context.Statistics
                 .Where(s => s.Preset == statPreset)

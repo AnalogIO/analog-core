@@ -8,21 +8,21 @@ namespace CoffeeCard.Library.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
+            _ = migrationBuilder.AddColumn<int>(
                 name: "PurchaseId",
                 schema: "dbo",
                 table: "Vouchers",
                 type: "int",
                 nullable: true);
 
-            migrationBuilder.AddColumn<string>(
+            _ = migrationBuilder.AddColumn<string>(
                 name: "Type",
                 schema: "dbo",
                 table: "Purchases",
                 type: "nvarchar(max)",
                 nullable: true);
 
-            migrationBuilder.CreateTable(
+            _ = migrationBuilder.CreateTable(
                 name: "PosPurchases",
                 schema: "dbo",
                 columns: table => new
@@ -32,8 +32,8 @@ namespace CoffeeCard.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PosPurchases", x => x.PurchaseId);
-                    table.ForeignKey(
+                    _ = table.PrimaryKey("PK_PosPurchases", x => x.PurchaseId);
+                    _ = table.ForeignKey(
                         name: "FK_PosPurchases_Purchases_PurchaseId",
                         column: x => x.PurchaseId,
                         principalSchema: "dbo",
@@ -45,7 +45,7 @@ namespace CoffeeCard.Library.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
+            _ = migrationBuilder.DropTable(
                 name: "PosPurchases",
                 schema: "dbo");
         }

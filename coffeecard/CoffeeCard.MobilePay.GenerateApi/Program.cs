@@ -1,8 +1,8 @@
-﻿using System;
+﻿using NSwag;
+using NSwag.CodeGeneration.CSharp;
+using System;
 using System.IO;
 using System.Threading.Tasks;
-using NSwag;
-using NSwag.CodeGeneration.CSharp;
 
 namespace CoffeeCard.MobilePay.GenerateApi
 {
@@ -25,8 +25,8 @@ namespace CoffeeCard.MobilePay.GenerateApi
         public static async Task Main(string[] args)
         {
             // TODO: Fix that they might be null and give a error if that is the case.
-            var openApiSpecDirectory = Directory.GetParent(Environment.CurrentDirectory)?.Parent?.Parent?.FullName + "\\OpenApiSpecs\\";
-            var outputDirectory = Directory.GetParent(Environment.CurrentDirectory)?.Parent?.Parent?.Parent?.FullName +
+            string openApiSpecDirectory = Directory.GetParent(Environment.CurrentDirectory)?.Parent?.Parent?.FullName + "\\OpenApiSpecs\\";
+            string outputDirectory = Directory.GetParent(Environment.CurrentDirectory)?.Parent?.Parent?.Parent?.FullName +
                                   "\\CoffeeCard.MobilePay\\Generated\\";
 
             await GeneratePaymentsApi(openApiSpecDirectory + PaymentsApi + ".tojson.json", outputDirectory + $"{PaymentsApi}\\" + PaymentsApi + ".cs");
@@ -37,9 +37,9 @@ namespace CoffeeCard.MobilePay.GenerateApi
         {
             CheckFileExists(inputFile);
 
-            var document = await OpenApiDocument.FromFileAsync(inputFile);
+            OpenApiDocument document = await OpenApiDocument.FromFileAsync(inputFile);
 
-            var settings = new CSharpClientGeneratorSettings
+            CSharpClientGeneratorSettings settings = new CSharpClientGeneratorSettings
             {
                 ClassName = WebhooksApi,
                 CSharpGeneratorSettings =
@@ -49,8 +49,8 @@ namespace CoffeeCard.MobilePay.GenerateApi
                 UseBaseUrl = false
             };
 
-            var generator = new CSharpClientGenerator(document, settings);
-            var code = generator.GenerateFile();
+            CSharpClientGenerator generator = new CSharpClientGenerator(document, settings);
+            string code = generator.GenerateFile();
 
             await File.WriteAllTextAsync(outputFile, code);
         }
@@ -59,9 +59,9 @@ namespace CoffeeCard.MobilePay.GenerateApi
         {
             CheckFileExists(inputFile);
 
-            var document = await OpenApiDocument.FromFileAsync(inputFile);
+            OpenApiDocument document = await OpenApiDocument.FromFileAsync(inputFile);
 
-            var settings = new CSharpClientGeneratorSettings
+            CSharpClientGeneratorSettings settings = new CSharpClientGeneratorSettings
             {
                 ClassName = PaymentsApi,
                 CSharpGeneratorSettings =
@@ -71,15 +71,15 @@ namespace CoffeeCard.MobilePay.GenerateApi
                 UseBaseUrl = false
             };
 
-            var generator = new CSharpClientGenerator(document, settings);
-            var code = generator.GenerateFile();
+            CSharpClientGenerator generator = new CSharpClientGenerator(document, settings);
+            string code = generator.GenerateFile();
 
             await File.WriteAllTextAsync(outputFile, code);
         }
 
         private static void CheckFileExists(string inputFile)
         {
-            var file = new FileInfo(inputFile);
+            FileInfo file = new FileInfo(inputFile);
             if (!file.Exists)
             {
                 throw new FileNotFoundException(PaymentsApi);

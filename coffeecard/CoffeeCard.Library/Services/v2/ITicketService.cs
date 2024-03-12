@@ -1,8 +1,8 @@
+using CoffeeCard.Models.DataTransferObjects.v2.Ticket;
+using CoffeeCard.Models.Entities;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CoffeeCard.Models.DataTransferObjects.v2.Ticket;
-using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Library.Services.v2
 {

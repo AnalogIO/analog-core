@@ -1,15 +1,14 @@
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
+using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.DataTransferObjects.v2.Product;
 using CoffeeCard.Models.DataTransferObjects.v2.Products;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using CoffeeCard.Library.Utils;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.Library.Services.v2
 {
@@ -50,7 +49,7 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task<ProductResponse> GetProductAsync(int productId)
         {
-            var product = await _context.Products
+            Product product = await _context.Products
                 .Include(p => p.ProductUserGroup)
                 .Include(p => p.EligibleMenuItems)
                 .FirstOrDefaultAsync(p => p.Id == productId);
@@ -66,7 +65,7 @@ namespace CoffeeCard.Library.Services.v2
 
         private async Task<bool> CheckProductUniquenessAsync(string name, int price)
         {
-            var product = await _context.Products
+            Product product = await _context.Products
                 .FirstOrDefaultAsync(p => (p.Name == name && p.Price == price));
 
             return product == null;
@@ -74,13 +73,13 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task<ProductResponse> AddProduct(AddProductRequest newProduct)
         {
-            var unique = await CheckProductUniquenessAsync(newProduct.Name, newProduct.Price);
+            bool unique = await CheckProductUniquenessAsync(newProduct.Name, newProduct.Price);
             if (!unique)
             {
                 throw new ConflictException($"Product already exists with name {newProduct.Name} and price of {newProduct.Price}");
             }
 
-            var product = new Product()
+            Product product = new Product()
             {
                 Price = newProduct.Price,
                 Description = newProduct.Description,
@@ -99,15 +98,15 @@ namespace CoffeeCard.Library.Services.v2
                     .ToList()
             };
 
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
+            _ = _context.Products.Add(product);
+            _ = await _context.SaveChangesAsync();
 
             return product.ToProductResponse();
         }
 
         public async Task<ProductResponse> UpdateProduct(int productId, UpdateProductRequest changedProduct)
         {
-            var product = await _context.Products
+            Product product = await _context.Products
                 .Include(p => p.ProductUserGroup)
                 .Include(p => p.EligibleMenuItems)
                 .FirstOrDefaultAsync(p => p.Id == productId);
@@ -129,7 +128,7 @@ namespace CoffeeCard.Library.Services.v2
                     .Contains(mi.Id))
                 .ToList();
 
-            await _context.SaveChangesAsync();
+            _ = await _context.SaveChangesAsync();
 
             return product.ToProductResponse();
         }

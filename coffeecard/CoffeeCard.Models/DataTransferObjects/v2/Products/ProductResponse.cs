@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using CoffeeCard.Models.DataTransferObjects.v2.Products;
+﻿using CoffeeCard.Models.DataTransferObjects.v2.MenuItems;
 using CoffeeCard.Models.Entities;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.Products
 {

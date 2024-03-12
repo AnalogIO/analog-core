@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using CoffeeCard.Library.Persistence;
+﻿using CoffeeCard.Library.Persistence;
 using CoffeeCard.Models.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CoffeeCard.Library.Services
 {

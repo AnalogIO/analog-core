@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using CoffeeCard.Common.Errors;
+﻿using CoffeeCard.Common.Errors;
 using CoffeeCard.MobilePay.Exception.v2;
 using CoffeeCard.MobilePay.Generated.Api.WebhooksApi;
 using Serilog;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using ApiException = CoffeeCard.MobilePay.Generated.Api.PaymentsApi.ApiException;
 
 namespace CoffeeCard.MobilePay.Service.v2
@@ -86,7 +86,7 @@ namespace CoffeeCard.MobilePay.Service.v2
 
         public async Task<SingleWebhookResponse> UpdateWebhook(Guid webhookId, string url, ICollection<Events> events)
         {
-            var events3 = events.Select(MapEventsToEvents3).ToHashSet();
+            HashSet<Events3> events3 = events.Select(MapEventsToEvents3).ToHashSet();
 
             Log.Information("Sync webhook subscription. Webhook: {webhookId}, Url: {url}, subscribed webhook events: {events}", webhookId, url, events3);
 
@@ -108,7 +108,7 @@ namespace CoffeeCard.MobilePay.Service.v2
 
         private static Events3 MapEventsToEvents3(Events events)
         {
-            var event3 = events switch
+            Events3 event3 = events switch
             {
                 Events.Payment_cancelled_by_user => Events3.Payment_cancelled_by_user,
                 Events.Payment_expired => Events3.Payment_expired,

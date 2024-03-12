@@ -1,12 +1,12 @@
-﻿using System;
-using System.Threading.Tasks;
-using CoffeeCard.Library.Persistence;
+﻿using CoffeeCard.Library.Persistence;
 using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.Models.DataTransferObjects.v2;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
+using System;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.WebApi.Controllers.v2
 {
@@ -55,10 +55,10 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesDefaultResponseType]
         public async Task<IActionResult> Healthcheck()
         {
-            var databaseConnected = await IsServiceHealthy(async () => await _context.Database.CanConnectAsync());
-            var mobilepayApiConnected = await IsServiceHealthy(async () => await _mobilePayWebhooksService.GetAllWebhooks());
+            bool databaseConnected = await IsServiceHealthy(async () => await _context.Database.CanConnectAsync());
+            bool mobilepayApiConnected = await IsServiceHealthy(async () => await _mobilePayWebhooksService.GetAllWebhooks());
 
-            var response = new ServiceHealthResponse()
+            ServiceHealthResponse response = new ServiceHealthResponse()
             {
                 Database = databaseConnected,
                 MobilePay = mobilepayApiConnected

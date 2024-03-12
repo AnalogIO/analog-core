@@ -32,7 +32,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(AppConfig), StatusCodes.Status200OK)]
         public ActionResult<AppConfig> Get()
         {
-            var environment = _environmentSettings.EnvironmentType;
+            EnvironmentType environment = _environmentSettings.EnvironmentType;
             return Ok(new AppConfig
             {
                 EnvironmentType = environment

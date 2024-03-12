@@ -8,18 +8,18 @@ namespace CoffeeCard.Library.Services
     {
         public string GenerateSalt()
         {
-            using var rng = RandomNumberGenerator.Create();
-            var byteArr = new byte[256];
+            using RandomNumberGenerator rng = RandomNumberGenerator.Create();
+            byte[] byteArr = new byte[256];
             rng.GetBytes(byteArr);
-            var salt = BitConverter.ToString(byteArr);
+            string salt = BitConverter.ToString(byteArr);
             return salt;
         }
 
         public string Hash(string password)
         {
-            var byteArr = Encoding.UTF8.GetBytes(password);
-            using var hasher = SHA256.Create();
-            var hashBytes = hasher.ComputeHash(byteArr);
+            byte[] byteArr = Encoding.UTF8.GetBytes(password);
+            using SHA256 hasher = SHA256.Create();
+            byte[] hashBytes = hasher.ComputeHash(byteArr);
             return Convert.ToBase64String(hashBytes);
         }
     }

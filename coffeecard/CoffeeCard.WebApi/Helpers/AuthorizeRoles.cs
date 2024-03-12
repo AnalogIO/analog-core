@@ -1,7 +1,7 @@
-using System;
 using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System;
 
 namespace CoffeeCard.WebApi.Helpers
 {
@@ -18,9 +18,9 @@ namespace CoffeeCard.WebApi.Helpers
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            var user = context.HttpContext.User;
-            var isAuthorized = false;
-            foreach (var userGroup in _roles)
+            System.Security.Claims.ClaimsPrincipal user = context.HttpContext.User;
+            bool isAuthorized = false;
+            foreach (UserGroup userGroup in _roles)
             {
                 isAuthorized = user.IsInRole(userGroup.ToString());
                 if (isAuthorized)

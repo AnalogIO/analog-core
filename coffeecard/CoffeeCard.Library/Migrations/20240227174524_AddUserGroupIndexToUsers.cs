@@ -10,7 +10,7 @@ namespace CoffeeCard.Library.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "IX_Users_UserGroup",
                 schema: "dbo",
                 table: "Users",
@@ -20,7 +20,7 @@ namespace CoffeeCard.Library.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
+            _ = migrationBuilder.DropIndex(
                 name: "IX_Users_UserGroup",
                 schema: "dbo",
                 table: "Users");

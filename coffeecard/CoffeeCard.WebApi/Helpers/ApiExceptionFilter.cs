@@ -1,9 +1,9 @@
-﻿using System;
-using CoffeeCard.Common.Errors;
+﻿using CoffeeCard.Common.Errors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Serilog;
+using System;
 
 namespace CoffeeCard.WebApi.Helpers
 {
@@ -39,7 +39,7 @@ namespace CoffeeCard.WebApi.Helpers
 #if !DEBUG
                     var msg = "An unhandled error occurred.";
 #else
-                        var msg = context.Exception.GetBaseException().Message;
+                        string msg = context.Exception.GetBaseException().Message;
 #endif
 
                         apiError = new ApiError(msg);

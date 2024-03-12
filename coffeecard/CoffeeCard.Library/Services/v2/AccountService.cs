@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Models.DataTransferObjects.v2.User;
@@ -10,6 +5,11 @@ using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.Library.Services.v2
 {
@@ -39,14 +39,14 @@ namespace CoffeeCard.Library.Services.v2
                 StatusCodes.Status409Conflict);
             }
 
-            var salt = _hashService.GenerateSalt();
-            var hashedPassword = _hashService.Hash(password + salt);
+            string salt = _hashService.GenerateSalt();
+            string hashedPassword = _hashService.Hash(password + salt);
 
-            var chosenProgramme = _context.Programmes.FirstOrDefault(x => x.Id == programme);
+            Programme chosenProgramme = _context.Programmes.FirstOrDefault(x => x.Id == programme);
             if (chosenProgramme == null)
                 throw new ApiException($"No programme found with the id: {programme}", StatusCodes.Status400BadRequest);
 
-            var user = new User
+            User user = new User
             {
                 Name = EscapeName(name),
                 Email = email,
@@ -56,8 +56,8 @@ namespace CoffeeCard.Library.Services.v2
                 UserGroup = UserGroup.Customer
             };
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            _ = _context.Users.Add(user);
+            _ = await _context.SaveChangesAsync();
 
             await SendAccountVerificationEmail(user);
 
@@ -66,12 +66,12 @@ namespace CoffeeCard.Library.Services.v2
 
         private async Task SendAccountVerificationEmail(User user)
         {
-            var claims = new[]
+            Claim[] claims = new[]
             {
                 new Claim(ClaimTypes.Email, user.Email), new Claim(ClaimTypes.Name, user.Name),
                 new Claim(ClaimTypes.Role, "verification_token")
             };
-            var verificationToken = _tokenService.GenerateToken(claims);
+            string verificationToken = _tokenService.GenerateToken(claims);
 
             await _emailService.SendRegistrationVerificationEmailAsync(user, verificationToken);
         }
@@ -101,7 +101,7 @@ namespace CoffeeCard.Library.Services.v2
 
             if (updateUserRequest.ProgrammeId != null)
             {
-                var programme = _context.Programmes.FirstOrDefault(x => x.Id == updateUserRequest.ProgrammeId);
+                Programme programme = _context.Programmes.FirstOrDefault(x => x.Id == updateUserRequest.ProgrammeId);
                 if (programme == null)
                     throw new ApiException($"No programme with id {updateUserRequest.ProgrammeId} exists!", 400);
                 Log.Information($"Changing programme of user from {user.Programme.Id} to {programme.Id}");
@@ -110,23 +110,23 @@ namespace CoffeeCard.Library.Services.v2
 
             if (updateUserRequest.Password != null)
             {
-                var salt = _hashService.GenerateSalt();
-                var hashedPassword = _hashService.Hash(updateUserRequest.Password + salt);
+                string salt = _hashService.GenerateSalt();
+                string hashedPassword = _hashService.Hash(updateUserRequest.Password + salt);
                 user.Salt = salt;
                 user.Password = hashedPassword;
                 Log.Information("User changed password");
             }
 
-            await _context.SaveChangesAsync();
+            _ = await _context.SaveChangesAsync();
             return user;
         }
 
         public async Task<User> GetAccountByClaimsAsync(IEnumerable<Claim> claims)
         {
-            var emailClaim = claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
+            Claim emailClaim = claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
             if (emailClaim == null) throw new ApiException("The token is invalid!", 401);
 
-            var user = await GetAccountByEmailAsync(emailClaim.Value);
+            User user = await GetAccountByEmailAsync(emailClaim.Value);
             if (user == null) throw new ApiException("The user could not be found", 400);
 
             return user;
@@ -134,12 +134,12 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task RequestAnonymizationAsync(User user)
         {
-            var claims = new[]
+            Claim[] claims = new[]
             {
                 new Claim(ClaimTypes.Email, user.Email), new Claim(ClaimTypes.Name, user.Name),
                 new Claim(ClaimTypes.Role, "verification_token")
             };
-            var verificationToken = _tokenService.GenerateToken(claims);
+            string verificationToken = _tokenService.GenerateToken(claims);
 
             await _emailService.SendVerificationEmailForDeleteAccount(user, verificationToken);
         }
@@ -148,8 +148,8 @@ namespace CoffeeCard.Library.Services.v2
         {
             Log.Information("Trying to verify deletion with token: {token}", token);
 
-            var email = _tokenService.ValidateVerificationTokenAndGetEmail(token);
-            var user = await GetAccountByEmailAsync(email);
+            string email = _tokenService.ValidateVerificationTokenAndGetEmail(token);
+            User user = await GetAccountByEmailAsync(email);
 
             await AnonymizeUserAsync(user);
         }
@@ -161,7 +161,7 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task ResendAccountVerificationEmail(ResendAccountVerificationEmailRequest request)
         {
-            var user = await _context.Users
+            User user = await _context.Users
                 .Where(u => u.Email.ToLower().Equals(request.Email.ToLower()))
                 .FirstOrDefaultAsync();
 
@@ -187,12 +187,12 @@ namespace CoffeeCard.Library.Services.v2
             user.DateUpdated = DateTime.Now;
             user.PrivacyActivated = true;
             user.UserState = UserState.Deleted;
-            await _context.SaveChangesAsync();
+            _ = await _context.SaveChangesAsync();
         }
 
         private async Task<User> GetAccountByEmailAsync(string email)
         {
-            var user = await _context.Users
+            User user = await _context.Users
                 .Where(u => u.Email == email)
                 .FirstOrDefaultAsync();
             if (user == null) throw new ApiException("No user found with the given email", 401);
@@ -206,7 +206,7 @@ namespace CoffeeCard.Library.Services.v2
 
             user.UserGroup = userGroup;
 
-            await _context.SaveChangesAsync();
+            _ = await _context.SaveChangesAsync();
         }
 
 
@@ -227,14 +227,14 @@ namespace CoffeeCard.Library.Services.v2
                     EF.Functions.Like(u.Email, $"%{search}%"));
             }
 
-            var totalUsers = await query.CountAsync();
+            int totalUsers = await query.CountAsync();
 
             if (totalUsers < skip)
             {
                 throw new ArgumentException($"The value of {nameof(pageNum)} is outside of the range of total users");
             }
 
-            var usersByPage = await query
+            List<SimpleUserResponse> usersByPage = await query
                 .OrderBy(u => u.Id)
                 .Skip(skip).Take(pageLength)
                 .Select(u => new SimpleUserResponse
@@ -257,7 +257,7 @@ namespace CoffeeCard.Library.Services.v2
 
         private async Task<User> GetUserByIdAsync(int id)
         {
-            var user = await _context.Users
+            User user = await _context.Users
                 .Where(u => u.Id == id)
                 .FirstOrDefaultAsync();
 
@@ -278,13 +278,13 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task UpdatePriviligedUserGroups(WebhookUpdateUserGroupRequest request)
         {
-            await _context.Users
+            _ = await _context.Users
                 .Where(u => u.UserGroup != UserGroup.Customer)
                 .ExecuteUpdateAsync(u => u.SetProperty(u => u.UserGroup, UserGroup.Customer));
 
-            foreach (var item in request.PrivilegedUsers)
+            foreach (AccountUserGroup item in request.PrivilegedUsers)
             {
-                await _context.Users
+                _ = await _context.Users
                     .Where(u => u.Id == item.AccountId)
                     .ExecuteUpdateAsync(u => u.SetProperty(u => u.UserGroup, item.UserGroup));
             }

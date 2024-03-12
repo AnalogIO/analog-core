@@ -7,16 +7,16 @@ namespace CoffeeCard.Tests.Common.Builders
     {
         public static UserBuilder Simple()
         {
-            var programme = ProgrammeBuilder.Simple().Build();
+            Programme programme = ProgrammeBuilder.Simple().Build();
 
             return new UserBuilder()
                 .WithProgramme(programme)
-                .WithPurchases(new List<Purchase>())
-                .WithStatistics(new List<Statistic>())
-                .WithLoginAttempts(new List<LoginAttempt>())
-                .WithTokens(new List<Token>())
+                .WithPurchases([])
+                .WithStatistics([])
+                .WithLoginAttempts([])
+                .WithTokens([])
                 .WithUserState(UserState.Active)
-                .WithTickets(new List<Ticket>());
+                .WithTickets([]);
         }
 
         public static UserBuilder DefaultCustomer()

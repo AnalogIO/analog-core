@@ -1,14 +1,12 @@
+using CoffeeCard.Common.Errors;
+using CoffeeCard.Library.Persistence;
+using CoffeeCard.Models.DataTransferObjects.v2.Voucher;
+using CoffeeCard.Models.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CoffeeCard.Common.Errors;
-using CoffeeCard.Library.Persistence;
-using CoffeeCard.Models.DataTransferObjects.v2.Voucher;
-using CoffeeCard.Models.Entities;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 
 namespace CoffeeCard.Library.Services.v2
 {
@@ -24,21 +22,21 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task<IEnumerable<IssueVoucherResponse>> CreateVouchers(IssueVoucherRequest request)
         {
-            var product = await _context.Products.FindAsync(request.ProductId);
+            Product product = await _context.Products.FindAsync(request.ProductId);
             if (product == null)
             {
                 throw new EntityNotFoundException("No product was found by Id " + request.ProductId);
             }
 
-            var newCodes = new HashSet<string>();
-            var existingVouchers = _context.Vouchers.Where(v => v.Code.StartsWith(request.VoucherPrefix)).Select(v => v.Code).ToHashSet();
+            HashSet<string> newCodes = [];
+            HashSet<string> existingVouchers = _context.Vouchers.Where(v => v.Code.StartsWith(request.VoucherPrefix)).Select(v => v.Code).ToHashSet();
             while (newCodes.Count < request.Amount)
             {
-                var code = GenerateUniqueVoucherCode(8, request.VoucherPrefix, existingVouchers); // 8 character length gives 36^8 combos
-                newCodes.Add(code);
+                string code = GenerateUniqueVoucherCode(8, request.VoucherPrefix, existingVouchers); // 8 character length gives 36^8 combos
+                _ = newCodes.Add(code);
             }
 
-            var vouchers = newCodes
+            List<Voucher> vouchers = newCodes
                 .Select(code => new Voucher
                 {
                     Code = code,
@@ -49,9 +47,9 @@ namespace CoffeeCard.Library.Services.v2
                 }).ToList();
 
             await _context.Vouchers.AddRangeAsync(vouchers);
-            await _context.SaveChangesAsync();
+            _ = await _context.SaveChangesAsync();
 
-            var responses = vouchers.
+            IEnumerable<IssueVoucherResponse> responses = vouchers.
                 Select(v =>
                     new IssueVoucherResponse
                     {
@@ -77,11 +75,11 @@ namespace CoffeeCard.Library.Services.v2
 
             while (String.IsNullOrEmpty(code.ToString()) || existingCodes.Contains(code.ToString()))
             {
-                code.Append($"{voucherPrefix}-"); // Ensure code starts with prefix
+                _ = code.Append($"{voucherPrefix}-"); // Ensure code starts with prefix
 
-                for (var i = 0; i < codeLength; i++)
+                for (int i = 0; i < codeLength; i++)
                 {
-                    code.Append(chars[_random.Next(chars.Length)]);
+                    _ = code.Append(chars[_random.Next(chars.Length)]);
                 }
             }
             return code.ToString();

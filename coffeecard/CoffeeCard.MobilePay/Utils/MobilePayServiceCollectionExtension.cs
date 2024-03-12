@@ -1,8 +1,8 @@
-﻿using System.Net.Http.Headers;
-using CoffeeCard.Common.Configuration;
+﻿using CoffeeCard.Common.Configuration;
 using CoffeeCard.MobilePay.Generated.Api.PaymentsApi;
 using CoffeeCard.MobilePay.Generated.Api.WebhooksApi;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net.Http.Headers;
 
 namespace CoffeeCard.MobilePay.Utils
 {
@@ -21,15 +21,15 @@ namespace CoffeeCard.MobilePay.Utils
         {
             mobilePaySettings.Validate();
 
-            var apiKeyAuthentication = new AuthenticationHeaderValue("Bearer", mobilePaySettings.ApiKey);
+            AuthenticationHeaderValue apiKeyAuthentication = new AuthenticationHeaderValue("Bearer", mobilePaySettings.ApiKey);
 
-            services.AddHttpClient<PaymentsApi>(client =>
+            _ = services.AddHttpClient<PaymentsApi>(client =>
             {
                 client.BaseAddress = mobilePaySettings.ApiUrl;
                 client.DefaultRequestHeaders.Authorization = apiKeyAuthentication;
             });
 
-            services.AddHttpClient<WebhooksApi>(client =>
+            _ = services.AddHttpClient<WebhooksApi>(client =>
             {
                 client.BaseAddress = mobilePaySettings.ApiUrl;
                 client.DefaultRequestHeaders.Authorization = apiKeyAuthentication;

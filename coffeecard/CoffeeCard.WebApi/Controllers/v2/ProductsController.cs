@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.DataTransferObjects.v2.Product;
@@ -10,6 +7,9 @@ using CoffeeCard.WebApi.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using IProductService = CoffeeCard.Library.Services.v2.IProductService;
 
 namespace CoffeeCard.WebApi.Controllers.v2
@@ -46,7 +46,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status201Created)]
         public async Task<IActionResult> AddProduct(AddProductRequest addProductRequest)
         {
-            var newproduct = await _productService.AddProduct(addProductRequest);
+            ProductResponse newproduct = await _productService.AddProduct(addProductRequest);
 
             return CreatedAtAction(nameof(GetProduct), new { id = newproduct.Id }, newproduct);
         }
@@ -77,8 +77,8 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<IEnumerable<ProductResponse>>> GetProducts()
         {
-            var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
-            var products = await _productService.GetProductsForUserAsync(user);
+            User user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
+            IEnumerable<ProductResponse> products = await _productService.GetProductsForUserAsync(user);
             return Ok(products.ToList());
         }
 
@@ -97,8 +97,8 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ProductResponse>> GetProduct([FromRoute(Name = "id")] int productId)
         {
-            await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
-            var product = await _productService.GetProductAsync(productId);
+            _ = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
+            ProductResponse product = await _productService.GetProductAsync(productId);
             return Ok(product);
         }
 

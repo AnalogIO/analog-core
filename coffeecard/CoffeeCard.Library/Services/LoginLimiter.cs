@@ -1,8 +1,8 @@
-using System;
-using System.Collections.Concurrent;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Models.Entities;
 using Serilog;
+using System;
+using System.Collections.Concurrent;
 
 namespace CoffeeCard.Library.Services
 {
@@ -38,7 +38,7 @@ namespace CoffeeCard.Library.Services
         /// <param name="email"></param>
         private void ResetUsersTimeoutPeriod(string email)
         {
-            if (!_loginAttempts.TryGetValue(email, out var oldEntry)) return;
+            if (!_loginAttempts.TryGetValue(email, out (DateTime, int) oldEntry)) return;
             if (_loginAttempts.TryUpdate(email, (DateTime.UtcNow, oldEntry.Item2), oldEntry))
                 Log.Warning("The lockout period for {username} was reset, possible brute force attack", email);
         }
@@ -50,11 +50,11 @@ namespace CoffeeCard.Library.Services
         /// <returns></returns>
         public bool LoginAllowed(User user)
         {
-            var (firstFailedLogin, loginAttemptsMade) = UpdateAndGetLoginAttemptCount(user.Email);
-            var timeOutPeriod = new TimeSpan(0, 0, _loginLimiterSettings.TimeOutPeriodInSeconds);
-            var timeSinceFirstFailedLogin = DateTime.UtcNow.Subtract(firstFailedLogin);
+            (DateTime firstFailedLogin, int loginAttemptsMade) = UpdateAndGetLoginAttemptCount(user.Email);
+            TimeSpan timeOutPeriod = new TimeSpan(0, 0, _loginLimiterSettings.TimeOutPeriodInSeconds);
+            TimeSpan timeSinceFirstFailedLogin = DateTime.UtcNow.Subtract(firstFailedLogin);
 
-            var maximumLoginAttemptsWithinTimeOut = _loginLimiterSettings.MaximumLoginAttemptsWithinTimeOut;
+            int maximumLoginAttemptsWithinTimeOut = _loginLimiterSettings.MaximumLoginAttemptsWithinTimeOut;
 
             if (loginAttemptsMade % maximumLoginAttemptsWithinTimeOut == 0 && timeSinceFirstFailedLogin > timeOutPeriod) //If the timeout period is exceeded it will reset it whenever loginAttemptsMade % x = 0, where x is the maximum login attempts made. I.e. x number of logins will be allowed before the timer is reset again
                 ResetUsersTimeoutPeriod(user.Email);
@@ -69,7 +69,7 @@ namespace CoffeeCard.Library.Services
         /// <param name="user"></param>
         public void ResetLoginAttemptsForUser(User user)
         {
-            _loginAttempts.TryRemove(user.Email, out var value);
+            _ = _loginAttempts.TryRemove(user.Email, out _);
         }
     }
 }

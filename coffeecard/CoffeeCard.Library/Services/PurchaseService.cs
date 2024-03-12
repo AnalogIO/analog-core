@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using CoffeeCard.Common;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
@@ -11,6 +6,11 @@ using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.Library.Services
 {
@@ -25,18 +25,18 @@ namespace CoffeeCard.Library.Services
 
         public async Task<Purchase> RedeemVoucher(string voucherCode, IEnumerable<Claim> claims)
         {
-            var userId = claims.FirstOrDefault(x => x.Type == Constants.UserId);
+            Claim userId = claims.FirstOrDefault(x => x.Type == Constants.UserId);
             if (userId == null) throw new ApiException("The token is invalid!", StatusCodes.Status401Unauthorized);
-            var id = int.Parse(userId.Value);
+            int id = int.Parse(userId.Value);
 
-            var user = _context.Users.FirstOrDefault(x => x.Id == id);
+            User user = _context.Users.FirstOrDefault(x => x.Id == id);
             if (user == null) throw new ApiException("The user could not be found");
 
-            var voucher = _context.Vouchers.Include(x => x.Product).FirstOrDefault(x => x.Code.Equals(voucherCode));
+            Voucher voucher = _context.Vouchers.Include(x => x.Product).FirstOrDefault(x => x.Code.Equals(voucherCode));
             if (voucher == null) throw new ApiException($"Voucher '{voucherCode}' does not exist!", StatusCodes.Status404NotFound);
             if (voucher.UserId != null) throw new ApiException("Voucher has already been redeemed!", StatusCodes.Status409Conflict);
 
-            var purchase = new Purchase
+            Purchase purchase = new Purchase
             {
                 DateCreated = DateTime.UtcNow,
                 NumberOfTickets = voucher.Product.NumberOfTickets,
@@ -51,15 +51,15 @@ namespace CoffeeCard.Library.Services
 
             user.Purchases.Add(purchase);
 
-            DeliverProductToUser(purchase, user, $"VOUCHER: {voucher.Id}");
+            _ = DeliverProductToUser(purchase, user, $"VOUCHER: {voucher.Id}");
 
             voucher.DateUsed = DateTime.UtcNow;
             voucher.User = user;
             voucher.Purchase = purchase;
 
-            _context.Vouchers.Attach(voucher);
+            _ = _context.Vouchers.Attach(voucher);
             _context.Entry(voucher).State = EntityState.Modified;
-            _context.SaveChanges();
+            _ = _context.SaveChanges();
 
             return purchase;
         }
@@ -68,9 +68,9 @@ namespace CoffeeCard.Library.Services
         {
             while (true)
             {
-                var newOrderId = Guid.NewGuid();
+                Guid newOrderId = Guid.NewGuid();
 
-                var orderIdAlreadyExists =
+                bool orderIdAlreadyExists =
                     await _context.Purchases.Where(p => p.OrderId.Equals(newOrderId.ToString())).AnyAsync();
                 if (orderIdAlreadyExists) continue;
 
@@ -82,20 +82,20 @@ namespace CoffeeCard.Library.Services
         {
             Log.Information(
                 $"Delivering product ({purchase.ProductId}) to userId: {user.Id} with orderId: {purchase.OrderId}");
-            var product = _context.Products.FirstOrDefault(x => x.Id == purchase.ProductId);
+            Product product = _context.Products.FirstOrDefault(x => x.Id == purchase.ProductId);
             if (product == null)
                 throw new ApiException($"The product with id {purchase.ProductId} could not be found!");
-            for (var i = 0; i < purchase.NumberOfTickets; i++)
+            for (int i = 0; i < purchase.NumberOfTickets; i++)
             {
-                var ticket = new Ticket { ProductId = product.Id, Purchase = purchase };
+                Ticket ticket = new Ticket { ProductId = product.Id, Purchase = purchase };
                 user.Tickets.Add(ticket);
             }
 
             purchase.ExternalTransactionId = transactionId;
 
-            _context.Users.Attach(user);
+            _ = _context.Users.Attach(user);
             _context.Entry(user).State = EntityState.Modified;
-            _context.SaveChanges();
+            _ = _context.SaveChanges();
 
             Log.Information(
                 $"Delivery of product ({purchase.ProductId}) to userId: {user.Id} with orderId: {purchase.OrderId} succeeded!");

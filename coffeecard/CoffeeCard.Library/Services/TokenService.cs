@@ -1,10 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Utils;
@@ -12,6 +5,13 @@ using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.Library.Services
 {
@@ -28,10 +28,10 @@ namespace CoffeeCard.Library.Services
 
         public string GenerateToken(IEnumerable<Claim> claims)
         {
-            var key = new SymmetricSecurityKey(
+            SymmetricSecurityKey key = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(_identitySettings.TokenKey)); // get token from appsettings.json
 
-            var jwt = new JwtSecurityToken("AnalogIO",
+            JwtSecurityToken jwt = new JwtSecurityToken("AnalogIO",
                 "Everyone",
                 claims,
                 DateTime.UtcNow,
@@ -56,13 +56,13 @@ namespace CoffeeCard.Library.Services
         /// <returns>bool</returns>
         public bool ValidateToken(string tokenString)
         {
-            var securityKey = new SymmetricSecurityKey(
+            SymmetricSecurityKey securityKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(_identitySettings.TokenKey));
 
             try
             {
-                var securityTokenHandler = new JwtSecurityTokenHandler();
-                var validationParameters = new TokenValidationParameters
+                JwtSecurityTokenHandler securityTokenHandler = new JwtSecurityTokenHandler();
+                TokenValidationParameters validationParameters = new TokenValidationParameters
                 {
                     ValidateAudience = false,
                     ValidateIssuer = false,
@@ -72,7 +72,7 @@ namespace CoffeeCard.Library.Services
                     ClockSkew = TimeSpan.Zero //the default for this setting is 5 minutes
                 };
 
-                securityTokenHandler.ValidateToken(tokenString, validationParameters, out _); // Throws exception if token is invalid
+                _ = securityTokenHandler.ValidateToken(tokenString, validationParameters, out _); // Throws exception if token is invalid
             }
             catch (Exception e) when (e is ArgumentException ||
                                       e is SecurityTokenException)
@@ -94,10 +94,10 @@ namespace CoffeeCard.Library.Services
         {
             try
             {
-                var tokenIsUnused = false;
-                var token = ReadToken(tokenString);
+                bool tokenIsUnused = false;
+                JwtSecurityToken token = ReadToken(tokenString);
 
-                var user = await _claimsUtilities.ValidateAndReturnUserFromEmailClaimAsync(token.Claims);
+                User user = await _claimsUtilities.ValidateAndReturnUserFromEmailClaimAsync(token.Claims);
 
                 if (user.Tokens.Contains(new Token(tokenString))) tokenIsUnused = true; // Tokens are removed from the user on account recovery
 
@@ -118,14 +118,14 @@ namespace CoffeeCard.Library.Services
                 throw new ApiException("The token is invalid!", StatusCodes.Status401Unauthorized);
             }
 
-            var jwtToken = ReadToken(token);
+            JwtSecurityToken jwtToken = ReadToken(token);
             if (jwtToken.Claims.Any(x => x.Type == ClaimTypes.Role && x.Value != "verification_token"))
             {
                 Log.Information("Token validation failed. Not a verification token");
                 throw new ApiException("The token is invalid!", StatusCodes.Status401Unauthorized);
             }
 
-            var emailClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
+            Claim emailClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
             if (emailClaim == null)
             {
                 Log.Information("Token validation failed. No email found in token");

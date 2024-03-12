@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services.v2;
@@ -10,6 +6,10 @@ using CoffeeCard.Models.DataTransferObjects.v2.Leaderboard;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace CoffeeCard.Tests.Unit.Services.v2
@@ -24,21 +24,21 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             LeaderboardPreset inputPreset)
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
+            DbContextOptionsBuilder<CoffeeCardContext> builder = new DbContextOptionsBuilder<CoffeeCardContext>()
                 .UseInMemoryDatabase(nameof(GetLeaderboardEntryGivenUserAndPresetReturnsLeaderboardEntry) +
                                      inputPreset);
 
-            var databaseSettings = new DatabaseSettings
+            DatabaseSettings databaseSettings = new DatabaseSettings
             {
                 SchemaName = "test"
             };
-            var environmentSettings = new EnvironmentSettings()
+            EnvironmentSettings environmentSettings = new EnvironmentSettings()
             {
                 EnvironmentType = EnvironmentType.Test
             };
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
-            var user1 = new User
+            await using CoffeeCardContext context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            User user1 = new User
             {
                 Id = 1,
                 Name = "User1",
@@ -51,9 +51,9 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 UserGroup = UserGroup.Customer,
                 UserState = UserState.Active
             };
-            context.Add(user1);
+            _ = context.Add(user1);
 
-            var user2 = new User
+            User user2 = new User
             {
                 Id = 2,
                 Name = "User2",
@@ -66,9 +66,9 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 UserGroup = UserGroup.Customer,
                 UserState = UserState.Active
             };
-            context.Add(user2);
+            _ = context.Add(user2);
 
-            var user1Statistics = new Statistic
+            Statistic user1Statistics = new Statistic
             {
                 Id = 1,
                 Preset = inputPreset.ToStatisticPreset(),
@@ -77,9 +77,9 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 ExpiryDate = new DateTime(year: 2020, month: 11, day: 11),
                 User = user1
             };
-            context.Add(user1Statistics);
+            _ = context.Add(user1Statistics);
 
-            var user2Statistics = new Statistic
+            Statistic user2Statistics = new Statistic
             {
                 Id = 2,
                 Preset = inputPreset.ToStatisticPreset(),
@@ -88,17 +88,17 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 ExpiryDate = new DateTime(year: 2020, month: 11, day: 11),
                 User = user2
             };
-            context.Add(user2Statistics);
+            _ = context.Add(user2Statistics);
 
-            await context.SaveChangesAsync();
+            _ = await context.SaveChangesAsync();
 
-            var dateTimeProvider = new Mock<IDateTimeProvider>();
-            dateTimeProvider.Setup(dtp => dtp.UtcNow()).Returns(new DateTime(2020, 11, 11));
+            Mock<IDateTimeProvider> dateTimeProvider = new Mock<IDateTimeProvider>();
+            _ = dateTimeProvider.Setup(dtp => dtp.UtcNow()).Returns(new DateTime(2020, 11, 11));
 
-            var leaderboardService = new LeaderboardService(context, dateTimeProvider.Object);
+            LeaderboardService leaderboardService = new LeaderboardService(context, dateTimeProvider.Object);
 
             // Act
-            var result = await leaderboardService.GetLeaderboardEntry(user1, inputPreset);
+            LeaderboardEntry result = await leaderboardService.GetLeaderboardEntry(user1, inputPreset);
 
             // Assert
             Assert.Equal(new LeaderboardEntry
@@ -119,22 +119,22 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             LeaderboardPreset inputPreset)
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
+            DbContextOptionsBuilder<CoffeeCardContext> builder = new DbContextOptionsBuilder<CoffeeCardContext>()
                 .UseInMemoryDatabase(
                     nameof(GetLeaderboardEntryGivenUserAndPresetWhenUserHasNoScoreReturnsLeaderboardEntryWithRank0) +
                     inputPreset);
 
-            var databaseSettings = new DatabaseSettings
+            DatabaseSettings databaseSettings = new DatabaseSettings
             {
                 SchemaName = "test"
             };
-            var environmentSettings = new EnvironmentSettings()
+            EnvironmentSettings environmentSettings = new EnvironmentSettings()
             {
                 EnvironmentType = EnvironmentType.Test
             };
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
-            var user1 = new User
+            await using CoffeeCardContext context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            User user1 = new User
             {
                 Id = 1,
                 Name = "User1",
@@ -147,14 +147,14 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 UserGroup = UserGroup.Customer,
                 UserState = UserState.Active
             };
-            context.Add(user1);
-            await context.SaveChangesAsync();
+            _ = context.Add(user1);
+            _ = await context.SaveChangesAsync();
 
-            var dateTimeProvider = new Mock<IDateTimeProvider>();
-            var leaderboardService = new LeaderboardService(context, dateTimeProvider.Object);
+            Mock<IDateTimeProvider> dateTimeProvider = new Mock<IDateTimeProvider>();
+            LeaderboardService leaderboardService = new LeaderboardService(context, dateTimeProvider.Object);
 
             // Act
-            var result = await leaderboardService.GetLeaderboardEntry(user1, inputPreset);
+            LeaderboardEntry result = await leaderboardService.GetLeaderboardEntry(user1, inputPreset);
 
             // Assert
             Assert.Equal(new LeaderboardEntry
@@ -174,21 +174,21 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             LeaderboardPreset inputPreset)
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
+            DbContextOptionsBuilder<CoffeeCardContext> builder = new DbContextOptionsBuilder<CoffeeCardContext>()
                 .UseInMemoryDatabase(nameof(GetTopLeaderboardEntriesPresetReturnsListLeaderboardEntry) +
                                      inputPreset);
 
-            var databaseSettings = new DatabaseSettings
+            DatabaseSettings databaseSettings = new DatabaseSettings
             {
                 SchemaName = "test"
             };
-            var environmentSettings = new EnvironmentSettings()
+            EnvironmentSettings environmentSettings = new EnvironmentSettings()
             {
                 EnvironmentType = EnvironmentType.Test
             };
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
-            var user1 = new User
+            await using CoffeeCardContext context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            User user1 = new User
             {
                 Id = 1,
                 Name = "User1",
@@ -201,9 +201,9 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 UserGroup = UserGroup.Customer,
                 UserState = UserState.Active
             };
-            context.Add(user1);
+            _ = context.Add(user1);
 
-            var user2 = new User
+            User user2 = new User
             {
                 Id = 2,
                 Name = "User2",
@@ -216,9 +216,9 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 UserGroup = UserGroup.Customer,
                 UserState = UserState.Active
             };
-            context.Add(user2);
+            _ = context.Add(user2);
 
-            var user1Statistics = new Statistic
+            Statistic user1Statistics = new Statistic
             {
                 Id = 1,
                 Preset = inputPreset.ToStatisticPreset(),
@@ -227,9 +227,9 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 ExpiryDate = new DateTime(year: 2020, month: 11, day: 11),
                 User = user1
             };
-            context.Add(user1Statistics);
+            _ = context.Add(user1Statistics);
 
-            var user2Statistics = new Statistic
+            Statistic user2Statistics = new Statistic
             {
                 Id = 2,
                 Preset = inputPreset.ToStatisticPreset(),
@@ -238,21 +238,21 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 ExpiryDate = new DateTime(year: 2020, month: 11, day: 11),
                 User = user2
             };
-            context.Add(user2Statistics);
+            _ = context.Add(user2Statistics);
 
-            await context.SaveChangesAsync();
+            _ = await context.SaveChangesAsync();
 
-            var dateTimeProvider = new Mock<IDateTimeProvider>();
-            dateTimeProvider.Setup(dtp => dtp.UtcNow()).Returns(new DateTime(2020, 11, 11));
+            Mock<IDateTimeProvider> dateTimeProvider = new Mock<IDateTimeProvider>();
+            _ = dateTimeProvider.Setup(dtp => dtp.UtcNow()).Returns(new DateTime(2020, 11, 11));
 
-            var leaderboardService = new LeaderboardService(context, dateTimeProvider.Object);
+            LeaderboardService leaderboardService = new LeaderboardService(context, dateTimeProvider.Object);
 
             // Act
-            var result = await leaderboardService.GetTopLeaderboardEntries(inputPreset, 10);
+            IEnumerable<LeaderboardEntry> result = await leaderboardService.GetTopLeaderboardEntries(inputPreset, 10);
 
             // Assert
-            Assert.Equal(new List<LeaderboardEntry>
-            {
+            Assert.Equal(
+            [
                 new LeaderboardEntry
                 {
                     Id = user2.Id,
@@ -267,7 +267,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                     Rank = 2,
                     Score = 10
                 }
-            }, result.ToList());
+            ], result.ToList());
         }
 
         [Theory(DisplayName = "GetTopLeaderboardEntries given preset when statistics are expired returns empty list")]
@@ -277,21 +277,21 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             LeaderboardPreset inputPreset)
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
+            DbContextOptionsBuilder<CoffeeCardContext> builder = new DbContextOptionsBuilder<CoffeeCardContext>()
                 .UseInMemoryDatabase(nameof(GetTopLeaderboardEntriesGivensPresetWhenStatisticsAreExpiredReturnsEmptyList) +
                                      inputPreset);
 
-            var databaseSettings = new DatabaseSettings
+            DatabaseSettings databaseSettings = new DatabaseSettings
             {
                 SchemaName = "test"
             };
-            var environmentSettings = new EnvironmentSettings()
+            EnvironmentSettings environmentSettings = new EnvironmentSettings()
             {
                 EnvironmentType = EnvironmentType.Test
             };
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
-            var user1 = new User
+            await using CoffeeCardContext context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            User user1 = new User
             {
                 Id = 1,
                 Name = "User1",
@@ -304,9 +304,9 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 UserGroup = UserGroup.Customer,
                 UserState = UserState.Active
             };
-            context.Add(user1);
+            _ = context.Add(user1);
 
-            var user2 = new User
+            User user2 = new User
             {
                 Id = 2,
                 Name = "User2",
@@ -319,9 +319,9 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 UserGroup = UserGroup.Customer,
                 UserState = UserState.Active
             };
-            context.Add(user2);
+            _ = context.Add(user2);
 
-            var user1Statistics = new Statistic
+            Statistic user1Statistics = new Statistic
             {
                 Id = 1,
                 Preset = inputPreset.ToStatisticPreset(),
@@ -330,9 +330,9 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 ExpiryDate = new DateTime(year: 2020, month: 11, day: 11),
                 User = user1
             };
-            context.Add(user1Statistics);
+            _ = context.Add(user1Statistics);
 
-            var user2Statistics = new Statistic
+            Statistic user2Statistics = new Statistic
             {
                 Id = 2,
                 Preset = inputPreset.ToStatisticPreset(),
@@ -341,17 +341,17 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 ExpiryDate = new DateTime(year: 2020, month: 11, day: 11),
                 User = user2
             };
-            context.Add(user2Statistics);
+            _ = context.Add(user2Statistics);
 
-            await context.SaveChangesAsync();
+            _ = await context.SaveChangesAsync();
 
-            var dateTimeProvider = new Mock<IDateTimeProvider>();
-            dateTimeProvider.Setup(dtp => dtp.UtcNow()).Returns(new DateTime(2021, 12, 31));
+            Mock<IDateTimeProvider> dateTimeProvider = new Mock<IDateTimeProvider>();
+            _ = dateTimeProvider.Setup(dtp => dtp.UtcNow()).Returns(new DateTime(2021, 12, 31));
 
-            var leaderboardService = new LeaderboardService(context, dateTimeProvider.Object);
+            LeaderboardService leaderboardService = new LeaderboardService(context, dateTimeProvider.Object);
 
             // Act
-            var result = await leaderboardService.GetTopLeaderboardEntries(inputPreset, 10);
+            IEnumerable<LeaderboardEntry> result = await leaderboardService.GetTopLeaderboardEntries(inputPreset, 10);
 
             // Assert
             Assert.Empty(result.ToList());
@@ -365,25 +365,25 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             LeaderboardPreset inputPreset)
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
+            DbContextOptionsBuilder<CoffeeCardContext> builder = new DbContextOptionsBuilder<CoffeeCardContext>()
                 .UseInMemoryDatabase(nameof(GetTopLeaderboardEntriesGivenPresetWhenNoStatisticsExistsReturnsEmptyList) +
                                      inputPreset);
 
-            var databaseSettings = new DatabaseSettings
+            DatabaseSettings databaseSettings = new DatabaseSettings
             {
                 SchemaName = "test"
             };
-            var environmentSettings = new EnvironmentSettings()
+            EnvironmentSettings environmentSettings = new EnvironmentSettings()
             {
                 EnvironmentType = EnvironmentType.Test
             };
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
-            var dateTimeProvider = new Mock<IDateTimeProvider>();
-            var leaderboardService = new LeaderboardService(context, dateTimeProvider.Object);
+            await using CoffeeCardContext context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            Mock<IDateTimeProvider> dateTimeProvider = new Mock<IDateTimeProvider>();
+            LeaderboardService leaderboardService = new LeaderboardService(context, dateTimeProvider.Object);
 
             // Act
-            var result = await leaderboardService.GetTopLeaderboardEntries(inputPreset, 10);
+            IEnumerable<LeaderboardEntry> result = await leaderboardService.GetTopLeaderboardEntries(inputPreset, 10);
 
             // Assert
             Assert.Empty(result.ToList());
@@ -396,21 +396,21 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             LeaderboardPreset inputPreset)
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
+            DbContextOptionsBuilder<CoffeeCardContext> builder = new DbContextOptionsBuilder<CoffeeCardContext>()
                 .UseInMemoryDatabase(nameof(GetTopLeaderboardEntriesGivenPresetDoesNotIncludeExpiredEntries) +
                                      inputPreset);
 
-            var databaseSettings = new DatabaseSettings
+            DatabaseSettings databaseSettings = new DatabaseSettings
             {
                 SchemaName = "test"
             };
-            var environmentSettings = new EnvironmentSettings()
+            EnvironmentSettings environmentSettings = new EnvironmentSettings()
             {
                 EnvironmentType = EnvironmentType.Test
             };
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
-            var user1 = new User
+            await using CoffeeCardContext context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            User user1 = new User
             {
                 Id = 1,
                 Name = "User1",
@@ -423,9 +423,9 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 UserGroup = UserGroup.Customer,
                 UserState = UserState.Active
             };
-            context.Add(user1);
+            _ = context.Add(user1);
 
-            var user2 = new User
+            User user2 = new User
             {
                 Id = 2,
                 Name = "User2",
@@ -438,9 +438,9 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 UserGroup = UserGroup.Customer,
                 UserState = UserState.Active
             };
-            context.Add(user2);
+            _ = context.Add(user2);
 
-            var user1Statistics = new Statistic
+            Statistic user1Statistics = new Statistic
             {
                 Id = 1,
                 Preset = inputPreset.ToStatisticPreset(),
@@ -449,9 +449,9 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 ExpiryDate = new DateTime(year: 2000, month: 11, day: 11),
                 User = user1
             };
-            context.Add(user1Statistics);
+            _ = context.Add(user1Statistics);
 
-            var user2Statistics = new Statistic
+            Statistic user2Statistics = new Statistic
             {
                 Id = 2,
                 Preset = inputPreset.ToStatisticPreset(),
@@ -460,15 +460,15 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 ExpiryDate = new DateTime(year: 2000, month: 11, day: 11),
                 User = user2
             };
-            context.Add(user2Statistics);
-            await context.SaveChangesAsync();
+            _ = context.Add(user2Statistics);
+            _ = await context.SaveChangesAsync();
 
-            var dateTimeProvider = new Mock<IDateTimeProvider>();
-            dateTimeProvider.Setup(dtp => dtp.UtcNow()).Returns(new DateTime(2020, 11, 12));
-            var leaderboardService = new LeaderboardService(context, dateTimeProvider.Object);
+            Mock<IDateTimeProvider> dateTimeProvider = new Mock<IDateTimeProvider>();
+            _ = dateTimeProvider.Setup(dtp => dtp.UtcNow()).Returns(new DateTime(2020, 11, 12));
+            LeaderboardService leaderboardService = new LeaderboardService(context, dateTimeProvider.Object);
 
             // Act
-            var result = await leaderboardService.GetTopLeaderboardEntries(inputPreset, 10);
+            IEnumerable<LeaderboardEntry> result = await leaderboardService.GetTopLeaderboardEntries(inputPreset, 10);
 
             // Assert
             Assert.Empty(result.ToList());

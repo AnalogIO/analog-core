@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.DataTransferObjects.Product;
 using CoffeeCard.Models.DataTransferObjects.Programme;
@@ -7,6 +5,8 @@ using CoffeeCard.Models.DataTransferObjects.Purchase;
 using CoffeeCard.Models.DataTransferObjects.Ticket;
 using CoffeeCard.Models.DataTransferObjects.User;
 using CoffeeCard.Models.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CoffeeCard.Library.Services
 {

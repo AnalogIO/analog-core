@@ -1,10 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Net.Http;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Models.Entities;
@@ -12,6 +5,13 @@ using CoffeeCard.WebApi;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace CoffeeCard.Tests.Integration.WebApplication
@@ -28,7 +28,7 @@ namespace CoffeeCard.Tests.Integration.WebApplication
         {
             // Set the random seed used for generation of data in the builders
             // This ensures our tests are deterministic within a specific version of the code
-            var seed = new Random(42);
+            Random seed = new Random(42);
             Bogus.Randomizer.Seed = seed;
             _factory = factory;
             _scope = _factory.Services.CreateScope();
@@ -39,32 +39,32 @@ namespace CoffeeCard.Tests.Integration.WebApplication
 
         private HttpClient GetHttpClient()
         {
-            var client = CreateClient();
+            HttpClient client = CreateClient();
 
             return client;
         }
 
         protected void SetDefaultAuthHeader(User user)
         {
-            var claims = new[]
+            Claim[] claims = new[]
                     {
                         new Claim(ClaimTypes.Email, user.Email),
                         new Claim(ClaimTypes.Name, user.Name),
                         new Claim("UserId", user.Id.ToString()),
                         new Claim(ClaimTypes.Role, user.UserGroup.ToString())
                     };
-            var token = GenerateToken(claims);
+            string token = GenerateToken(claims);
             Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", token);
         }
 
         private string GenerateToken(IEnumerable<Claim> claims)
         {
-            var scopedServices = _scope.ServiceProvider;
-            var identitySettings = scopedServices.GetRequiredService<IdentitySettings>();
-            var key = new SymmetricSecurityKey(
+            IServiceProvider scopedServices = _scope.ServiceProvider;
+            IdentitySettings identitySettings = scopedServices.GetRequiredService<IdentitySettings>();
+            SymmetricSecurityKey key = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(identitySettings.TokenKey)); // get token from appsettings.json
 
-            var jwt = new JwtSecurityToken("AnalogIO",
+            JwtSecurityToken jwt = new JwtSecurityToken("AnalogIO",
                 "Everyone",
                 claims,
                 DateTime.UtcNow,
@@ -83,12 +83,12 @@ namespace CoffeeCard.Tests.Integration.WebApplication
         private CoffeeCardContext GetCoffeeCardContext()
         {
             // Create a scope to obtain a reference to the database context (ApplicationDbContext).
-            var scopedServices = _scope.ServiceProvider;
-            var context = scopedServices.GetRequiredService<CoffeeCardContext>();
+            IServiceProvider scopedServices = _scope.ServiceProvider;
+            CoffeeCardContext context = scopedServices.GetRequiredService<CoffeeCardContext>();
 
             // Ensure the database is cleaned for each test run
-            context.Database.EnsureDeleted();
-            context.Database.EnsureCreated();
+            _ = context.Database.EnsureDeleted();
+            _ = context.Database.EnsureCreated();
 
             return context;
         }
@@ -98,8 +98,8 @@ namespace CoffeeCard.Tests.Integration.WebApplication
         /// </summary>
         protected static async Task<T> DeserializeResponseAsync<T>(HttpResponseMessage response)
         {
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
+            _ = response.EnsureSuccessStatusCode();
+            string content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<T>(content);
         }
 

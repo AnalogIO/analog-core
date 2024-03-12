@@ -11,7 +11,7 @@ namespace CoffeeCard.Tests.Common.Builders
                 .WithName(f => f.Commerce.ProductName())
                 .WithDescription(f => f.Commerce.ProductDescription())
                 .WithNumberOfTickets(f => f.PickRandom(1, 10))
-                .WithProductUserGroup(new List<ProductUserGroup>());
+                .WithProductUserGroup([]);
         }
 
         public static ProductBuilder Typical()

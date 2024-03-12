@@ -1,8 +1,8 @@
-using System;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Serilog.Core;
 using Serilog.Events;
+using System;
+using System.Linq;
 using Constants = CoffeeCard.Common.Constants;
 
 namespace CoffeeCard.WebApi.Logging
@@ -51,9 +51,9 @@ namespace CoffeeCard.WebApi.Logging
             if (_contextAccessor.HttpContext == null)
                 return;
 
-            var correlationIdProperty =
+            LogEventProperty correlationIdProperty =
                 new LogEventProperty(CorrelationIdPropertyName, new ScalarValue(GetCorrelationId()));
-            var userIdProperty = new LogEventProperty(UserIdPropertyName, new ScalarValue(GetUserId()));
+            LogEventProperty userIdProperty = new LogEventProperty(UserIdPropertyName, new ScalarValue(GetUserId()));
 
             logEvent.AddOrUpdateProperty(correlationIdProperty);
             logEvent.AddOrUpdateProperty(userIdProperty);
@@ -61,7 +61,7 @@ namespace CoffeeCard.WebApi.Logging
 
         private string GetUserId()
         {
-            var id = _contextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == Constants.UserId)
+            string id = _contextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == Constants.UserId)
                 ?.Value;
 
             return id != null ? $" userid:{id}" : string.Empty;
@@ -69,7 +69,7 @@ namespace CoffeeCard.WebApi.Logging
 
         private string GetCorrelationId()
         {
-            var id = $"correlationid:{Guid.NewGuid().ToString().Substring(0, 8)}";
+            string id = $"correlationid:{Guid.NewGuid().ToString().Substring(0, 8)}";
 
             return (string)(_contextAccessor.HttpContext.Items[CorrelationIdItemName] ??
                              (_contextAccessor.HttpContext.Items[CorrelationIdItemName] = id));

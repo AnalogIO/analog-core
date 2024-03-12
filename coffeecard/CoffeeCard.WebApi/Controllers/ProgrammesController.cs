@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using CoffeeCard.Library.Services;
+﻿using CoffeeCard.Library.Services;
 using CoffeeCard.Models.DataTransferObjects.Programme;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CoffeeCard.WebApi.Controllers
 {
@@ -38,7 +38,7 @@ namespace CoffeeCard.WebApi.Controllers
         [ProducesResponseType(typeof(List<ProgrammeDto>), StatusCodes.Status200OK)]
         public ActionResult<List<ProgrammeDto>> Get()
         {
-            var programmes = _programmeService.GetProgrammes();
+            IEnumerable<Models.Entities.Programme> programmes = _programmeService.GetProgrammes();
             return Ok(_mapperService.Map(programmes.OrderBy(x => x.SortPriority)).ToList());
         }
     }

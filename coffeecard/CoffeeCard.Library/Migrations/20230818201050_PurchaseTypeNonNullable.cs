@@ -8,7 +8,7 @@ namespace CoffeeCard.Library.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<string>(
+            _ = migrationBuilder.AlterColumn<string>(
                 name: "Type",
                 schema: "dbo",
                 table: "Purchases",
@@ -21,7 +21,7 @@ namespace CoffeeCard.Library.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<string>(
+            _ = migrationBuilder.AlterColumn<string>(
                 name: "Type",
                 schema: "dbo",
                 table: "Purchases",

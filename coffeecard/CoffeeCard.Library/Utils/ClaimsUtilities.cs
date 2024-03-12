@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using CoffeeCard.Common;
+﻿using CoffeeCard.Common;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace CoffeeCard.Library.Utils
 {
@@ -22,10 +22,10 @@ namespace CoffeeCard.Library.Utils
 
         public async Task<User> ValidateAndReturnUserFromClaimAsync(IEnumerable<Claim> claims)
         {
-            var userId = claims.FirstOrDefault(x => x.Type == Constants.UserId);
+            Claim userId = claims.FirstOrDefault(x => x.Type == Constants.UserId);
             if (userId == null) throw new ApiException("The token is invalid!", 401);
 
-            var user = await _context.Users
+            User user = await _context.Users
                 .Where(u => u.Id == int.Parse(userId.Value))
                 .Include(x => x.Purchases)
                 .FirstOrDefaultAsync();
@@ -36,11 +36,11 @@ namespace CoffeeCard.Library.Utils
 
         public async Task<User> ValidateAndReturnUserFromEmailClaimAsync(IEnumerable<Claim> claims)
         {
-            var emailClaim = claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
+            Claim emailClaim = claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
             if (emailClaim == null) throw new ApiException("The token is invalid!", 401);
-            var email = emailClaim.Value;
+            string email = emailClaim.Value;
 
-            var user = await _context.Users
+            User user = await _context.Users
                 .Where(u => u.Email == email)
                 .Include(u => u.Tokens)
                 .Include(u => u.Programme)

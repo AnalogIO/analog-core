@@ -7,8 +7,8 @@ namespace CoffeeCard.Tests.Common.Builders
     {
         public static TicketBuilder Simple()
         {
-            var owner = UserBuilder.Simple().Build();
-            var purchase = PurchaseBuilder.Simple().Build();
+            User owner = UserBuilder.Simple().Build();
+            Purchase purchase = PurchaseBuilder.Simple().Build();
             return new TicketBuilder()
                 .WithOwner(owner)
                 .WithPurchase(purchase);

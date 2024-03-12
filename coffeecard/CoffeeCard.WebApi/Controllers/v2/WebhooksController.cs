@@ -1,10 +1,10 @@
 ﻿using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.User;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 
 namespace CoffeeCard.WebApi.Controllers.v2
 {
