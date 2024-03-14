@@ -49,7 +49,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
-        [AuthorizeRoles(UserGroup.Board)]
+        [AuthorizeRoles(UserGroup.Board, UserGroup.Manager)]
         [HttpPost("issue-vouchers")]
         public async Task<ActionResult<IEnumerable<IssueVoucherResponse>>> IssueVouchers([FromBody] IssueVoucherRequest request)
         {
