@@ -95,6 +95,7 @@ namespace CoffeeCard.WebApi
             services.AddScoped<Library.Services.v2.ILeaderboardService, Library.Services.v2.LeaderboardService>();
             services.AddScoped<IStatisticService, StatisticService>();
             services.AddScoped<IDateTimeProvider, DateTimeProvider>();
+            services.AddScoped<IAdminStatisticsService, AdminStatisticsService>();
             services.AddFeatureManagement();
 
             // Azure Application Insights
