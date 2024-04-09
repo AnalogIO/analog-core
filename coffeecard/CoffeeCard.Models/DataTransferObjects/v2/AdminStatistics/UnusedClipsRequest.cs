@@ -14,12 +14,12 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.AdminStatistics
         /// <example>2021-02-08</example>
         public required DateTime StartDate { get; set; }
 
-    /// <summary>
-    /// The end date of unused tickets query.
-    /// </summary>
-    /// <value>End Date</value>
-    /// <example>2024-02-08</example>
-    public required DateTime EndDate { get; set; }
+        /// <summary>
+        /// The end date of unused tickets query.
+        /// </summary>
+        /// <value>End Date</value>
+        /// <example>2024-02-08</example>
+        public required DateTime EndDate { get; set; }
     }
 }
 
