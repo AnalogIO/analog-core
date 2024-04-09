@@ -173,7 +173,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var orderId = Guid.NewGuid().ToString();
             var mpDeepLink = "mobilepay://merchant_payments?payment_id=186d2b31-ff25-4414-9fd1-bfe9807fa8b7";
             mobilePayService.Setup(mps => mps.InitiatePayment(It.IsAny<MobilePayPaymentRequest>()))
-                .ReturnsAsync(new MobilePayPaymentDetails(orderId, mpDeepLink, mobilepayPaymentId, "Initiated"));
+                .ReturnsAsync(new MobilePayPaymentDetails(orderId, mpDeepLink, mobilepayPaymentId));
 
             // Act
             var result = await purchaseService.InitiatePurchase(request, user);
@@ -257,7 +257,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             // Assert
             var userUpdated = await context.Users.FindAsync(user.Id);
 
-            Assert.Equal(1, userUpdated.Purchases.Count);
+            Assert.Single(userUpdated.Purchases);
             Assert.Equal(product.NumberOfTickets, userUpdated.Tickets.Count);
         }
 

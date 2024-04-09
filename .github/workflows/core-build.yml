@@ -24,14 +24,12 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-      - name: Install dotnet-format
-        run: dotnet tool install -g dotnet-format
       - name: Restore dependencies
         run: dotnet restore coffeecard/
       - name: Build CoffeeCard solution
         run: dotnet build coffeecard/ --no-restore /p:ContinuousIntegrationBuild=true
       - name: Check code formatting
-        run: dotnet-format --no-restore --check coffeecard/
+        run: dotnet format --no-restore --verify-no-changes coffeecard/
       - name: Run tests
         run: dotnet test coffeecard/ --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
       - name: Upload test coverage to Codecov

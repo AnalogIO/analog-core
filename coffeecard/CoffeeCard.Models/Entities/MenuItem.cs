@@ -35,5 +35,5 @@ public class MenuItem
     /// <summary>
     /// Whether or not this menu item is active
     /// </summary>
-    public bool Active { get; set; }
+    public bool Active { get; set; } = true;
 }

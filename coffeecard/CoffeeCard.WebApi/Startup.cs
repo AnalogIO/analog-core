@@ -1,5 +1,7 @@
 using System;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using AspNetCore.Authentication.ApiKey;
 using CoffeeCard.Common.Configuration;
@@ -21,6 +23,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.FeatureManagement;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
@@ -92,6 +95,7 @@ namespace CoffeeCard.WebApi
             services.AddScoped<Library.Services.v2.ILeaderboardService, Library.Services.v2.LeaderboardService>();
             services.AddScoped<IStatisticService, StatisticService>();
             services.AddScoped<IDateTimeProvider, DateTimeProvider>();
+            services.AddFeatureManagement();
 
             // Azure Application Insights
             services.AddApplicationInsightsTelemetry();
@@ -103,11 +107,11 @@ namespace CoffeeCard.WebApi
                     options.Filters.Add(new ApiExceptionFilter());
                     options.Filters.Add(new ReadableBodyFilter());
                 })
-                // Setup Json Serializing
-                .AddNewtonsoftJson(options =>
+                .AddJsonOptions(options =>
                 {
-                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
-                    options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+                    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.Never;
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                 });
 
             services.AddCors(options => options.AddDefaultPolicy(builder =>
@@ -157,7 +161,7 @@ namespace CoffeeCard.WebApi
                         OnAuthenticationFailed = context =>
                         {
                             if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
-                                context.Response.Headers.Add("Token-Expired", "true");
+                                context.Response.Headers.Append("Token-Expired", "true");
 
                             return Task.CompletedTask;
                         }
@@ -198,6 +202,7 @@ namespace CoffeeCard.WebApi
                 // Add an OpenApi document per API version
                 services.AddOpenApiDocument(config =>
                 {
+                    config.DefaultResponseReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull;
                     config.Title = apiVersion.GroupName;
                     config.Version = apiVersion.ApiVersion.ToString();
                     config.DocumentName = apiVersion.GroupName;
