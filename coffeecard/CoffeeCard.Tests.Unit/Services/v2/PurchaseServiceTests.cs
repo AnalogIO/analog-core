@@ -257,7 +257,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             // Assert
             var userUpdated = await context.Users.FindAsync(user.Id);
 
-            Assert.Equal(1, userUpdated.Purchases.Count);
+            Assert.Single(userUpdated.Purchases);
             Assert.Equal(product.NumberOfTickets, userUpdated.Tickets.Count);
         }
 
