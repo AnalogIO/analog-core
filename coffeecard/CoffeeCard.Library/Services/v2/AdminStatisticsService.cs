@@ -23,7 +23,6 @@ namespace CoffeeCard.Library.Services.v2
 
             var tickets = await _context.Tickets
                 .Where(t => t.DateCreated >= startDate && t.DateCreated <= endDate && t.IsUsed == false)
-                .Include(p => p.Purchase)
                 .GroupBy(ticket => ticket.ProductId)
                 .Select(group => new UnusedClipsResponse
                 {
