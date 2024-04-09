@@ -1,5 +1,3 @@
-using System.Runtime.Serialization;
-
 namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
 {
     /// <summary>
@@ -11,7 +9,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
     ///     "orderId": "f5cb3e0f-3b9b-4f50-8c4f-a7450f300a5c"
     /// }
     /// </example>
-    [KnownType(typeof(FreePurchasePaymentDetails))]
     public class FreePurchasePaymentDetails : PaymentDetails
     {
         /// <summary>

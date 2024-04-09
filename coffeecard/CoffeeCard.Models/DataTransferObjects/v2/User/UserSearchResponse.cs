@@ -32,5 +32,5 @@ public class UserSearchResponse
     ///  ]
     /// </example>
     [Required]
-    public IEnumerable<SimpleUserResponse> Users;
+    public IEnumerable<SimpleUserResponse> Users { get; set; }
 }

@@ -4,12 +4,14 @@ using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services.v2;
+using CoffeeCard.Library.Utils;
 using CoffeeCard.WebApi.Logging;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.FeatureManagement;
 using Serilog;
 
 namespace CoffeeCard.WebApi
@@ -55,7 +57,7 @@ namespace CoffeeCard.WebApi
             return Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration(((context, builder) =>
                 {
-                    builder.AddJsonFile("appsettings.json", false, true);
+                    builder.AddJsonFile(path: "appsettings.json", optional: false, reloadOnChange: true);
                     builder.AddEnvironmentVariables();
                 }))
                 .ConfigureWebHostDefaults(webBuilder =>
@@ -69,6 +71,7 @@ namespace CoffeeCard.WebApi
         {
             using var serviceScope = webhost.Services.CreateScope();
             var environment = serviceScope.ServiceProvider.GetRequiredService<EnvironmentSettings>();
+            var featureManager = serviceScope.ServiceProvider.GetRequiredService<IFeatureManager>();
 
             Log.Information("Apply Database Migrations if any");
             await using var context = serviceScope.ServiceProvider.GetRequiredService<CoffeeCardContext>();
@@ -77,7 +80,10 @@ namespace CoffeeCard.WebApi
                 context.Database.Migrate();
             }
 
-            if (environment.EnvironmentType != EnvironmentType.LocalDevelopment)
+            var isMobilePayWebhookRegistrationManagementEnabled = await featureManager.IsEnabledAsync(FeatureFlags.MobilePayManageWebhookRegistration);
+            Log.Information("FeatureFlag {flag} has enablement state '{value}'", nameof(FeatureFlags.MobilePayManageWebhookRegistration), isMobilePayWebhookRegistrationManagementEnabled);
+
+            if (environment.EnvironmentType != EnvironmentType.LocalDevelopment && isMobilePayWebhookRegistrationManagementEnabled)
             {
                 var webhookService = serviceScope.ServiceProvider.GetRequiredService<IWebhookService>();
                 await webhookService.EnsureWebhookIsRegistered();

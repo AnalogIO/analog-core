@@ -72,5 +72,10 @@ namespace CoffeeCard.Library.Services.v2
         /// <param name="pageNum"> The page number </param>
         /// <param name="pageLength"> The length of a page </param>
         Task<UserSearchResponse> SearchUsers(String search, int pageNum, int pageLength);
+
+        /// <summary>
+        /// Remove all existing priviliged user group assignments. Update users based on request contents
+        /// </summary>
+        Task UpdatePriviligedUserGroups(WebhookUpdateUserGroupRequest request);
     }
 }

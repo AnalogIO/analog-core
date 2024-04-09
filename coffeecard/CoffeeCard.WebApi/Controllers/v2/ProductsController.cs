@@ -108,7 +108,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <returns>List of all products</returns>
         /// <response code="200">Successful request</response>
         [HttpGet("all")]
-        [AuthorizeRoles(UserGroup.Board)]
+        [AuthorizeRoles(UserGroup.Board, UserGroup.Manager)]
         [ProducesResponseType(typeof(IEnumerable<ProductResponse>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<ProductResponse>>> GetAllProducts()
         {
