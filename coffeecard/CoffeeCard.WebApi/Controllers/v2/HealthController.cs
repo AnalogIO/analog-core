@@ -13,23 +13,17 @@ namespace CoffeeCard.WebApi.Controllers.v2
     /// <summary>
     /// Controller for health checks
     /// </summary>
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="HealthController"/> class.
+    /// </remarks>
     [ApiVersion("2")]
     [Route("api/v{version:apiVersion}/health")]
     [ApiController]
     [Authorize(AuthenticationSchemes = "apikey")]
-    public class HealthController : ControllerBase
+    public class HealthController(IMobilePayPaymentsService mobilePayPaymentsService, CoffeeCardContext context) : ControllerBase
     {
-        private readonly CoffeeCardContext _context;
-        private readonly IMobilePayWebhooksService _mobilePayWebhooksService;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HealthController"/> class.
-        /// </summary>
-        public HealthController(IMobilePayWebhooksService mobilePayWebhooksService, CoffeeCardContext context)
-        {
-            _mobilePayWebhooksService = mobilePayWebhooksService;
-            _context = context;
-        }
+        private readonly CoffeeCardContext _context = context;
+        private readonly IMobilePayPaymentsService _mobilePayPaymentsService = mobilePayPaymentsService;
 
         /// <summary>
         /// Ping
@@ -55,8 +49,8 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesDefaultResponseType]
         public async Task<IActionResult> Healthcheck()
         {
-            var databaseConnected = await IsServiceHealthy(async () => await _context.Database.CanConnectAsync());
-            var mobilepayApiConnected = await IsServiceHealthy(async () => await _mobilePayWebhooksService.GetAllWebhooks());
+            var databaseConnected = await IsServiceCallSuccessful(async () => await _context.Database.CanConnectAsync());
+            var mobilepayApiConnected = await IsServiceCallSuccessful(async () => await _mobilePayPaymentsService.GetPaymentPoints());
 
             var response = new ServiceHealthResponse()
             {
@@ -72,7 +66,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
             return StatusCode(StatusCodes.Status503ServiceUnavailable, response);
         }
 
-        private static async Task<bool> IsServiceHealthy(Func<Task> action)
+        private static async Task<bool> IsServiceCallSuccessful(Func<Task> action)
         {
             try
             {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using CoffeeCard.MobilePay.Exception.v2;
+using CoffeeCard.MobilePay.Generated.Api.PaymentsApi;
 using CoffeeCard.MobilePay.Generated.Api.WebhooksApi;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
@@ -39,5 +40,11 @@ namespace CoffeeCard.MobilePay.Service.v2
         /// <param name="paymentId">Payment Id</param>
         /// <exception cref="MobilePayApiException">Cancellation failed</exception>
         Task CancelPayment(Guid paymentId);
+
+        /// <summary>
+        /// Get all Payment Points registered with the MobilePay Integration
+        /// </summary>
+        /// <returns>All Payment Points</returns>
+        Task<PaymentPointsList> GetPaymentPoints();
     }
 }
