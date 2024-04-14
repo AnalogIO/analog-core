@@ -51,6 +51,8 @@ module webapp 'modules/webapp.bicep' = {
     dockerRegistry: dockerRegistry
     keyVaultReferences: keyVaultReferences
     sqlServerConnectionString: sqlDb.outputs.sqlDatabaseConnectionString
+    enableAlerts: envSettings.webapp.alerts.resource == null ? true : envSettings.webapp.alerts.resource
+    actionGroupId: actiongroup.id
   }
 }
 
@@ -66,6 +68,8 @@ module sqlDb 'modules/sqldatabase.bicep' = {
     skuCapacity: envSettings.sqlServer.skuCapacity
     skuName: envSettings.sqlServer.skuName
     skuTier: envSettings.sqlServer.skuTier
+    actionGroupId: actiongroup.id
+    enableAlerts: envSettings.sqlServer.alerts == null ? true : envSettings.sqlServer.alerts
   }
 }
 
