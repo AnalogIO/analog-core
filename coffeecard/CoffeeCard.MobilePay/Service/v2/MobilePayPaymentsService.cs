@@ -135,6 +135,28 @@ namespace CoffeeCard.MobilePay.Service.v2
             }
         }
 
+        public async Task<PaymentPointsList> GetPaymentPoints()
+        {
+            try
+            {
+                return await _paymentsApi.GetPaymentPointsAsync(null, null, null);
+            }
+            catch (ApiException<ErrorResponse> e)
+            {
+                var errorResponse = e.Result;
+                Log.Error(e,
+                    "MobilePay GetPaymentPoints failed with HTTP {StatusCode}. ErrorCode: {ErrorCode} Message: {Message} CorrelationId: {CorrelationId}",
+                    e.StatusCode, errorResponse.Code, errorResponse.Message, errorResponse.CorrelationId);
+
+                throw new MobilePayApiException(e.StatusCode, errorResponse.Message, errorResponse.Code);
+            }
+            catch (ApiException apiException)
+            {
+                LogMobilePayException(apiException);
+                throw new MobilePayApiException(apiException.StatusCode, apiException.Message);
+            }
+        }
+
         /// <summary>
         /// Convert Amount in kroner to amount in Danish ører
         /// </summary>
