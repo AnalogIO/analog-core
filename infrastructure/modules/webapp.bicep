@@ -18,10 +18,15 @@ param appSettings array
 param keyVaultReferences array
 param dockerRegistry string
 
-var keyVaultReferencesFormatted = [for item in keyVaultReferences: {
-  name: item.name
-  value: '@Microsoft.KeyVault(VaultName=${keyvaultName};SecretName=${item.secretName})'
-}]
+param enableAlerts bool
+param actionGroupId string
+
+var keyVaultReferencesFormatted = [
+  for item in keyVaultReferences: {
+    name: item.name
+    value: '@Microsoft.KeyVault(VaultName=${keyvaultName};SecretName=${item.secretName})'
+  }
+]
 
 resource appservicePlan 'Microsoft.Web/serverfarms@2022-03-01' existing = {
   name: appservicePlanName
@@ -52,7 +57,8 @@ resource webapp 'Microsoft.Web/sites@2022-03-01' = {
       ftpsState: 'Disabled'
       minTlsVersion: '1.2'
       logsDirectorySizeLimit: 100 // MB
-      appSettings: union([
+      appSettings: union(
+        [
           {
             name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
             value: reference(applicationInsights.id, '2015-05-01').InstrumentationKey
@@ -73,7 +79,10 @@ resource webapp 'Microsoft.Web/sites@2022-03-01' = {
             name: 'DatabaseSettings__ConnectionString'
             value: sqlServerConnectionString
           }
-        ], appSettings, keyVaultReferencesFormatted)
+        ],
+        appSettings,
+        keyVaultReferencesFormatted
+      )
     }
     httpsOnly: true
     redundancyMode: 'None'
@@ -152,7 +161,201 @@ resource preventDeleteLock 'Microsoft.Authorization/locks@2020-05-01' = {
   }
 }
 
-output webappDefaultHostNameFqdn string = webapp.properties.defaultHostName
+resource serverErrorsAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
+  name: 'alert-5xxerr-${webapp.name}'
+  location: 'Global'
+  properties: {
+    description: 'High amout of Server Errors'
+    severity: 2
+    enabled: enableAlerts
+    autoMitigate: true
+    scopes: [
+      webapp.id
+    ]
+    evaluationFrequency: 'PT5M'
+    windowSize: 'PT15M'
+    criteria: {
+      allOf: [
+        {
+          alertSensitivity: 'Medium'
+          name: 'ServerErrors'
+          failingPeriods: {
+            numberOfEvaluationPeriods: 4
+            minFailingPeriodsToAlert: 4
+          }
+          metricNamespace: 'Microsoft.Web/sites'
+          metricName: 'Http5xx'
+          operator: 'GreaterThan'
+          timeAggregation: 'Total'
+          skipMetricValidation: false
+          criterionType: 'DynamicThresholdCriterion'
+        }
+      ]
+      'odata.type': 'Microsoft.Azure.Monitor.MultipleResourceMultipleMetricCriteria'
+    }
+    actions: [
+      {
+        actionGroupId: actionGroupId
+      }
+    ]
+  }
+}
 
+resource responseTimeAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
+  name: 'alert-rsptime-${webapp.name}'
+  location: 'Global'
+  properties: {
+    description: 'High Response Time'
+    severity: 2
+    enabled: enableAlerts
+    autoMitigate: true
+    scopes: [
+      webapp.id
+    ]
+    evaluationFrequency: 'PT5M'
+    windowSize: 'PT30M'
+    criteria: {
+      allOf: [
+        {
+          alertSensitivity: 'Medium'
+          name: 'Response Time'
+          failingPeriods: {
+            numberOfEvaluationPeriods: 4
+            minFailingPeriodsToAlert: 4
+          }
+          metricNamespace: 'Microsoft.Web/sites'
+          metricName: 'HttpResponseTime'
+          operator: 'GreaterThan'
+          timeAggregation: 'Average'
+          skipMetricValidation: false
+          criterionType: 'DynamicThresholdCriterion'
+        }
+      ]
+      'odata.type': 'Microsoft.Azure.Monitor.MultipleResourceMultipleMetricCriteria'
+    }
+    actions: [
+      {
+        actionGroupId: actionGroupId
+      }
+    ]
+  }
+}
+
+resource fourxxErrorsAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
+  name: 'alert-4xx-${webapp.name}'
+  location: 'Global'
+  properties: {
+    description: 'High amout of 4xx Errors'
+    severity: 2
+    enabled: enableAlerts
+    autoMitigate: true
+    scopes: [
+      webapp.id
+    ]
+    evaluationFrequency: 'PT5M'
+    windowSize: 'PT15M'
+    criteria: {
+      allOf: [
+        {
+          alertSensitivity: 'Medium'
+          name: '4xx errors'
+          failingPeriods: {
+            numberOfEvaluationPeriods: 4
+            minFailingPeriodsToAlert: 4
+          }
+          metricNamespace: 'Microsoft.Web/sites'
+          metricName: 'Http4xx'
+          operator: 'GreaterThan'
+          timeAggregation: 'Total'
+          skipMetricValidation: false
+          criterionType: 'DynamicThresholdCriterion'
+        }
+      ]
+      'odata.type': 'Microsoft.Azure.Monitor.MultipleResourceMultipleMetricCriteria'
+    }
+    actions: [
+      {
+        actionGroupId: actionGroupId
+      }
+    ]
+  }
+}
+
+resource connectionsAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
+  name: 'alert-cnn-${webapp.name}'
+  location: 'Global'
+  properties: {
+    description: 'High amout of connections'
+    severity: 3
+    enabled: enableAlerts
+    autoMitigate: true
+    scopes: [
+      webapp.id
+    ]
+    evaluationFrequency: 'PT5M'
+    windowSize: 'PT15M'
+    criteria: {
+      allOf: [
+        {
+          alertSensitivity: 'Medium'
+          name: 'Connections'
+          failingPeriods: {
+            numberOfEvaluationPeriods: 4
+            minFailingPeriodsToAlert: 4
+          }
+          metricNamespace: 'Microsoft.Web/sites'
+          metricName: 'Requests'
+          operator: 'GreaterThan'
+          timeAggregation: 'Total'
+          skipMetricValidation: false
+          criterionType: 'DynamicThresholdCriterion'
+        }
+      ]
+      'odata.type': 'Microsoft.Azure.Monitor.MultipleResourceMultipleMetricCriteria'
+    }
+    actions: [
+      {
+        actionGroupId: actionGroupId
+      }
+    ]
+  }
+}
+
+resource resourceHealth 'Microsoft.Insights/activityLogAlerts@2020-10-01' = {
+  name: 'alert-resourcehealth-${webapp.name}'
+  location: 'Global'
+  properties: {
+    description: 'Resource Health alert for App Services'
+    enabled: enableAlerts
+    scopes: [
+      subscription().id
+    ]
+    condition: {
+      allOf: [
+        {
+          field: 'category'
+          equals: 'ResourceHealth'
+        }
+        {
+          anyOf: [
+            {
+              field: 'resourceType'
+              equals: 'Microsoft.Web/sites'
+            }
+          ]
+        }
+      ]
+    }
+    actions: {
+      actionGroups: [
+        {
+          actionGroupId: actionGroupId
+        }
+      ]
+    }
+  }
+}
+
+output webappDefaultHostNameFqdn string = webapp.properties.defaultHostName
 // Remove . (dot) from FQDN
-output webappCustomDomainNameFqdn string = take(dns.outputs.customDomainFqdn, length(dns.outputs.customDomainFqdn)-1)
+output webappCustomDomainNameFqdn string = take(dns.outputs.customDomainFqdn, length(dns.outputs.customDomainFqdn) - 1)

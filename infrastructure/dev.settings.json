@@ -2,11 +2,13 @@
   "sqlServer": {
     "skuCapacity": 5,
     "skuName": "Basic",
-    "skuTier": "Basic"
+    "skuTier": "Basic",
+    "alerts": true
   },
   "webapp": {
     "dockerRegistry": "ghcr.io/analogio/coffeecard-api:develop",
     "alerts": {
+      "resource": true,
       "healthcheck": false,
       "ping": true
     },
