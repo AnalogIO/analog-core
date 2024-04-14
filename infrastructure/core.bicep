@@ -100,6 +100,7 @@ resource keyvault 'Microsoft.KeyVault/vaults@2023-02-01' existing = {
   name: keyvaultModule.outputs.keyvaultName
 }
 
+var enablePingAlerts = envSettings.webapp.alerts.ping == null ? true : envSettings.webapp.alerts.ping
 module availabilityTestPing 'modules/urlPingTest.bicep' = {
   name: '${deployment().name}-${applicationPrefix}-pingtest'
   scope: resourceGroup(sharedResourceGroupName)
@@ -110,9 +111,13 @@ module availabilityTestPing 'modules/urlPingTest.bicep' = {
     apiKey: keyvault.getSecret('IdentitySettings-ApiKey')
     applicationInsightsName: applicationInsights.name
     actionGroupId: actiongroup.id
+    enableAlerts: enablePingAlerts
   }
 }
 
+var enableHealthCheckAlerts = envSettings.webapp.alerts.healthcheck == null
+  ? true
+  : envSettings.webapp.alerts.healthcheck
 module availabilityTestHealth 'modules/urlPingTest.bicep' = {
   name: '${deployment().name}-${applicationPrefix}-healthtest'
   scope: resourceGroup(sharedResourceGroupName)
@@ -123,5 +128,6 @@ module availabilityTestHealth 'modules/urlPingTest.bicep' = {
     apiKey: keyvault.getSecret('IdentitySettings-ApiKey')
     applicationInsightsName: applicationInsights.name
     actionGroupId: actiongroup.id
+    enableAlerts: enableHealthCheckAlerts
   }
 }

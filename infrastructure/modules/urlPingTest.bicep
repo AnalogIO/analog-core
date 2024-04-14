@@ -9,6 +9,8 @@ param apiKeyQueryParam string = ''
 
 param applicationInsightsName string
 param actionGroupId string
+param enableAlerts bool = true
+
 param location string = resourceGroup().location
 
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing = {
@@ -83,7 +85,7 @@ resource metricalert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
   properties: {
     description: 'Availability test ${testName} is failing'
     severity: 1
-    enabled: true
+    enabled: enableAlerts
     scopes: [
       urlPingTest.id
       applicationInsights.id
