@@ -6,6 +6,10 @@
   },
   "webapp": {
     "dockerRegistry": "ghcr.io/analogio/coffeecard-api:production",
+    "alerts": {
+      "healthcheck": true,
+      "ping": true
+    },
     "appSettings": [
       {
         "name": "EnvironmentSettings__EnvironmentType",
