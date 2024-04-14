@@ -25,6 +25,11 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing
   scope: resourceGroup(sharedResourceGroupName)
 }
 
+resource actiongroup 'Microsoft.Insights/actionGroups@2023-01-01' existing = {
+  name: 'ag-${organizationPrefix}-${sharedResourcesAbbreviation}-${environment}'
+  scope: resourceGroup(sharedResourceGroupName)
+}
+
 var envSettings = isPrd ? loadJsonContent('prd.settings.json') : loadJsonContent('dev.settings.json')
 var appSettings = array(envSettings.webapp.appSettings)
 var dockerRegistry = envSettings.webapp.dockerRegistry
@@ -104,6 +109,7 @@ module availabilityTestPing 'modules/urlPingTest.bicep' = {
     apiKeyQueryParam: 'x-api-key'
     apiKey: keyvault.getSecret('IdentitySettings-ApiKey')
     applicationInsightsName: applicationInsights.name
+    actionGroupId: actiongroup.id
   }
 }
 
@@ -116,5 +122,6 @@ module availabilityTestHealth 'modules/urlPingTest.bicep' = {
     apiKeyQueryParam: 'x-api-key'
     apiKey: keyvault.getSecret('IdentitySettings-ApiKey')
     applicationInsightsName: applicationInsights.name
+    actionGroupId: actiongroup.id
   }
 }
