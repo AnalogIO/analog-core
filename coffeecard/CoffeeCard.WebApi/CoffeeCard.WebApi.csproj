@@ -6,6 +6,7 @@
     <ProjectGuid>5562C898-513F-493A-A335-417C39476714</ProjectGuid>
     <UserSecretsId>d3bbf778-c5fe-4240-b2ca-dfa64082cc0e</UserSecretsId>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <OpenApiGenerateDocumentsOnBuild>true</OpenApiGenerateDocumentsOnBuild>
     <IncludeOpenAPIAnalyzers>true</IncludeOpenAPIAnalyzers>
     <NoWarn>$(NoWarn);1591</NoWarn>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>

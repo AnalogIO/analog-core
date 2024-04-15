@@ -23,6 +23,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoffeeCard.Common.Test", "C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeeCard.Generators", "CoffeeCard.Generators\CoffeeCard.Generators.csproj", "{BE332D7E-FD07-4878-B7E3-A06988F0C382}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeeCard.Tests.ApiClient.Generated", "CoffeeCard.Tests.ApiClient.Generated\CoffeeCard.Tests.ApiClient.Generated.csproj", "{3B3790DA-BE1F-4F14-8921-61B913C88885}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6D7D49A1-44ED-4013-9EDD-AB2A4A219E2B} = {6D7D49A1-44ED-4013-9EDD-AB2A4A219E2B}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +74,10 @@ Global
 		{BE332D7E-FD07-4878-B7E3-A06988F0C382}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE332D7E-FD07-4878-B7E3-A06988F0C382}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BE332D7E-FD07-4878-B7E3-A06988F0C382}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B3790DA-BE1F-4F14-8921-61B913C88885}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B3790DA-BE1F-4F14-8921-61B913C88885}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B3790DA-BE1F-4F14-8921-61B913C88885}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B3790DA-BE1F-4F14-8921-61B913C88885}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
