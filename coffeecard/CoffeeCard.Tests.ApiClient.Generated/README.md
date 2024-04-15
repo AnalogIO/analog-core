@@ -6,3 +6,7 @@ This is set up by configuring the OpenApiReference to point to the outputted ope
 The clients that are out putted are:
 - CoffeeCardClient
 - CoffeeCardClientV2
+
+See the following for more info in how to set up, and configure clients
+- [Microsoft reference](https://learn.microsoft.com/en-us/aspnet/core/web-api/microsoft.dotnet-openapi?view=aspnetcore-8.0)
+- [Blog explaining in detail](https://stevetalkscode.co.uk/openapireference-commands) ([Backup archive.org](https://web.archive.org/web/20240415183726/https://stevetalkscode.co.uk/openapireference-commands))

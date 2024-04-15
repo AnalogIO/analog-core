@@ -1,7 +1,6 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
-using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,12 +13,8 @@ using Xunit;
 namespace CoffeeCard.Tests.Integration.Controllers.Account
 {
 
-    public class LoginTest : BaseIntegrationTest
+    public class LoginTest(CustomWebApplicationFactory<Startup> factory) : BaseIntegrationTest(factory)
     {
-        public LoginTest(CustomWebApplicationFactory<Startup> factory) : base(factory)
-        {
-        }
-
         [Fact]
         public async Task Unknown_user_login_fails()
         {
@@ -29,7 +24,7 @@ namespace CoffeeCard.Tests.Integration.Controllers.Account
                 Email = "test@email.dk",
                 Version = "2.1.0"
             };
-            
+
             var apiException = await Assert.ThrowsAsync<ApiException>(() => CoffeeCardClient.Account_LoginAsync(loginRequest));
             Assert.Equal((int)HttpStatusCode.Unauthorized, apiException.StatusCode);
         }

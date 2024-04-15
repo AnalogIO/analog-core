@@ -6,18 +6,13 @@ using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Tests.Integration.Controllers.Account
 {
-
-    public class GetAccountTest : BaseIntegrationTest
+    public class GetAccountTest(CustomWebApplicationFactory<Startup> factory) : BaseIntegrationTest(factory)
     {
-        public GetAccountTest(CustomWebApplicationFactory<Startup> factory) : base(factory)
-        {
-        }
-
         [Fact]
         public async Task Get_account_succeeds_when_authenticated_for_existing_account()
         {
             var user = await GetAuthenticatedUserAsync();
-            
+
             var account = await CoffeeCardClientV2.Account_GetAsync();
 
             Assert.Equal(user.Email, account.Email);
