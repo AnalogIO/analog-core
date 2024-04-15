@@ -29,6 +29,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CoffeeCard.Tests.ApiClient.Generated\CoffeeCard.Tests.ApiClient.Generated.csproj" />
     <ProjectReference Include="..\CoffeeCard.WebApi\CoffeeCard.WebApi.csproj" />
     <ProjectReference Include="..\CoffeeCard.Tests.Common\CoffeeCard.Tests.Common.csproj" />
   </ItemGroup>
