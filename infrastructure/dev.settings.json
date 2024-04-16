@@ -64,8 +64,8 @@
     ],
     "keyVaultReferences": [
       {
-        "name": "IdentityServerSettings__TokenKey",
-        "secretName": "IdentityServerSettings-TokenKey"
+        "name": "IdentitySettings__TokenKey",
+        "secretName": "IdentitySettings-TokenKey"
       },
       {
         "name": "IdentitySettings__AdminToken",
