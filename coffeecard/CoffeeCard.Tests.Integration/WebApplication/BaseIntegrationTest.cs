@@ -8,10 +8,12 @@ using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Models.Entities;
+using CoffeeCard.Tests.ApiClient.Generated;
+using CoffeeCard.Tests.ApiClient.v2.Generated;
+using CoffeeCard.Tests.Common.Builders;
 using CoffeeCard.WebApi;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 using Xunit;
 
 namespace CoffeeCard.Tests.Integration.WebApplication
@@ -21,7 +23,9 @@ namespace CoffeeCard.Tests.Integration.WebApplication
     {
         private readonly CustomWebApplicationFactory<Startup> _factory;
         private readonly IServiceScope _scope;
-        protected readonly HttpClient Client;
+        private readonly HttpClient _httpClient;
+        protected readonly CoffeeCardClient CoffeeCardClient;
+        protected readonly CoffeeCardClientV2 CoffeeCardClientV2;
         protected readonly CoffeeCardContext Context;
 
         protected BaseIntegrationTest(CustomWebApplicationFactory<Startup> factory)
@@ -33,7 +37,9 @@ namespace CoffeeCard.Tests.Integration.WebApplication
             _factory = factory;
             _scope = _factory.Services.CreateScope();
 
-            Client = GetHttpClient();
+            _httpClient = GetHttpClient();
+            CoffeeCardClient = new CoffeeCardClient(_httpClient);
+            CoffeeCardClientV2 = new CoffeeCardClientV2(_httpClient);
             Context = GetCoffeeCardContext();
         }
 
@@ -42,6 +48,15 @@ namespace CoffeeCard.Tests.Integration.WebApplication
             var client = CreateClient();
 
             return client;
+        }
+
+        protected async Task<User> GetAuthenticatedUserAsync()
+        {
+            var user = UserBuilder.DefaultCustomer().Build();
+            await Context.Users.AddAsync(user);
+            await Context.SaveChangesAsync();
+            SetDefaultAuthHeader(user);
+            return user;
         }
 
         protected void SetDefaultAuthHeader(User user)
@@ -54,7 +69,7 @@ namespace CoffeeCard.Tests.Integration.WebApplication
                         new Claim(ClaimTypes.Role, user.UserGroup.ToString())
                     };
             var token = GenerateToken(claims);
-            Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", token);
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", token);
         }
 
         private string GenerateToken(IEnumerable<Claim> claims)
@@ -77,7 +92,7 @@ namespace CoffeeCard.Tests.Integration.WebApplication
 
         protected void RemoveRequestHeaders()
         {
-            Client.DefaultRequestHeaders.Clear();
+            _httpClient.DefaultRequestHeaders.Clear();
         }
 
         private CoffeeCardContext GetCoffeeCardContext()
@@ -93,19 +108,11 @@ namespace CoffeeCard.Tests.Integration.WebApplication
             return context;
         }
 
-        /// <summary>
-        /// Helper method to deserialize a response from the api
-        /// </summary>
-        protected static async Task<T> DeserializeResponseAsync<T>(HttpResponseMessage response)
-        {
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<T>(content);
-        }
-
         public override ValueTask DisposeAsync()
         {
             _scope.Dispose();
+            _httpClient.Dispose();
+            GC.SuppressFinalize(this);
             return base.DisposeAsync();
         }
     }

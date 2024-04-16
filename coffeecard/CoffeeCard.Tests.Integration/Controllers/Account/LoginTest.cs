@@ -1,10 +1,10 @@
 using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
-using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using CoffeeCard.Models.DataTransferObjects.User;
+using CoffeeCard.Tests.ApiClient.Generated;
 using CoffeeCard.Tests.Common.Builders;
 using CoffeeCard.Tests.Integration.WebApplication;
 using CoffeeCard.WebApi;
@@ -13,13 +13,8 @@ using Xunit;
 namespace CoffeeCard.Tests.Integration.Controllers.Account
 {
 
-    public class LoginTest : BaseIntegrationTest
+    public class LoginTest(CustomWebApplicationFactory<Startup> factory) : BaseIntegrationTest(factory)
     {
-        private const string LoginUrl = "api/v1/account/login";
-        public LoginTest(CustomWebApplicationFactory<Startup> factory) : base(factory)
-        {
-        }
-
         [Fact]
         public async Task Unknown_user_login_fails()
         {
@@ -30,9 +25,8 @@ namespace CoffeeCard.Tests.Integration.Controllers.Account
                 Version = "2.1.0"
             };
 
-            var response = await Client.PostAsJsonAsync(LoginUrl, loginRequest);
-
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            var apiException = await Assert.ThrowsAsync<ApiException>(() => CoffeeCardClient.Account_LoginAsync(loginRequest));
+            Assert.Equal((int)HttpStatusCode.Unauthorized, apiException.StatusCode);
         }
 
         [Fact]
@@ -51,11 +45,11 @@ namespace CoffeeCard.Tests.Integration.Controllers.Account
                 Email = user.Email,
                 Version = "2.1.0"
             };
-            var response = await Client.PostAsJsonAsync(LoginUrl, loginRequest);
+            var response = await CoffeeCardClient.Account_LoginAsync(loginRequest);
 
-            var token = await DeserializeResponseAsync<TokenDto>(response);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.NotEmpty(token.Token!);
+            Assert.NotEmpty(response.Token);
+            var tokenValidator = new JwtSecurityTokenHandler();
+            Assert.True(tokenValidator.CanReadToken(response.Token));
         }
 
         private static string HashPassword(string password)

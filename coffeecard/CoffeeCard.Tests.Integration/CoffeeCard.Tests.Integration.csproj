@@ -27,6 +27,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0" />
+    <PackageReference Include="NSwag.ApiDescription.Client" Version="14.0.7" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CoffeeCard.WebApi\CoffeeCard.WebApi.csproj" />
@@ -39,5 +41,17 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />
+  </ItemGroup>
+  <ItemGroup>
+    <OpenApiReference Include="../CoffeeCard.WebApi/obj/CoffeeCard.WebApi.json" >
+      <ClassName>CoffeeCardClient</ClassName>
+      <Namespace>CoffeeCard.Tests.ApiClient.Generated</Namespace>
+      <Options>/UseBaseUrl:false /OperationGenerationMode:SingleClientFromOperationId</Options>
+    </OpenApiReference>
+    <OpenApiReference Include="../CoffeeCard.WebApi/obj/CoffeeCard.WebApi_v2.json" >
+      <ClassName>CoffeeCardClientV2</ClassName>
+      <Namespace>CoffeeCard.Tests.ApiClient.v2.Generated</Namespace>
+      <Options>/AdditionalNamespaceUsages:CoffeeCard.Tests.ApiClient.Generated /UseBaseUrl:false /OperationGenerationMode:SingleClientFromOperationId</Options>
+    </OpenApiReference>
   </ItemGroup>
 </Project>
