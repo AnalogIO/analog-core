@@ -7,6 +7,7 @@ using CoffeeCard.Models.DataTransferObjects.v2.AdminStatistics;
 using CoffeeCard.Models.Entities;
 using CoffeeCard.WebApi.Helpers;
 using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
 
 namespace CoffeeCard.WebApi.Controllers.v2
 {
@@ -38,9 +39,9 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <response code="401"> Invalid credentials </response>
         [HttpPost("unused-clips")]
         [AuthorizeRoles(UserGroup.Board)]
-        [ProducesResponseType(typeof(UnusedClipsResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<UnusedClipsResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<UnusedClipsResponse>> GetUnusedClips([FromBody] UnusedClipsRequest unusedClipsRequest)
+        public async Task<ActionResult<IEnumerable<UnusedClipsResponse>>> GetUnusedClips([FromBody] UnusedClipsRequest unusedClipsRequest)
         {
             var tickets = await _adminStatisticsService.GetUnusedClips(unusedClipsRequest);
             return Ok(tickets);
