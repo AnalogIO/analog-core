@@ -14,6 +14,7 @@ using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Models.Entities;
 using CoffeeCard.WebApi.Helpers;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity.Data;
 
 namespace CoffeeCard.WebApi.Controllers.v2
 {
@@ -224,5 +225,40 @@ namespace CoffeeCard.WebApi.Controllers.v2
         {
             return Ok(await _accountService.SearchUsers(filter, pageNum, pageLength));
         }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("login")]
+        public async Task<ActionResult<UserResponse>> Login([FromBody] string email)
+        {
+            // Generate magic link token (MLT)
+            var guid = Guid.NewGuid().ToString();
+            var magicLink = new Token(guid, TokenType.Refresh, TokenType.Refresh.getExpiresAt());
+
+            // Store MLT in DB
+
+            // Send MLT using MailGun
+
+            // Return 200 OK
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("auth/token={token}")]
+        public async Task<ActionResult<UserResponse>> AuthToken(string token)
+        {
+            // Validate token in DB
+            
+            // Invalidate token in DB
+            
+            // Generate refresh token
+            
+            // Generate JWT token with user claims and refresh token
+            
+            // Return JWT token
+        }
+        
+        [HttpPost]
+        [AuthorizeRoles(UserGroup.Customer]
     }
 }
