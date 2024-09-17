@@ -7,7 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Common.Errors;
+using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Utils;
+using CoffeeCard.Models.DataTransferObjects.CoffeeCard;
 using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -20,11 +22,13 @@ namespace CoffeeCard.Library.Services
         private readonly ClaimsUtilities _claimsUtilities;
         private readonly IdentitySettings _identitySettings;
         private readonly ILogger<TokenService> _logger;
+        private readonly CoffeeCardContext _context;
 
-        public TokenService(IdentitySettings identitySettings, ClaimsUtilities claimsUtilities, ILogger<TokenService> logger)
+        public TokenService(IdentitySettings identitySettings, ClaimsUtilities claimsUtilities, CoffeeCardContext context, ILogger<TokenService> logger)
         {
             _identitySettings = identitySettings;
             _claimsUtilities = claimsUtilities;
+            _context = context;
             _logger = logger;
         }
 
@@ -101,7 +105,7 @@ namespace CoffeeCard.Library.Services
 
                 var user = await _claimsUtilities.ValidateAndReturnUserFromEmailClaimAsync(token.Claims);
 
-                if (user.Tokens.Contains(new Token(tokenString))) tokenIsUnused = true; // Tokens are removed from the user on account recovery
+                if (user.Tokens.Any((e) => e.TokenHash == tokenString)) tokenIsUnused = true; // Tokens are removed from the user on account recovery
 
                 return ValidateToken(tokenString) && tokenIsUnused;
             }

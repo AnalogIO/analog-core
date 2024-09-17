@@ -238,7 +238,7 @@ namespace CoffeeCard.Library.Services
                 new Claim(ClaimTypes.Role, "verification_token")
             };
             var verificationToken = _tokenService.GenerateToken(claims);
-            user.Tokens.Add(new Token(verificationToken));
+            user.Tokens.Add(new Token(verificationToken, TokenType.ResetPassword, TokenType.ResetPassword.getExpiresAt()));
             _context.SaveChanges();
             await _emailService.SendVerificationEmailForLostPwAsync(user, verificationToken);
         }
