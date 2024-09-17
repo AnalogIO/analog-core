@@ -81,13 +81,12 @@ namespace CoffeeCard.Models.Entities
         /// <example>186d2b31-ff25-4414-9fd1-bfe9807fa8b7</example>
         public string? ExternalTransactionId { get; set; }
 
-        // Status is nullable for migration purposes
         /// <summary>
         /// Purchase Status. The status should also reflect the status at the external payment provider
         /// </summary>
         /// <value>Status</value>
         /// <example>Completed</example>
-        public PurchaseStatus? Status { get; set; }
+        public PurchaseStatus Status { get; set; }
         
         // PaymentType is nullable for migration purposes
         /// <summary>

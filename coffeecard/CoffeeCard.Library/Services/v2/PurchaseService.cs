@@ -160,14 +160,14 @@ namespace CoffeeCard.Library.Services.v2
             PaymentDetails paymentDetails;
             if (purchase.PaymentType == null)
             {
-                paymentDetails = await _mobilePayPaymentsService.GetPayment(Guid.Parse(purchase.TransactionId));
+                paymentDetails = await _mobilePayPaymentsService.GetPayment(Guid.Parse(purchase.ExternalTransactionId));
             }
             else
             {
                 switch (purchase.PaymentType)
                 {
                     case PaymentType.MobilePay:
-                        paymentDetails = await _mobilePayPaymentsService.GetPayment(Guid.Parse(purchase.TransactionId));
+                        paymentDetails = await _mobilePayPaymentsService.GetPayment(Guid.Parse(purchase.ExternalTransactionId));
                         break;
                     case PaymentType.FreePurchase:
                         paymentDetails = new FreePurchasePaymentDetails(purchase.OrderId);
