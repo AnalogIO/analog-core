@@ -260,7 +260,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             Assert.Single(userUpdated.Purchases);
             Assert.Equal(product.NumberOfTickets, userUpdated.Tickets.Count);
         }
-        
+
         [Fact(DisplayName = "GetPurchase calls MobilePay Api when Payment Type is MobilePay")]
         public async Task GetPurchaseCallsMobilePayApiWhenPaymentTypeIsMobilePay()
         {
@@ -278,7 +278,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             };
 
             await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
-            
+
             var user = new User
             {
                 Id = 1,
@@ -293,7 +293,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 UserState = UserState.Active
             };
             await context.AddAsync(user);
-            
+
             var purchase = new Purchase()
             {
                 Id = 1,
@@ -315,11 +315,11 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var mobilePayService = new Mock<IMobilePayPaymentsService>();
             mobilePayService.Setup(mp => mp.GetPayment(Guid.Parse(purchase.ExternalTransactionId))).ReturnsAsync(
                 new MobilePayPaymentDetails(purchase.OrderId, "redirect", purchase.ExternalTransactionId));
-            
+
             var mailService = new Mock<Library.Services.IEmailService>();
             var productService = new ProductService(context);
             var ticketService = new TicketService(context, new Mock<IStatisticService>().Object);
-            
+
             var purchaseService = new PurchaseService(context, mobilePayService.Object, ticketService,
                 mailService.Object, productService);
 
@@ -328,10 +328,10 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             // Assert
             mobilePayService.Verify(mp => mp.GetPayment(Guid.Parse(purchase.ExternalTransactionId)), Times.Once);
-            
+
             Assert.Equal(purchase.PaymentType, result.PaymentDetails.PaymentType);
         }
-        
+
         [Fact(DisplayName = "GetPurchase doesnt calls MobilePay Api when Payment Type is FreePurchase")]
         public async Task GetPurchaseDoesntCallsMobilePayApiWhenPaymentTypeIsFreePurchase()
         {
@@ -349,7 +349,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             };
 
             await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
-            
+
             var user = new User
             {
                 Id = 1,
@@ -364,7 +364,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 UserState = UserState.Active
             };
             await context.AddAsync(user);
-            
+
             var purchase = new Purchase()
             {
                 Id = 1,
@@ -387,7 +387,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var mailService = new Mock<Library.Services.IEmailService>();
             var productService = new ProductService(context);
             var ticketService = new TicketService(context, new Mock<IStatisticService>().Object);
-            
+
             var purchaseService = new PurchaseService(context, mobilePayService.Object, ticketService,
                 mailService.Object, productService);
 
@@ -396,7 +396,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             // Assert
             mobilePayService.Verify(mp => mp.GetPayment(Guid.Parse(purchase.ExternalTransactionId)), Times.Never);
-            
+
             Assert.Equal(purchase.PaymentType, result.PaymentDetails.PaymentType);
         }
 

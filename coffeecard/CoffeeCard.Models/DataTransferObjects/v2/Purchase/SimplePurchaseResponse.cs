@@ -75,7 +75,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <example>Completed</example>
         [Required]
         public PurchaseStatus? PurchaseStatus { get; set; }
-        
+
         /// <summary>
         /// Payment Type
         /// </summary>

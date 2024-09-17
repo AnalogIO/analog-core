@@ -31,13 +31,13 @@ namespace CoffeeCard.Models.Entities
         /// <value>Product Id</value>
         /// <example>2</example>
         public int ProductId { get; set; }
-        
+
         /// <summary>
         /// Product purchased
         /// </summary>
         /// <value>Product</value>
         public Product Product { get; set; }
-        
+
         /// <summary>
         /// Price for purchase in Danish kroner (kr)
         /// </summary>
@@ -57,15 +57,15 @@ namespace CoffeeCard.Models.Entities
         /// </summary>
         /// <value>Purchase DateCreated</value>
         /// <example>???</example>
-        public DateTime DateCreated { get; set; }  = DateTime.UtcNow;
-        
+        public DateTime DateCreated { get; set; } = DateTime.UtcNow;
+
         /// <summary>
         /// Purchase completed
         /// </summary>
         /// <value>Purchase Completed</value>
         /// <example>true</example>
         public bool Completed { get; set; }
-        
+
         /// <summary>
         /// Order Id. Unique identifier used to represent the order at a external provider
         /// </summary>
@@ -87,7 +87,7 @@ namespace CoffeeCard.Models.Entities
         /// <value>Status</value>
         /// <example>Completed</example>
         public PurchaseStatus Status { get; set; }
-        
+
         // PaymentType is nullable for migration purposes
         /// <summary>
         /// Payment Type
