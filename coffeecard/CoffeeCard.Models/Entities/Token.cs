@@ -18,6 +18,9 @@ namespace CoffeeCard.Models.Entities
 
         public DateTime Expires { get; set; } = expiresAt;
         
+        public bool Revoked { get; set; } = false;
+        
+        public int? PreviousTokenId { get; set; }
         
         public override bool Equals(object? obj)
         {

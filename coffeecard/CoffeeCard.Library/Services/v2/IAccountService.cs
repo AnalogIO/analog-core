@@ -77,5 +77,7 @@ namespace CoffeeCard.Library.Services.v2
         /// Remove all existing priviliged user group assignments. Update users based on request contents
         /// </summary>
         Task UpdatePriviligedUserGroups(WebhookUpdateUserGroupRequest request);
+
+        Task SendMagicLinkEmail(string email);
     }
 }
