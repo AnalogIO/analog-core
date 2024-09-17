@@ -60,13 +60,6 @@ namespace CoffeeCard.Models.Entities
         public DateTime DateCreated { get; set; } = DateTime.UtcNow;
 
         /// <summary>
-        /// Purchase completed
-        /// </summary>
-        /// <value>Purchase Completed</value>
-        /// <example>true</example>
-        public bool Completed { get; set; }
-
-        /// <summary>
         /// Order Id. Unique identifier used to represent the order at a external provider
         /// </summary>
         /// <value>Order Id</value>

@@ -15,7 +15,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
     ///     "productName": "Filter coffee",
     ///     "totalAmount": 300,
     ///     "purchaseStatus": "Completed",
-    ///     "paymentType": "MobilePay"
     /// }
     /// </example>
     public class SimplePurchaseResponse
@@ -74,15 +73,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <value>Purchase status</value>
         /// <example>Completed</example>
         [Required]
-        public PurchaseStatus? PurchaseStatus { get; set; }
-
-        /// <summary>
-        /// Payment Type
-        /// </summary>
-        /// <value>Payment Type</value>
-        /// <example>MobilePay</example>
-        [Required]
-        [JsonProperty(Required = Required.AllowNull)]
-        public PaymentType? PaymentType { get; set; }
+        public PurchaseStatus PurchaseStatus { get; set; }
     }
 }
