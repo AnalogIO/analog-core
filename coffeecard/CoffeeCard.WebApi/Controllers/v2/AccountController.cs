@@ -28,16 +28,18 @@ namespace CoffeeCard.WebApi.Controllers.v2
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
+        private readonly ITokenService _tokenService;
         private readonly ClaimsUtilities _claimsUtilities;
         private readonly ILeaderboardService _leaderboardService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
         /// </summary>
-        public AccountController(IAccountService accountService, ClaimsUtilities claimsUtilities,
+        public AccountController(IAccountService accountService, ITokenService tokenService, ClaimsUtilities claimsUtilities,
             ILeaderboardService leaderboardService)
         {
             _accountService = accountService;
+            _tokenService = tokenService;
             _claimsUtilities = claimsUtilities;
             _leaderboardService = leaderboardService;
         }
@@ -229,17 +231,10 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [HttpPost]
         [AllowAnonymous]
         [Route("login")]
-        public async Task<ActionResult<UserResponse>> Login([FromBody] string email)
+        public async Task<ActionResult> Login([FromBody] string email)
         {
-            // Generate magic link token (MLT)
-            var guid = Guid.NewGuid().ToString();
-            var magicLink = new Token(guid, TokenType.Refresh, TokenType.Refresh.getExpiresAt());
-
-            // Store MLT in DB
-
-            // Send MLT using MailGun
-
-            // Return 200 OK
+            await _accountService.SendMagicLinkEmail(email);
+            return Ok();
         }
 
         [HttpGet]
@@ -247,18 +242,11 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [Route("auth/token={token}")]
         public async Task<ActionResult<UserResponse>> AuthToken(string token)
         {
-            // Validate token in DB
-            
-            // Invalidate token in DB
-            
-            // Generate refresh token
-            
-            // Generate JWT token with user claims and refresh token
-            
-            // Return JWT token
+            await _accountService.LoginByMagicLink(token);
+            // do shit
         }
         
-        [HttpPost]
-        [AuthorizeRoles(UserGroup.Customer]
+        // [HttpPost]
+        // [AuthorizeRoles(UserGroup.Customer]
     }
 }
