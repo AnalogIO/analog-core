@@ -304,7 +304,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 DateCreated = DateTime.UtcNow,
                 Completed = true,
                 OrderId = Guid.NewGuid().ToString(),
-                TransactionId = Guid.NewGuid().ToString(),
+                ExternalTransactionId = Guid.NewGuid().ToString(),
                 Status = PurchaseStatus.Completed,
                 PaymentType = PaymentType.MobilePay,
                 PurchasedBy = user
@@ -313,8 +313,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             await context.SaveChangesAsync();
 
             var mobilePayService = new Mock<IMobilePayPaymentsService>();
-            mobilePayService.Setup(mp => mp.GetPayment(Guid.Parse(purchase.TransactionId))).ReturnsAsync(
-                new MobilePayPaymentDetails(purchase.OrderId, "redirect", purchase.TransactionId, "complete"));
+            mobilePayService.Setup(mp => mp.GetPayment(Guid.Parse(purchase.ExternalTransactionId))).ReturnsAsync(
+                new MobilePayPaymentDetails(purchase.OrderId, "redirect", purchase.ExternalTransactionId));
             
             var mailService = new Mock<Library.Services.IEmailService>();
             var productService = new ProductService(context);
@@ -327,7 +327,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var result = await purchaseService.GetPurchase(purchase.Id, user);
 
             // Assert
-            mobilePayService.Verify(mp => mp.GetPayment(Guid.Parse(purchase.TransactionId)), Times.Once);
+            mobilePayService.Verify(mp => mp.GetPayment(Guid.Parse(purchase.ExternalTransactionId)), Times.Once);
             
             Assert.Equal(purchase.PaymentType, result.PaymentDetails.PaymentType);
         }
@@ -375,7 +375,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 DateCreated = DateTime.UtcNow,
                 Completed = true,
                 OrderId = Guid.NewGuid().ToString(),
-                TransactionId = Guid.NewGuid().ToString(),
+                ExternalTransactionId = Guid.NewGuid().ToString(),
                 Status = PurchaseStatus.Completed,
                 PaymentType = PaymentType.FreePurchase,
                 PurchasedBy = user
@@ -395,7 +395,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var result = await purchaseService.GetPurchase(purchase.Id, user);
 
             // Assert
-            mobilePayService.Verify(mp => mp.GetPayment(Guid.Parse(purchase.TransactionId)), Times.Never);
+            mobilePayService.Verify(mp => mp.GetPayment(Guid.Parse(purchase.ExternalTransactionId)), Times.Never);
             
             Assert.Equal(purchase.PaymentType, result.PaymentDetails.PaymentType);
         }
