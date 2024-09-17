@@ -88,14 +88,6 @@ namespace CoffeeCard.Models.Entities
         /// <example>Completed</example>
         public PurchaseStatus Status { get; set; }
 
-        // PaymentType is nullable for migration purposes
-        /// <summary>
-        /// Payment Type
-        /// </summary>
-        /// <value>Payment Type</value>
-        /// <example>MobilePay</example>
-        public PaymentType? PaymentType { get; set; }
-
         /// The type of purchase e.g. MobilePayV1, Free
         public PurchaseType Type { get; set; }
 

@@ -306,7 +306,6 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 OrderId = Guid.NewGuid().ToString(),
                 ExternalTransactionId = Guid.NewGuid().ToString(),
                 Status = PurchaseStatus.Completed,
-                PaymentType = PaymentType.MobilePay,
                 PurchasedBy = user
             };
             await context.AddAsync(purchase);
@@ -328,8 +327,6 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             // Assert
             mobilePayService.Verify(mp => mp.GetPayment(Guid.Parse(purchase.ExternalTransactionId)), Times.Once);
-
-            Assert.Equal(purchase.PaymentType, result.PaymentDetails.PaymentType);
         }
 
         [Fact(DisplayName = "GetPurchase doesnt calls MobilePay Api when Payment Type is FreePurchase")]
@@ -377,7 +374,6 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 OrderId = Guid.NewGuid().ToString(),
                 ExternalTransactionId = Guid.NewGuid().ToString(),
                 Status = PurchaseStatus.Completed,
-                PaymentType = PaymentType.FreePurchase,
                 PurchasedBy = user
             };
             await context.AddAsync(purchase);
@@ -396,8 +392,6 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             // Assert
             mobilePayService.Verify(mp => mp.GetPayment(Guid.Parse(purchase.ExternalTransactionId)), Times.Never);
-
-            Assert.Equal(purchase.PaymentType, result.PaymentDetails.PaymentType);
         }
 
         public static IEnumerable<object[]> ProductGenerator()

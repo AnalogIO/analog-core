@@ -81,10 +81,6 @@ namespace CoffeeCard.Library.Persistence
                 .Property(p => p.Status)
                 .HasConversion<string>();
 
-            modelBuilder.Entity<Purchase>()
-                .Property(p => p.PaymentType)
-                .HasConversion<string>();
-
             modelBuilder.Entity<Ticket>()
                 .HasOne<User>(t => t.Owner)
                 .WithMany(u => u.Tickets)

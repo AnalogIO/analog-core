@@ -136,7 +136,6 @@ namespace CoffeeCard.Library.Services.v2
                 ExternalTransactionId = transactionId,
                 PurchasedBy = user,
                 Status = purchaseStatus,
-                PaymentType = purchaseRequest.PaymentType
                 // FIXME State management
             };
 
@@ -158,32 +157,15 @@ namespace CoffeeCard.Library.Services.v2
             }
 
             PaymentDetails paymentDetails;
-            if (purchase.PaymentType == null)
+            try
             {
-                try
-                {
-                    paymentDetails = await _mobilePayPaymentsService.GetPayment(Guid.Parse(purchase.ExternalTransactionId));
-                }
-                catch (MobilePay.Exception.v2.MobilePayApiException)
-                {
-                    paymentDetails = new FreePurchasePaymentDetails(purchase.OrderId);
-                }
+                paymentDetails = await _mobilePayPaymentsService.GetPayment(Guid.Parse(purchase.ExternalTransactionId));
             }
-            else
+            catch (MobilePay.Exception.v2.MobilePayApiException)
             {
-                switch (purchase.PaymentType)
-                {
-                    case PaymentType.MobilePay:
-                        paymentDetails = await _mobilePayPaymentsService.GetPayment(Guid.Parse(purchase.ExternalTransactionId));
-                        break;
-                    case PaymentType.FreePurchase:
-                        paymentDetails = new FreePurchasePaymentDetails(purchase.OrderId);
-                        break;
-                    default:
-                        Log.Error("Payment Type {PaymentType} is not handled in PurchaseService", purchase.PaymentType);
-                        throw new ArgumentException($"Payment Type '{purchase.PaymentType}' is not handled");
-                }
+                paymentDetails = new FreePurchasePaymentDetails(purchase.OrderId);
             }
+
 
             return new SinglePurchaseResponse
             {
@@ -209,7 +191,6 @@ namespace CoffeeCard.Library.Services.v2
                     NumberOfTickets = p.NumberOfTickets,
                     TotalAmount = p.Price,
                     PurchaseStatus = p.Status,
-                    PaymentType = p.PaymentType
                 })
                 .ToListAsync();
         }
