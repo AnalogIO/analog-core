@@ -136,7 +136,7 @@ namespace CoffeeCard.Library.Services.v2
                 ExternalTransactionId = transactionId,
                 PurchasedBy = user,
                 Status = purchaseStatus,
-                Type = purchaseRequest.PaymentType.toPurchaseType()
+                // FIXME State management
             };
 
             return (purchase, paymentDetails);
@@ -156,7 +156,16 @@ namespace CoffeeCard.Library.Services.v2
                     $"No purchase was found by Purchase Id: {purchaseId} and User Id: {user.Id}");
             }
 
-            var paymentDetails = await _mobilePayPaymentsService.GetPayment(Guid.Parse(purchase.ExternalTransactionId));
+            PaymentDetails paymentDetails;
+            try
+            {
+                paymentDetails = await _mobilePayPaymentsService.GetPayment(Guid.Parse(purchase.ExternalTransactionId));
+            }
+            catch (MobilePay.Exception.v2.MobilePayApiException)
+            {
+                paymentDetails = new FreePurchasePaymentDetails(purchase.OrderId);
+            }
+
 
             return new SinglePurchaseResponse
             {
@@ -181,7 +190,7 @@ namespace CoffeeCard.Library.Services.v2
                     ProductName = p.ProductName,
                     NumberOfTickets = p.NumberOfTickets,
                     TotalAmount = p.Price,
-                    PurchaseStatus = p.Status
+                    PurchaseStatus = p.Status,
                 })
                 .ToListAsync();
         }

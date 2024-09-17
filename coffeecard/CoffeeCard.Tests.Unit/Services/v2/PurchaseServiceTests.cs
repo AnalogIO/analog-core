@@ -252,13 +252,144 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             };
 
             // Act
-            var purchaseResponse = await purchaseService.InitiatePurchase(request, user);
+            await purchaseService.InitiatePurchase(request, user);
 
             // Assert
             var userUpdated = await context.Users.FindAsync(user.Id);
 
             Assert.Single(userUpdated.Purchases);
             Assert.Equal(product.NumberOfTickets, userUpdated.Tickets.Count);
+        }
+
+        [Fact(DisplayName = "GetPurchase calls MobilePay Api when Payment Type is MobilePay")]
+        public async Task GetPurchaseCallsMobilePayApiWhenPaymentTypeIsMobilePay()
+        {
+            // Arrange
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
+                .UseInMemoryDatabase(nameof(GetPurchaseCallsMobilePayApiWhenPaymentTypeIsMobilePay));
+
+            var databaseSettings = new DatabaseSettings
+            {
+                SchemaName = "test"
+            };
+            var environmentSettings = new EnvironmentSettings()
+            {
+                EnvironmentType = EnvironmentType.Test
+            };
+
+            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+
+            var user = new User
+            {
+                Id = 1,
+                Name = "User1",
+                Email = "email@email.test",
+                Password = "password",
+                Salt = "salt",
+                DateCreated = new DateTime(year: 2020, month: 11, day: 11),
+                IsVerified = true,
+                PrivacyActivated = false,
+                UserGroup = UserGroup.Customer,
+                UserState = UserState.Active
+            };
+            await context.AddAsync(user);
+
+            var purchase = new Purchase()
+            {
+                Id = 1,
+                ProductName = "Coffee clip card",
+                ProductId = 1,
+                Price = 100,
+                NumberOfTickets = 10,
+                DateCreated = DateTime.UtcNow,
+                OrderId = Guid.NewGuid().ToString(),
+                ExternalTransactionId = Guid.NewGuid().ToString(),
+                Status = PurchaseStatus.Completed,
+                PurchasedBy = user
+            };
+            await context.AddAsync(purchase);
+            await context.SaveChangesAsync();
+
+            var mobilePayService = new Mock<IMobilePayPaymentsService>();
+            mobilePayService.Setup(mp => mp.GetPayment(Guid.Parse(purchase.ExternalTransactionId))).ReturnsAsync(
+                new MobilePayPaymentDetails(purchase.OrderId, "redirect", purchase.ExternalTransactionId));
+
+            var mailService = new Mock<Library.Services.IEmailService>();
+            var productService = new ProductService(context);
+            var ticketService = new TicketService(context, new Mock<IStatisticService>().Object);
+
+            var purchaseService = new PurchaseService(context, mobilePayService.Object, ticketService,
+                mailService.Object, productService);
+
+            // Act
+            var result = await purchaseService.GetPurchase(purchase.Id, user);
+
+            // Assert
+            mobilePayService.Verify(mp => mp.GetPayment(Guid.Parse(purchase.ExternalTransactionId)), Times.Once);
+        }
+
+        [Fact(DisplayName = "GetPurchase doesnt calls MobilePay Api when Payment Type is FreePurchase")]
+        public async Task GetPurchaseDoesntCallsMobilePayApiWhenPaymentTypeIsFreePurchase()
+        {
+            // Arrange
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
+                .UseInMemoryDatabase(nameof(GetPurchaseDoesntCallsMobilePayApiWhenPaymentTypeIsFreePurchase));
+
+            var databaseSettings = new DatabaseSettings
+            {
+                SchemaName = "test"
+            };
+            var environmentSettings = new EnvironmentSettings()
+            {
+                EnvironmentType = EnvironmentType.Test
+            };
+
+            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+
+            var user = new User
+            {
+                Id = 1,
+                Name = "User1",
+                Email = "email@email.test",
+                Password = "password",
+                Salt = "salt",
+                DateCreated = new DateTime(year: 2020, month: 11, day: 11),
+                IsVerified = true,
+                PrivacyActivated = false,
+                UserGroup = UserGroup.Customer,
+                UserState = UserState.Active
+            };
+            await context.AddAsync(user);
+
+            var purchase = new Purchase()
+            {
+                Id = 1,
+                ProductName = "Coffee clip card",
+                ProductId = 1,
+                Price = 100,
+                NumberOfTickets = 10,
+                DateCreated = DateTime.UtcNow,
+                OrderId = Guid.NewGuid().ToString(),
+                ExternalTransactionId = Guid.NewGuid().ToString(),
+                Status = PurchaseStatus.Completed,
+                PurchasedBy = user
+            };
+            await context.AddAsync(purchase);
+            await context.SaveChangesAsync();
+
+            var mobilePayService = new Mock<IMobilePayPaymentsService>();
+            var mailService = new Mock<Library.Services.IEmailService>();
+            var productService = new ProductService(context);
+            var ticketService = new TicketService(context, new Mock<IStatisticService>().Object);
+
+            var purchaseService = new PurchaseService(context, mobilePayService.Object, ticketService,
+                mailService.Object, productService);
+
+            // Act
+            var result = await purchaseService.GetPurchase(purchase.Id, user);
+
+            // Assert
+            mobilePayService.Verify(mp => mp.GetPayment(Guid.Parse(purchase.ExternalTransactionId)), Times.Never);
         }
 
         public static IEnumerable<object[]> ProductGenerator()

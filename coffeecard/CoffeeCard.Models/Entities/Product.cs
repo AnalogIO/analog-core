@@ -25,6 +25,8 @@ namespace CoffeeCard.Models.Entities
 
         public ICollection<ProductUserGroup> ProductUserGroup { get; set; }
 
+        public ICollection<Purchase> Purchases { get; set; }
+
         /// <summary>
         /// The menu item(s) that this product is eligible to redeem
         /// </summary>

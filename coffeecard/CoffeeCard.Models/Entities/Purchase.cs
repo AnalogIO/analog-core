@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CoffeeCard.Models.Entities
 {
-    // TODO Should me marked as unique
-    [Index(nameof(OrderId), IsUnique = true)]
+    // FIXME Should me marked as unique
+    [Index(nameof(OrderId))]
     [Index(nameof(ExternalTransactionId))]
     public class Purchase
     {
@@ -28,13 +28,14 @@ namespace CoffeeCard.Models.Entities
         /// <summary>
         /// Id of Product purchased
         /// </summary>
-        /// <value></value>
+        /// <value>Product Id</value>
         /// <example>2</example>
         public int ProductId { get; set; }
 
         /// <summary>
-        /// Product purchases
+        /// Product purchased
         /// </summary>
+        /// <value>Product</value>
         public Product Product { get; set; }
 
         /// <summary>
@@ -73,7 +74,6 @@ namespace CoffeeCard.Models.Entities
         /// <example>186d2b31-ff25-4414-9fd1-bfe9807fa8b7</example>
         public string? ExternalTransactionId { get; set; }
 
-        // Status is nullable for migration purposes
         /// <summary>
         /// Purchase Status. The status should also reflect the status at the external payment provider
         /// </summary>
