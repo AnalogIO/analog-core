@@ -84,6 +84,36 @@ namespace CoffeeCard.MobilePay.Service.v2
             }
         }
 
+        public async Task<bool> RefundPayment(Guid paymentId)
+        {
+            try
+            {
+                IssueRefundRequest issueRefundRequest = new IssueRefundRequest
+                {
+                    PaymentId = paymentId
+                };
+                try
+                {
+                    var response = await _paymentsApi.IssueRefundAsync(issueRefundRequest);
+                    return true;
+                }
+                catch (ApiException e)
+                {
+                    Log.Error(e, "MobilePay RefundPayment failed with HTTP {StatusCode}. Message: {Message}", e.StatusCode, e.Message);
+                    return false;
+                }
+
+            }
+            catch (ApiException<ErrorResponse> e)
+            {
+                var errorResponse = e.Result;
+                Log.Error(e,
+                    "MobilePay RefundPayment failed with HTTP {StatusCode}. ErrorCode: {ErrorCode} Message: {Message} CorrelationId: {CorrelationId}",
+                    e.StatusCode, errorResponse.Code, errorResponse.Message, errorResponse.CorrelationId);
+                throw new MobilePayApiException(e.StatusCode, errorResponse.Message, errorResponse.Code);
+            }
+        }
+
         public async Task CapturePayment(Guid paymentId, int amountInDanishKroner)
         {
             try
