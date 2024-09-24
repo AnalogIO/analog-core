@@ -21,13 +21,11 @@ namespace CoffeeCard.Library.Services
     {
         private readonly ClaimsUtilities _claimsUtilities;
         private readonly IdentitySettings _identitySettings;
-        private readonly CoffeeCardContext _context;
 
-        public TokenService(IdentitySettings identitySettings, ClaimsUtilities claimsUtilities, CoffeeCardContext context)
+        public TokenService(IdentitySettings identitySettings, ClaimsUtilities claimsUtilities)
         {
             _identitySettings = identitySettings;
             _claimsUtilities = claimsUtilities;
-            _context = context;
         }
 
         public string GenerateToken(IEnumerable<Claim> claims)
@@ -42,7 +40,6 @@ namespace CoffeeCard.Library.Services
                 DateTime.UtcNow.AddHours(24),
                 new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
             );
-
             return new JwtSecurityTokenHandler().WriteToken(jwt); //the method is called WriteToken but returns a string
         }
 
