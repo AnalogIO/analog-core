@@ -5,6 +5,7 @@ using CoffeeCard.Common.Configuration;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services.v2;
+using CoffeeCard.MobilePay.Generated.Api.PaymentsApi;
 using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
@@ -259,6 +260,198 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             Assert.Single(userUpdated.Purchases);
             Assert.Equal(product.NumberOfTickets, userUpdated.Tickets.Count);
+        }
+
+        [Theory(DisplayName = "RefundPurchase refunds a purchase")]
+        [MemberData(nameof(ProductGenerator))]
+        public async Task RefundPurchaseRefundsAPurchase(Product product)
+        {
+            // Arrange
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
+                .UseInMemoryDatabase(nameof(RefundPurchaseRefundsAPurchase) +
+                                     product.Name);
+
+            var databaseSettings = new DatabaseSettings
+            {
+                SchemaName = "test"
+            };
+            var environmentSettings = new EnvironmentSettings()
+            {
+                EnvironmentType = EnvironmentType.Test
+            };
+
+            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            var user = new User
+            {
+                Id = 1,
+                Name = "User1",
+                Email = "email@email.test",
+                Password = "password",
+                Salt = "salt",
+                DateCreated = new DateTime(year: 2020, month: 11, day: 11),
+                IsVerified = true,
+                PrivacyActivated = false,
+                UserGroup = UserGroup.Board,
+                UserState = UserState.Active
+            };
+
+            var purchase = new Purchase
+            {
+                Id = 1,
+                ProductId = product.Id,
+                ProductName = product.Name,
+                Price = product.Price,
+                NumberOfTickets = product.NumberOfTickets,
+                ExternalTransactionId = Guid.NewGuid().ToString(),
+                PurchasedBy = user,
+                OrderId = "test",
+            };
+            context.Add(user);
+            context.Add(product);
+            context.Add(purchase);
+            await context.SaveChangesAsync();
+
+            var mobilePayService = new Mock<IMobilePayPaymentsService>();
+            mobilePayService.Setup(mps => mps.RefundPayment(It.IsAny<Guid>()))
+                .ReturnsAsync(true);
+            var mailService = new Mock<Library.Services.IEmailService>();
+            var productService = new ProductService(context);
+            var ticketService = new TicketService(context, new Mock<IStatisticService>().Object);
+            var purchaseService = new PurchaseService(context, mobilePayService.Object, ticketService,
+                mailService.Object, productService);
+
+            // Act
+            var refund = await purchaseService.RefundPurchase(purchase.Id);
+
+            // Assert
+            Assert.Equal(PurchaseStatus.Refunded, refund.PurchaseStatus);
+        }
+
+        [Theory(DisplayName = "RefundPurchase throws exception when purchase not found")]
+        [MemberData(nameof(ProductGenerator))]
+        public async Task RefundPurchaseThrowsExceptionWhenNotAllowed(Product product)
+        {
+            // Arrange
+            var builder = new DbContextOptionsBuilder<
+                CoffeeCardContext>()
+                .UseInMemoryDatabase(nameof(RefundPurchaseThrowsExceptionWhenNotAllowed) +
+                                     product.Name);
+
+            var databaseSettings = new DatabaseSettings
+            {
+                SchemaName = "test"
+            };
+            var environmentSettings = new EnvironmentSettings()
+            {
+                EnvironmentType = EnvironmentType.Test
+            };
+
+            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            var user = new User
+            {
+                Id = 1,
+                Name = "User1",
+                Email = "email@email.test",
+                Password = "password",
+                Salt = "salt",
+                DateCreated = new DateTime(year: 2020, month: 11, day: 11),
+                IsVerified = true,
+                PrivacyActivated = false,
+                UserGroup = UserGroup.Board,
+                UserState = UserState.Active
+            };
+
+            var purchase = new Purchase
+            {
+                Id = 1,
+                ProductId = product.Id,
+                ProductName = product.Name,
+                Price = product.Price,
+                NumberOfTickets = product.NumberOfTickets,
+                ExternalTransactionId = Guid.NewGuid().ToString(),
+                PurchasedBy = user,
+                OrderId = "test",
+            };
+            context.Add(user);
+            context.Add(product);
+            context.Add(purchase);
+            await context.SaveChangesAsync();
+
+            var mobilePayService = new Mock<IMobilePayPaymentsService>();
+            mobilePayService.Setup(mps => mps.RefundPayment(It.IsAny<Guid>()))
+                .ReturnsAsync(true);
+            var mailService = new Mock<Library.Services.IEmailService>();
+            var productService = new ProductService(context);
+            var ticketService = new TicketService(context, new Mock<IStatisticService>().Object);
+            var purchaseService = new PurchaseService(context, mobilePayService.Object, ticketService,
+                mailService.Object, productService);
+
+            // Act, Assert
+            await Assert.ThrowsAsync<EntityNotFoundException>(() => purchaseService.RefundPurchase(2));
+        }
+
+        [Theory(DisplayName = "RefundPurchase throws exception when purchase is already refunded")]
+        [MemberData(nameof(ProductGenerator))]
+        public async Task RefundPurchaseThrowsExceptionWhenAlreadyRefunded(Product product)
+        {
+            // Arrange
+            var builder = new DbContextOptionsBuilder<
+                CoffeeCardContext>()
+                .UseInMemoryDatabase(nameof(RefundPurchaseThrowsExceptionWhenAlreadyRefunded) +
+                                     product.Name);
+
+            var databaseSettings = new DatabaseSettings
+            {
+                SchemaName = "test"
+            };
+            var environmentSettings = new EnvironmentSettings()
+            {
+                EnvironmentType = EnvironmentType.Test
+            };
+
+            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            var user = new User
+            {
+                Id = 1,
+                Name = "User1",
+                Email = "email@email.test",
+                Password = "password",
+                Salt = "salt",
+                DateCreated = new DateTime(year: 2020, month: 11, day: 11),
+                IsVerified = true,
+                PrivacyActivated = false,
+                UserGroup = UserGroup.Board,
+                UserState = UserState.Active
+            };
+
+            var purchase = new Purchase
+            {
+                Id = 1,
+                ProductId = product.Id,
+                ProductName = product.Name,
+                Price = product.Price,
+                NumberOfTickets = product.NumberOfTickets,
+                ExternalTransactionId = Guid.NewGuid().ToString(),
+                PurchasedBy = user,
+                OrderId = "test",
+                Status = PurchaseStatus.Refunded
+            };
+            context.Add(user);
+            context.Add(product);
+            context.Add(purchase);
+            await context.SaveChangesAsync();
+
+            var mobilePayService = new Mock<IMobilePayPaymentsService>();
+            mobilePayService.Setup(mps => mps.RefundPayment(It.IsAny<Guid>()))
+                .ReturnsAsync(true);
+            var mailService = new Mock<Library.Services.IEmailService>();
+            var productService = new ProductService(context);
+            var ticketService = new TicketService(context, new Mock<IStatisticService>().Object);
+            var purchaseService = new PurchaseService(context, mobilePayService.Object, ticketService,
+                mailService.Object, productService);
+
+            // Act, Assert
+            await Assert.ThrowsAsync<IllegalUserOperationException>(() => purchaseService.RefundPurchase(product.Id));
         }
 
         public static IEnumerable<object[]> ProductGenerator()
