@@ -20,13 +20,13 @@ namespace CoffeeCard.Library.Services.v2
     public sealed class PurchaseService : IPurchaseService
     {
         private readonly CoffeeCardContext _context;
-        private readonly IEmailService _emailService;
+        private readonly CoffeeCard.Library.Services.IEmailService _emailService;
         private readonly IMobilePayPaymentsService _mobilePayPaymentsService;
         private readonly ITicketService _ticketService;
         private readonly IProductService _productService;
 
         public PurchaseService(CoffeeCardContext context, IMobilePayPaymentsService mobilePayPaymentsService,
-            ITicketService ticketService, IEmailService emailService, IProductService productService)
+            ITicketService ticketService, CoffeeCard.Library.Services.IEmailService emailService, IProductService productService)
         {
             _context = context;
             _mobilePayPaymentsService = mobilePayPaymentsService;
