@@ -92,11 +92,14 @@ namespace CoffeeCard.MobilePay.Service.v2
                 {
                     PaymentId = paymentId
                 };
-                try{
+                try
+                {
 
                     var response = await _paymentsApi.IssueRefundAsync(issueRefundRequest);
                     return true;
-                } catch(ApiException e) {
+                }
+                catch (ApiException e)
+                {
                     Log.Error(e, "MobilePay RefundPayment failed with HTTP {StatusCode}. Message: {Message}", e.StatusCode, e.Message);
                     return false;
                 }
@@ -108,7 +111,7 @@ namespace CoffeeCard.MobilePay.Service.v2
                 Log.Error(e,
                     "MobilePay RefundPayment failed with HTTP {StatusCode}. ErrorCode: {ErrorCode} Message: {Message} CorrelationId: {CorrelationId}",
                     e.StatusCode, errorResponse.Code, errorResponse.Message, errorResponse.CorrelationId);
-                    throw new MobilePayApiException(e.StatusCode, errorResponse.Message, errorResponse.Code);
+                throw new MobilePayApiException(e.StatusCode, errorResponse.Message, errorResponse.Code);
             }
         }
 
