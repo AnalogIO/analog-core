@@ -6,6 +6,8 @@ using CoffeeCard.Library.Utils;
 using CoffeeCard.MobilePay.Generated.Api.PaymentsApi;
 using CoffeeCard.Models.DataTransferObjects;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
+using CoffeeCard.Models.Entities;
+using CoffeeCard.WebApi.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -97,14 +99,13 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <param name="id">database id of purchase</param>
         /// <returns></returns>
         [HttpPut("{id}/refund")]
-        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [AuthorizeRoles(UserGroup.Board)]
+        [ProducesResponseType(typeof(SimplePurchaseResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<bool>> RefundPurchase([FromRoute] int id)
         {
-            var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
-            var refundResponse = await _purchaseService.RefundPurchase(id, user);
-
+            var refundResponse = await _purchaseService.RefundPurchase(id);
             return Ok(refundResponse);
         }
     }

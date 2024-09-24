@@ -51,8 +51,7 @@ namespace CoffeeCard.Library.Services.v2
         /// Refund a purchase
         /// </summary>
         /// <param name="paymentId">The payment to refund</param>
-        /// /// <param name="user">user refunding the purchase</param>
-        /// <returns>Status of refund</returns>
-        Task<bool> RefundPurchase(int paymentId, User user);
+        /// <returns>The purchase after being refunded</returns>
+        Task<SimplePurchaseResponse> RefundPurchase(int paymentId);
     }
 }

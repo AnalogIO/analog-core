@@ -320,7 +320,7 @@ namespace CoffeeCard.Library.Services.v2
             };
         }
 
-        public async Task<bool> RefundPurchase(int paymentId, User user)
+        public async Task<SimplePurchaseResponse> RefundPurchase(int paymentId)
         {
             var purchase = await _context.Purchases
                 .Where(p => p.Id == paymentId)
@@ -328,15 +328,10 @@ namespace CoffeeCard.Library.Services.v2
                 .FirstOrDefaultAsync();
             if (purchase == null)
             {
-                Log.Error("No purchase was found by Purchase Id: {Id} and User Id: {UId}", paymentId, user.Id);
-                throw new EntityNotFoundException($"No purchase was found by Purchase Id: {paymentId} and User Id: {user.Id}");
+                Log.Error("No purchase was found by Purchase Id: {Id}", paymentId);
+                throw new EntityNotFoundException($"No purchase was found by Purchase Id: {paymentId}");
             }
 
-            if (purchase.PurchasedBy.Id != user.Id)
-            {
-                Log.Error("User {UserId} tried to refund purchase {PurchaseId} that does not belong to them", user.Id, paymentId);
-                throw new IllegalUserOperationException($"User {user.Id} tried to refund purchase {paymentId} that does not belong to them");
-            }
 
             if (purchase.Status != PurchaseStatus.Completed)
             {
@@ -356,7 +351,16 @@ namespace CoffeeCard.Library.Services.v2
 
             Log.Information("Refunded Purchase {PurchaseId}", purchase.Id);
 
-            return true;
+            return new SimplePurchaseResponse
+            {
+                Id = purchase.Id,
+                DateCreated = purchase.DateCreated,
+                ProductId = purchase.ProductId,
+                ProductName = purchase.ProductName,
+                NumberOfTickets = purchase.NumberOfTickets,
+                TotalAmount = purchase.Price,
+                PurchaseStatus = purchase.Status
+            };
         }
 
         public void Dispose()
