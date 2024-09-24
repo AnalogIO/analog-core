@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
+using CoffeeCard.MobilePay.Generated.Api.PaymentsApi;
 using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.v2.Products;
@@ -317,6 +318,45 @@ namespace CoffeeCard.Library.Services.v2
                 TotalAmount = purchase.Price,
                 PurchaseStatus = purchase.Status
             };
+        }
+
+        public async Task<bool> RefundPurchase(int paymentId, User user)
+        {
+            var purchase = await _context.Purchases
+                .Where(p => p.Id == paymentId)
+                .Include(p => p.PurchasedBy)
+                .FirstOrDefaultAsync();
+            if (purchase == null)
+            {
+                Log.Error("No purchase was found by Purchase Id: {Id} and User Id: {UId}", paymentId, user.Id);
+                throw new EntityNotFoundException($"No purchase was found by Purchase Id: {paymentId} and User Id: {user.Id}");
+            }
+
+            if (purchase.PurchasedBy.Id != user.Id)
+            {
+                Log.Error("User {UserId} tried to refund purchase {PurchaseId} that does not belong to them", user.Id, paymentId);
+                throw new IllegalUserOperationException($"User {user.Id} tried to refund purchase {paymentId} that does not belong to them");
+            }
+
+            if (purchase.Status != PurchaseStatus.Completed)
+            {
+                Log.Error("Purchase {PurchaseId} is not in state Completed. Cannot refund", purchase.Id);
+                throw new IllegalUserOperationException($"Purchase {purchase.Id} is not in state Completed. Cannot refund");
+            }
+
+            var refundSuccess = await _mobilePayPaymentsService.RefundPayment(Guid.Parse(purchase.ExternalTransactionId));
+            if (!refundSuccess)
+            {
+                Log.Error("Refund of Purchase {PurchaseId} failed", purchase.Id);
+                throw new InvalidOperationException($"Refund of Purchase {purchase.Id} failed");
+            }
+
+            purchase.Status = PurchaseStatus.Refunded;
+            await _context.SaveChangesAsync();
+
+            Log.Information("Refunded Purchase {PurchaseId}", purchase.Id);
+
+            return true;
         }
 
         public void Dispose()

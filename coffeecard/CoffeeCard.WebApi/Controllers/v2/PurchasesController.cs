@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Library.Utils;
+using CoffeeCard.MobilePay.Generated.Api.PaymentsApi;
 using CoffeeCard.Models.DataTransferObjects;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 using Microsoft.AspNetCore.Authorization;
@@ -12,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CoffeeCard.WebApi.Controllers.v2
 {
     /// <summary>
-    /// Controller for initiating and retrieving purchases 
+    /// Controller for initiating and retrieving purchases
     /// </summary>
     [ApiController]
     [Authorize]
@@ -69,7 +70,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         }
 
         /// <summary>
-        /// Initiate a new payment. 
+        /// Initiate a new payment.
         /// </summary>
         /// <param name="initiateRequest">Initiate request</param>
         /// <returns>Purchase with payment details</returns>
@@ -87,6 +88,24 @@ namespace CoffeeCard.WebApi.Controllers.v2
 
             // TODO Return CreatedAtAction
             return Ok(purchaseResponse);
+        }
+
+
+        /// <summary>
+        /// Refunds a payment
+        /// </summary>
+        /// <param name="id">database id of purchase</param>
+        /// <returns></returns>
+        [HttpPut("{id}/refund")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<bool>> RefundPurchase([FromRoute] int id)
+        {
+            var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
+            var refundResponse = await _purchaseService.RefundPurchase(id, user);
+
+            return Ok(refundResponse);
         }
     }
 }

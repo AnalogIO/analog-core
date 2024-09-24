@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CoffeeCard.MobilePay.Generated.Api.PaymentsApi;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 using CoffeeCard.Models.Entities;
@@ -45,5 +46,13 @@ namespace CoffeeCard.Library.Services.v2
         /// <param name="voucherCode">Voucher code</param>
         /// <param name="user">user redeeming the voucher</param>
         Task<SimplePurchaseResponse> RedeemVoucher(string voucherCode, User user);
+
+        /// <summary>
+        /// Refund a purchase
+        /// </summary>
+        /// <param name="paymentId">The payment to refund</param>
+        /// /// <param name="user">user refunding the purchase</param>
+        /// <returns>Status of refund</returns>
+        Task<bool> RefundPurchase(int paymentId, User user);
     }
 }

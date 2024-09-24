@@ -46,5 +46,7 @@ namespace CoffeeCard.MobilePay.Service.v2
         /// </summary>
         /// <returns>All Payment Points</returns>
         Task<PaymentPointsList> GetPaymentPoints();
+
+        Task<bool> RefundPayment(Guid paymentId);
     }
 }
