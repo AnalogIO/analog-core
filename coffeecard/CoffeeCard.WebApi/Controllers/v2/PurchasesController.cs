@@ -97,7 +97,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// Refunds a payment
         /// </summary>
         /// <param name="id">database id of purchase</param>
-        /// <returns></returns>
+        /// <returns>Purchase after being refunded</returns>
         [HttpPut("{id}/refund")]
         [AuthorizeRoles(UserGroup.Board)]
         [ProducesResponseType(typeof(SimplePurchaseResponse), StatusCodes.Status200OK)]
