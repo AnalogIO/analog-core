@@ -18,7 +18,7 @@ namespace CoffeeCard.Library.Services.v2
         private readonly CoffeeCardContext _context;
         private readonly CoffeeCard.Library.Services.IEmailService _emailService;
         private readonly CoffeeCard.Library.Services.v2.IEmailService _emailServiceV2;
-        private readonly IHashService _hashService;
+        private readonly CoffeeCard.Library.Services.IHashService _hashService;
         private readonly CoffeeCard.Library.Services.ITokenService _tokenService;
         private readonly CoffeeCard.Library.Services.v2.ITokenService _tokenServiceV2;
         private readonly ILogger<AccountService> _logger;
@@ -29,7 +29,7 @@ namespace CoffeeCard.Library.Services.v2
             CoffeeCard.Library.Services.IEmailService emailService,
             CoffeeCard.Library.Services.v2.IEmailService emailServiceV2,
             CoffeeCard.Library.Services.v2.ITokenService tokenServiceV2,
-            HashService hashService,
+            CoffeeCard.Library.Services.IHashService hashService,
             ILogger<AccountService> logger
         )
         {
@@ -339,8 +339,7 @@ namespace CoffeeCard.Library.Services.v2
             };
             // Generate JWT token with user claims and refresh token
             var jwt = _tokenService.GenerateToken(claims);
-            
-            // Return JWT token
+
             return jwt;
         }
 

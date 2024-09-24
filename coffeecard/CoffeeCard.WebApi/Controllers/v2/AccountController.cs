@@ -14,6 +14,7 @@ using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Models.Entities;
 using CoffeeCard.WebApi.Helpers;
 using System.ComponentModel.DataAnnotations;
+using CoffeeCard.Models.DataTransferObjects.User;
 using Microsoft.AspNetCore.Identity.Data;
 
 namespace CoffeeCard.WebApi.Controllers.v2
@@ -240,10 +241,10 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [HttpGet]
         [AllowAnonymous]
         [Route("auth/token={token}")]
-        public async Task<ActionResult<UserResponse>> AuthToken(string token)
+        public async Task<ActionResult<TokenDto>> AuthToken(string magicLinkToken)
         {
-            await _accountService.LoginByMagicLink(token);
-            // do shit
+            var token = await _accountService.LoginByMagicLink(magicLinkToken);
+            return Ok(new TokenDto { Token = token });
         }
         
         // [HttpPost]
