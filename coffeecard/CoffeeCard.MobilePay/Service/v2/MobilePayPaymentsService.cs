@@ -94,7 +94,6 @@ namespace CoffeeCard.MobilePay.Service.v2
                 };
                 try
                 {
-
                     var response = await _paymentsApi.IssueRefundAsync(issueRefundRequest);
                     return true;
                 }
