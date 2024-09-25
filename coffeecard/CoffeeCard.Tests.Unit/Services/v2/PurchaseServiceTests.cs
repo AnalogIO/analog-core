@@ -312,7 +312,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             await context.SaveChangesAsync();
 
             var mobilePayService = new Mock<IMobilePayPaymentsService>();
-            mobilePayService.Setup(mps => mps.RefundPayment(It.IsAny<Guid>()))
+            mobilePayService.Setup(mps => mps.RefundPayment(It.IsAny<Purchase>(), It.IsAny<int>()))
                 .ReturnsAsync(true);
             var mailService = new Mock<Library.Services.IEmailService>();
             var productService = new ProductService(context);
@@ -378,7 +378,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             await context.SaveChangesAsync();
 
             var mobilePayService = new Mock<IMobilePayPaymentsService>();
-            mobilePayService.Setup(mps => mps.RefundPayment(It.IsAny<Guid>()))
+            mobilePayService.Setup(mps => mps.RefundPayment(It.IsAny<Purchase>(), It.IsAny<int>()))
                 .ReturnsAsync(true);
             var mailService = new Mock<Library.Services.IEmailService>();
             var productService = new ProductService(context);
@@ -442,7 +442,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             await context.SaveChangesAsync();
 
             var mobilePayService = new Mock<IMobilePayPaymentsService>();
-            mobilePayService.Setup(mps => mps.RefundPayment(It.IsAny<Guid>()))
+            mobilePayService.Setup(mps => mps.RefundPayment(It.IsAny<Purchase>(), It.IsAny<int>()))
                 .ReturnsAsync(true);
             var mailService = new Mock<Library.Services.IEmailService>();
             var productService = new ProductService(context);

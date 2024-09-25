@@ -5,6 +5,7 @@ using CoffeeCard.MobilePay.Exception.v2;
 using CoffeeCard.MobilePay.Generated.Api.PaymentsApi;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
+using CoffeeCard.Models.Entities;
 using Serilog;
 
 namespace CoffeeCard.MobilePay.Service.v2
@@ -84,13 +85,18 @@ namespace CoffeeCard.MobilePay.Service.v2
             }
         }
 
-        public async Task<bool> RefundPayment(Guid paymentId)
+        public async Task<bool> RefundPayment(Purchase purchase, int amount)
         {
+            if (purchase == null || purchase.ExternalTransactionId == null) throw new ArgumentNullException(nameof(purchase));
             try
             {
                 IssueRefundRequest issueRefundRequest = new IssueRefundRequest
                 {
-                    PaymentId = paymentId
+                    PaymentId = Guid.Parse(purchase.ExternalTransactionId),
+                    Amount = amount,
+                    Description = "Refund of purchase " + purchase.Id,
+                    IdempotencyKey = Guid.NewGuid(),
+                    Reference = purchase.OrderId.ToString()
                 };
                 try
                 {
