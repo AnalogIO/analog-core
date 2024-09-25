@@ -5,6 +5,7 @@ using CoffeeCard.MobilePay.Generated.Api.PaymentsApi;
 using CoffeeCard.MobilePay.Generated.Api.WebhooksApi;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
+using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.MobilePay.Service.v2
 {
@@ -47,6 +48,12 @@ namespace CoffeeCard.MobilePay.Service.v2
         /// <returns>All Payment Points</returns>
         Task<PaymentPointsList> GetPaymentPoints();
 
-        Task<bool> RefundPayment(Guid paymentId);
+        /// <summary>
+        /// Refund a payment to the customer
+        /// </summary>
+        /// <param name="purchase">Purchase to refund</param>
+        /// <param name="amount">Amount to refund in oere</param>
+        /// <returns>True if refund was successful, false otherwise</returns>
+        Task<bool> RefundPayment(Purchase purchase, int amount);
     }
 }

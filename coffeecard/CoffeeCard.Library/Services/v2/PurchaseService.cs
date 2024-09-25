@@ -339,7 +339,9 @@ namespace CoffeeCard.Library.Services.v2
                 throw new IllegalUserOperationException($"Purchase {purchase.Id} is not in state Completed. Cannot refund");
             }
 
-            var refundSuccess = await _mobilePayPaymentsService.RefundPayment(Guid.Parse(purchase.ExternalTransactionId));
+            // MobilePay requires the amount to be in oere, we store the amount in kroner
+            var amountToRefund = purchase.Price * 100;
+            var refundSuccess = await _mobilePayPaymentsService.RefundPayment(purchase, amountToRefund);
             if (!refundSuccess)
             {
                 Log.Error("Refund of Purchase {PurchaseId} failed", purchase.Id);
