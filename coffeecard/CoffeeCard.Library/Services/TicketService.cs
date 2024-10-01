@@ -34,10 +34,12 @@ namespace CoffeeCard.Library.Services
 
         public IEnumerable<Ticket> GetTickets(IEnumerable<Claim> claims, bool used)
         {
+            // (Never return refunded tickets)
+            var status = used ? TicketStatus.Used : TicketStatus.Unused;
             var userId = claims.FirstOrDefault(x => x.Type == Constants.UserId);
             if (userId == null) throw new ApiException("The token is invalid!", StatusCodes.Status401Unauthorized);
             var id = int.Parse(userId.Value);
-            return _context.Tickets.Include(p => p.Purchase).Where(x => x.Owner.Id == id && x.IsUsed == used);
+            return _context.Tickets.Include(p => p.Purchase).Where(x => x.Owner.Id == id && x.Status == status);
         }
 
         public async Task<Ticket> UseTicket(IEnumerable<Claim> claims, int productId)
@@ -131,7 +133,7 @@ namespace CoffeeCard.Library.Services
                     ticket => ticket.ProductId,
                     product => product.Id,
                     (ticket, product) => new { Ticket = ticket, Product = product })
-                .Where(tp => tp.Ticket.Owner.Id == userId && !tp.Ticket.IsUsed)
+                .Where(tp => tp.Ticket.Owner.Id == userId && tp.Ticket.IsUnused)
                 .AsEnumerable()
                 .GroupBy(
                     tp => tp.Product,
@@ -165,13 +167,13 @@ namespace CoffeeCard.Library.Services
         {
             return _context.Tickets
                 .Include(p => p.Purchase)
-                .FirstOrDefault(x => x.Owner.Id == userId && x.ProductId == productId && !x.IsUsed).Id;
+                .FirstOrDefault(x => x.Owner.Id == userId && x.ProductId == productId && x.IsUnused).Id;
         }
 
         private IEnumerable<Ticket> GetMultipleTicketsFromProduct(int productId, int userId, int count)
         {
             return _context.Tickets.Include(p => p.Purchase)
-                .Where(x => x.Owner.Id == userId && x.ProductId == productId && !x.IsUsed)
+                .Where(x => x.Owner.Id == userId && x.ProductId == productId && x.IsUnused)
                 .Take(count);
         }
 
@@ -179,14 +181,14 @@ namespace CoffeeCard.Library.Services
         {
             Log.Information($"Validating that ticketId: {ticketId} belongs to userId: {userId} and is not used");
             var ticket = _context.Tickets.Include(x => x.Purchase)
-                .FirstOrDefault(x => x.Id == ticketId && !x.IsUsed && x.Owner.Id == userId);
+                .FirstOrDefault(x => x.Id == ticketId && x.IsUnused && x.Owner.Id == userId);
             if (ticket == null) throw new ApiException("The ticket is invalid", StatusCodes.Status400BadRequest);
             return ticket;
         }
 
         private void UpdateTicket(Ticket ticket)
         {
-            ticket.IsUsed = true;
+            ticket.Status = TicketStatus.Used;
             ticket.DateUsed = DateTime.UtcNow;
         }
 

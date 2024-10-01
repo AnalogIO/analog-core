@@ -13,7 +13,10 @@ namespace CoffeeCard.Models.Entities
 
         public int ProductId { get; set; }
 
-        public bool IsUsed { get; set; }
+        /// <summary>
+        /// The status of this ticket (e.g. has this ticket been used or refunded?)
+        /// </summary>
+        public TicketStatus Status { get; set; }
 
         [Column(name: "Owner_Id")]
         public int OwnerId { get; set; }
@@ -34,5 +37,21 @@ namespace CoffeeCard.Models.Entities
         /// The menu item that this ticket was used on, if any
         /// </summary>
         public MenuItem? UsedOnMenuItem { get; set; }
+
+        /// <summary>
+        /// Whether or not this ticket has been used (does not return true for refunded tickets).
+        /// </summary>
+        /// <remarks>
+        /// This is a convenience property that is equivalent to <c>Status == TicketStatus.Used</c>.
+        /// </remarks>
+        public bool IsUsed => Status == TicketStatus.Used;
+
+        /// <summary>
+        /// Whether or not this ticket is unused.
+        /// </summary>
+        /// <remarks>
+        /// This is a convenience property that is equivalent to <c>Status == TicketStatus.Unused</c>.
+        /// </remarks>
+        public bool IsUnused => Status == TicketStatus.Unused;
     }
 }

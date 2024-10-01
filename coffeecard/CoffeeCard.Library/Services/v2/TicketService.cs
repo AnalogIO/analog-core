@@ -31,7 +31,7 @@ namespace CoffeeCard.Library.Services.v2
                 {
                     DateCreated = DateTime.UtcNow,
                     ProductId = purchase.ProductId,
-                    IsUsed = false,
+                    Status = TicketStatus.Unused,
                     Owner = purchase.PurchasedBy,
                     Purchase = purchase
                 });
@@ -45,8 +45,10 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task<IEnumerable<TicketResponse>> GetTicketsAsync(User user, bool includeUsed)
         {
+            // (Never return refunded tickets)
+            var status = includeUsed ? TicketStatus.Used : TicketStatus.Unused;
             return await _context.Tickets
-                .Where(t => t.Owner.Equals(user) && t.IsUsed == includeUsed)
+                .Where(t => t.Owner.Equals(user) && t.Status == status)
                 .Include(t => t.Purchase)
                 .Include(t => t.UsedOnMenuItem)
                 .Select(t => new TicketResponse
@@ -68,7 +70,7 @@ namespace CoffeeCard.Library.Services.v2
             var product = await GetProductIncludingMenuItemsFromIdAsync(productId);
             var ticket = await GetFirstTicketFromProductAsync(product, user.Id);
 
-            ticket.IsUsed = true;
+            ticket.Status = TicketStatus.Used;
             var timeUsed = DateTime.UtcNow;
             ticket.DateUsed = timeUsed;
 
@@ -101,7 +103,7 @@ namespace CoffeeCard.Library.Services.v2
                 throw new IllegalUserOperationException("This ticket cannot be used on this menu item");
             }
 
-            ticket.IsUsed = true;
+            ticket.Status = TicketStatus.Used;
             var timeUsed = DateTime.UtcNow;
             ticket.DateUsed = timeUsed;
             ticket.UsedOnMenuItemId = menuItemId;
@@ -139,7 +141,7 @@ namespace CoffeeCard.Library.Services.v2
 
             var ticket = await _context.Tickets
                 .Include(t => t.Purchase)
-                .FirstOrDefaultAsync(t => t.Owner.Id == user.Id && t.ProductId == product.Id && !t.IsUsed)
+                .FirstOrDefaultAsync(t => t.Owner.Id == user.Id && t.ProductId == product.Id && t.IsUnused)
                 ?? throw new IllegalUserOperationException("User has no tickets for this product");
 
             return ticket;

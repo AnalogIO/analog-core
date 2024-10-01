@@ -16,13 +16,13 @@ namespace CoffeeCard.Library.Services.v2
             _context = context;
         }
 
-        public async Task<List<UnusedClipsResponse>> GetUnusedClips(UnusedClipsRequest unusedClipsRequest)
+        public async Task<List<UnusedClipsResponse>> GetUsableClips(UnusedClipsRequest unusedClipsRequest)
         {
             var startDate = unusedClipsRequest.StartDate;
             var endDate = unusedClipsRequest.EndDate;
 
             var tickets = await _context.Tickets
-                .Where(t => t.DateCreated >= startDate && t.DateCreated <= endDate && t.IsUsed == false)
+                .Where(t => t.DateCreated >= startDate && t.DateCreated <= endDate && t.IsUnused)
                 .GroupBy(ticket => ticket.ProductId)
                 .Select(group => new UnusedClipsResponse
                 {
