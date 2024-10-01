@@ -240,14 +240,22 @@ namespace CoffeeCard.WebApi.Controllers.v2
 
         [HttpGet]
         [AllowAnonymous]
-        [Route("auth/token={token}")]
-        public async Task<ActionResult<TokenDto>> AuthToken(string magicLinkToken)
+        [Route("auth/token={magicLinkToken}")]
+        public async Task<ActionResult<TokenDto>> AuthToken([FromRoute] string magicLinkToken)
         {
             var token = await _accountService.LoginByMagicLink(magicLinkToken);
+            HttpContext.Response.Cookies.Append("auth", token, new() { Expires = DateTime.Now.AddMinutes(2) }); // Expires in 2 minutes for testing purposes
             return Ok(new TokenDto { Token = token });
         }
-        
-        // [HttpPost]
-        // [AuthorizeRoles(UserGroup.Customer]
+
+        [HttpPost]
+        [AuthorizeRoles(UserGroup.Customer, UserGroup.Barista, UserGroup.Manager, UserGroup.Board)]
+        [Route("auth/refresh")]
+        public async Task<ActionResult<TokenDto>> Refresh()
+        {
+            var refreshToken = HttpContext.Request.Cookies.FirstOrDefault(c => c.Key == "refresh").Value;
+            var token = await _accountService.RefreshToken(refreshToken);
+            return Ok(new TokenDto { Token = token });
+        }
     }
 }
