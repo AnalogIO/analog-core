@@ -342,7 +342,7 @@ namespace CoffeeCard.Library.Services.v2
             }
 
             // Are all of the tickets unused (i.e. refundable)?
-            if (purchase.Tickets.Any(t => !t.IsUnused))
+            if (purchase.Tickets.Any(t => !t.IsConsumable))
             {
                 Log.Error("Purchase {PurchaseId} has tickets that are not unused. Cannot refund", purchase.Id);
                 throw new IllegalUserOperationException($"Purchase {purchase.Id} has tickets that are not unused. Cannot refund");

@@ -133,7 +133,7 @@ namespace CoffeeCard.Library.Services
                     ticket => ticket.ProductId,
                     product => product.Id,
                     (ticket, product) => new { Ticket = ticket, Product = product })
-                .Where(tp => tp.Ticket.Owner.Id == userId && tp.Ticket.IsUnused)
+                .Where(tp => tp.Ticket.Owner.Id == userId && tp.Ticket.IsConsumable)
                 .AsEnumerable()
                 .GroupBy(
                     tp => tp.Product,
@@ -167,13 +167,13 @@ namespace CoffeeCard.Library.Services
         {
             return _context.Tickets
                 .Include(p => p.Purchase)
-                .FirstOrDefault(x => x.Owner.Id == userId && x.ProductId == productId && x.IsUnused).Id;
+                .FirstOrDefault(x => x.Owner.Id == userId && x.ProductId == productId && x.IsConsumable).Id;
         }
 
         private IEnumerable<Ticket> GetMultipleTicketsFromProduct(int productId, int userId, int count)
         {
             return _context.Tickets.Include(p => p.Purchase)
-                .Where(x => x.Owner.Id == userId && x.ProductId == productId && x.IsUnused)
+                .Where(x => x.Owner.Id == userId && x.ProductId == productId && x.IsConsumable)
                 .Take(count);
         }
 
@@ -181,7 +181,7 @@ namespace CoffeeCard.Library.Services
         {
             Log.Information($"Validating that ticketId: {ticketId} belongs to userId: {userId} and is not used");
             var ticket = _context.Tickets.Include(x => x.Purchase)
-                .FirstOrDefault(x => x.Id == ticketId && x.IsUnused && x.Owner.Id == userId);
+                .FirstOrDefault(x => x.Id == ticketId && x.IsConsumable && x.Owner.Id == userId);
             if (ticket == null) throw new ApiException("The ticket is invalid", StatusCodes.Status400BadRequest);
             return ticket;
         }

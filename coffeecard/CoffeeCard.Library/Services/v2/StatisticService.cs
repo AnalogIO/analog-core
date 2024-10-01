@@ -35,7 +35,7 @@ namespace CoffeeCard.Library.Services.v2
                 {
                     ExpiryDate = DateTime.UtcNow.AddYears(100),
                     Preset = StatisticPreset.Total,
-                    SwipeCount = user.Tickets.Count(t => t.IsUsed) - increaseBy,
+                    SwipeCount = user.Tickets.Count(t => t.IsConsumed) - increaseBy,
                     LastSwipe = utcNow
                 };
                 user.Statistics.Add(totalStatistics);
@@ -56,7 +56,7 @@ namespace CoffeeCard.Library.Services.v2
                     ExpiryDate = semesterEnd,
                     Preset = StatisticPreset.Semester,
                     SwipeCount =
-                        user.Tickets.Count(t => t.IsUsed && t.DateUsed > semesterStart && t.DateUsed < semesterEnd) -
+                        user.Tickets.Count(t => t.IsConsumed && t.DateUsed > semesterStart && t.DateUsed < semesterEnd) -
                         increaseBy,
                     LastSwipe = utcNow
                 };
@@ -87,7 +87,7 @@ namespace CoffeeCard.Library.Services.v2
                 {
                     ExpiryDate = monthEnd,
                     Preset = StatisticPreset.Monthly,
-                    SwipeCount = user.Tickets.Count(t => t.IsUsed && t.DateUsed > monthStart && t.DateUsed < monthEnd) -
+                    SwipeCount = user.Tickets.Count(t => t.IsConsumed && t.DateUsed > monthStart && t.DateUsed < monthEnd) -
                                  increaseBy,
                     LastSwipe = utcNow
                 };

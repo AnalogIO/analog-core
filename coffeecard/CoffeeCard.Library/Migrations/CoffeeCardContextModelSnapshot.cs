@@ -270,6 +270,9 @@ namespace CoffeeCard.Library.Migrations
                     b.Property<DateTime?>("DateUsed")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
+
                     b.Property<int>("OwnerId")
                         .HasColumnType("int")
                         .HasColumnName("Owner_Id");

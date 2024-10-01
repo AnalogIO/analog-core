@@ -22,7 +22,7 @@ namespace CoffeeCard.Library.Services.v2
             var endDate = unusedClipsRequest.EndDate;
 
             var tickets = await _context.Tickets
-                .Where(t => t.DateCreated >= startDate && t.DateCreated <= endDate && t.IsUnused)
+                .Where(t => t.DateCreated >= startDate && t.DateCreated <= endDate && t.IsConsumable)
                 .GroupBy(ticket => ticket.ProductId)
                 .Select(group => new UnusedClipsResponse
                 {
