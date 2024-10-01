@@ -303,29 +303,30 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task SendMagicLinkEmail(string email)
         {
+            // TODO: If no user is found, should not throw error but send a register account mail instead
+            // This prevents showing a malicious user if an email is registered already
             var user = await GetAccountByEmailAsync(email);
             var magicLinkToken = _tokenServiceV2.GenerateMagicLink(email);
             await _emailServiceV2.SendMagicLink(user, magicLinkToken);
+            Console.WriteLine(magicLinkToken);
         }
 
         public async Task<string> LoginByMagicLink(string token)
         {
+            // Validate token in DB
             var foundToken = await GetTokenByMagicLink(token);
             if (foundToken.Revoked)
             {
-                await InvalidateTokenChain(foundToken.Id);
+                await InvalidateTokenChain(foundToken.Id); // Should we invalidate a the token chain if the magic link is used multiple times or should we just return already used?
                 throw new ApiException("Token already used", 401);
             }
- 
+            // Invalidate token in DB
             foundToken.Revoked = true;
             await _context.SaveChangesAsync();
-            // Validate token in DB
-
-            // Invalidate token in DB
 
             // Generate refresh token
             var refreshToken = await _tokenServiceV2.GenerateRefreshTokenAsync(foundToken.User);
-            
+
             var claims = new[]
             {
                 new Claim(ClaimTypes.Email, foundToken.User!.Email),
@@ -338,6 +339,48 @@ namespace CoffeeCard.Library.Services.v2
             var jwt = _tokenService.GenerateToken(claims);
 
             return jwt;
+        }
+
+        public async Task<string> RefreshToken(string token)
+        {
+            var foundToken = await GetRefreshToken(token);
+            if (foundToken.Revoked)
+            {
+                await InvalidateTokenChain(foundToken.Id); // Should we invalidate a the token chain if the magic link is used multiple times or should we just return already used?
+                throw new ApiException("Token already used", 401);
+            }
+            // Invalidate token in DB
+            foundToken.Revoked = true;
+            await _context.SaveChangesAsync();
+
+            // Generate refresh token
+            var refreshToken = await _tokenServiceV2.GenerateRefreshTokenAsync(foundToken.User);
+
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Email, foundToken.User!.Email),
+                new Claim(ClaimTypes.Name, foundToken.User.Name),
+                new Claim("UserId", foundToken.User.Id.ToString()),
+                new Claim(ClaimTypes.Role, foundToken.User.UserGroup.ToString()),
+                new Claim("RefreshToken", refreshToken)
+            };
+            // Generate JWT token with user claims and refresh token
+            var jwt = _tokenService.GenerateToken(claims);
+
+            return jwt;
+        }
+
+        private async Task<Token> GetRefreshToken(string token)
+        {
+            var foundToken = await _context.Tokens
+                .Include(t => t.User)
+                .FirstOrDefaultAsync(t => t.TokenHash == token);
+            if (foundToken?.User == null)
+            {
+                throw new ApiException("Invalid token", 401);
+            }
+
+            return foundToken;
         }
 
         private async Task<Token> GetTokenByMagicLink(string token)

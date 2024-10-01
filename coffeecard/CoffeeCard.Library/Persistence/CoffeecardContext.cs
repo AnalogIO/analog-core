@@ -58,7 +58,7 @@ namespace CoffeeCard.Library.Persistence
             var userGroupIntConverter = new EnumToNumberConverter<UserGroup, int>();
             // Use Enum to String for PurchaseTypes
             var purchaseTypeStringConverter = new EnumToStringConverter<PurchaseType>();
-            
+
             var tokenTypeStringConverter = new EnumToStringConverter<TokenType>();
 
             modelBuilder.Entity<User>()
@@ -99,6 +99,11 @@ namespace CoffeeCard.Library.Persistence
                 .HasForeignKey(t => t.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
 
+            modelBuilder.Entity<Token>()
+                .Property(t => t.Expires).IsRequired();
+
+            modelBuilder.Entity<Token>()
+                .Property(t => t.TokenHash).IsRequired();
         }
     }
 }

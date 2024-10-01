@@ -33,10 +33,10 @@ namespace CoffeeCard.Library.Services.v2
             Log.Information("Sending magic link email to {email} {userid}", user.Email, user.Id);
             var message = new MimeMessage();
             var builder = RetrieveTemplate("email_magic_link_login.html");
-            const string endpoint = "loginbylink?token=";
+            const string endpoint = "auth?token=";
 
             builder = BuildMagicLinkEmail(builder, magicLink, user.Email, user.Name, endpoint);
-            
+
             message.To.Add(new MailboxAddress(user.Name, user.Email));
             message.Subject = "Login to Analog";
 
@@ -44,7 +44,7 @@ namespace CoffeeCard.Library.Services.v2
 
             await SendEmailAsync(message);
         }
-        
+
         private BodyBuilder BuildMagicLinkEmail(BodyBuilder builder, string token, string email, string name, string endpoint)
         {
             var baseUrl = _environmentSettings.DeploymentUrl;
