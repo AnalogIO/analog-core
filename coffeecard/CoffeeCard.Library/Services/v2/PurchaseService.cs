@@ -326,7 +326,7 @@ namespace CoffeeCard.Library.Services.v2
                 .Where(p => p.Id == paymentId)
                 .Include(p => p.PurchasedBy)
                 .FirstOrDefaultAsync();
-            
+
             // Does the purchase exist?
             if (purchase == null)
             {

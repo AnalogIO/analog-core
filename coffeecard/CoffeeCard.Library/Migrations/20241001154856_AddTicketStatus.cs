@@ -40,7 +40,7 @@ namespace CoffeeCard.Library.Migrations
 
             // Update the IsUsed column according to the Status column
             migrationBuilder.Sql("UPDATE dbo.Tickets SET IsUsed = 1 WHERE Status = 1 OR Status = 2");
-            
+
             migrationBuilder.DropColumn(
                 name: "Status",
                 schema: "dbo",
