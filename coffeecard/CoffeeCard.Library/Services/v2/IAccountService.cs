@@ -81,5 +81,6 @@ namespace CoffeeCard.Library.Services.v2
         Task<string> LoginByMagicLink(string token);
 
         Task SendMagicLinkEmail(string email);
+        Task<string> RefreshToken(string token);
     }
 }

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CoffeeCard.Models.Entities
 {
-    public class Token(string tokenHash, TokenType type, DateTime expiresAt)
+    public class Token(string tokenHash, TokenType type, DateTime expires)
     {
         public int Id { get; set; }
 
@@ -16,12 +16,12 @@ namespace CoffeeCard.Models.Entities
 
         public TokenType Type { get; set; } = type;
 
-        public DateTime Expires { get; set; } = expiresAt;
-        
+        public DateTime Expires { get; set; } = expires;
+
         public bool Revoked { get; set; } = false;
-        
+
         public int? PreviousTokenId { get; set; }
-        
+
         public override bool Equals(object? obj)
         {
             if (obj is Token newToken) return TokenHash.Equals(newToken.TokenHash);
