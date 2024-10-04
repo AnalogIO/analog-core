@@ -69,6 +69,12 @@ public class BuilderGenerator : IIncrementalGenerator
         var configBuilder = new StringBuilder();
         foreach (var property in properties)
         {
+            // Skip properties marked as Obsolete
+            if (property.GetAttributes().Any(attr => attr.AttributeClass?.Name == "ObsoleteAttribute"))
+            {
+                continue;
+            }
+
             if (property.Name.Contains("Id"))
             {
                 configBuilder.AppendLine($"            .WithSkip<{entity.Name}>(\"{property.Name}\")");
