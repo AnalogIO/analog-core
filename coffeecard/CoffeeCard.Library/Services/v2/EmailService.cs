@@ -28,12 +28,12 @@ namespace CoffeeCard.Library.Services.v2
             _env = env;
         }
 
-        public async Task SendMagicLink(User user, string magicLink)
+        public async Task SendMagicLink(User user, string magicLink, LoginType loginType)
         {
             Log.Information("Sending magic link email to {email} {userid}", user.Email, user.Id);
             var message = new MimeMessage();
             var builder = RetrieveTemplate("email_magic_link_login.html");
-            const string endpoint = "auth?token=";
+            var endpoint = loginType.getDeepLink(magicLink);
 
             builder = BuildMagicLinkEmail(builder, magicLink, user.Email, user.Name, endpoint);
 
