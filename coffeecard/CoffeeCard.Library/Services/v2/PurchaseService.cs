@@ -174,7 +174,6 @@ namespace CoffeeCard.Library.Services.v2
         {
             var user = await _context.Users
                 .Where(u => u.Id == userId)
-                .Include(u => u.Purchases)
                 .FirstOrDefaultAsync();
             if (user == null)
             {
