@@ -170,6 +170,22 @@ namespace CoffeeCard.Library.Services.v2
             };
         }
 
+        public async Task<IEnumerable<SimplePurchaseResponse>> GetPurchases(int userId)
+        {
+            var user = await _context.Users
+                .Where(u => u.Id == userId)
+                .Include(u => u.Purchases)
+                .FirstOrDefaultAsync();
+            if (user == null)
+            {
+                Log.Error("No user was found by User Id: {Id}", userId);
+                throw new EntityNotFoundException($"No user was found by User Id: {userId}");
+            }
+
+            return await GetPurchases(user);
+        }
+
+
         public async Task<IEnumerable<SimplePurchaseResponse>> GetPurchases(User user)
         {
             return await _context.Purchases
