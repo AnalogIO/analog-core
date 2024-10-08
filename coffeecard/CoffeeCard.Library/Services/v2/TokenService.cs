@@ -19,16 +19,10 @@ public class TokenService : ITokenService
         _context = context;
     }
 
-    public string GenerateMagicLink(string email)
+    public string GenerateMagicLink(User user)
     {
-        var user = _context.Users.FirstOrDefault(u => u.Email == email);
-        if (user == null)
-        {
-            throw new ApiException("No user found with the given email."); // This check is already done in AccountService
-        }
-
         var guid = Guid.NewGuid().ToString();
-        var magicLinkToken = new Token(guid, TokenType.MagicLink, TokenType.MagicLink.getExpiresAt());
+        var magicLinkToken = new Token(guid, TokenType.MagicLink);
 
         user.Tokens.Add(magicLinkToken);
         _context.SaveChangesAsync();
@@ -38,7 +32,7 @@ public class TokenService : ITokenService
     public async Task<string> GenerateRefreshTokenAsync(User user)
     {
         var refreshToken = Guid.NewGuid().ToString();
-        _context.Tokens.Add(new Token(refreshToken, TokenType.Refresh, TokenType.Refresh.getExpiresAt()));
+        _context.Tokens.Add(new Token(refreshToken, TokenType.Refresh));
         await _context.SaveChangesAsync();
         return refreshToken;
     }
