@@ -326,20 +326,30 @@ namespace CoffeeCard.Library.Services.v2
                 .Where(p => p.Id == paymentId)
                 .Include(p => p.PurchasedBy)
                 .FirstOrDefaultAsync();
+
+            // Does the purchase exist?
             if (purchase == null)
             {
                 Log.Error("No purchase was found by Purchase Id: {Id}", paymentId);
                 throw new EntityNotFoundException($"No purchase was found by Purchase Id: {paymentId}");
             }
 
-
+            // Is the purchase in a state where it can be refunded?
             if (purchase.Status != PurchaseStatus.Completed)
             {
                 Log.Error("Purchase {PurchaseId} is not in state Completed. Cannot refund", purchase.Id);
                 throw new IllegalUserOperationException($"Purchase {purchase.Id} is not in state Completed. Cannot refund");
             }
 
-            // MobilePay requires the amount to be in oere, we store the amount in kroner
+            // Are all of the tickets unused (i.e. refundable)?
+            if (purchase.Tickets.Any(t => !t.IsConsumable))
+            {
+                Log.Error("Purchase {PurchaseId} has tickets that are not unused. Cannot refund", purchase.Id);
+                throw new IllegalUserOperationException($"Purchase {purchase.Id} has tickets that are not unused. Cannot refund");
+            }
+
+            // Refund the MobilePay payment
+            // (MobilePay expects refund amount in øre; we store the price in kroner)
             var amountToRefund = purchase.Price * 100;
             var refundSuccess = await _mobilePayPaymentsService.RefundPayment(purchase, amountToRefund);
             if (!refundSuccess)
@@ -348,9 +358,16 @@ namespace CoffeeCard.Library.Services.v2
                 throw new InvalidOperationException($"Refund of Purchase {purchase.Id} failed");
             }
 
-            purchase.Status = PurchaseStatus.Refunded;
-            await _context.SaveChangesAsync();
+            // Set the tickets' status to refunded
+            foreach (var ticket in purchase.Tickets)
+            {
+                ticket.Status = TicketStatus.Refunded;
+            }
 
+            // Set the purchase status to refunded
+            purchase.Status = PurchaseStatus.Refunded;
+
+            await _context.SaveChangesAsync();
             Log.Information("Refunded Purchase {PurchaseId}", purchase.Id);
 
             return new SimplePurchaseResponse
