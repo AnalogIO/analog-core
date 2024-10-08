@@ -229,33 +229,57 @@ namespace CoffeeCard.WebApi.Controllers.v2
             return Ok(await _accountService.SearchUsers(filter, pageNum, pageLength));
         }
 
+        /// <summary>
+        /// Sends a magic link to the user's email to login
+        /// </summary>
+        /// <param name="request">User's email</param>
+        /// <returns></returns> 
         [HttpPost]
         [AllowAnonymous]
         [Route("login")]
-        public async Task<ActionResult> Login([FromBody] string email)
+        public async Task<ActionResult> Login([FromBody] UserLoginRequest request)
         {
-            await _accountService.SendMagicLinkEmail(email);
+            await _accountService.SendMagicLinkEmail(request.Email, request.LoginType);
             return Ok();
         }
 
         [HttpGet]
         [AllowAnonymous]
-        [Route("auth/token={magicLinkToken}")]
-        public async Task<ActionResult<TokenDto>> AuthToken([FromRoute] string magicLinkToken)
+        [ProducesResponseType(typeof(TokenDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(UserLoginResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status404NotFound)]
+        [Route("auth/token={tokenHash}&loginType={loginType}")]
+        public async Task<ActionResult<UserLoginResponse>> AuthToken([FromRoute] string tokenHash, [FromRoute] LoginType loginType)
         {
-            var token = await _accountService.LoginByMagicLink(magicLinkToken);
-            HttpContext.Response.Cookies.Append("auth", token, new() { Expires = DateTime.Now.AddMinutes(2) }); // Expires in 2 minutes for testing purposes
-            return Ok(new TokenDto { Token = token });
+            var token = await _accountService.LoginByMagicLink(tokenHash);
+            return Tokenize(loginType, token);
         }
 
         [HttpPost]
         [AuthorizeRoles(UserGroup.Customer, UserGroup.Barista, UserGroup.Manager, UserGroup.Board)]
         [Route("auth/refresh")]
-        public async Task<ActionResult<TokenDto>> Refresh()
+        public async Task<ActionResult<UserLoginResponse>> Refresh()
         {
-            var refreshToken = HttpContext.Request.Cookies.FirstOrDefault(c => c.Key == "refresh").Value;
+            var refreshToken = HttpContext.Request.Cookies.FirstOrDefault(c => c.Key == "refreshToken").Value;
             var token = await _accountService.RefreshToken(refreshToken);
-            return Ok(new TokenDto { Token = token });
+            return Ok(token);
+        }
+
+        private ActionResult<UserLoginResponse> Tokenize(LoginType loginType, UserLoginResponse token)
+        {
+            switch (loginType)
+            {
+                case LoginType.App:
+                    // Redirect to app deeplink with token passed along
+                    return Ok(token);
+                case LoginType.Shifty:
+                    // Set cookie and redirect to shifty website
+                    HttpContext.Response.Cookies.Append("refreshToken", token.RefreshToken, new() { Expires = TokenType.Refresh.getExpiresAt().ToUniversalTime() });
+                    return Ok(new TokenDto() { Token = token.Jwt });
+                default:
+                    return NotFound(new MessageResponseDto { Message = "Cannot determine application to login. Please re-send link from the correct application." });
+            }
         }
     }
 }

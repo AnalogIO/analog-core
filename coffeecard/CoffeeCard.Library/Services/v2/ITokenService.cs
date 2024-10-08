@@ -5,7 +5,7 @@ namespace CoffeeCard.Library.Services.v2
 {
     public interface ITokenService
     {
-        string GenerateMagicLink(string email);
+        string GenerateMagicLink(User user);
         Task<string> GenerateRefreshTokenAsync(User user);
         Task<string> ValidateTokenAsync(string token);
     }
