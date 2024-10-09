@@ -34,6 +34,13 @@ namespace CoffeeCard.Library.Services.v2
         Task<IEnumerable<SimplePurchaseResponse>> GetPurchases(User user);
 
         /// <summary>
+        /// Get all purchases for a user by its Id
+        /// </summary>
+        /// <param name="userId">id of user to fetch purchases from</param>
+        /// <returns>Purchase details for all users purchases</returns>
+        Task<IEnumerable<SimplePurchaseResponse>> GetPurchases(int userId);
+
+        /// <summary>
         /// Handle MobilePay webhook invocation and update purchase accordingly
         /// </summary>
         /// <param name="webhook">Webhook data object</param>
