@@ -43,7 +43,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<IEnumerable<UnusedClipsResponse>>> GetUnusedClips([FromBody] UnusedClipsRequest unusedClipsRequest)
         {
-            var tickets = await _adminStatisticsService.GetUnusedClips(unusedClipsRequest);
+            var tickets = await _adminStatisticsService.GetUsableClips(unusedClipsRequest);
             return Ok(tickets);
         }
     }

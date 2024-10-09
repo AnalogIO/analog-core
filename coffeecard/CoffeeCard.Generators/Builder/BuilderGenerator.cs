@@ -111,6 +111,8 @@ public class BuilderGenerator : IIncrementalGenerator
 
     private void AddWithPropertyValueToCodeBuilder(StringBuilder codeBuilder, ITypeSymbol typeSymbol, IPropertySymbol property, char entityNameChar)
     {
+        MarkObsoleteAsObsolete(codeBuilder, property);
+
         codeBuilder.AppendLine(
             $"    public {typeSymbol.Name} With{property.Name}({property.Type} {property.Name}Value)");
         codeBuilder.AppendLine("    {");
@@ -122,6 +124,8 @@ public class BuilderGenerator : IIncrementalGenerator
     }
     private void AddWithPropertySetterToCodeBuilder(StringBuilder codeBuilder, ITypeSymbol typeSymbol, IPropertySymbol property, char entityNameChar)
     {
+        MarkObsoleteAsObsolete(codeBuilder, property);
+
         codeBuilder.AppendLine(
             $"    public {typeSymbol.Name} With{property.Name}(Func<Bogus.Faker, {property.Type}> {property.Name}Setter)");
         codeBuilder.AppendLine("    {");
@@ -130,5 +134,14 @@ public class BuilderGenerator : IIncrementalGenerator
             $"        Faker.RuleFor({entityNameChar} => {entityNameChar}.{property.Name}, {property.Name}Setter);");
         codeBuilder.AppendLine("        return this;");
         codeBuilder.AppendLine("    }");
+    }
+
+    private void MarkObsoleteAsObsolete(StringBuilder codeBuilder, IPropertySymbol property)
+    {
+        // Mark obsolete attributes as obsolete
+        if (property.GetAttributes().Any(attr => attr.AttributeClass?.Name == "ObsoleteAttribute"))
+        {
+            codeBuilder.AppendLine("    [Obsolete]");
+        }
     }
 }

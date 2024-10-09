@@ -305,6 +305,16 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 ExternalTransactionId = Guid.NewGuid().ToString(),
                 PurchasedBy = user,
                 OrderId = "test",
+                Tickets = new List<Ticket>
+                {
+                    new Ticket
+                    {
+                        Id = 1,
+                        ProductId = product.Id,
+                        Status = TicketStatus.Unused,
+                        Owner = user
+                    }
+                }
             };
             context.Add(user);
             context.Add(product);
