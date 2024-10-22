@@ -25,13 +25,13 @@ namespace CoffeeCard.Library.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            // Update the IsUsed column according to the Status column
+            migrationBuilder.Sql("UPDATE dbo.Tickets SET IsUsed = 1 WHERE Status = 1 OR Status = 2");
+            
             migrationBuilder.DropColumn(
                 name: "Status",
                 schema: "dbo",
                 table: "Tickets");
-            
-            // Update the IsUsed column according to the Status column
-            migrationBuilder.Sql("UPDATE dbo.Tickets SET IsUsed = 1 WHERE Status = 1 OR Status = 2");
         }
     }
 }
