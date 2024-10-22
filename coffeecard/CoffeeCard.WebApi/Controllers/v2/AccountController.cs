@@ -237,10 +237,12 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [HttpPost]
         [AllowAnonymous]
         [Route("login")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesDefaultResponseType]
         public async Task<ActionResult> Login([FromBody] UserLoginRequest request)
         {
             await _accountService.SendMagicLinkEmail(request.Email, request.LoginType);
-            return Ok();
+            return new NoContentResult();
         }
 
         [HttpGet]
@@ -249,8 +251,8 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(UserLoginResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status404NotFound)]
-        [Route("auth/token={tokenHash}&loginType={loginType}")]
-        public async Task<ActionResult<UserLoginResponse>> AuthToken([FromRoute] string tokenHash, [FromRoute] LoginType loginType)
+        [Route("auth/login")]
+        public async Task<ActionResult<UserLoginResponse>> AuthToken([FromQuery] string tokenHash, [FromQuery] LoginType loginType)
         {
             var token = await _accountService.LoginByMagicLink(tokenHash);
             return Tokenize(loginType, token);
@@ -258,7 +260,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
 
         [HttpPost]
         [AuthorizeRoles(UserGroup.Customer, UserGroup.Barista, UserGroup.Manager, UserGroup.Board)]
-        [Route("auth/refresh/loginType={loginType}")]
+        [Route("auth/refresh")]
         public async Task<ActionResult<UserLoginResponse>> Refresh([FromRoute] LoginType loginType, string refreshToken = null)
         {
             switch (loginType)
