@@ -284,9 +284,6 @@ namespace CoffeeCard.Library.Migrations
                         .HasColumnType("int")
                         .HasColumnName("Purchase_Id");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
                     b.Property<int?>("UsedOnMenuItemId")
                         .HasColumnType("int");
 
