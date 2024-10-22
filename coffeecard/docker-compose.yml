@@ -1,5 +1,8 @@
 ﻿version: "3.8"
 
+volumes:
+  mssql:
+
 services:
   mssql:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -11,6 +14,8 @@ services:
     restart: unless-stopped
     ports:
       - 1433:1433
+    volumes:
+      - mssql:/var/opt/mssql
   
   webapi:    
     container_name: coffeecard-api
@@ -20,11 +25,11 @@ services:
     depends_on: [ mssql ]
     ports:
       - 8080:8080
-      - 8001:8001
+      - 8081:8081
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       # - ASPNETCORE_URLS=https://+:443;http://+:80
-      - ASPNETCORE_HTTPS_PORTS=8001
+      - ASPNETCORE_HTTPS_PORTS=8081
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/CoffeeCard.WebApi.pfx
       - ASPNETCORE_Kestrel__Certificates__Default__Password=crypticpassword
     volumes:
