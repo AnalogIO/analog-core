@@ -19,13 +19,6 @@ namespace CoffeeCard.Library.Migrations
                 nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
-            migrationBuilder.AddColumn<int>(
-                name: "PreviousTokenId",
-                schema: "dbo",
-                table: "Tokens",
-                type: "int",
-                nullable: true);
-
             migrationBuilder.AddColumn<bool>(
                 name: "Revoked",
                 schema: "dbo",
@@ -48,11 +41,6 @@ namespace CoffeeCard.Library.Migrations
         {
             migrationBuilder.DropColumn(
                 name: "Expires",
-                schema: "dbo",
-                table: "Tokens");
-
-            migrationBuilder.DropColumn(
-                name: "PreviousTokenId",
                 schema: "dbo",
                 table: "Tokens");
 

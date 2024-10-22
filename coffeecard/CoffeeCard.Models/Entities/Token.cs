@@ -20,8 +20,6 @@ namespace CoffeeCard.Models.Entities
 
         public bool Revoked { get; set; } = false;
 
-        public int? PreviousTokenId { get; set; }
-
         public override bool Equals(object? obj)
         {
             if (obj is Token newToken) return TokenHash.Equals(newToken.TokenHash);
@@ -31,6 +29,11 @@ namespace CoffeeCard.Models.Entities
         public override int GetHashCode()
         {
             return HashCode.Combine(Id, TokenHash, User);
+        }
+
+        public bool Expired()
+        {
+            return DateTime.UtcNow > Expires;
         }
     }
 }

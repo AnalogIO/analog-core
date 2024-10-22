@@ -320,11 +320,8 @@ namespace CoffeeCard.Library.Services.v2
         public async Task<UserLoginResponse> LoginByMagicLink(string token)
         {
             // Validate token in DB
-            var foundToken = await GetTokenByMagicLink(token);
-            if (foundToken.Revoked)
-            {
-                throw new ApiException("Token already used", 401);
-            }
+            var foundToken = await _tokenServiceV2.GetValidTokenByHashAsync(token);
+
             // Invalidate token in DB
             foundToken.Revoked = true;
             await _context.SaveChangesAsync();
@@ -347,12 +344,8 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task<UserLoginResponse> RefreshToken(string token)
         {
-            var foundToken = await GetRefreshToken(token);
-            if (foundToken.Revoked)
-            {
-                await InvalidateTokenChain(foundToken.Id);
-                throw new ApiException("Token already used", 401);
-            }
+            var foundToken = await _tokenServiceV2.GetValidTokenByHashAsync(token);
+
             // Invalidate token in DB
             foundToken.Revoked = true;
             await _context.SaveChangesAsync();
@@ -371,43 +364,6 @@ namespace CoffeeCard.Library.Services.v2
             var jwt = _tokenService.GenerateToken(claims);
 
             return new UserLoginResponse() { Jwt = jwt, RefreshToken = refreshToken };
-        }
-
-        private async Task<Token> GetRefreshToken(string token)
-        {
-            var foundToken = await _context.Tokens
-                .Include(t => t.User)
-                .FirstOrDefaultAsync(t => t.TokenHash == token);
-            if (foundToken?.User == null)
-            {
-                throw new ApiException("Invalid token", 401);
-            }
-
-            return foundToken;
-        }
-
-        private async Task<Token> GetTokenByMagicLink(string token)
-        {
-            var foundToken = await _context.Tokens
-                .Include(t => t.User)
-                .FirstOrDefaultAsync(t => t.TokenHash == token);
-            if (foundToken?.User == null)
-            {
-                throw new ApiException("Invalid token", 401);
-            }
-
-            return foundToken;
-        }
-
-        private async Task InvalidateTokenChain(int tokenId)
-        {
-            // todo: invalidate all from user instead of recursion
-            var newerToken = _context.Tokens.FirstOrDefault(t => t.PreviousTokenId == tokenId);
-            if (newerToken != null)
-            {
-                newerToken.Revoked = true;
-                await InvalidateTokenChain(newerToken.Id);
-            }
         }
     }
 }

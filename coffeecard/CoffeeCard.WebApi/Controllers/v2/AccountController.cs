@@ -258,12 +258,23 @@ namespace CoffeeCard.WebApi.Controllers.v2
 
         [HttpPost]
         [AuthorizeRoles(UserGroup.Customer, UserGroup.Barista, UserGroup.Manager, UserGroup.Board)]
-        [Route("auth/refresh")]
-        public async Task<ActionResult<UserLoginResponse>> Refresh()
+        [Route("auth/refresh/loginType={loginType}")]
+        public async Task<ActionResult<UserLoginResponse>> Refresh([FromRoute] LoginType loginType, string refreshToken = null)
         {
-            var refreshToken = HttpContext.Request.Cookies.FirstOrDefault(c => c.Key == "refreshToken").Value;
+            switch (loginType)
+            {
+                case LoginType.App:
+                    if (refreshToken is null) return NotFound(new MessageResponseDto { Message = "Refresh token required for app refresh." });
+                    break;
+                case LoginType.Shifty:
+                    refreshToken = HttpContext.Request.Cookies.FirstOrDefault(c => c.Key == "refreshToken").Value;
+                    break;
+                default:
+                    return NotFound(new MessageResponseDto { Message = "Cannot determine application to login." });
+            }
+
             var token = await _accountService.RefreshToken(refreshToken);
-            return Ok(token);
+            return Tokenize(loginType, token);
         }
 
         private ActionResult<UserLoginResponse> Tokenize(LoginType loginType, UserLoginResponse token)
