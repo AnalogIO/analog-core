@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoffeeCard.Library.Migrations
 {
     [DbContext(typeof(CoffeeCardContext))]
-    [Migration("20241001160733_AddTokenProperties")]
+    [Migration("20241022153731_AddTokenProperties")]
     partial class AddTokenProperties
     {
         /// <inheritdoc />
@@ -311,9 +311,6 @@ namespace CoffeeCard.Library.Migrations
 
                     b.Property<DateTime>("Expires")
                         .HasColumnType("datetime2");
-
-                    b.Property<int?>("PreviousTokenId")
-                        .HasColumnType("int");
 
                     b.Property<bool>("Revoked")
                         .HasColumnType("bit");
