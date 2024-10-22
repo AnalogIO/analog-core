@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using AspNetCore.Authentication.ApiKey;
+using Azure.Monitor.OpenTelemetry.Exporter;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services;
@@ -12,7 +13,6 @@ using CoffeeCard.Library.Utils;
 using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.MobilePay.Utils;
 using CoffeeCard.WebApi.Helpers;
-using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -25,14 +25,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.FeatureManagement;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Net.Http.Headers;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using NJsonSchema.Generation;
 using NSwag;
 using NSwag.Generation.Processors.Security;
 using RestSharp;
 using RestSharp.Authenticators;
+using OpenTelemetry;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
+using Serilog;
 using AccountService = CoffeeCard.Library.Services.AccountService;
 using IAccountService = CoffeeCard.Library.Services.IAccountService;
 using IPurchaseService = CoffeeCard.Library.Services.IPurchaseService;
@@ -109,7 +111,8 @@ namespace CoffeeCard.WebApi
 
             services.AddScoped<Library.Services.v2.IPurchaseService, Library.Services.v2.PurchaseService>();
             services.AddScoped<Library.Services.v2.ITicketService, Library.Services.v2.TicketService>();
-            services.AddMobilePayHttpClients(_configuration.GetSection("MobilePaySettingsV2").Get<MobilePaySettingsV2>());
+            services.AddMobilePayHttpClients(
+                _configuration.GetSection("MobilePaySettingsV2").Get<MobilePaySettingsV2>());
             services.AddScoped<IMobilePayPaymentsService, MobilePayPaymentsService>();
             services.AddScoped<IMobilePayWebhooksService, MobilePayWebhooksService>();
             services.AddScoped<IWebhookService, WebhookService>();
@@ -119,9 +122,30 @@ namespace CoffeeCard.WebApi
             services.AddScoped<IAdminStatisticsService, AdminStatisticsService>();
             services.AddFeatureManagement();
 
-            // Azure Application Insights
-            services.AddApplicationInsightsTelemetry();
-            services.AddSingleton<TelemetryClient>();
+            // Azure Application Insights/ OpenTelemetry
+            var azureConnectionString = _configuration.GetRequiredSection("ApplicationInsights").GetValue<string>("ConnectionString");
+            services.AddOpenTelemetry()
+                .WithMetrics(metrics =>
+                {
+                    metrics.AddAspNetCoreInstrumentation()
+                        // Metrics provides by ASP.NET Core in .NET 8
+                        .AddMeter("Microsoft.AspNetCore.Hosting")
+                        .AddMeter("Microsoft.AspNetCore.Server.Kestrel")
+                        .AddOtlpExporter();
+                    if (azureConnectionString is null or "") return;
+                    metrics.AddAzureMonitorMetricExporter(options => options.ConnectionString = azureConnectionString);
+                })
+                .WithTracing(traces =>
+                {
+                    var builder = traces.AddSqlClientInstrumentation()
+                        .AddSqlClientInstrumentation()
+                        .AddHttpClientInstrumentation()
+                        .AddAspNetCoreInstrumentation()
+                        .AddOtlpExporter();
+                    if (azureConnectionString is null or "") return;
+                    builder.AddAzureMonitorTraceExporter(options => options.ConnectionString = azureConnectionString);
+                });
+                    
 
             // Setup filter to catch outgoing exceptions
             services.AddControllers(options =>
@@ -151,10 +175,7 @@ namespace CoffeeCard.WebApi
                 setup.GroupNameFormat = "'v'VVV";
                 setup.SubstituteApiVersionInUrl = true;
             });
-            services.Configure<ApiBehaviorOptions>(config =>
-            {
-                config.SuppressMapClientErrors = true;
-            });
+            services.Configure<ApiBehaviorOptions>(config => { config.SuppressMapClientErrors = true; });
 
             GenerateOpenApiDocument(services);
 
@@ -198,7 +219,8 @@ namespace CoffeeCard.WebApi
                     {
                         OnValidateKey = async context =>
                         {
-                            var identitySettings = _configuration.GetSection(nameof(IdentitySettings)).Get<IdentitySettings>();
+                            var identitySettings = _configuration.GetSection(nameof(IdentitySettings))
+                                .Get<IdentitySettings>();
                             var apiKey = identitySettings.ApiKey;
                             if (apiKey == context.ApiKey)
 
@@ -300,6 +322,7 @@ namespace CoffeeCard.WebApi
 
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseSerilogRequestLogging();
 
             app.UseEndpoints(endpoints =>
             {

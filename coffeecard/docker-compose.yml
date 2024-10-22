@@ -32,6 +32,7 @@ services:
       - ASPNETCORE_HTTPS_PORTS=8081
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/CoffeeCard.WebApi.pfx
       - ASPNETCORE_Kestrel__Certificates__Default__Password=crypticpassword
+      - DatabaseSettings__ConnectionString="Server=mssql;Initial Catalog=master;User=sa;Password=Your_password123;TrustServerCertificate=True;"
     volumes:
       - ./CoffeeCard.WebApi/appsettings.json:/app/appsettings.json:z
       - ~/.aspnet/https:/https:ro
