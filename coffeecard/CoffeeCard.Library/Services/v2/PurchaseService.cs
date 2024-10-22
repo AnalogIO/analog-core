@@ -340,6 +340,7 @@ namespace CoffeeCard.Library.Services.v2
             var purchase = await _context.Purchases
                 .Where(p => p.Id == paymentId)
                 .Include(p => p.PurchasedBy)
+                .Include(p => p.Tickets)
                 .FirstOrDefaultAsync();
 
             // Does the purchase exist?
