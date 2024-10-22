@@ -312,9 +312,6 @@ namespace CoffeeCard.Library.Migrations
                     b.Property<DateTime>("Expires")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("PreviousTokenId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("Revoked")
                         .HasColumnType("bit");
 
