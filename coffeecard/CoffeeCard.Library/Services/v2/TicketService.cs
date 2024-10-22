@@ -141,7 +141,7 @@ namespace CoffeeCard.Library.Services.v2
 
             var ticket = await _context.Tickets
                 .Include(t => t.Purchase)
-                .FirstOrDefaultAsync(t => t.Owner.Id == user.Id && t.ProductId == product.Id && t.IsConsumable)
+                .FirstOrDefaultAsync(t => t.Owner.Id == user.Id && t.ProductId == product.Id && t.Status == TicketStatus.Unused)
                 ?? throw new IllegalUserOperationException("User has no tickets for this product");
 
             return ticket;

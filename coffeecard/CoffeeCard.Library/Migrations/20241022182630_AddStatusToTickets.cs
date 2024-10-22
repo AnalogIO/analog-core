@@ -5,7 +5,7 @@
 namespace CoffeeCard.Library.Migrations
 {
     /// <inheritdoc />
-    public partial class AddTicketStatus : Migration
+    public partial class AddStatusToTickets : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

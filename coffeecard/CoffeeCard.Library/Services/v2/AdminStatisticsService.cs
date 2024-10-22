@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Models.DataTransferObjects.v2.AdminStatistics;
+using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoffeeCard.Library.Services.v2
@@ -22,7 +23,7 @@ namespace CoffeeCard.Library.Services.v2
             var endDate = unusedClipsRequest.EndDate;
 
             var tickets = await _context.Tickets
-                .Where(t => t.DateCreated >= startDate && t.DateCreated <= endDate && t.IsConsumable)
+                .Where(t => t.DateCreated >= startDate && t.DateCreated <= endDate && t.Status == TicketStatus.Unused)
                 .GroupBy(ticket => ticket.ProductId)
                 .Select(group => new UnusedClipsResponse
                 {
