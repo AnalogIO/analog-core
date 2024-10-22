@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.MobilePay.Generated.Api.PaymentsApi;
@@ -48,6 +49,28 @@ namespace CoffeeCard.WebApi.Controllers.v2
         public async Task<ActionResult<IEnumerable<SimplePurchaseResponse>>> GetAllPurchases()
         {
             var purchases = await _purchaseService.GetPurchases(await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims));
+
+            return Ok(purchases);
+        }
+
+        /// <summary>
+        /// Get all purchases for a user
+        /// </summary>
+        /// <param name="userId">User Id</param>
+        /// <returns>List of purchases</returns>
+        /// <response code="200">Purchases</response>
+        /// <response code="401">Invalid credentials</response>
+        /// <response code="403">User not allowed to view purchases for given user</response>
+        /// <response code="404">User with userId not found</response>
+        [HttpGet("user/{userId}")]
+        [AuthorizeRoles(UserGroup.Board)]
+        [ProducesResponseType(typeof(List<SimplePurchaseResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<IEnumerable<SimplePurchaseResponse>>> GetAllPurchasesForUser([FromRoute] int userId)
+        {
+            var purchases = await _purchaseService.GetPurchases(userId);
 
             return Ok(purchases);
         }
