@@ -70,13 +70,15 @@ namespace CoffeeCard.WebApi
             services.AddSingleton(_environment);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IHashService, HashService>();
-            services.AddTransient<ITokenService, TokenService>();
+            services.AddTransient<Library.Services.ITokenService, Library.Services.TokenService>();
+            services.AddScoped<Library.Services.v2.ITokenService, Library.Services.v2.TokenService>();
             services.AddSingleton<ILoginLimiter, LoginLimiter>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<Library.Services.v2.IAccountService, Library.Services.v2.AccountService>();
             services.AddScoped<IPurchaseService, PurchaseService>();
             services.AddScoped<IMapperService, MapperService>();
-            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<Library.Services.IEmailService, Library.Services.EmailService>();
+            services.AddScoped<Library.Services.v2.IEmailService, Library.Services.v2.EmailService>();
             services.AddScoped<IVoucherService, VoucherService>();
             services.AddScoped<IProgrammeService, ProgrammeService>();
             services.AddScoped<Library.Services.IProductService, Library.Services.ProductService>();

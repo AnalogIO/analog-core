@@ -14,6 +14,8 @@ using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Models.Entities;
 using CoffeeCard.WebApi.Helpers;
 using System.ComponentModel.DataAnnotations;
+using CoffeeCard.Models.DataTransferObjects.User;
+using Microsoft.AspNetCore.Identity.Data;
 
 namespace CoffeeCard.WebApi.Controllers.v2
 {
@@ -27,16 +29,18 @@ namespace CoffeeCard.WebApi.Controllers.v2
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
+        private readonly ITokenService _tokenService;
         private readonly ClaimsUtilities _claimsUtilities;
         private readonly ILeaderboardService _leaderboardService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
         /// </summary>
-        public AccountController(IAccountService accountService, ClaimsUtilities claimsUtilities,
+        public AccountController(IAccountService accountService, ITokenService tokenService, ClaimsUtilities claimsUtilities,
             ILeaderboardService leaderboardService)
         {
             _accountService = accountService;
+            _tokenService = tokenService;
             _claimsUtilities = claimsUtilities;
             _leaderboardService = leaderboardService;
         }
@@ -223,6 +227,72 @@ namespace CoffeeCard.WebApi.Controllers.v2
         public async Task<ActionResult<UserSearchResponse>> SearchUsers([FromQuery][Range(0, int.MaxValue)] int pageNum, [FromQuery] string filter = "", [FromQuery][Range(1, 100)] int pageLength = 30)
         {
             return Ok(await _accountService.SearchUsers(filter, pageNum, pageLength));
+        }
+
+        /// <summary>
+        /// Sends a magic link to the user's email to login
+        /// </summary>
+        /// <param name="request">User's email</param>
+        /// <returns></returns> 
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("login")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult> Login([FromBody] UserLoginRequest request)
+        {
+            await _accountService.SendMagicLinkEmail(request.Email, request.LoginType);
+            return new NoContentResult();
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(TokenDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(UserLoginResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status404NotFound)]
+        [Route("auth/login")]
+        public async Task<ActionResult<UserLoginResponse>> AuthToken([FromQuery] string tokenHash, [FromQuery] LoginType loginType)
+        {
+            var token = await _accountService.LoginByMagicLink(tokenHash);
+            return Tokenize(loginType, token);
+        }
+
+        [HttpPost]
+        [AuthorizeRoles(UserGroup.Customer, UserGroup.Barista, UserGroup.Manager, UserGroup.Board)]
+        [Route("auth/refresh")]
+        public async Task<ActionResult<UserLoginResponse>> Refresh([FromRoute] LoginType loginType, string refreshToken = null)
+        {
+            switch (loginType)
+            {
+                case LoginType.App:
+                    if (refreshToken is null) return NotFound(new MessageResponseDto { Message = "Refresh token required for app refresh." });
+                    break;
+                case LoginType.Shifty:
+                    refreshToken = HttpContext.Request.Cookies.FirstOrDefault(c => c.Key == "refreshToken").Value;
+                    break;
+                default:
+                    return NotFound(new MessageResponseDto { Message = "Cannot determine application to login." });
+            }
+
+            var token = await _accountService.RefreshToken(refreshToken);
+            return Tokenize(loginType, token);
+        }
+
+        private ActionResult<UserLoginResponse> Tokenize(LoginType loginType, UserLoginResponse token)
+        {
+            switch (loginType)
+            {
+                case LoginType.App:
+                    // Redirect to app deeplink with token passed along
+                    return Ok(token);
+                case LoginType.Shifty:
+                    // Set cookie and redirect to shifty website
+                    HttpContext.Response.Cookies.Append("refreshToken", token.RefreshToken, new() { Expires = TokenType.Refresh.getExpiresAt().ToUniversalTime() });
+                    return Ok(new TokenDto() { Token = token.Jwt });
+                default:
+                    return NotFound(new MessageResponseDto { Message = "Cannot determine application to login. Please re-send link from the correct application." });
+            }
         }
     }
 }
