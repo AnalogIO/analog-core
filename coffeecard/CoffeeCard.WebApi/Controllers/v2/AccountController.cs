@@ -249,32 +249,18 @@ namespace CoffeeCard.WebApi.Controllers.v2
             return new NoContentResult();
         }
 
-        [HttpGet]
-        [AllowAnonymous]
-        [ProducesResponseType(typeof(TokenDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(UserLoginResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
-        [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status404NotFound)]
-        [Route("auth/login")]
-        public async Task<ActionResult<UserLoginResponse>> AuthToken([FromQuery] string tokenHash,
-            [FromQuery] LoginType loginType)
-        {
-            var token = await _accountService.LoginByMagicLink(tokenHash);
-            return Ok(token);
-        }
-
         [HttpPost]
         [AllowAnonymous]
-        [Route("auth/refresh")]
+        [Route("auth")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<UserLoginResponse>> Refresh(string refreshToken)
+        public async Task<ActionResult<UserLoginResponse>> Authenticate(string tokenHash)
         {
-            if (refreshToken is null)
-                return NotFound(new MessageResponseDto { Message = "Refresh token required for app refresh." });
+            if (tokenHash is null)
+                return NotFound(new MessageResponseDto { Message = "Token required for app authentication." });
 
-            var token = await _accountService.RefreshToken(refreshToken);
+            var token = await _accountService.GenerateTokenPair(tokenHash);
             return Ok(token);
         }
     }

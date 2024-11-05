@@ -37,17 +37,6 @@ public class TokenService : ITokenService
         return refreshToken;
     }
 
-    public async Task<string> ValidateTokenAsync(string refreshToken)
-    {
-        var token = await _context.Tokens.FirstOrDefaultAsync(t => t.TokenHash == refreshToken);
-        if (token.Revoked)
-        {
-            await InvalidateRefreshTokensForUser(token.User);
-            throw new ApiException("Refresh token is already used", 401);
-        }
-        throw new NotImplementedException();
-    }
-
     public async Task<Token> GetValidTokenByHashAsync(string tokenHash)
     {
         var foundToken = await _context.Tokens.Include(t => t.User).FirstOrDefaultAsync(t => t.TokenHash == tokenHash);
