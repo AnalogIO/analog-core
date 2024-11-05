@@ -320,7 +320,7 @@ namespace CoffeeCard.Library.Services.v2
             Console.WriteLine(magicLinkTokenHash);
         }
 
-        public async Task<UserLoginResponse> LoginByMagicLink(string token)
+        public async Task<UserLoginResponse> GenerateTokenPair(string token)
         {
             // Validate token in DB
             var foundToken = await _tokenServiceV2.GetValidTokenByHashAsync(token);
@@ -340,30 +340,6 @@ namespace CoffeeCard.Library.Services.v2
                 new Claim(ClaimTypes.Role, foundToken.User.UserGroup.ToString()),
             };
             // Generate JWT token with user claims
-            var jwt = _tokenService.GenerateToken(claims);
-
-            return new UserLoginResponse() { Jwt = jwt, RefreshToken = refreshToken };
-        }
-
-        public async Task<UserLoginResponse> RefreshToken(string token)
-        {
-            var foundToken = await _tokenServiceV2.GetValidTokenByHashAsync(token);
-
-            // Invalidate token in DB
-            foundToken.Revoked = true;
-            await _context.SaveChangesAsync();
-
-            // Generate refresh token
-            var refreshToken = await _tokenServiceV2.GenerateRefreshTokenAsync(foundToken.User);
-
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.Email, foundToken.User!.Email),
-                new Claim(ClaimTypes.Name, foundToken.User.Name),
-                new Claim("UserId", foundToken.User.Id.ToString()),
-                new Claim(ClaimTypes.Role, foundToken.User.UserGroup.ToString()),
-            };
-            // Generate JWT token with user claims and refresh token
             var jwt = _tokenService.GenerateToken(claims);
 
             return new UserLoginResponse() { Jwt = jwt, RefreshToken = refreshToken };
