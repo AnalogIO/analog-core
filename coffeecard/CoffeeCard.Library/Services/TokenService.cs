@@ -37,7 +37,7 @@ namespace CoffeeCard.Library.Services
                 "Everyone",
                 claims,
                 DateTime.UtcNow,
-                DateTime.UtcNow.AddHours(24),
+                DateTime.UtcNow.AddMinutes(1),
                 new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
             );
             return new JwtSecurityTokenHandler().WriteToken(jwt); //the method is called WriteToken but returns a string

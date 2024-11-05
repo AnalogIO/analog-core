@@ -126,8 +126,8 @@ namespace CoffeeCard.WebApi
                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                 });
 
-            services.AddCors(options => options.AddDefaultPolicy(builder =>
-                builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
+            services.AddCors(options => options.AddPolicy("local", builder =>
+                builder.WithOrigins("https://shifty.local.analogio.dk:8001").AllowAnyMethod().AllowAnyHeader().AllowCredentials()));
 
             services.AddApiVersioning(config =>
             {
@@ -285,7 +285,7 @@ namespace CoffeeCard.WebApi
 
             app.UseRouting();
 
-            app.UseCors();
+            app.UseCors("local");
 
             app.UseAuthentication();
             app.UseAuthorization();

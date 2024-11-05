@@ -259,9 +259,9 @@ namespace CoffeeCard.WebApi.Controllers.v2
         }
 
         [HttpPost]
-        [AuthorizeRoles(UserGroup.Customer, UserGroup.Barista, UserGroup.Manager, UserGroup.Board)]
+        [AllowAnonymous]
         [Route("auth/refresh")]
-        public async Task<ActionResult<UserLoginResponse>> Refresh([FromRoute] LoginType loginType, string refreshToken = null)
+        public async Task<ActionResult<UserLoginResponse>> Refresh([FromQuery] LoginType loginType, string refreshToken = null)
         {
             switch (loginType)
             {
@@ -288,8 +288,8 @@ namespace CoffeeCard.WebApi.Controllers.v2
                     return Ok(token);
                 case LoginType.Shifty:
                     // Set cookie and redirect to shifty website
-                    HttpContext.Response.Cookies.Append("refreshToken", token.RefreshToken, new() { Expires = TokenType.Refresh.getExpiresAt().ToUniversalTime() });
-                    return Ok(new TokenDto() { Token = token.Jwt });
+                    HttpContext.Response.Cookies.Append("refreshToken", token.RefreshToken, new() { Domain = "analogio.dk", Expires = TokenType.Refresh.getExpiresAt().ToUniversalTime(), SameSite = SameSiteMode.None, Secure = true });
+                    return Ok(new UserLoginResponse() { Jwt = token.Jwt, RefreshToken = "" });
                 default:
                     return NotFound(new MessageResponseDto { Message = "Cannot determine application to login. Please re-send link from the correct application." });
             }
