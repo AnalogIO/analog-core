@@ -35,3 +35,9 @@ services:
     volumes:
       - ./CoffeeCard.WebApi/appsettings.json:/app/appsettings.json:z
       - ~/.aspnet/https:/https:ro
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"

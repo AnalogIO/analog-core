@@ -18,13 +18,13 @@ namespace CoffeeCard.Library.Services
     {
         private readonly IWebHostEnvironment _env;
         private readonly EnvironmentSettings _environmentSettings;
-        private readonly MailgunSettings _mailgunSettings;
+        private readonly IEmailSender _emailSender;
         private readonly IMapperService _mapperService;
 
-        public EmailService(MailgunSettings mailgunSettings, EnvironmentSettings environmentSettings,
+        public EmailService(IEmailSender emailSender, EnvironmentSettings environmentSettings,
             IWebHostEnvironment env, IMapperService mapperService)
         {
-            _mailgunSettings = mailgunSettings;
+            _emailSender = emailSender;
             _environmentSettings = environmentSettings;
             _env = env;
             _mapperService = mapperService;
@@ -54,7 +54,7 @@ namespace CoffeeCard.Library.Services
 
             Log.Information("Sending invoice for PurchaseId {PurchaseId} to UserId {UserId}, E-mail {Email}", purchase.Id, user.Id, user.Email);
 
-            await SendEmailAsync(message);
+            await _emailSender.SendEmailAsync(message);
         }
 
         public async Task SendRegistrationVerificationEmailAsync(User user, string token)
@@ -71,7 +71,7 @@ namespace CoffeeCard.Library.Services
 
             message.Body = builder.ToMessageBody();
 
-            await SendEmailAsync(message);
+            await _emailSender.SendEmailAsync(message);
         }
 
         public async Task SendVerificationEmailForLostPwAsync(User user, string token)
@@ -87,7 +87,7 @@ namespace CoffeeCard.Library.Services
 
             message.Body = builder.ToMessageBody();
 
-            await SendEmailAsync(message);
+            await _emailSender.SendEmailAsync(message);
         }
 
         public async Task SendVerificationEmailForDeleteAccount(User user, string token)
@@ -104,7 +104,7 @@ namespace CoffeeCard.Library.Services
 
             message.Body = builder.ToMessageBody();
 
-            await SendEmailAsync(message);
+            await _emailSender.SendEmailAsync(message);
         }
 
         public async Task SendInvoiceAsyncV2(Purchase purchase, User user)
@@ -149,30 +149,6 @@ namespace CoffeeCard.Library.Services
             }
 
             return builder;
-        }
-
-        private async Task SendEmailAsync(MimeMessage mail)
-        {
-            var client = new RestClient(_mailgunSettings.MailgunApiUrl)
-            {
-                Authenticator = new HttpBasicAuthenticator("api", _mailgunSettings.ApiKey)
-            };
-
-            var request = new RestRequest();
-            request.AddParameter("domain", _mailgunSettings.Domain, ParameterType.UrlSegment);
-            request.Resource = "{domain}/messages";
-            request.AddParameter("from", "Cafe Analog <mailgun@cafeanalog.dk>");
-            request.AddParameter("to", mail.To[0].ToString());
-            request.AddParameter("subject", mail.Subject);
-            request.AddParameter("html", mail.HtmlBody);
-            request.Method = Method.Post;
-
-            var response = await client.ExecutePostAsync(request);
-
-            if (!response.IsSuccessful)
-            {
-                Log.Error("Error sending request to Mailgun. StatusCode: {statusCode} ErrorMessage: {errorMessage}", response.StatusCode, response.ErrorMessage);
-            }
         }
     }
 }
