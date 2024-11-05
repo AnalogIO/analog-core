@@ -33,9 +33,18 @@ namespace CoffeeCard.Library.Services.v2
             Log.Information("Sending magic link email to {email} {userid}", user.Email, user.Id);
             var message = new MimeMessage();
             var builder = RetrieveTemplate("email_magic_link_login.html");
-            var endpoint = loginType.getDeepLink(magicLink);
+            var baseUrl = loginType switch
+            {
+                LoginType.Shifty => _environmentSettings.ShiftyUrl,
+                LoginType.App => throw new NotImplementedException(),
+                _ => throw new NotImplementedException(),
+            };
 
-            builder = BuildMagicLinkEmail(builder, magicLink, user.Email, user.Name, endpoint);
+            var deeplink = loginType.GetDeepLink(baseUrl, magicLink);
+
+            Console.WriteLine($"MAGIC LINK HREF: {deeplink}");
+
+            builder = BuildMagicLinkEmail(builder, user.Email, user.Name, deeplink);
 
             message.To.Add(new MailboxAddress(user.Name, user.Email));
             message.Subject = "Login to Analog";
@@ -45,16 +54,12 @@ namespace CoffeeCard.Library.Services.v2
             await SendEmailAsync(message);
         }
 
-        private BodyBuilder BuildMagicLinkEmail(BodyBuilder builder, string token, string email, string name, string endpoint)
+        private BodyBuilder BuildMagicLinkEmail(BodyBuilder builder, string email, string name, string deeplink)
         {
-            var baseUrl = _environmentSettings.DeploymentUrl;
-
             builder.HtmlBody = builder.HtmlBody.Replace("{email}", email);
             builder.HtmlBody = builder.HtmlBody.Replace("{name}", name);
             builder.HtmlBody = builder.HtmlBody.Replace("{expiry}", "30 minutes");
-            builder.HtmlBody = builder.HtmlBody.Replace("{baseUrl}", baseUrl);
-            builder.HtmlBody = builder.HtmlBody.Replace("{endpoint}", endpoint);
-            builder.HtmlBody = builder.HtmlBody.Replace("{token}", token);
+            builder.HtmlBody = builder.HtmlBody.Replace("{deeplink}", deeplink);
 
             return builder;
         }

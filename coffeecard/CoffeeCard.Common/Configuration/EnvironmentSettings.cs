@@ -11,6 +11,8 @@ namespace CoffeeCard.Common.Configuration
 
         [Required] public string DeploymentUrl { get; set; }
 
+        [Required] public string ShiftyUrl { get; set; }
+
         public void Validate()
         {
             Validator.ValidateObject(this, new ValidationContext(this), true);
