@@ -11,10 +11,8 @@ public class MailgunEmailSender(MailgunSettings mailgunSettings) : IEmailSender
 {
     public async Task SendEmailAsync(MimeMessage mail)
     {
-        var client = new RestClient(mailgunSettings.MailgunApiUrl)
-        {
-            Authenticator = new HttpBasicAuthenticator("api", mailgunSettings.ApiKey)
-        };
+        using var client = new RestClient(mailgunSettings.MailgunApiUrl);
+        client.Authenticator = new HttpBasicAuthenticator("api", mailgunSettings.ApiKey);
 
         var request = new RestRequest();
         request.AddParameter("domain", mailgunSettings.Domain, ParameterType.UrlSegment);
