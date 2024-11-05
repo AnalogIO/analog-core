@@ -36,7 +36,8 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
         /// </summary>
-        public AccountController(IAccountService accountService, ITokenService tokenService, ClaimsUtilities claimsUtilities,
+        public AccountController(IAccountService accountService, ITokenService tokenService,
+            ClaimsUtilities claimsUtilities,
             ILeaderboardService leaderboardService)
         {
             _accountService = accountService;
@@ -159,7 +160,8 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
         [Route("{id:int}/user-group")]
-        public async Task<ActionResult> UpdateAccountUserGroup([FromRoute] int id, [FromBody] UpdateUserGroupRequest updateUserGroupRequest)
+        public async Task<ActionResult> UpdateAccountUserGroup([FromRoute] int id,
+            [FromBody] UpdateUserGroupRequest updateUserGroupRequest)
         {
             await _accountService.UpdateUserGroup(updateUserGroupRequest.UserGroup, id);
 
@@ -224,7 +226,9 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(UserSearchResponse), StatusCodes.Status200OK)]
         [Route("search")]
-        public async Task<ActionResult<UserSearchResponse>> SearchUsers([FromQuery][Range(0, int.MaxValue)] int pageNum, [FromQuery] string filter = "", [FromQuery][Range(1, 100)] int pageLength = 30)
+        public async Task<ActionResult<UserSearchResponse>> SearchUsers(
+            [FromQuery][Range(0, int.MaxValue)] int pageNum, [FromQuery] string filter = "",
+            [FromQuery][Range(1, 100)] int pageLength = 30)
         {
             return Ok(await _accountService.SearchUsers(filter, pageNum, pageLength));
         }
@@ -252,7 +256,8 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status404NotFound)]
         [Route("auth/login")]
-        public async Task<ActionResult<UserLoginResponse>> AuthToken([FromQuery] string tokenHash, [FromQuery] LoginType loginType)
+        public async Task<ActionResult<UserLoginResponse>> AuthToken([FromQuery] string tokenHash,
+            [FromQuery] LoginType loginType)
         {
             var token = await _accountService.LoginByMagicLink(tokenHash);
             return Ok(token);
@@ -266,9 +271,11 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesDefaultResponseType]
         public async Task<ActionResult<UserLoginResponse>> Refresh(string refreshToken)
         {
-            if (refreshToken is null) return NotFound(new MessageResponseDto { Message = "Refresh token required for app refresh." });
+            if (refreshToken is null)
+                return NotFound(new MessageResponseDto { Message = "Refresh token required for app refresh." });
 
             var token = await _accountService.RefreshToken(refreshToken);
             return Ok(token);
         }
     }
+}
