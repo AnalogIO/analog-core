@@ -255,44 +255,21 @@ namespace CoffeeCard.WebApi.Controllers.v2
         public async Task<ActionResult<UserLoginResponse>> AuthToken([FromQuery] string tokenHash, [FromQuery] LoginType loginType)
         {
             var token = await _accountService.LoginByMagicLink(tokenHash);
-            return Tokenize(loginType, token);
+            return Ok(token);
         }
 
         [HttpPost]
         [AllowAnonymous]
         [Route("auth/refresh")]
-        public async Task<ActionResult<UserLoginResponse>> Refresh([FromQuery] LoginType loginType, string refreshToken = null)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<UserLoginResponse>> Refresh(string refreshToken)
         {
-            switch (loginType)
-            {
-                case LoginType.App:
-                    if (refreshToken is null) return NotFound(new MessageResponseDto { Message = "Refresh token required for app refresh." });
-                    break;
-                case LoginType.Shifty:
-                    refreshToken = HttpContext.Request.Cookies.FirstOrDefault(c => c.Key == "refreshToken").Value;
-                    break;
-                default:
-                    return NotFound(new MessageResponseDto { Message = "Cannot determine application to login." });
-            }
+            if (refreshToken is null) return NotFound(new MessageResponseDto { Message = "Refresh token required for app refresh." });
 
             var token = await _accountService.RefreshToken(refreshToken);
-            return Tokenize(loginType, token);
-        }
-
-        private ActionResult<UserLoginResponse> Tokenize(LoginType loginType, UserLoginResponse token)
-        {
-            switch (loginType)
-            {
-                case LoginType.App:
-                    // Redirect to app deeplink with token passed along
-                    return Ok(token);
-                case LoginType.Shifty:
-                    // Set cookie and redirect to shifty website
-                    HttpContext.Response.Cookies.Append("refreshToken", token.RefreshToken, new() { Domain = "analogio.dk", Expires = TokenType.Refresh.getExpiresAt().ToUniversalTime(), SameSite = SameSiteMode.None, Secure = true });
-                    return Ok(new UserLoginResponse() { Jwt = token.Jwt, RefreshToken = "" });
-                default:
-                    return NotFound(new MessageResponseDto { Message = "Cannot determine application to login. Please re-send link from the correct application." });
-            }
+            return Ok(token);
         }
     }
 }
