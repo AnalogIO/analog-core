@@ -3,5 +3,9 @@
     "yaml.schemas": {
         "https://json.schemastore.org/github-workflow.json": "file:///c%3A/code/private/analogio/analog-core/.github/actions/deploy.yml",
         "https://json.schemastore.org/github-action.json": "file:///c%3A/code/private/analogio/analog-core/.github/actions/core-sonarcloud.yml"
+    },
+    "sonarlint.connectedMode.project": {
+        "connectionId": "Analog",
+        "projectKey": "AnalogIO_analog-core"
     }
 }
