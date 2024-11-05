@@ -25,7 +25,7 @@
                     If you did not try to login you can safely disregard this message.
                 </mj-text>
                 <mj-spacer height="20px" />
-                <mj-button background-color="#38251a" href="{baseUrl}{endpoint}{token}"  mj-class="description" color="#ece9e9">
+                <mj-button background-color="#38251a" href="{deeplink}"  mj-class="description" color="#ece9e9">
                     Login
                 </mj-button>
                 <mj-spacer height="15px" />

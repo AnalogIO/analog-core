@@ -272,4 +272,3 @@ namespace CoffeeCard.WebApi.Controllers.v2
             return Ok(token);
         }
     }
-}
