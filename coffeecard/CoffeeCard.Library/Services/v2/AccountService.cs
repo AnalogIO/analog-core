@@ -308,13 +308,11 @@ namespace CoffeeCard.Library.Services.v2
                 .FirstOrDefaultAsync();
             if (user is null)
             {
-                // TODO: If no user is found, should not throw error but send a register account mail instead
-                // This prevents showing a malicious user if an email is registered already
+                // Should not throw error to prevent showing a malicious user if an email is already registered
                 return;
             }
             var magicLinkTokenHash = _tokenServiceV2.GenerateMagicLink(user);
             await _emailServiceV2.SendMagicLink(user, magicLinkTokenHash, loginType);
-            Console.WriteLine(magicLinkTokenHash);
         }
 
         public async Task<UserLoginResponse> GenerateTokenPair(string token)
