@@ -79,6 +79,7 @@ namespace CoffeeCard.WebApi
             if (_environment.IsDevelopment())
             {
                 services.AddTransient<IEmailSender, SmtpEmailSender>();
+                services.AddSingleton(_configuration.GetSection("SmtpSettings").Get<SmtpSettings>());
             }
             else
             {

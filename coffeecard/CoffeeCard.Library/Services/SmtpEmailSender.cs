@@ -22,7 +22,7 @@ public class SmtpEmailSender(SmtpSettings smtpSettings) : IEmailSender
         }
         catch (Exception ex)
         {
-            Log.Error($"Error sending mail to SMTP server: {ex.Message}");
+            Log.Error("Error sending request to SMTP server. Error: {errorMessage}", ex.Message);
         }
     }
 }
