@@ -76,6 +76,15 @@ namespace CoffeeCard.WebApi
             services.AddScoped<Library.Services.v2.IAccountService, Library.Services.v2.AccountService>();
             services.AddScoped<IPurchaseService, PurchaseService>();
             services.AddScoped<IMapperService, MapperService>();
+            if (_environment.IsDevelopment())
+            {
+                services.AddTransient<IEmailSender, SmtpEmailSender>();
+                services.AddSingleton(_configuration.GetSection("SmtpSettings").Get<SmtpSettings>());
+            }
+            else
+            {
+                services.AddTransient<IEmailSender, MailgunEmailSender>();
+            }
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IVoucherService, VoucherService>();
             services.AddScoped<IProgrammeService, ProgrammeService>();
