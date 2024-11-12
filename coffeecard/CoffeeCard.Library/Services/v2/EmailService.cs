@@ -18,12 +18,12 @@ namespace CoffeeCard.Library.Services.v2
     {
         private readonly IWebHostEnvironment _env;
         private readonly EnvironmentSettings _environmentSettings;
-        private readonly MailgunSettings _mailgunSettings;
+        private readonly IEmailSender _emailSender;
 
-        public EmailService(MailgunSettings mailgunSettings, EnvironmentSettings environmentSettings,
+        public EmailService(IEmailSender emailSender, EnvironmentSettings environmentSettings,
             IWebHostEnvironment env)
         {
-            _mailgunSettings = mailgunSettings;
+            _emailSender = emailSender;
             _environmentSettings = environmentSettings;
             _env = env;
         }
@@ -51,14 +51,14 @@ namespace CoffeeCard.Library.Services.v2
 
             message.Body = builder.ToMessageBody();
 
-            await SendEmailAsync(message);
+            await _emailSender.SendEmailAsync(message);
         }
 
         private static BodyBuilder BuildMagicLinkEmail(BodyBuilder builder, string email, string name, string deeplink)
         {
             builder.HtmlBody = builder.HtmlBody.Replace("{email}", email);
             builder.HtmlBody = builder.HtmlBody.Replace("{name}", name);
-            builder.HtmlBody = builder.HtmlBody.Replace("{expiry}", "30 minutes");
+            builder.HtmlBody = builder.HtmlBody.Replace("{expires}", "30 minutes");
             builder.HtmlBody = builder.HtmlBody.Replace("{deeplink}", deeplink);
 
             return builder;
@@ -84,30 +84,6 @@ namespace CoffeeCard.Library.Services.v2
             }
 
             return builder;
-        }
-
-        private async Task SendEmailAsync(MimeMessage mail)
-        {
-            var client = new RestClient(_mailgunSettings.MailgunApiUrl)
-            {
-                Authenticator = new HttpBasicAuthenticator("api", _mailgunSettings.ApiKey)
-            };
-
-            var request = new RestRequest();
-            request.AddParameter("domain", _mailgunSettings.Domain, ParameterType.UrlSegment);
-            request.Resource = "{domain}/messages";
-            request.AddParameter("from", "Cafe Analog <mailgun@cafeanalog.dk>");
-            request.AddParameter("to", mail.To[0].ToString());
-            request.AddParameter("subject", mail.Subject);
-            request.AddParameter("html", mail.HtmlBody);
-            request.Method = Method.Post;
-
-            var response = await client.ExecutePostAsync(request);
-
-            if (!response.IsSuccessful)
-            {
-                Log.Error("Error sending request to Mailgun. StatusCode: {statusCode} ErrorMessage: {errorMessage}", response.StatusCode, response.ErrorMessage);
-            }
         }
     }
 }
