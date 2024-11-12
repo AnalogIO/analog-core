@@ -29,19 +29,17 @@ namespace CoffeeCard.WebApi.Controllers.v2
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
-        private readonly ITokenService _tokenService;
         private readonly ClaimsUtilities _claimsUtilities;
         private readonly ILeaderboardService _leaderboardService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
         /// </summary>
-        public AccountController(IAccountService accountService, ITokenService tokenService,
+        public AccountController(IAccountService accountService,
             ClaimsUtilities claimsUtilities,
             ILeaderboardService leaderboardService)
         {
             _accountService = accountService;
-            _tokenService = tokenService;
             _claimsUtilities = claimsUtilities;
             _leaderboardService = leaderboardService;
         }
@@ -249,6 +247,11 @@ namespace CoffeeCard.WebApi.Controllers.v2
             return new NoContentResult();
         }
 
+        /// <summary>
+        /// Authenticates the user with the token hash from a magic link
+        /// </summary>
+        /// <param name="tokenHash">The token hash from the magic link</param>
+        /// <returns>A JSON Web Token used to authenticate for other endpoints and a refresh token to re-authenticate without a new magic link</returns>
         [HttpPost]
         [AllowAnonymous]
         [Route("auth")]

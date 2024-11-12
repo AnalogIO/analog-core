@@ -21,6 +21,11 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
         [EmailAddress]
         public string Email { get; set; } = null!;
 
+        /// <summary>
+        /// Defines which application should open on login
+        /// </summary>
+        /// <value>LoginType</value>
+        /// <example>Shifty</example>
         public LoginType LoginType { get; set; }
     }
 }

@@ -4,6 +4,11 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
     /// User login response object
     /// </summary>
     /// <example>
+    /// {
+    ///     "jwt": "hidden",
+    ///     "refreshToken": "hidden"
+    /// }
+    /// </example>
     public class UserLoginResponse
     {
         /// <summary>
@@ -12,9 +17,8 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
         public required string Jwt { get; set; }
 
         /// <summary>
-        /// User's Display Name
+        /// Token used to obtain a new JWT token on expiration
         /// </summary>
-        /// <example>Name</example>
         public required string RefreshToken { get; set; }
     }
 }

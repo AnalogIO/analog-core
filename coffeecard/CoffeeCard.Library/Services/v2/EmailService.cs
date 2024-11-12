@@ -54,7 +54,7 @@ namespace CoffeeCard.Library.Services.v2
             await SendEmailAsync(message);
         }
 
-        private BodyBuilder BuildMagicLinkEmail(BodyBuilder builder, string email, string name, string deeplink)
+        private static BodyBuilder BuildMagicLinkEmail(BodyBuilder builder, string email, string name, string deeplink)
         {
             builder.HtmlBody = builder.HtmlBody.Replace("{email}", email);
             builder.HtmlBody = builder.HtmlBody.Replace("{name}", name);
