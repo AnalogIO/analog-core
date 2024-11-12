@@ -64,7 +64,7 @@ namespace CoffeeCard.Tests.Unit.Services
             tokenService.Setup(t => t.ValidateTokenIsUnusedAsync("valid")).ReturnsAsync(true);
 
             // Act
-            var token = new Token("valid");
+            var token = new Token("valid", TokenType.ResetPassword);
             var userTokens = new List<Token> { token };
             var programme = new Programme { FullName = "fullName", ShortName = "shortName" };
 
@@ -87,7 +87,7 @@ namespace CoffeeCard.Tests.Unit.Services
         public async Task RecoverUserGivenValidTokenUpdatesPasswordAndResetsUsersTokens()
         {
             // Arrange
-            var token = new Token("valid");
+            var token = new Token("valid", TokenType.ResetPassword);
 
             var userPass = "not set";
             var user = UserBuilder.DefaultCustomer()
