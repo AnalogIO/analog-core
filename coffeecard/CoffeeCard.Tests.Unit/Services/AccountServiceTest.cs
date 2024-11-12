@@ -90,7 +90,7 @@ namespace CoffeeCard.Tests.Unit.Services
 
             // Act
             await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
-            var token = new Token("valid");
+            var token = new Token("valid", TokenType.ResetPassword);
             var userTokens = new List<Token> { token };
             var programme = new Programme { FullName = "fullName", ShortName = "shortName" };
 
@@ -142,7 +142,7 @@ namespace CoffeeCard.Tests.Unit.Services
 
             // Act
             await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
-            var token = new Token("valid");
+            var token = new Token("valid", TokenType.ResetPassword);
             var userTokens = new List<Token> { token };
             var programme = new Programme { FullName = "fullName", ShortName = "shortName" };
 

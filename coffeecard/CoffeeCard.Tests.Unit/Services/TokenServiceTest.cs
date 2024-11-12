@@ -75,7 +75,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 var tokenService = new TokenService(_identity, claimsUtility);
 
                 var token = tokenService.GenerateToken(claims);
-                var userTokens = new List<Token> { new Token(token) };
+                var userTokens = new List<Token> { new Token(token, TokenType.MagicLink) };
                 var user = GenerateTestUser(tokens: userTokens);
                 await context.AddAsync(user);
                 await context.SaveChangesAsync();
@@ -151,7 +151,7 @@ namespace CoffeeCard.Tests.Unit.Services
 
                     var token = new JwtSecurityTokenHandler().WriteToken(jwt);
 
-                    var userTokens = new List<Token> { new Token(token) };
+                    var userTokens = new List<Token> { new Token(token, TokenType.MagicLink) };
                     var user = GenerateTestUser(tokens: userTokens);
                     await context.AddAsync(user);
                     await context.SaveChangesAsync();
