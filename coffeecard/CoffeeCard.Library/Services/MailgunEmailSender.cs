@@ -11,8 +11,11 @@ public class MailgunEmailSender(MailgunSettings mailgunSettings) : IEmailSender
 {
     public async Task SendEmailAsync(MimeMessage mail)
     {
-        using var client = new RestClient(mailgunSettings.MailgunApiUrl);
-        client.Authenticator = new HttpBasicAuthenticator("api", mailgunSettings.ApiKey);
+        var options = new RestClientOptions(mailgunSettings.MailgunApiUrl)
+        {
+            Authenticator = new HttpBasicAuthenticator("api", mailgunSettings.ApiKey),
+        };
+        using var client = new RestClient(options);
 
         var request = new RestRequest();
         request.AddParameter("domain", mailgunSettings.Domain, ParameterType.UrlSegment);
@@ -27,8 +30,12 @@ public class MailgunEmailSender(MailgunSettings mailgunSettings) : IEmailSender
 
         if (!response.IsSuccessful)
         {
-            Log.Error("Error sending request to Mailgun. StatusCode: {statusCode} ErrorMessage: {errorMessage}",
-                response.StatusCode, response.ErrorMessage);
+            Log.Error(
+                "Error sending request to Mailgun. StatusCode: {statusCode} ErrorMessage: {errorMessage}",
+                response.StatusCode,
+                response.ErrorMessage
+            );
         }
     }
 }
+
