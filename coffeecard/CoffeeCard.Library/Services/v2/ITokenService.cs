@@ -7,6 +7,6 @@ namespace CoffeeCard.Library.Services.v2
     {
         string GenerateMagicLink(User user);
         Task<string> GenerateRefreshTokenAsync(User user);
-        Task<Token> GetValidTokenByHashAsync(string tokenHash);
+        Task<Token> GetValidTokenByHashAsync(string tokenString);
     }
 }
