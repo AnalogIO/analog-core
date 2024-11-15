@@ -43,7 +43,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"AnalogIO_analog-core" /o:"analogio" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="coverageunit.xml,coverageintegration.xml" /d:sonar.exclusions="CoffeeCard.Library/Migrations/*"
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"AnalogIO_analog-core" /o:"analogio" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="coverageunit.xml,coverageintegration.xml" /d:sonar.exclusions="CoffeeCard.Library/Migrations/*,CoffeeCard.WebApi/wwwroot/Templates/EmailTemplate/GeneratedEmails/*"
 
           dotnet tool install --global coverlet.console
 
