@@ -31,6 +31,7 @@ using NSwag.Generation.Processors.Security;
 using RestSharp;
 using RestSharp.Authenticators;
 using OpenTelemetry;
+using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
@@ -123,29 +124,49 @@ namespace CoffeeCard.WebApi
             services.AddFeatureManagement();
 
             // Azure Application Insights/ OpenTelemetry
-            var azureConnectionString = _configuration.GetRequiredSection("ApplicationInsights").GetValue<string>("ConnectionString");
-            services.AddOpenTelemetry()
+            var otlpSettings = _configuration.GetSection("OtlpSettings").Get<OtlpSettings>();
+            var applicationInsightsConnectionString = _configuration.GetRequiredSection("ApplicationInsights").GetValue<string>("ConnectionString");
+            var openTelemetryBuilder = services.AddOpenTelemetry()
                 .WithMetrics(metrics =>
                 {
                     metrics.AddAspNetCoreInstrumentation()
                         // Metrics provides by ASP.NET Core in .NET 8
                         .AddMeter("Microsoft.AspNetCore.Hosting")
-                        .AddMeter("Microsoft.AspNetCore.Server.Kestrel")
-                        .AddOtlpExporter();
-                    if (azureConnectionString is null or "") return;
-                    metrics.AddAzureMonitorMetricExporter(options => options.ConnectionString = azureConnectionString);
+                        .AddMeter("Microsoft.AspNetCore.Server.Kestrel");
+                    if (applicationInsightsConnectionString is null or "") return;
+                    metrics.AddAzureMonitorMetricExporter(options => options.ConnectionString = applicationInsightsConnectionString);
                 })
                 .WithTracing(traces =>
                 {
                     var builder = traces.AddSqlClientInstrumentation()
                         .AddSqlClientInstrumentation()
                         .AddHttpClientInstrumentation()
-                        .AddAspNetCoreInstrumentation()
-                        .AddOtlpExporter();
-                    if (azureConnectionString is null or "") return;
-                    builder.AddAzureMonitorTraceExporter(options => options.ConnectionString = azureConnectionString);
-                });
+                        .AddAspNetCoreInstrumentation();
                     
+                    if (applicationInsightsConnectionString is null or "") return;
+                    builder.AddAzureMonitorTraceExporter(options => options.ConnectionString = applicationInsightsConnectionString);
+                });
+
+            if (otlpSettings is not null)
+            {
+                var otlpExportProtocol = otlpSettings.Protocol switch
+                {
+                    OtelProtocol.Grpc => OtlpExportProtocol.Grpc,
+                    OtelProtocol.Http => OtlpExportProtocol.HttpProtobuf,
+                    _ => throw new ArgumentOutOfRangeException("Unspecified protocol for export")
+                };
+                
+                openTelemetryBuilder.UseOtlpExporter(otlpExportProtocol, new Uri(otlpSettings.Endpoint));
+                if (otlpSettings.Protocol is OtelProtocol.Http)
+                {
+                    services.AddHttpClient("OtlpTraceExporter", 
+                        client => client.DefaultRequestHeaders.Add("Authorization", $"Basic {otlpSettings.Token}"))
+                        .RemoveAllLoggers();
+                    services.AddHttpClient("OtlpMetricExporter", 
+                        client => client.DefaultRequestHeaders.Add("Authorization", $"Basic {otlpSettings.Token}"))
+                        .RemoveAllLoggers();
+                }
+            }
 
             // Setup filter to catch outgoing exceptions
             services.AddControllers(options =>
