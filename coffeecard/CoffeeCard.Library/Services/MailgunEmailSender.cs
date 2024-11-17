@@ -7,15 +7,10 @@ using Serilog;
 
 namespace CoffeeCard.Library.Services;
 
-public class MailgunEmailSender(MailgunSettings mailgunSettings) : IEmailSender
+public class MailgunEmailSender(MailgunSettings mailgunSettings, IRestClient restClient) : IEmailSender
 {
     public async Task SendEmailAsync(MimeMessage mail)
     {
-        var options = new RestClientOptions(mailgunSettings.MailgunApiUrl)
-        {
-            Authenticator = new HttpBasicAuthenticator("api", mailgunSettings.ApiKey),
-        };
-        using var client = new RestClient(options);
 
         var request = new RestRequest();
         request.AddParameter("domain", mailgunSettings.Domain, ParameterType.UrlSegment);
@@ -26,7 +21,7 @@ public class MailgunEmailSender(MailgunSettings mailgunSettings) : IEmailSender
         request.AddParameter("html", mail.HtmlBody);
         request.Method = Method.Post;
 
-        var response = await client.ExecutePostAsync(request);
+        var response = await restClient.ExecutePostAsync(request);
 
         if (!response.IsSuccessful)
         {
