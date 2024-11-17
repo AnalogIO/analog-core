@@ -29,8 +29,8 @@ namespace CoffeeCard.MobilePay.GenerateApi
                 Environment.CurrentDirectory, "OpenApiSpecs"
                 );
             var outputDirectory = Path.Combine(
-                Directory.GetParent(Environment.CurrentDirectory)!.FullName, 
-                "CoffeeCard.MobilePay", 
+                Directory.GetParent(Environment.CurrentDirectory)!.FullName,
+                "CoffeeCard.MobilePay",
                 "Generated"
             );
 
