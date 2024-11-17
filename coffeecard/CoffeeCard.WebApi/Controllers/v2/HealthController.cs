@@ -11,7 +11,7 @@ using Serilog;
 namespace CoffeeCard.WebApi.Controllers.v2
 {
     /// <summary>
-    /// Controller for health checks
+    /// Controller for health check
     /// </summary>
     /// <remarks>
     /// Initializes a new instance of the <see cref="HealthController"/> class.
@@ -43,30 +43,30 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <returns>pong</returns>
         /// <response code="200">Healthy service</response>
         /// <response code="503">Unhealthy service</response>
-        [HttpGet("check")]
-        [ProducesResponseType(typeof(ServiceHealthResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ServiceHealthResponse), StatusCodes.Status503ServiceUnavailable)]
-        [ProducesDefaultResponseType]
-        public async Task<IActionResult> Healthcheck()
-        {
-            var databaseConnected = await IsServiceCallSuccessful(async () => await _context.Database.CanConnectAsync());
-
-            // FIXME: GetPaymentPoints is removed. Consider adding a new method to check the connection to the MobilePay API
-            // var mobilepayApiConnected = await IsServiceCallSuccessful(async () => await _mobilePayPaymentsService.GetPaymentPoints());
-
-            var response = new ServiceHealthResponse()
-            {
-                Database = databaseConnected,
-                MobilePay = mobilepayApiConnected
-            };
-
-            if (databaseConnected && mobilepayApiConnected)
-            {
-                return Ok(response);
-            }
-
-            return StatusCode(StatusCodes.Status503ServiceUnavailable, response);
-        }
+        // [HttpGet("check")]
+        // [ProducesResponseType(typeof(ServiceHealthResponse), StatusCodes.Status200OK)]
+        // [ProducesResponseType(typeof(ServiceHealthResponse), StatusCodes.Status503ServiceUnavailable)]
+        // [ProducesDefaultResponseType]
+        // public async Task<IActionResult> Healthcheck()
+        // {
+        //     var databaseConnected = await IsServiceCallSuccessful(async () => await _context.Database.CanConnectAsync());
+        //
+        //     // FIXME: GetPaymentPoints is removed. Consider adding a new method to check the connection to the MobilePay API
+        //     // var mobilepayApiConnected = await IsServiceCallSuccessful(async () => await _mobilePayPaymentsService.GetPaymentPoints());
+        //
+        //     var response = new ServiceHealthResponse()
+        //     {
+        //         Database = databaseConnected,
+        //         MobilePay = true
+        //     };
+        //
+        //     if (databaseConnected && true)
+        //     {
+        //         return Ok(response);
+        //     }
+        //
+        //     return StatusCode(StatusCodes.Status503ServiceUnavailable, response);
+        // }
 
         private static async Task<bool> IsServiceCallSuccessful(Func<Task> action)
         {

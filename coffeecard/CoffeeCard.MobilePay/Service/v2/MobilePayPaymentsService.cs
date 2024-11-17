@@ -70,7 +70,7 @@ namespace CoffeeCard.MobilePay.Service.v2
                     e,
                     "MobilePay CreatePayment failed with HTTP {StatusCode}. ErrorCode: {ErrorCode} Message: {Message}",
                     e.StatusCode,
-                    errorResponse.Status,
+                    errorResponse.Status,   
                     e.Message
                 );
 
