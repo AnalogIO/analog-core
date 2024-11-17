@@ -122,6 +122,7 @@ namespace CoffeeCard.WebApi
                     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                     options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.Never;
                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                    options.JsonSerializerOptions.Converters.Add(new DateTimeConverter());
                 });
 
             services.AddCors(options => options.AddDefaultPolicy(builder =>
