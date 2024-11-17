@@ -50,7 +50,9 @@ namespace CoffeeCard.WebApi.Controllers.v2
         public async Task<IActionResult> Healthcheck()
         {
             var databaseConnected = await IsServiceCallSuccessful(async () => await _context.Database.CanConnectAsync());
-            var mobilepayApiConnected = await IsServiceCallSuccessful(async () => await _mobilePayPaymentsService.GetPaymentPoints());
+
+            // FIXME: GetPaymentPoints is removed. Consider adding a new method to check the connection to the MobilePay API
+            // var mobilepayApiConnected = await IsServiceCallSuccessful(async () => await _mobilePayPaymentsService.GetPaymentPoints());
 
             var response = new ServiceHealthResponse()
             {

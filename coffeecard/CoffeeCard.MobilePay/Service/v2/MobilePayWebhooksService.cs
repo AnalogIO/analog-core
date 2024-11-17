@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CoffeeCard.Common.Errors;
 using CoffeeCard.MobilePay.Exception.v2;
 using CoffeeCard.MobilePay.Generated.Api.WebhooksApi;
 using Serilog;
-using ApiException = CoffeeCard.MobilePay.Generated.Api.PaymentsApi.ApiException;
 
 namespace CoffeeCard.MobilePay.Service.v2
 {
@@ -50,7 +48,7 @@ namespace CoffeeCard.MobilePay.Service.v2
                 {
                     case 404:
                         Log.Error("Webhook with Id: {Id} does not exist", webhookId);
-                        throw new EntityNotFoundException(e.Message);
+                        throw new Common.Errors.EntityNotFoundException(e.Message);
                     default:
                         Log.Error(e, "Error calling Get Webhook with Id: {Id}. Http {StatusCode} {Message}", webhookId, e.StatusCode, e.Message);
                         throw new MobilePayApiException(e.StatusCode, e.Message);

@@ -15,7 +15,7 @@ namespace CoffeeCard.MobilePay.GenerateApi
     /// </summary>
     public static class Program
     {
-        private const string PaymentsApi = "PaymentsApi";
+        private const string ePaymentApi = "ePaymentApi";
         private const string WebhooksApi = "WebhooksApi";
         private const string AccessToken = "AccessTokenApi";
 
@@ -34,15 +34,15 @@ namespace CoffeeCard.MobilePay.GenerateApi
                 "Generated"
             );
 
-            var paymentApiInput = Path.Combine(openApiSpecDirectory, PaymentsApi + ".tojson.json");
+            var paymentApiInput = Path.Combine(openApiSpecDirectory, ePaymentApi + ".tojson.json");
             var webhooksApiInput = Path.Combine(openApiSpecDirectory, WebhooksApi + ".tojson.json");
             var accessTokenApiInput = Path.Combine(openApiSpecDirectory, AccessToken + ".tojson.json");
 
-            var paymentApiOutput = Path.Combine(outputDirectory, PaymentsApi + ".cs");
+            var paymentApiOutput = Path.Combine(outputDirectory, ePaymentApi + ".cs");
             var webhooksApiOutput = Path.Combine(outputDirectory, WebhooksApi + ".cs");
             var accessTokenApiOutput = Path.Combine(outputDirectory, AccessToken + ".cs");
 
-            await GeneratePaymentsApi(paymentApiInput, paymentApiOutput);
+            await GenerateEPaymentApi(paymentApiInput, paymentApiOutput);
             await GenerateWebhooksApi(webhooksApiInput, webhooksApiOutput);
             await GenerateAccessTokenApi(accessTokenApiInput, accessTokenApiOutput);
         }
@@ -69,7 +69,7 @@ namespace CoffeeCard.MobilePay.GenerateApi
             await File.WriteAllTextAsync(outputFile, code);
         }
 
-        private static async Task GeneratePaymentsApi(string inputFile, string outputFile)
+        private static async Task GenerateEPaymentApi(string inputFile, string outputFile)
         {
             CheckFileExists(inputFile);
 
@@ -77,10 +77,10 @@ namespace CoffeeCard.MobilePay.GenerateApi
 
             var settings = new CSharpClientGeneratorSettings
             {
-                ClassName = PaymentsApi,
+                ClassName = ePaymentApi,
                 CSharpGeneratorSettings =
                 {
-                    Namespace = $"CoffeeCard.MobilePay.Generated.Api.{PaymentsApi}"
+                    Namespace = $"CoffeeCard.MobilePay.Generated.Api.{ePaymentApi}"
                 },
                 UseBaseUrl = false
             };
