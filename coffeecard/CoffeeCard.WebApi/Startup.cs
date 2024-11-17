@@ -97,9 +97,9 @@ namespace CoffeeCard.WebApi
             services.AddScoped<ClaimsUtilities>();
             services.AddSingleton(_environment.ContentRootFileProvider);
 
-            services.AddSingleton<IRestClient>(_ =>
+            services.AddSingleton<IRestClient>(provider =>
             {
-                var mailgunSettings = _configuration.GetSection("MailgunSettings").Get<MailgunSettings>();
+                var mailgunSettings = provider.GetRequiredService<MailgunSettings>();
                 var options = new RestClientOptions(mailgunSettings.MailgunApiUrl)
                 {
                     Authenticator = new HttpBasicAuthenticator("api", mailgunSettings.ApiKey),
