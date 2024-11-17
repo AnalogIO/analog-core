@@ -31,6 +31,8 @@ using Newtonsoft.Json.Converters;
 using NJsonSchema.Generation;
 using NSwag;
 using NSwag.Generation.Processors.Security;
+using RestSharp;
+using RestSharp.Authenticators;
 using AccountService = CoffeeCard.Library.Services.AccountService;
 using IAccountService = CoffeeCard.Library.Services.IAccountService;
 using IPurchaseService = CoffeeCard.Library.Services.IPurchaseService;
@@ -94,6 +96,16 @@ namespace CoffeeCard.WebApi
             services.AddScoped<ITicketService, TicketService>();
             services.AddScoped<ClaimsUtilities>();
             services.AddSingleton(_environment.ContentRootFileProvider);
+
+            services.AddSingleton<IRestClient>(provider =>
+            {
+                var mailgunSettings = provider.GetRequiredService<MailgunSettings>();
+                var options = new RestClientOptions(mailgunSettings.MailgunApiUrl)
+                {
+                    Authenticator = new HttpBasicAuthenticator("api", mailgunSettings.ApiKey),
+                };
+                return new RestClient(options);
+            });
 
             services.AddScoped<Library.Services.v2.IPurchaseService, Library.Services.v2.PurchaseService>();
             services.AddScoped<Library.Services.v2.ITicketService, Library.Services.v2.TicketService>();
