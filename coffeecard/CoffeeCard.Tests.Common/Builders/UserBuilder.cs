@@ -10,6 +10,14 @@ namespace CoffeeCard.Tests.Common.Builders
             var programme = ProgrammeBuilder.Simple().Build();
 
             return new UserBuilder()
+                .WithName(f => f.Person.FullName)
+                .WithEmail(f => f.Person.Email)
+                .WithPassword(f => f.Random.Utf16String(10, 15))
+                .WithSalt("")
+                .WithExperience(f => f.Random.Int(min: 0, max: 5000))
+                .WithDateCreated(new DateTime(2000, 1, 1))
+                .WithDateUpdated(new DateTime(2000, 1, 1, 20, 0, 0))
+                .WithPrivacyActivated(f => f.Random.Bool())
                 .WithProgramme(programme)
                 .WithPurchases(new List<Purchase>())
                 .WithStatistics(new List<Statistic>())
