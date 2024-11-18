@@ -132,7 +132,7 @@ namespace CoffeeCard.Library.Services.v2
                 Price = product.Price,
                 NumberOfTickets = product.NumberOfTickets,
                 DateCreated = DateTime.UtcNow,
-                OrderId = paymentDetails.OrderId,
+                OrderId = orderId.ToString(),
                 ExternalTransactionId = transactionId,
                 PurchasedBy = user,
                 Status = purchaseStatus,

@@ -158,7 +158,7 @@ namespace CoffeeCard.MobilePay.Generated.Api.AccessTokenApi
 
                     if (vipps_System_Plugin_Version != null)
                         request_.Headers.TryAddWithoutValidation("Vipps-System-Plugin-Version", ConvertToString(vipps_System_Plugin_Version, System.Globalization.CultureInfo.InvariantCulture));
-                    request_.Content = new System.Net.Http.StringContent(string.Empty, System.Text.Encoding.UTF8, "application/json;charset=UTF-8");
+
                     request_.Method = new System.Net.Http.HttpMethod("POST");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json;charset=UTF-8"));
 

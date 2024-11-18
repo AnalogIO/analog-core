@@ -12,16 +12,19 @@ namespace CoffeeCard.MobilePay.Service.v2
 {
     public class MobilePayPaymentsService : IMobilePayPaymentsService
     {
-        private readonly MobilePaySettingsV2 _mobilePaySettings;
+        private readonly MobilePaySettingsV3 _mobilePaySettings;
+        private readonly MobilePaySettingsV2 _mobilePaySettingsv2;
         private readonly ePaymentApi _ePaymentApi;
 
         public MobilePayPaymentsService(
             ePaymentApi ePaymentApi,
-            MobilePaySettingsV2 mobilePaySettings
+            MobilePaySettingsV3 mobilePaySettings,
+            MobilePaySettingsV2 mobilePaySettingsv2
         )
         {
             _ePaymentApi = ePaymentApi;
             _mobilePaySettings = mobilePaySettings;
+            _mobilePaySettingsv2 = mobilePaySettingsv2;
         }
 
         public async Task<MobilePayPaymentDetails> InitiatePayment(
@@ -39,7 +42,7 @@ namespace CoffeeCard.MobilePay.Service.v2
                         Reference = orderId,
                         UserFlow = CreatePaymentRequestUserFlow.NATIVE_REDIRECT,
                         // Unsure if return url is needed with given user flow
-                        ReturnUrl = _mobilePaySettings.AnalogAppRedirectUri,
+                        ReturnUrl = _mobilePaySettingsv2.AnalogAppRedirectUri,
                         PaymentDescription = paymentRequest.Description
                     },
                     idempotency_Key: orderId,
@@ -50,12 +53,13 @@ namespace CoffeeCard.MobilePay.Service.v2
                     vipps_System_Plugin_Name: null,
                     vipps_System_Plugin_Version: null
                 );
-
                 Log.Information(
                     "Created MobilePay Payment with Reference {Reference} of {OrerAmount} (DKK)",
                     response.Reference.ToString(),
                     paymentRequest.Amount
                 );
+
+                var test = response.RedirectUrl;
 
                 return new MobilePayPaymentDetails
                 {
