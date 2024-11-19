@@ -5,7 +5,7 @@ namespace CoffeeCard.Tests.Common.Builders
     public abstract class BaseBuilder<T> where T : class
     {
         protected readonly Faker<T> Faker = new();
-        
+
         /// <summary>
         /// Creates a new instance of type T, 
         /// using the configuration set by using the builderM   ethods
