@@ -5,7 +5,6 @@ using CoffeeCard.Common.Configuration;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services.v2;
-using CoffeeCard.MobilePay.Generated.Api.PaymentsApi;
 using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
@@ -174,7 +173,11 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var orderId = Guid.NewGuid().ToString();
             var mpDeepLink = "mobilepay://merchant_payments?payment_id=186d2b31-ff25-4414-9fd1-bfe9807fa8b7";
             mobilePayService.Setup(mps => mps.InitiatePayment(It.IsAny<MobilePayPaymentRequest>()))
-                .ReturnsAsync(new MobilePayPaymentDetails(orderId, mpDeepLink, mobilepayPaymentId));
+                .ReturnsAsync(new MobilePayPaymentDetails
+                {
+                    PaymentId = orderId,
+                    MobilePayAppRedirectUri = mpDeepLink
+                });
 
             // Act
             var result = await purchaseService.InitiatePurchase(request, user);

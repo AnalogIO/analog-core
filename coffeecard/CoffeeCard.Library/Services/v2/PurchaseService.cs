@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
-using CoffeeCard.MobilePay.Generated.Api.PaymentsApi;
 using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.v2.Products;
@@ -133,7 +132,7 @@ namespace CoffeeCard.Library.Services.v2
                 Price = product.Price,
                 NumberOfTickets = product.NumberOfTickets,
                 DateCreated = DateTime.UtcNow,
-                OrderId = paymentDetails.OrderId,
+                OrderId = orderId.ToString(),
                 ExternalTransactionId = transactionId,
                 PurchasedBy = user,
                 Status = purchaseStatus,

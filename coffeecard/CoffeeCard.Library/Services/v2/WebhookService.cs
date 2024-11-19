@@ -24,11 +24,11 @@ namespace CoffeeCard.Library.Services.v2
 
         private readonly CoffeeCardContext _context;
         private readonly IMobilePayWebhooksService _mobilePayWebhooksService;
-        private readonly MobilePaySettingsV2 _mobilePaySettings;
+        private readonly MobilePaySettingsV3 _mobilePaySettings;
         private readonly IMemoryCache _memoryCache;
 
         public WebhookService(CoffeeCardContext context, IMobilePayWebhooksService mobilePayWebhooksService,
-            MobilePaySettingsV2 mobilePaySettings, IMemoryCache memoryCache)
+            MobilePaySettingsV3 mobilePaySettings, IMemoryCache memoryCache)
         {
             _context = context;
             _mobilePayWebhooksService = mobilePayWebhooksService;
