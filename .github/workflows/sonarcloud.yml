@@ -14,7 +14,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: 17
-          distribution: 'zulu'
+          distribution: "zulu"
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -43,7 +43,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"AnalogIO_analog-core" /o:"analogio" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="coverageunit.xml,coverageintegration.xml" /d:sonar.exclusions="CoffeeCard.Library/Migrations/*,CoffeeCard.WebApi/wwwroot/Templates/EmailTemplate/GeneratedEmails/*"
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"AnalogIO_analog-core" /o:"analogio" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="coverageunit.xml,coverageintegration.xml"
 
           dotnet tool install --global coverlet.console
 
@@ -53,3 +53,4 @@ jobs:
           coverlet ./coffeecard/CoffeeCard.Tests.Integration/bin/Debug/net8.0/CoffeeCard.Tests.Integration.dll --target "dotnet" --targetargs "test --no-build coffeecard/CoffeeCard.Tests.Integration" -f=opencover -o="coverageintegration.xml"
 
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+
