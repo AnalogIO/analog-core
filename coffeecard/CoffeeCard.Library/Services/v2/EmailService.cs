@@ -2,15 +2,10 @@
 using System.IO;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
-using CoffeeCard.Models.DataTransferObjects.Purchase;
-using CoffeeCard.Models.DataTransferObjects.User;
 using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Hosting;
 using MimeKit;
-using RestSharp;
-using RestSharp.Authenticators;
 using Serilog;
-using TimeZoneConverter;
 
 namespace CoffeeCard.Library.Services.v2
 {
@@ -41,8 +36,6 @@ namespace CoffeeCard.Library.Services.v2
             };
 
             var deeplink = loginType.GetDeepLink(baseUrl, magicLink);
-
-            Console.WriteLine($"MAGIC LINK HREF: {deeplink}");
 
             builder = BuildMagicLinkEmail(builder, user.Email, user.Name, deeplink);
 
