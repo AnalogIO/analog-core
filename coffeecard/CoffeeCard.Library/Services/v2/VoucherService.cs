@@ -42,7 +42,7 @@ namespace CoffeeCard.Library.Services.v2
                 .Select(code => new Voucher
                 {
                     Code = code,
-                    DateCreated = DateTime.Now,
+                    DateCreated = DateTime.UtcNow,
                     Product = product,
                     Description = request.Description,
                     Requester = request.Requester

@@ -195,7 +195,7 @@ namespace CoffeeCard.Library.Services.v2
             user.Name = string.Empty;
             user.Password = string.Empty;
             user.Salt = string.Empty;
-            user.DateUpdated = DateTime.Now;
+            user.DateUpdated = DateTime.UtcNow;
             user.PrivacyActivated = true;
             user.UserState = UserState.Deleted;
             await _context.SaveChangesAsync();

@@ -31,6 +31,8 @@ using Newtonsoft.Json.Converters;
 using NJsonSchema.Generation;
 using NSwag;
 using NSwag.Generation.Processors.Security;
+using RestSharp;
+using RestSharp.Authenticators;
 using AccountService = CoffeeCard.Library.Services.AccountService;
 using IAccountService = CoffeeCard.Library.Services.IAccountService;
 using IPurchaseService = CoffeeCard.Library.Services.IPurchaseService;
@@ -97,6 +99,16 @@ namespace CoffeeCard.WebApi
             services.AddScoped<ClaimsUtilities>();
             services.AddSingleton(_environment.ContentRootFileProvider);
 
+            services.AddSingleton<IRestClient>(provider =>
+            {
+                var mailgunSettings = provider.GetRequiredService<MailgunSettings>();
+                var options = new RestClientOptions(mailgunSettings.MailgunApiUrl)
+                {
+                    Authenticator = new HttpBasicAuthenticator("api", mailgunSettings.ApiKey),
+                };
+                return new RestClient(options);
+            });
+
             services.AddScoped<Library.Services.v2.IPurchaseService, Library.Services.v2.PurchaseService>();
             services.AddScoped<Library.Services.v2.ITicketService, Library.Services.v2.TicketService>();
             services.AddMobilePayHttpClients(_configuration.GetSection("MobilePaySettingsV2").Get<MobilePaySettingsV2>());
@@ -124,6 +136,7 @@ namespace CoffeeCard.WebApi
                     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                     options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.Never;
                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                    options.JsonSerializerOptions.Converters.Add(new DateTimeConverter());
                 });
 
             services.AddCors(options => options.AddDefaultPolicy(builder =>
