@@ -8,7 +8,7 @@ namespace CoffeeCard.Tests.Common.Builders
 
         /// <summary>
         /// Creates a new instance of type T, 
-        /// using the configuration set by using the builderM   ethods
+        /// using the configuration set by using the builderMethods
         /// </summary>
         public T Build()
         {
