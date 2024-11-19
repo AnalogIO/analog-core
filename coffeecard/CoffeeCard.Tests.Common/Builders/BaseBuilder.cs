@@ -1,15 +1,10 @@
-using AutoBogus;
-using AutoBogus.Conventions;
+using Bogus;
 
 namespace CoffeeCard.Tests.Common.Builders
 {
     public abstract class BaseBuilder<T> where T : class
     {
-        protected readonly AutoFaker<T> Faker = new();
-        protected BaseBuilder()
-        {
-            Faker.Configure(builder => builder.WithConventions());
-        }
+        protected readonly Faker<T> Faker = new();
 
         /// <summary>
         /// Creates a new instance of type T, 
@@ -17,7 +12,7 @@ namespace CoffeeCard.Tests.Common.Builders
         /// </summary>
         public T Build()
         {
-            return Faker.Generate();
+            return Faker.StrictMode(true).Generate();
         }
 
         /// <summary>
@@ -26,7 +21,7 @@ namespace CoffeeCard.Tests.Common.Builders
         /// </summary>
         public List<T> Build(int count)
         {
-            return Faker.Generate(count);
+            return Faker.StrictMode(true).Generate(count);
         }
     }
 

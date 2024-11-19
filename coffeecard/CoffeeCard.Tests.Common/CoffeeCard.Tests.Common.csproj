@@ -4,8 +4,7 @@
     <ProjectReference Include="..\CoffeeCard.Models\CoffeeCard.Models.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AutoBogus" Version="2.13.1" />
-    <PackageReference Include="AutoBogus.Conventions" Version="2.13.1" />
+    <PackageReference Include="Bogus" Version="35.6.1" />
   </ItemGroup>
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>

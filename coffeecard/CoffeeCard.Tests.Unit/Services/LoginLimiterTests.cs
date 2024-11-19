@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Library.Services;
 using CoffeeCard.Models.Entities;
+using CoffeeCard.Tests.Common.Builders;
 using Xunit;
 
 namespace CoffeeCard.Tests.Unit.Services
@@ -20,15 +21,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 MaximumLoginAttemptsWithinTimeOut = 5,
                 TimeOutPeriodInSeconds = 1
             };
-            var user = new User
-            {
-                Id = 1,
-                Name = "test",
-                Email = "test@email.dk",
-                Programme = new Programme(),
-                Password = "test",
-                IsVerified = true
-            };
+            var user = UserBuilder.DefaultCustomer().Build();
 
             var loginLimiter = new LoginLimiter(loginLimiterSettings);
 
@@ -61,15 +54,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 MaximumLoginAttemptsWithinTimeOut = 5,
                 TimeOutPeriodInSeconds = 1
             };
-            var user = new User
-            {
-                Id = 1,
-                Name = "test",
-                Email = "test@email.dk",
-                Programme = new Programme(),
-                Password = "test",
-                IsVerified = true
-            };
+            var user = UserBuilder.DefaultCustomer().Build();
 
             var loginLimiter = new LoginLimiter(loginLimiterSettings);
 
