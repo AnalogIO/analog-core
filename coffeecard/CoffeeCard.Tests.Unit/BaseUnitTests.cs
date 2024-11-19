@@ -14,6 +14,7 @@ public abstract class BaseUnitTests : IDisposable, IAsyncDisposable
     protected BaseUnitTests()
     {
         var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
+            .EnableSensitiveDataLogging()
             .UseInMemoryDatabase(Guid.NewGuid().ToString());
 
         var databaseSettings = new DatabaseSettings
@@ -25,6 +26,11 @@ public abstract class BaseUnitTests : IDisposable, IAsyncDisposable
         
         InitialContext = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
         AssertionContext = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+        
+        // Set the random seed used for generation of data in the builders
+        // This ensures our tests are deterministic within a specific version of the code
+        var seed = new Random(42);
+        Bogus.Randomizer.Seed = seed;
     }
 
     public void Dispose()

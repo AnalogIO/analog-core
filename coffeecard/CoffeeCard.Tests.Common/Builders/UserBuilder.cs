@@ -14,6 +14,7 @@ namespace CoffeeCard.Tests.Common.Builders
                 .WithEmail(f => f.Person.Email)
                 .WithPassword(f => f.Random.Utf16String(10, 15))
                 .WithSalt("")
+                .WithIsVerified(false)
                 .WithExperience(f => f.Random.Int(min: 0, max: 5000))
                 .WithDateCreated(new DateTime(2000, 1, 1))
                 .WithDateUpdated(new DateTime(2000, 1, 1, 20, 0, 0))
