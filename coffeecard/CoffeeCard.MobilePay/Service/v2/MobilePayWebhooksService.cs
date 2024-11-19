@@ -2,32 +2,30 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CoffeeCard.Common.Configuration;
 using CoffeeCard.MobilePay.Exception.v2;
 using CoffeeCard.MobilePay.Generated.Api.WebhooksApi;
 using Serilog;
 
 namespace CoffeeCard.MobilePay.Service.v2
 {
-    public class MobilePayWebhooksService : IMobilePayWebhooksService
+    public class MobilePayWebhooksService(WebhooksApi webhooksApi, MobilePaySettingsV3 mobilePaySettings)
+        : IMobilePayWebhooksService
     {
-        private readonly WebhooksApi _webhooksApi;
-
-        public MobilePayWebhooksService(WebhooksApi webhooksApi)
-        {
-            _webhooksApi = webhooksApi;
-        }
-
-        public async Task<SingleWebhookResponse> RegisterWebhook(string url, ICollection<Events> events)
+        public async Task<RegisterResponse> RegisterWebhook(string url, ICollection<string> events)
         {
             try
             {
                 Log.Information("Register new webhook for Url: {url}, Events: {events}", url, events);
 
-                return await _webhooksApi.CreateWebhookAsync(new CreateWebhookRequest
-                {
-                    Events = events,
-                    Url = url
-                });
+                await webhooksApi.WebhooksPOSTAsync(mobilePaySettings.OcpApimSubscriptionKey,
+                    mobilePaySettings.MerchantSerialNumber, mobilePaySettings.VippsSystemName,
+                    mobilePaySettings.VippsSystemVersion, mobilePaySettings.VippsSystemPluginName,
+                    mobilePaySettings.VippsSystemPluginVersion, new RegisterRequest
+                    {
+                        Events = events,
+                        Url = new Uri(url)
+                    });
             }
             catch (ApiException e)
             {
@@ -36,31 +34,31 @@ namespace CoffeeCard.MobilePay.Service.v2
             }
         }
 
-        public async Task<SingleWebhookResponse> GetWebhook(Guid webhookId)
-        {
-            try
-            {
-                return await _webhooksApi.GetWebhookAsync(webhookId);
-            }
-            catch (ApiException e)
-            {
-                switch (e.StatusCode)
-                {
-                    case 404:
-                        Log.Error("Webhook with Id: {Id} does not exist", webhookId);
-                        throw new Common.Errors.EntityNotFoundException(e.Message);
-                    default:
-                        Log.Error(e, "Error calling Get Webhook with Id: {Id}. Http {StatusCode} {Message}", webhookId, e.StatusCode, e.Message);
-                        throw new MobilePayApiException(e.StatusCode, e.Message);
-                }
-            }
-        }
+        // public async Task<SingleWebhookResponse> GetWebhook(Guid webhookId)
+        // {
+        //     try
+        //     {
+        //         return await webhooksApi.GetWebhookAsync(webhookId);
+        //     }
+        //     catch (ApiException e)
+        //     {
+        //         switch (e.StatusCode)
+        //         {
+        //             case 404:
+        //                 Log.Error("Webhook with Id: {Id} does not exist", webhookId);
+        //                 throw new Common.Errors.EntityNotFoundException(e.Message);
+        //             default:
+        //                 Log.Error(e, "Error calling Get Webhook with Id: {Id}. Http {StatusCode} {Message}", webhookId, e.StatusCode, e.Message);
+        //                 throw new MobilePayApiException(e.StatusCode, e.Message);
+        //         }
+        //     }
+        // }
 
         public async Task DeregisterWebhook(Guid webhookId)
         {
             try
             {
-                await _webhooksApi.DeleteWebhookAsync(webhookId);
+                await webhooksApi.DeleteWebhookAsync(webhookId);
             }
             catch (ApiException e)
             {
@@ -73,7 +71,7 @@ namespace CoffeeCard.MobilePay.Service.v2
         {
             try
             {
-                return await _webhooksApi.GetWebhooksListAsync();
+                return await webhooksApi.GetWebhooksListAsync();
             }
             catch (ApiException e)
             {
@@ -90,7 +88,7 @@ namespace CoffeeCard.MobilePay.Service.v2
 
             try
             {
-                return await _webhooksApi.UpdateWebhookAsync(webhookId, new UpdateWebhookRequest
+                return await webhooksApi.UpdateWebhookAsync(webhookId, new UpdateWebhookRequest
                 {
                     Url = url,
                     Events = events3

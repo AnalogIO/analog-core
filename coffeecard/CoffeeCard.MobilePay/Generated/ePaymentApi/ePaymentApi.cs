@@ -1451,7 +1451,7 @@ namespace CoffeeCard.MobilePay.Generated.Api.ePaymentApi
         /// <br/>Nothing will be returned when `userFlow` is `PUSH_MESSAGE`.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("redirectUrl", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Uri RedirectUrl { get; set; }
+        public string RedirectUrl { get; set; }
 
         [Newtonsoft.Json.JsonProperty("reference", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]

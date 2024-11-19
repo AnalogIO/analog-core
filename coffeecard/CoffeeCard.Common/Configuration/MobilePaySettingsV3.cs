@@ -17,6 +17,9 @@ namespace CoffeeCard.Common.Configuration
 
         [Required]
         public string MerchantSerialNumber { get; set; }
+        
+        [Required]
+        public string WebhookUrl { get; set; }
 
         [Required]
         public string OcpApimSubscriptionKey { get; set; }
