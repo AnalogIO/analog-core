@@ -575,6 +575,143 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             }));
         }
 
+        [Fact(DisplayName = "SendMagicLink sends email when user is found")]
+        public async Task SendMagicLinkSendsEmailWhenUserIsFound()
+        {
+            // Arrange
+            const string userEmail = "john@cena.com";
+            var user = new User
+            {
+                Id = 1,
+                Name = "John Cena",
+                Password = "pass",
+                Email = userEmail,
+            };
+
+            await using var context = CreateTestCoffeeCardContextWithName(nameof(SendMagicLinkSendsEmailWhenUserIsFound));
+
+            await context.Users.AddAsync(user);
+            await context.SaveChangesAsync();
+
+            var emailService = new Mock<Library.Services.v2.IEmailService>();
+            var accountService = new Library.Services.v2.AccountService(
+                context,
+                new Mock<Library.Services.ITokenService>().Object,
+                new Mock<Library.Services.IEmailService>().Object,
+                emailService.Object,
+                new Mock<Library.Services.v2.ITokenService>().Object,
+                new Mock<IHashService>().Object);
+
+            // Act
+            await accountService.SendMagicLinkEmail(userEmail, LoginType.Shifty);
+
+            // Assert
+            emailService.Verify(e => e.SendMagicLink(user, It.IsAny<string>(), It.IsAny<LoginType>()), Times.Once);
+        }
+
+        [Fact(DisplayName = "SendMagicLink does not send mail when user is not found")]
+        public async Task SendMagicLinkDoesNotSendMailWhenUserIsNotFound()
+        {
+            // Arrange
+            await using var context = CreateTestCoffeeCardContextWithName(nameof(SendMagicLinkDoesNotSendMailWhenUserIsNotFound));
+
+            var emailService = new Mock<Library.Services.v2.IEmailService>();
+            var accountService = new Library.Services.v2.AccountService(
+                context,
+                new Mock<Library.Services.ITokenService>().Object,
+                new Mock<Library.Services.IEmailService>().Object,
+                emailService.Object,
+                new Mock<Library.Services.v2.ITokenService>().Object,
+                new Mock<IHashService>().Object);
+
+            // Act
+            await accountService.SendMagicLinkEmail("nonexisting@email.com", LoginType.Shifty);
+
+            // Assert
+            emailService.Verify(e => e.SendMagicLink(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<LoginType>()), Times.Never);
+        }
+
+        [Fact(DisplayName = "GenerateTokenPair revokes token on use")]
+        public async Task GenerateTokenPairRevokesTokenOnUse()
+        {
+            // Arrange
+            var user = new User
+            {
+                Id = 1,
+                Name = "John Cena",
+                Password = "pass",
+                Email = "test@test.com",
+            };
+
+            var refreshToken = new Token("refreshToken", TokenType.Refresh) { User = user };
+
+            await using var context = CreateTestCoffeeCardContextWithName(nameof(GenerateTokenPairRevokesTokenOnUse));
+            await context.Users.AddAsync(user);
+            await context.Tokens.AddAsync(refreshToken);
+            await context.SaveChangesAsync();
+
+            var tokenService = new Mock<Library.Services.v2.ITokenService>();
+            // tokenService.Setup(t => t.GenerateRefreshTokenAsync(user)).ReturnsAsync("refreshToken");
+            tokenService.Setup(t => t.GetValidTokenByHashAsync("refreshToken")).ReturnsAsync(refreshToken);
+
+            var accountService = new Library.Services.v2.AccountService(
+                context,
+                new Mock<Library.Services.ITokenService>().Object,
+                new Mock<Library.Services.IEmailService>().Object,
+                new Mock<Library.Services.v2.IEmailService>().Object,
+                tokenService.Object,
+                new Mock<IHashService>().Object);
+
+            // Act
+            var tokenPair = await accountService.GenerateTokenPair("refreshToken");
+
+            // Assert
+            Assert.True(refreshToken.Revoked);
+        }
+
+        [Fact(DisplayName = "GenerateTokenPair returns token pair")]
+        public async Task GenerateTokenPairReturnsTokenPair()
+        {
+            // Arrange
+            var user = new User
+            {
+                Id = 1,
+                Name = "John Cena",
+                Password = "pass",
+                Email = "test@test.com",
+            };
+
+            var refreshToken = new Token("refreshToken", TokenType.Refresh) { User = user };
+
+            await using var context = CreateTestCoffeeCardContextWithName(nameof(GenerateTokenPairReturnsTokenPair));
+            await context.Users.AddAsync(user);
+            await context.Tokens.AddAsync(refreshToken);
+            await context.SaveChangesAsync();
+
+            var tokenServicev2 = new Mock<Library.Services.v2.ITokenService>();
+            tokenServicev2.Setup(t => t.GenerateRefreshTokenAsync(user)).ReturnsAsync("newToken");
+            tokenServicev2.Setup(t => t.GetValidTokenByHashAsync("refreshToken")).ReturnsAsync(refreshToken);
+
+            var tokenServicev1 = new Mock<Library.Services.ITokenService>();
+            tokenServicev1.Setup(t => t.GenerateToken(It.IsAny<IEnumerable<Claim>>())).Returns("jwtToken");
+
+            var accountService = new Library.Services.v2.AccountService(
+                context,
+                tokenServicev1.Object,
+                new Mock<Library.Services.IEmailService>().Object,
+                new Mock<Library.Services.v2.IEmailService>().Object,
+                tokenServicev2.Object,
+                new Mock<IHashService>().Object);
+
+            // Act
+            var tokenPair = await accountService.GenerateTokenPair("refreshToken");
+
+            // Assert
+            Assert.NotNull(tokenPair);
+            Assert.NotNull(tokenPair.RefreshToken);
+            Assert.NotNull(tokenPair.Jwt);
+        }
+
         public static IEnumerable<object[]> ClaimGenerator()
         {
             yield return new object[] {
