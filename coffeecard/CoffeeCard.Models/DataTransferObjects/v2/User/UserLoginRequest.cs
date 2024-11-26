@@ -19,6 +19,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
         /// <value>Email</value>
         /// <example>john@doe.com</example>
         [EmailAddress]
+        [Required]
         public string Email { get; set; } = null!;
 
         /// <summary>
@@ -26,6 +27,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
         /// </summary>
         /// <value>LoginType</value>
         /// <example>Shifty</example>
+        [Required]
         public LoginType LoginType { get; set; }
     }
 }
