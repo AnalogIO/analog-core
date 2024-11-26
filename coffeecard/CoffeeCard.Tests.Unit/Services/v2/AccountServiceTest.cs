@@ -647,7 +647,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 new Mock<IHashService>().Object);
 
             // Act
-            var tokenPair = await accountService.GenerateTokenPair("refreshToken");
+            var tokenPair = await accountService.GenerateUserLoginFromToken("refreshToken");
 
             // Assert
             Assert.True(refreshToken.Revoked);
@@ -688,7 +688,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 new Mock<IHashService>().Object);
 
             // Act
-            var tokenPair = await accountService.GenerateTokenPair("refreshToken");
+            var tokenPair = await accountService.GenerateUserLoginFromToken("refreshToken");
 
             // Assert
             Assert.NotNull(tokenPair);

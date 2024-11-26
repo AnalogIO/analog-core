@@ -78,7 +78,7 @@ namespace CoffeeCard.Library.Services.v2
         /// </summary>
         Task UpdatePriviligedUserGroups(WebhookUpdateUserGroupRequest request);
 
-        Task<UserLoginResponse> GenerateTokenPair(string token);
+        Task<UserLoginResponse> GenerateUserLoginFromToken(string token);
 
         Task SendMagicLinkEmail(string email, LoginType loginType);
     }
