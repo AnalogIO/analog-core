@@ -263,7 +263,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
             if (tokenHash is null)
                 return NotFound(new MessageResponseDto { Message = "Token required for app authentication." });
 
-            var token = await _accountService.GenerateTokenPair(tokenHash);
+            var token = await _accountService.GenerateUserLoginFromToken(tokenHash);
             return Ok(token);
         }
     }

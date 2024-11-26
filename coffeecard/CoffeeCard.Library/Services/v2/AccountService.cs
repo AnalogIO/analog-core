@@ -318,7 +318,7 @@ namespace CoffeeCard.Library.Services.v2
             await _emailServiceV2.SendMagicLink(user, magicLinkTokenHash, loginType);
         }
 
-        public async Task<UserLoginResponse> GenerateTokenPair(string token)
+        public async Task<UserLoginResponse> GenerateUserLoginFromToken(string token)
         {
             // Validate token in DB
             var foundToken = await _tokenServiceV2.GetValidTokenByHashAsync(token);
