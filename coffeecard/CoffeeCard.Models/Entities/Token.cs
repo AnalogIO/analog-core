@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace CoffeeCard.Models.Entities
 {
@@ -8,6 +9,7 @@ namespace CoffeeCard.Models.Entities
     /// </summary>
     /// <param name="tokenHash">Hash used to identify the token</param>
     /// <param name="type"></param>
+    [Index(nameof(TokenHash))]
     public class Token(string tokenHash, TokenType type)
     {
         /// <summary>
