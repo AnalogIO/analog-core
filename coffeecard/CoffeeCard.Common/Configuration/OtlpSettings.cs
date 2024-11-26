@@ -17,7 +17,8 @@ public class OtlpSettings : IValidatable
         Validator.ValidateObject(this, new ValidationContext(this), true);
     }
 }
-public enum OtelProtocol {
+public enum OtelProtocol
+{
     Http,
     Grpc
 }

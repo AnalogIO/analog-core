@@ -35,6 +35,8 @@ using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
+using OpenTelemetry.Resources;
+using System.Collections.Generic;
 using Serilog;
 using AccountService = CoffeeCard.Library.Services.AccountService;
 using IAccountService = CoffeeCard.Library.Services.IAccountService;
@@ -126,6 +128,7 @@ namespace CoffeeCard.WebApi
             // Azure Application Insights/ OpenTelemetry
             var otlpSettings = _configuration.GetSection("OtlpSettings").Get<OtlpSettings>();
             var applicationInsightsConnectionString = _configuration.GetRequiredSection("ApplicationInsights").GetValue<string>("ConnectionString");
+            var environment = _configuration.GetSection("EnvironmentSettings").Get<EnvironmentSettings>();
             var openTelemetryBuilder = services.AddOpenTelemetry()
                 .WithMetrics(metrics =>
                 {
@@ -142,7 +145,7 @@ namespace CoffeeCard.WebApi
                         .AddSqlClientInstrumentation()
                         .AddHttpClientInstrumentation()
                         .AddAspNetCoreInstrumentation();
-                    
+
                     if (applicationInsightsConnectionString is null or "") return;
                     builder.AddAzureMonitorTraceExporter(options => options.ConnectionString = applicationInsightsConnectionString);
                 });
@@ -155,14 +158,18 @@ namespace CoffeeCard.WebApi
                     OtelProtocol.Http => OtlpExportProtocol.HttpProtobuf,
                     _ => throw new ArgumentOutOfRangeException("Unspecified protocol for export")
                 };
-                
+
                 openTelemetryBuilder.UseOtlpExporter(otlpExportProtocol, new Uri(otlpSettings.Endpoint));
+                openTelemetryBuilder.ConfigureResource(resource => resource.AddAttributes(
+                [
+                    new KeyValuePair<string, object>("Env", environment.EnvironmentType.ToString() ?? "Env not set"),
+                ]));
                 if (otlpSettings.Protocol is OtelProtocol.Http)
                 {
-                    services.AddHttpClient("OtlpTraceExporter", 
+                    services.AddHttpClient("OtlpTraceExporter",
                         client => client.DefaultRequestHeaders.Add("Authorization", $"Basic {otlpSettings.Token}"))
                         .RemoveAllLoggers();
-                    services.AddHttpClient("OtlpMetricExporter", 
+                    services.AddHttpClient("OtlpMetricExporter",
                         client => client.DefaultRequestHeaders.Add("Authorization", $"Basic {otlpSettings.Token}"))
                         .RemoveAllLoggers();
                 }
