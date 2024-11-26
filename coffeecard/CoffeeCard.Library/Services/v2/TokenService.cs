@@ -19,13 +19,13 @@ public class TokenService : ITokenService
         _hashService = hashService;
     }
 
-    public string GenerateMagicLink(User user)
+    public async Task<string> GenerateMagicLink(User user)
     {
         var guid = Guid.NewGuid().ToString();
         var magicLinkToken = new Token(guid, TokenType.MagicLink);
 
         user.Tokens.Add(magicLinkToken);
-        _context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
         return magicLinkToken.TokenHash;
     }
 

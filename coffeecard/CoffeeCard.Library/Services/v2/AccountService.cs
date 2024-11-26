@@ -311,7 +311,7 @@ namespace CoffeeCard.Library.Services.v2
                 // Should not throw error to prevent showing a malicious user if an email is already registered
                 return;
             }
-            var magicLinkTokenHash = _tokenServiceV2.GenerateMagicLink(user);
+            var magicLinkTokenHash = await _tokenServiceV2.GenerateMagicLink(user);
             await _emailServiceV2.SendMagicLink(user, magicLinkTokenHash, loginType);
         }
 

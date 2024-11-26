@@ -51,7 +51,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var tokenService = new TokenService(context, Mock.Of<IHashService>());
 
             // Act
-            var result = tokenService.GenerateMagicLink(user);
+            var result = await tokenService.GenerateMagicLink(user);
 
             // Assert
             Assert.NotNull(result);
