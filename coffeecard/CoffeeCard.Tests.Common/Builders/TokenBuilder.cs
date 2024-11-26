@@ -8,7 +8,7 @@ namespace CoffeeCard.Tests.Common.Builders
         public static TokenBuilder Simple()
         {
             return new TokenBuilder()
-                .WithUser(UserBuilder.Simple().Build());
+                .WithUser(UserBuilder.DefaultCustomer().Build());
         }
 
         public static TokenBuilder Typical()

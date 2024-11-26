@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,10 +8,8 @@ namespace CoffeeCard.Models.Entities
     /// <summary>
     /// Shared Token class for different token types
     /// </summary>
-    /// <param name="tokenHash">Hash used to identify the token</param>
-    /// <param name="type"></param>
     [Index(nameof(TokenHash))]
-    public class Token(string tokenHash, TokenType type)
+    public class Token
     {
         /// <summary>
         /// The ID of the token
@@ -20,7 +19,8 @@ namespace CoffeeCard.Models.Entities
         /// <summary>
         /// The randomly generated hash used to find the token
         /// </summary>
-        public string TokenHash { get; set; } = tokenHash;
+        [Required]
+        public required string TokenHash { get; set; }
 
         /// <summary>
         /// The ID of the user that the token is associated with
@@ -39,12 +39,14 @@ namespace CoffeeCard.Models.Entities
         /// <example>
         /// RefreshToken
         /// </example>
-        public TokenType Type { get; set; } = type;
+        [Required]
+        public required TokenType Type { get; set; }
 
         /// <summary>
         /// The date and time when the Token is no longer valid
         /// </summary>
-        public DateTime Expires { get; set; } = type.getExpiresAt();
+        public DateTime Expires
+            => Type.getExpiresAt();
 
         /// <summary>
         /// Whether or not the token has been revoked

@@ -22,7 +22,7 @@ public class TokenService : ITokenService
     public async Task<string> GenerateMagicLink(User user)
     {
         var guid = Guid.NewGuid().ToString();
-        var magicLinkToken = new Token(guid, TokenType.MagicLink);
+        var magicLinkToken = new Token { TokenHash = guid, Type = TokenType.MagicLink };
 
         user.Tokens.Add(magicLinkToken);
         await _context.SaveChangesAsync();
@@ -33,7 +33,7 @@ public class TokenService : ITokenService
     {
         var refreshToken = Guid.NewGuid().ToString();
         var hashedToken = _hashService.Hash(refreshToken);
-        _context.Tokens.Add(new Token(hashedToken, TokenType.Refresh) { User = user });
+        _context.Tokens.Add(new Token { TokenHash = hashedToken, Type = TokenType.Refresh, User = user });
         await _context.SaveChangesAsync();
         return refreshToken;
     }
