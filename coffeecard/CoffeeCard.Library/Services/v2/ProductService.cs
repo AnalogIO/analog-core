@@ -8,18 +8,20 @@ using CoffeeCard.Models.DataTransferObjects.v2.Product;
 using CoffeeCard.Models.DataTransferObjects.v2.Products;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
 using CoffeeCard.Library.Utils;
+using Microsoft.Extensions.Logging;
 
 namespace CoffeeCard.Library.Services.v2
 {
     public sealed class ProductService : IProductService
     {
         private readonly CoffeeCardContext _context;
+        private readonly ILogger<ProductService> _logger;
 
-        public ProductService(CoffeeCardContext context)
+        public ProductService(CoffeeCardContext context, ILogger<ProductService> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<ProductResponse>> GetProductsForUserAsync(User user)
@@ -57,7 +59,7 @@ namespace CoffeeCard.Library.Services.v2
 
             if (product == null)
             {
-                Log.Error("No product was found by Product Id: {Id}", productId);
+                _logger.LogError("No product was found by Product Id: {Id}", productId);
                 throw new EntityNotFoundException($"No product was found by Product Id: {productId}");
             }
 
