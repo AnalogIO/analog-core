@@ -4,6 +4,7 @@ using CoffeeCard.Common.Configuration;
 using CoffeeCard.Library.Services;
 using CoffeeCard.Models.Entities;
 using CoffeeCard.Tests.Common.Builders;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace CoffeeCard.Tests.Unit.Services
@@ -23,7 +24,7 @@ namespace CoffeeCard.Tests.Unit.Services
             };
             var user = UserBuilder.DefaultCustomer().Build();
 
-            var loginLimiter = new LoginLimiter(loginLimiterSettings);
+            var loginLimiter = new LoginLimiter(loginLimiterSettings, NullLogger<LoginLimiter>.Instance);
 
             const bool lockedOutExpected = false;
             const bool loginAllowedAgainExpected = true;
@@ -56,7 +57,7 @@ namespace CoffeeCard.Tests.Unit.Services
             };
             var user = UserBuilder.DefaultCustomer().Build();
 
-            var loginLimiter = new LoginLimiter(loginLimiterSettings);
+            var loginLimiter = new LoginLimiter(loginLimiterSettings, NullLogger<LoginLimiter>.Instance);
 
             // Act
             var allowedLoginResults = new List<bool>();

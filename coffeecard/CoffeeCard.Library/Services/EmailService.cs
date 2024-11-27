@@ -6,10 +6,8 @@ using CoffeeCard.Models.DataTransferObjects.Purchase;
 using CoffeeCard.Models.DataTransferObjects.User;
 using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
 using MimeKit;
-using RestSharp;
-using RestSharp.Authenticators;
-using Serilog;
 using TimeZoneConverter;
 
 namespace CoffeeCard.Library.Services
@@ -20,6 +18,7 @@ namespace CoffeeCard.Library.Services
         private readonly EnvironmentSettings _environmentSettings;
         private readonly IEmailSender _emailSender;
         private readonly IMapperService _mapperService;
+        private readonly ILogger<EmailService> _logger;
 
         public EmailService(IEmailSender emailSender, EnvironmentSettings environmentSettings,
             IWebHostEnvironment env, IMapperService mapperService)
@@ -52,14 +51,14 @@ namespace CoffeeCard.Library.Services
 
             message.Body = builder.ToMessageBody();
 
-            Log.Information("Sending invoice for PurchaseId {PurchaseId} to UserId {UserId}, E-mail {Email}", purchase.Id, user.Id, user.Email);
+            _logger.LogInformation("Sending invoice for PurchaseId {PurchaseId} to UserId {UserId}, E-mail {Email}", purchase.Id, user.Id, user.Email);
 
             await _emailSender.SendEmailAsync(message);
         }
 
         public async Task SendRegistrationVerificationEmailAsync(User user, string token)
         {
-            Log.Information("Sending registration verification email to {email} {userid}", user.Email, user.Id);
+            _logger.LogInformation("Sending registration verification email to {email} {userid}", user.Email, user.Id);
             var message = new MimeMessage();
             var builder = RetrieveTemplate("email_verify_registration.html");
             const string endpoint = "verifyemail?token=";
@@ -92,7 +91,7 @@ namespace CoffeeCard.Library.Services
 
         public async Task SendVerificationEmailForDeleteAccount(User user, string token)
         {
-            Log.Information("Sending delete verification email to {email} {userid}", user.Email, user.Id);
+            _logger.LogInformation("Sending delete verification email to {email} {userid}", user.Email, user.Id);
             var message = new MimeMessage();
             var builder = RetrieveTemplate("email_verify_account_deletion.html");
             const string endpoint = "verifydelete?token=";
