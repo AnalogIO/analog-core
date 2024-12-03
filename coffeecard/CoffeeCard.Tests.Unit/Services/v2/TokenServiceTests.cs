@@ -14,7 +14,7 @@ using TokenService = CoffeeCard.Library.Services.v2.TokenService;
 
 namespace CoffeeCard.Tests.Unit.Services.v2
 {
-    public class TokenServiceTests
+    public class TokenServiceTests : BaseUnitTests
     {
         private CoffeeCardContext CreateTestCoffeeCardContextWithName(string name)
         {
