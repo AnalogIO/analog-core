@@ -2,13 +2,15 @@ using System;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using MailKit.Net.Smtp;
+using Microsoft.Extensions.Logging;
 using MimeKit;
-using Serilog;
 
 namespace CoffeeCard.Library.Services;
 
-public class SmtpEmailSender(SmtpSettings smtpSettings) : IEmailSender
+public class SmtpEmailSender(SmtpSettings smtpSettings, ILogger<SmtpEmailSender> logger) : IEmailSender
 {
+    private readonly ILogger<SmtpEmailSender> _logger = logger;
+
     public async Task SendEmailAsync(MimeMessage mail)
     {
         mail.From.Add(new MailboxAddress("Cafe Analog", "smtp@analogio.dk"));
@@ -22,7 +24,7 @@ public class SmtpEmailSender(SmtpSettings smtpSettings) : IEmailSender
         }
         catch (Exception ex)
         {
-            Log.Error("Error sending request to SMTP server. Error: {errorMessage}", ex.Message);
+            _logger.LogError("Error sending request to SMTP server. Error: {errorMessage}", ex.Message);
         }
     }
 }

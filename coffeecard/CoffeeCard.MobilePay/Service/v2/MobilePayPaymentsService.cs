@@ -6,7 +6,7 @@ using CoffeeCard.MobilePay.Generated.Api.PaymentsApi;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 using CoffeeCard.Models.Entities;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace CoffeeCard.MobilePay.Service.v2
 {
@@ -14,11 +14,13 @@ namespace CoffeeCard.MobilePay.Service.v2
     {
         private readonly MobilePaySettingsV2 _mobilePaySettings;
         private readonly PaymentsApi _paymentsApi;
+        private readonly ILogger<MobilePayPaymentsService> _logger;
 
-        public MobilePayPaymentsService(PaymentsApi paymentsApi, MobilePaySettingsV2 mobilePaySettings)
+        public MobilePayPaymentsService(PaymentsApi paymentsApi, MobilePaySettingsV2 mobilePaySettings, ILogger<MobilePayPaymentsService> logger)
         {
             _paymentsApi = paymentsApi;
             _mobilePaySettings = mobilePaySettings;
+            _logger = logger;
         }
 
         public async Task<MobilePayPaymentDetails> InitiatePayment(MobilePayPaymentRequest paymentRequest)
@@ -35,7 +37,7 @@ namespace CoffeeCard.MobilePay.Service.v2
                     Description = paymentRequest.Description
                 }, null);
 
-                Log.Information("Initiated Payment with MobilePay PaymentId {TransactionId} of {OrerAmount} Oerer kr.", response.PaymentId.ToString(), paymentRequest.Amount);
+                _logger.LogInformation("Initiated Payment with MobilePay PaymentId {TransactionId} of {OrerAmount} Oerer kr.", response.PaymentId.ToString(), paymentRequest.Amount);
 
                 return new MobilePayPaymentDetails(paymentRequest.OrderId.ToString(), response.MobilePayAppRedirectUri,
                     response.PaymentId.ToString());
@@ -43,7 +45,7 @@ namespace CoffeeCard.MobilePay.Service.v2
             catch (ApiException<ErrorResponse> e)
             {
                 var errorResponse = e.Result;
-                Log.Error(e,
+                _logger.LogError(e,
                     "MobilePay InitiatePayment failed with HTTP {StatusCode}. ErrorCode: {ErrorCode} Message: {Message} CorrelationId: {CorrelationId}",
                     e.StatusCode, errorResponse.Code, errorResponse.Message, errorResponse.CorrelationId);
 
@@ -70,7 +72,7 @@ namespace CoffeeCard.MobilePay.Service.v2
             catch (ApiException<ErrorResponse> e)
             {
                 var errorResponse = e.Result;
-                Log.Error(e,
+                _logger.LogError(e,
                     "MobilePay GetPayment failed with HTTP {StatusCode}. ErrorCode: {ErrorCode} Message: {Message} CorrelationId: {CorrelationId}",
                     e.StatusCode, errorResponse.Code, errorResponse.Message, errorResponse.CorrelationId);
 
@@ -105,15 +107,14 @@ namespace CoffeeCard.MobilePay.Service.v2
                 }
                 catch (ApiException e)
                 {
-                    Log.Error(e, "MobilePay RefundPayment failed with HTTP {StatusCode}. Message: {Message}", e.StatusCode, e.Message);
+                    _logger.LogError(e, "MobilePay RefundPayment failed with HTTP {StatusCode}. Message: {Message}", e.StatusCode, e.Message);
                     return false;
                 }
-
             }
             catch (ApiException<ErrorResponse> e)
             {
                 var errorResponse = e.Result;
-                Log.Error(e,
+                _logger.LogError(e,
                     "MobilePay RefundPayment failed with HTTP {StatusCode}. ErrorCode: {ErrorCode} Message: {Message} CorrelationId: {CorrelationId}",
                     e.StatusCode, errorResponse.Code, errorResponse.Message, errorResponse.CorrelationId);
                 throw new MobilePayApiException(e.StatusCode, errorResponse.Message, errorResponse.Code);
@@ -132,7 +133,7 @@ namespace CoffeeCard.MobilePay.Service.v2
             catch (ApiException<ErrorResponse> e)
             {
                 var errorResponse = e.Result;
-                Log.Error(e,
+                _logger.LogError(e,
                     "MobilePay CapturePayment failed with HTTP {StatusCode}. ErrorCode: {ErrorCode} Message: {Message} CorrelationId: {CorrelationId}",
                     e.StatusCode, errorResponse.Code, errorResponse.Message, errorResponse.CorrelationId);
 
@@ -156,7 +157,7 @@ namespace CoffeeCard.MobilePay.Service.v2
             catch (ApiException<ErrorResponse> e)
             {
                 var errorResponse = e.Result;
-                Log.Error(e,
+                _logger.LogError(e,
                     "MobilePay CancelPayment failed with HTTP {StatusCode}. ErrorCode: {ErrorCode} Message: {Message} CorrelationId: {CorrelationId}",
                     e.StatusCode, errorResponse.Code, errorResponse.Message, errorResponse.CorrelationId);
 
@@ -180,7 +181,7 @@ namespace CoffeeCard.MobilePay.Service.v2
             catch (ApiException<ErrorResponse> e)
             {
                 var errorResponse = e.Result;
-                Log.Error(e,
+                _logger.LogError(e,
                     "MobilePay GetPaymentPoints failed with HTTP {StatusCode}. ErrorCode: {ErrorCode} Message: {Message} CorrelationId: {CorrelationId}",
                     e.StatusCode, errorResponse.Code, errorResponse.Message, errorResponse.CorrelationId);
 
@@ -202,7 +203,7 @@ namespace CoffeeCard.MobilePay.Service.v2
 
         private void LogMobilePayException(ApiException apiException)
         {
-            Log.Error(apiException,
+            _logger.LogError(apiException,
                 "MobilePay InitiatePayment failed with HTTP {StatusCode}. Message: {Message}",
                 apiException.StatusCode, apiException.Message);
         }

@@ -12,8 +12,12 @@ using CoffeeCard.Models.Entities;
 using CoffeeCard.Tests.Common.Builders;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.IdentityModel.Tokens;
 using Moq;
 using Xunit;
+using AccountService = CoffeeCard.Library.Services.v2.AccountService;
 
 namespace CoffeeCard.Tests.Unit.Services.v2
 {
@@ -55,7 +59,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 new Mock<Library.Services.IEmailService>().Object,
                 new Mock<Library.Services.v2.IEmailService>().Object,
                 new Mock<Library.Services.v2.ITokenService>().Object,
-                new Mock<IHashService>().Object);
+                new Mock<IHashService>().Object,
+                NullLogger<AccountService>.Instance);
             result = await accountService.GetAccountByClaimsAsync(claims);
 
             // Assert
@@ -80,7 +85,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 new Mock<Library.Services.IEmailService>().Object,
                 new Mock<Library.Services.v2.IEmailService>().Object,
                 new Mock<Library.Services.v2.ITokenService>().Object,
-                new Mock<IHashService>().Object);
+                new Mock<IHashService>().Object,
+                NullLogger<AccountService>.Instance);
 
             // Assert
             await Assert.ThrowsAsync<ApiException>(async () => await accountService.GetAccountByClaimsAsync(claims));
@@ -125,7 +131,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 emailService,
                 new Mock<Library.Services.v2.IEmailService>().Object,
                 new Mock<Library.Services.v2.ITokenService>().Object,
-                hashService);
+                hashService,
+                NullLogger<AccountService>.Instance);
 
             result = await accountService.RegisterAccountAsync(name, email, password, programmeId);
 
@@ -159,7 +166,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 new Mock<Library.Services.IEmailService>().Object,
                 new Mock<Library.Services.v2.IEmailService>().Object,
                 new Mock<Library.Services.v2.ITokenService>().Object,
-                hashservice.Object);
+                hashservice.Object,
+                NullLogger<AccountService>.Instance);
 
             // Assert
             // Register the first user
@@ -182,7 +190,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 new Mock<Library.Services.IEmailService>().Object,
                 new Mock<Library.Services.v2.IEmailService>().Object,
                 new Mock<Library.Services.v2.ITokenService>().Object,
-                new Mock<IHashService>().Object);
+                new Mock<IHashService>().Object,
+                NullLogger<AccountService>.Instance);
 
             // Assert
             var exception = await Assert.ThrowsAsync<ApiException>(
@@ -217,7 +226,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 emailService,
                 new Mock<Library.Services.v2.IEmailService>().Object,
                 new Mock<Library.Services.v2.ITokenService>().Object,
-                hashService);
+                hashService,
+                NullLogger<AccountService>.Instance);
 
             await accountService.RegisterAccountAsync("name", "email", "password", 1);
 
@@ -275,7 +285,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 new Mock<Library.Services.IEmailService>().Object,
                 new Mock<Library.Services.v2.IEmailService>().Object,
                 new Mock<Library.Services.v2.ITokenService>().Object,
-                hashService);
+                hashService,
+                NullLogger<AccountService>.Instance);
 
             var result = await accountService.UpdateAccountAsync(user, updateUserRequest);
 
@@ -315,7 +326,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 new Mock<Library.Services.IEmailService>().Object,
                 new Mock<Library.Services.v2.IEmailService>().Object,
                 new Mock<Library.Services.v2.ITokenService>().Object,
-                new Mock<IHashService>().Object);
+                new Mock<IHashService>().Object,
+                NullLogger<AccountService>.Instance);
 
             // Assert
             var exception = await Assert.ThrowsAsync<ApiException>(async () => await accountService.UpdateAccountAsync(user, updateUserRequest));
@@ -343,7 +355,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 emailService,
                 new Mock<Library.Services.v2.IEmailService>().Object,
                 new Mock<Library.Services.v2.ITokenService>().Object,
-                new Mock<IHashService>().Object);
+                new Mock<IHashService>().Object,
+                NullLogger<AccountService>.Instance);
 
             await accountService.RequestAnonymizationAsync(user);
             // Assert
@@ -378,7 +391,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 new Mock<Library.Services.IEmailService>().Object,
                 new Mock<Library.Services.v2.IEmailService>().Object,
                 new Mock<Library.Services.v2.ITokenService>().Object,
-                new Mock<IHashService>().Object);
+                new Mock<IHashService>().Object,
+                NullLogger<AccountService>.Instance);
 
             await accountService.AnonymizeAccountAsync("test");
             var result = await context.Users.Where(u => u.Id == user.Id).FirstAsync();
@@ -415,7 +429,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 emailService.Object,
                 new Mock<Library.Services.v2.IEmailService>().Object,
                 new Mock<Library.Services.v2.ITokenService>().Object,
-                new Mock<IHashService>().Object);
+                new Mock<IHashService>().Object,
+                NullLogger<AccountService>.Instance);
 
             await accountService.ResendAccountVerificationEmail(new ResendAccountVerificationEmailRequest
             {
@@ -447,7 +462,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 new Mock<Library.Services.IEmailService>().Object,
                 new Mock<Library.Services.v2.IEmailService>().Object,
                 new Mock<Library.Services.v2.ITokenService>().Object,
-                new Mock<IHashService>().Object);
+                new Mock<IHashService>().Object,
+                NullLogger<AccountService>.Instance);
 
             await Assert.ThrowsAsync<ConflictException>(async () => await accountService.ResendAccountVerificationEmail(new ResendAccountVerificationEmailRequest
             {
@@ -468,7 +484,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 new Mock<Library.Services.IEmailService>().Object,
                 new Mock<Library.Services.v2.IEmailService>().Object,
                 new Mock<Library.Services.v2.ITokenService>().Object,
-                new Mock<IHashService>().Object);
+                new Mock<IHashService>().Object,
+                NullLogger<AccountService>.Instance);
 
             await Assert.ThrowsAsync<EntityNotFoundException>(async () => await accountService.ResendAccountVerificationEmail(new ResendAccountVerificationEmailRequest
             {
@@ -495,7 +512,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 new Mock<Library.Services.IEmailService>().Object,
                 emailService.Object,
                 new Mock<Library.Services.v2.ITokenService>().Object,
-                new Mock<IHashService>().Object);
+                new Mock<IHashService>().Object,
+                NullLogger<AccountService>.Instance);
 
             // Act
             await accountService.SendMagicLinkEmail(userEmail, LoginType.Shifty);
@@ -517,7 +535,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 new Mock<Library.Services.IEmailService>().Object,
                 emailService.Object,
                 new Mock<Library.Services.v2.ITokenService>().Object,
-                new Mock<IHashService>().Object);
+                new Mock<IHashService>().Object,
+                NullLogger<AccountService>.Instance);
 
             // Act
             await accountService.SendMagicLinkEmail("nonexisting@email.com", LoginType.Shifty);
@@ -554,7 +573,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 new Mock<Library.Services.IEmailService>().Object,
                 new Mock<Library.Services.v2.IEmailService>().Object,
                 tokenService.Object,
-                new Mock<IHashService>().Object);
+                new Mock<IHashService>().Object,
+                NullLogger<AccountService>.Instance);
 
             // Act
             var tokenPair = await accountService.GenerateUserLoginFromToken(tokenHash);
@@ -595,7 +615,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 new Mock<Library.Services.IEmailService>().Object,
                 new Mock<Library.Services.v2.IEmailService>().Object,
                 tokenServicev2.Object,
-                new Mock<IHashService>().Object);
+                new Mock<IHashService>().Object,
+                NullLogger<AccountService>.Instance);
 
             // Act
             var tokenPair = await accountService.GenerateUserLoginFromToken(tokenHash);

@@ -7,13 +7,12 @@ using CoffeeCard.Common;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services.v2;
-using CoffeeCard.Models.DataTransferObjects;
 using CoffeeCard.Models.DataTransferObjects.CoffeeCard;
 using CoffeeCard.Models.DataTransferObjects.Ticket;
 using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace CoffeeCard.Library.Services
 {
@@ -23,13 +22,15 @@ namespace CoffeeCard.Library.Services
         private readonly IProductService _productService;
         private readonly IStatisticService _statisticService;
         private readonly CoffeeCardContext _context;
+        private readonly ILogger<TicketService> _logger;
 
-        public TicketService(CoffeeCardContext context, IAccountService accountService, IProductService productService, IStatisticService statisticService)
+        public TicketService(CoffeeCardContext context, IAccountService accountService, IProductService productService, IStatisticService statisticService, ILogger<TicketService> logger)
         {
             _context = context;
             _accountService = accountService;
             _productService = productService;
             _statisticService = statisticService;
+            _logger = logger;
         }
 
         public IEnumerable<Ticket> GetTickets(IEnumerable<Claim> claims, bool used)
@@ -48,10 +49,10 @@ namespace CoffeeCard.Library.Services
             if (userIdClaim == null) throw new ApiException("The token is invalid!", 401);
             var userId = int.Parse(userIdClaim.Value);
 
-            Log.Information($"Using product with id, {productId}");
+            _logger.LogInformation("Using product with id, {productId}", productId);
             var ticketId = GetFirstTicketIdFromProduct(productId, userId);
 
-            Log.Information($"Using ticket with id: {ticketId}");
+            _logger.LogInformation("Using ticket with id: {ticketId}", ticketId);
             var usedTicket = ValidateTicket(ticketId, userId);
 
             UpdateTicket(usedTicket);
@@ -67,7 +68,7 @@ namespace CoffeeCard.Library.Services
             //Throws exception if the list is empty
             if (!dto.ProductIds.Any()) throw new ApiException("The list is empty", StatusCodes.Status400BadRequest);
 
-            Log.Information($"Using multiple tickets {string.Join(",", dto.ProductIds)}");
+            _logger.LogInformation("Using multiple tickets {@productIds} ", dto.ProductIds);
             var userIdClaim = claims.FirstOrDefault(x => x.Type == Constants.UserId);
             if (userIdClaim == null) throw new ApiException("The token is invalid!", StatusCodes.Status401Unauthorized);
             var userId = int.Parse(userIdClaim.Value);
@@ -109,11 +110,11 @@ namespace CoffeeCard.Library.Services
                 // update user experience
                 usedTickets.ForEach(x => _accountService.UpdateExperience(userId, GetExperienceByTicket(x.ProductId)));
                 _context.SaveChanges();
-                Log.Information("All tickets were successfully used, updated and saved!");
+                _logger.LogInformation("All tickets were successfully used, updated and saved!");
             }
             else
             {
-                Log.Error($"All tickets could not be used :-( ticketIds: {string.Join(",", tickets)}");
+                _logger.LogError("All tickets could not be used :-( ticketIds: {@tickets}", tickets);
                 throw new ApiException("Could not use the supplied tickets - try again later or contact AnalogIO!", StatusCodes.Status400BadRequest);
             }
 
@@ -179,7 +180,7 @@ namespace CoffeeCard.Library.Services
 
         private Ticket ValidateTicket(int ticketId, int userId)
         {
-            Log.Information($"Validating that ticketId: {ticketId} belongs to userId: {userId} and is not used");
+            _logger.LogInformation("Validating that ticketId: {ticketId} belongs to userId: {userId} and is not used", ticketId, userId);
             var ticket = _context.Tickets.Include(x => x.Purchase)
                 .FirstOrDefault(x => x.Id == ticketId && x.Status == TicketStatus.Unused && x.Owner.Id == userId);
             if (ticket == null) throw new ApiException("The ticket is invalid", StatusCodes.Status400BadRequest);

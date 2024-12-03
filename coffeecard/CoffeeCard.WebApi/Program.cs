@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.FeatureManagement;
 using Serilog;
+using Serilog.Sinks.OpenTelemetry;
 
 namespace CoffeeCard.WebApi
 {
@@ -28,9 +30,35 @@ namespace CoffeeCard.WebApi
         public static async Task<int> Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .CreateBootstrapLogger();
+
+            var loggerConfiguration = new LoggerConfiguration()
                 .ReadFrom.Configuration(Configuration)
-                .Enrich.WithEnrichers()
-                .CreateLogger();
+                .Enrich.WithEnrichers();
+
+            var otlpSettings = Configuration.GetSection("OtlpSettings").Get<OtlpSettings>();
+            var environment = Configuration.GetSection("EnvironmentSettings").Get<EnvironmentSettings>();
+            if (otlpSettings is not null)
+            {
+                var otlpExportProtocol = otlpSettings.Protocol switch
+                {
+                    OtelProtocol.Grpc => OtlpProtocol.Grpc,
+                    OtelProtocol.Http => OtlpProtocol.HttpProtobuf,
+                    _ => throw new ArgumentOutOfRangeException("Unspecified protocol for export")
+                };
+                var resource = new Dictionary<string, object>();
+                resource.Add("Env", environment.EnvironmentType.ToString() ?? "Env not set");
+                loggerConfiguration.WriteTo.OpenTelemetry(settings =>
+                {
+                    settings.ResourceAttributes = resource;
+                    settings.Endpoint = otlpSettings.Endpoint;
+                    settings.Protocol = otlpExportProtocol;
+                    settings.Headers.Add("Authorization", $"Basic {otlpSettings.Token}");
+                });
+            }
+
+            Log.Logger = loggerConfiguration.CreateLogger();
             try
             {
                 Log.Information("Starting web host");

@@ -8,17 +8,19 @@ using CoffeeCard.Models.DataTransferObjects.v2.Product;
 using CoffeeCard.Models.DataTransferObjects.v2.Products;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace CoffeeCard.Library.Services.v2
 {
     public sealed class MenuItemService : IMenuItemService
     {
         private readonly CoffeeCardContext _context;
+        private readonly ILogger<MenuItemService> _logger;
 
-        public MenuItemService(CoffeeCardContext context)
+        public MenuItemService(CoffeeCardContext context, ILogger<MenuItemService> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<MenuItemResponse>> GetAllMenuItemsAsync()
@@ -72,7 +74,7 @@ namespace CoffeeCard.Library.Services.v2
 
             if (menuItem == null)
             {
-                Log.Warning("No menu item was found by Menu Item Id: {Id}", id);
+                _logger.LogWarning("No menu item was found by Menu Item Id: {Id}", id);
                 throw new EntityNotFoundException($"No menu item was found by Menu Item Id {id}");
             }
 

@@ -1,14 +1,15 @@
 using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
+using Microsoft.Extensions.Logging;
 using MimeKit;
 using RestSharp;
-using RestSharp.Authenticators;
-using Serilog;
 
 namespace CoffeeCard.Library.Services;
 
-public class MailgunEmailSender(MailgunSettings mailgunSettings, IRestClient restClient) : IEmailSender
+public class MailgunEmailSender(MailgunSettings mailgunSettings, IRestClient restClient, ILogger<MailgunEmailSender> logger) : IEmailSender
 {
+    private readonly ILogger<MailgunEmailSender> _logger = logger;
+
     public async Task SendEmailAsync(MimeMessage mail)
     {
 
@@ -25,7 +26,7 @@ public class MailgunEmailSender(MailgunSettings mailgunSettings, IRestClient res
 
         if (!response.IsSuccessful)
         {
-            Log.Error(
+            _logger.LogError(
                 "Error sending request to Mailgun. StatusCode: {statusCode} ErrorMessage: {errorMessage}",
                 response.StatusCode,
                 response.ErrorMessage

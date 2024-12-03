@@ -2,7 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Models.Entities;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace CoffeeCard.Library.Services
 {
@@ -10,11 +10,13 @@ namespace CoffeeCard.Library.Services
     {
         private readonly ConcurrentDictionary<string, (DateTime, int)> _loginAttempts;
         private readonly LoginLimiterSettings _loginLimiterSettings;
+        private readonly ILogger<LoginLimiter> _logger;
 
-        public LoginLimiter(LoginLimiterSettings loginLimiterSettings)
+        public LoginLimiter(LoginLimiterSettings loginLimiterSettings, ILogger<LoginLimiter> logger)
         {
             _loginAttempts = new ConcurrentDictionary<string, (DateTime, int)>();
             _loginLimiterSettings = loginLimiterSettings;
+            _logger = logger;
         }
 
         /// <summary>
@@ -40,7 +42,7 @@ namespace CoffeeCard.Library.Services
         {
             if (!_loginAttempts.TryGetValue(email, out var oldEntry)) return;
             if (_loginAttempts.TryUpdate(email, (DateTime.UtcNow, oldEntry.Item2), oldEntry))
-                Log.Warning("The lockout period for {username} was reset, possible brute force attack", email);
+                _logger.LogWarning("The lockout period for {username} was reset, possible brute force attack", email);
         }
 
         /// <summary>

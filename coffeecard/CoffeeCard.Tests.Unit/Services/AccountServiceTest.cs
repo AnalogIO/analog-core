@@ -13,6 +13,7 @@ using CoffeeCard.Models.Entities;
 using CoffeeCard.Tests.Common.Builders;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.IdentityModel.Tokens;
 using Moq;
 using Xunit;
@@ -43,7 +44,7 @@ namespace CoffeeCard.Tests.Unit.Services
             // Act
             var accountService = new AccountService(AssertionContext, _environmentSettings, new Mock<ITokenService>().Object,
                 new Mock<IEmailService>().Object, new Mock<IHashService>().Object,
-                new Mock<IHttpContextAccessor>().Object, new Mock<ILoginLimiter>().Object, _loginLimiterSettings);
+                new Mock<IHttpContextAccessor>().Object, new Mock<ILoginLimiter>().Object, _loginLimiterSettings, NullLogger<AccountService>.Instance);
             var result = await accountService.RecoverUserAsync("bogus", "3433");
 
             // Assert
@@ -73,7 +74,7 @@ namespace CoffeeCard.Tests.Unit.Services
 
             var accountService = new AccountService(AssertionContext, _environmentSettings, tokenService.Object,
                 new Mock<IEmailService>().Object, new Mock<IHashService>().Object,
-                new Mock<IHttpContextAccessor>().Object, new Mock<ILoginLimiter>().Object, _loginLimiterSettings);
+                new Mock<IHttpContextAccessor>().Object, new Mock<ILoginLimiter>().Object, _loginLimiterSettings, NullLogger<AccountService>.Instance);
 
             var result = await accountService.RecoverUserAsync("valid", "3433");
 
@@ -108,7 +109,7 @@ namespace CoffeeCard.Tests.Unit.Services
             // Act
             var accountService = new AccountService(AssertionContext, _environmentSettings, tokenService.Object,
                 new Mock<IEmailService>().Object, new Mock<IHashService>().Object,
-                new Mock<IHttpContextAccessor>().Object, new Mock<ILoginLimiter>().Object, _loginLimiterSettings);
+                new Mock<IHttpContextAccessor>().Object, new Mock<ILoginLimiter>().Object, _loginLimiterSettings, NullLogger<AccountService>.Instance);
 
             await accountService.RecoverUserAsync("valid", "3433");
 
@@ -146,7 +147,7 @@ namespace CoffeeCard.Tests.Unit.Services
 
             var accountService = new AccountService(AssertionContext, _environmentSettings, tokenService.Object,
                 new Mock<IEmailService>().Object, hasher.Object,
-                new Mock<IHttpContextAccessor>().Object, loginLimiter.Object, _loginLimiterSettings);
+                new Mock<IHttpContextAccessor>().Object, loginLimiter.Object, _loginLimiterSettings, NullLogger<AccountService>.Instance);
 
             var actualToken = accountService.Login(user.Email, user.Password, "2.1.0");
 
@@ -173,7 +174,7 @@ namespace CoffeeCard.Tests.Unit.Services
 
             var accountService = new AccountService(AssertionContext, _environmentSettings, new Mock<ITokenService>().Object,
                 new Mock<IEmailService>().Object, new HashService(), httpContextAccessor.Object,
-                loginLimiter.Object, _loginLimiterSettings);
+                loginLimiter.Object, _loginLimiterSettings, NullLogger<AccountService>.Instance);
 
             //Attempts to login
             Assert.Throws<ApiException>(() => accountService.Login(user.Email, wrongPass, "2.1.0"));
@@ -199,7 +200,7 @@ namespace CoffeeCard.Tests.Unit.Services
             // Act
             var accountService = new AccountService(AssertionContext, _environmentSettings, new Mock<ITokenService>().Object,
                 new Mock<IEmailService>().Object, new HashService(), httpContextAccessor.Object,
-                loginLimiter.Object, _loginLimiterSettings);
+                loginLimiter.Object, _loginLimiterSettings, NullLogger<AccountService>.Instance);
 
             //Attempts to login
             Assert.Throws<ApiException>(() => accountService.Login(user.Email, wrongPass, "2.1.0"));
@@ -226,7 +227,7 @@ namespace CoffeeCard.Tests.Unit.Services
             _loginLimiterSettings.MaximumLoginAttemptsWithinTimeOut = 1;
             var accountService = new AccountService(AssertionContext, _environmentSettings, new Mock<ITokenService>().Object,
                 new Mock<IEmailService>().Object, new HashService(), httpContextAccessor.Object,
-                new LoginLimiter(_loginLimiterSettings), _loginLimiterSettings);
+                new LoginLimiter(_loginLimiterSettings, NullLogger<LoginLimiter>.Instance), _loginLimiterSettings, NullLogger<AccountService>.Instance);
 
             //Attempts to login with the wrong credentials 
             Assert.Throws<ApiException>(() => accountService.Login(user.Email, wrongPass, "2.1.0"));
@@ -259,7 +260,7 @@ namespace CoffeeCard.Tests.Unit.Services
             // Act
             var accountService = new AccountService(AssertionContext, _environmentSettings, new Mock<ITokenService>().Object,
                 new Mock<IEmailService>().Object, new HashService(), httpContextAccessor.Object,
-                new LoginLimiter(_loginLimiterSettings), _loginLimiterSettings);
+                new LoginLimiter(_loginLimiterSettings, NullLogger<LoginLimiter>.Instance), _loginLimiterSettings, NullLogger<AccountService>.Instance);
 
             // Login 
             var exception = (ApiException)Record.Exception(() => accountService.Login(user.Email, somePass, "2.1.0"));
@@ -288,7 +289,7 @@ namespace CoffeeCard.Tests.Unit.Services
             // Act
             var accountService = new AccountService(AssertionContext, _environmentSettings, new Mock<ITokenService>().Object,
                 new Mock<IEmailService>().Object, hashService.Object, httpContextAccessor.Object,
-                new LoginLimiter(_loginLimiterSettings), _loginLimiterSettings);
+                new LoginLimiter(_loginLimiterSettings, NullLogger<LoginLimiter>.Instance), _loginLimiterSettings, NullLogger<AccountService>.Instance);
 
             // Login 
             var result = accountService.Login(user.Email, user.Password, "2.1.0");
@@ -307,7 +308,7 @@ namespace CoffeeCard.Tests.Unit.Services
             // Act
             var accountService = new AccountService(AssertionContext, _environmentSettings, new Mock<ITokenService>().Object,
                 new Mock<IEmailService>().Object, new Mock<IHashService>().Object, httpContextAccessor.Object,
-                new LoginLimiter(_loginLimiterSettings), _loginLimiterSettings);
+                new LoginLimiter(_loginLimiterSettings, NullLogger<LoginLimiter>.Instance), _loginLimiterSettings, NullLogger<AccountService>.Instance);
 
             // Login 
             var exception = (ApiException)Record.Exception(() => accountService.Login("unknown email", "somePass", "2.1.0"));
@@ -329,12 +330,12 @@ namespace CoffeeCard.Tests.Unit.Services
             {
                 TokenKey = "This is a long test token key"
             };
-            var tokenService = new TokenService(identitySettings, new ClaimsUtilities(AssertionContext));
+            var tokenService = new TokenService(identitySettings, new ClaimsUtilities(AssertionContext), NullLogger<TokenService>.Instance);
 
             httpContextAccessor.Setup(h => h.HttpContext).Returns(new DefaultHttpContext().HttpContext);
             var accountService = new AccountService(AssertionContext, _environmentSettings, tokenService,
                 new Mock<IEmailService>().Object, new Mock<IHashService>().Object, httpContextAccessor.Object,
-                new LoginLimiter(_loginLimiterSettings), _loginLimiterSettings);
+                new LoginLimiter(_loginLimiterSettings, NullLogger<LoginLimiter>.Instance), _loginLimiterSettings, NullLogger<AccountService>.Instance);
 
             //Act & Assert
             await Assert.ThrowsAsync<ApiException>(() => accountService.VerifyRegistration(token));
@@ -350,12 +351,12 @@ namespace CoffeeCard.Tests.Unit.Services
             {
                 TokenKey = "SuperLongSigningKeySuperLongSigningKey"
             };
-            var tokenService = new TokenService(identitySettings, new ClaimsUtilities(AssertionContext));
+            var tokenService = new TokenService(identitySettings, new ClaimsUtilities(AssertionContext), NullLogger<TokenService>.Instance);
 
             httpContextAccessor.Setup(h => h.HttpContext).Returns(new DefaultHttpContext().HttpContext);
             var accountService = new AccountService(AssertionContext, _environmentSettings, tokenService,
                 new Mock<IEmailService>().Object, new Mock<IHashService>().Object, httpContextAccessor.Object,
-                new LoginLimiter(_loginLimiterSettings), _loginLimiterSettings);
+                new LoginLimiter(_loginLimiterSettings, NullLogger<LoginLimiter>.Instance), _loginLimiterSettings, NullLogger<AccountService>.Instance);
 
             var user = UserBuilder.DefaultCustomer().WithIsVerified(false).Build();
             var token = WriteTokenString(new List<Claim>
