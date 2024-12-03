@@ -9,9 +9,9 @@ namespace CoffeeCard.Tests.Common.Builders
         {
             var builder = new TokenBuilder();
             builder.Faker.CustomInstantiator(f =>
-                    new Token("tokenHash", TokenType.Refresh))
-                    .RuleFor(o => o.TokenHash, f => f.Random.Guid().ToString())
-                    .RuleFor(o => o.Type, f => TokenType.Refresh);
+                    new Token(f.Random.Guid().ToString(), TokenType.Refresh))
+                    .Ignore(t => t.TokenHash)
+                    .Ignore(t => t.Type);
             return builder
                 .WithExpires(DateTime.Now.AddDays(1))
                 .WithRevoked(false)
