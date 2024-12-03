@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Text;
@@ -12,6 +13,7 @@ using CoffeeCard.Tests.ApiClient.Generated;
 using CoffeeCard.Tests.ApiClient.v2.Generated;
 using CoffeeCard.Tests.Common.Builders;
 using CoffeeCard.WebApi;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Xunit;
@@ -23,9 +25,9 @@ namespace CoffeeCard.Tests.Integration.WebApplication
     {
         private readonly CustomWebApplicationFactory<Startup> _factory;
         private readonly IServiceScope _scope;
-        private readonly HttpClient _httpClient;
-        protected readonly CoffeeCardClient CoffeeCardClient;
-        protected readonly CoffeeCardClientV2 CoffeeCardClientV2;
+        private HttpClient _httpClient;
+        protected CoffeeCardClient CoffeeCardClient => new(_httpClient);
+        protected CoffeeCardClientV2 CoffeeCardClientV2 => new(_httpClient);
         protected readonly CoffeeCardContext Context;
 
         protected BaseIntegrationTest(CustomWebApplicationFactory<Startup> factory)
@@ -38,8 +40,8 @@ namespace CoffeeCard.Tests.Integration.WebApplication
             _scope = _factory.Services.CreateScope();
 
             _httpClient = GetHttpClient();
-            CoffeeCardClient = new CoffeeCardClient(_httpClient);
-            CoffeeCardClientV2 = new CoffeeCardClientV2(_httpClient);
+            // CoffeeCardClient = new CoffeeCardClient(_httpClient);
+            // CoffeeCardClientV2 = new CoffeeCardClientV2(_httpClient);
             Context = GetCoffeeCardContext();
         }
 
@@ -70,6 +72,18 @@ namespace CoffeeCard.Tests.Integration.WebApplication
                     };
             var token = GenerateToken(claims);
             _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", token);
+        }
+
+        protected void ConfigureMockService<TService>(TService service) where TService : class
+        {
+            _httpClient = _factory.WithWebHostBuilder(services =>
+            {
+                services.ConfigureTestServices(services =>
+                {
+                    services.Remove(services.SingleOrDefault(d => d.ServiceType == typeof(TService)));
+                    services.AddSingleton(service);
+                });
+            }).CreateClient();
         }
 
         private string GenerateToken(IEnumerable<Claim> claims)

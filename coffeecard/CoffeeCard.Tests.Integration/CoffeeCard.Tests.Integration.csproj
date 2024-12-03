@@ -11,6 +11,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.3" />
+    <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="NetEscapades.Configuration.Validation" Version="2.0.0" />
     <PackageReference Include="xunit" Version="2.7.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.7">
@@ -43,12 +44,12 @@
     <Folder Include="Controllers\" />
   </ItemGroup>
   <ItemGroup>
-    <OpenApiReference Include="../CoffeeCard.WebApi/obj/CoffeeCard.WebApi.json" >
+    <OpenApiReference Include="../CoffeeCard.WebApi/obj/CoffeeCard.WebApi.json">
       <ClassName>CoffeeCardClient</ClassName>
       <Namespace>CoffeeCard.Tests.ApiClient.Generated</Namespace>
       <Options>/UseBaseUrl:false /OperationGenerationMode:SingleClientFromOperationId</Options>
     </OpenApiReference>
-    <OpenApiReference Include="../CoffeeCard.WebApi/obj/CoffeeCard.WebApi_v2.json" >
+    <OpenApiReference Include="../CoffeeCard.WebApi/obj/CoffeeCard.WebApi_v2.json">
       <ClassName>CoffeeCardClientV2</ClassName>
       <Namespace>CoffeeCard.Tests.ApiClient.v2.Generated</Namespace>
       <Options>/AdditionalNamespaceUsages:CoffeeCard.Tests.ApiClient.Generated /UseBaseUrl:false /OperationGenerationMode:SingleClientFromOperationId</Options>
