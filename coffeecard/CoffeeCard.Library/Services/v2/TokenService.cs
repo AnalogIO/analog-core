@@ -33,7 +33,7 @@ public class TokenService : ITokenService
     {
         var refreshToken = Guid.NewGuid().ToString();
         var hashedToken = _hashService.Hash(refreshToken);
-        _context.Tokens.Add(new Token(hashedToken, TokenType.Refresh) { User = user });
+        _context.Tokens.Add(new Token(hashedToken, TokenType.Refresh) { UserId = user.Id });
         await _context.SaveChangesAsync();
         return refreshToken;
     }
