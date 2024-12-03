@@ -26,8 +26,8 @@ namespace CoffeeCard.Tests.Integration.WebApplication
         private readonly CustomWebApplicationFactory<Startup> _factory;
         private readonly IServiceScope _scope;
         private HttpClient _httpClient;
-        protected CoffeeCardClient CoffeeCardClient;
-        protected CoffeeCardClientV2 CoffeeCardClientV2;
+        protected CoffeeCardClient CoffeeCardClient => new(_httpClient);
+        protected CoffeeCardClientV2 CoffeeCardClientV2 => new(_httpClient);
         protected readonly CoffeeCardContext Context;
 
         protected BaseIntegrationTest(CustomWebApplicationFactory<Startup> factory)
@@ -40,8 +40,6 @@ namespace CoffeeCard.Tests.Integration.WebApplication
             _scope = _factory.Services.CreateScope();
 
             _httpClient = GetHttpClient();
-            CoffeeCardClient = new CoffeeCardClient(_httpClient);
-            CoffeeCardClientV2 = new CoffeeCardClientV2(_httpClient);
             Context = GetCoffeeCardContext();
         }
 
