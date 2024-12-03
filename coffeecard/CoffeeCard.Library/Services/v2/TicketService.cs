@@ -7,7 +7,7 @@ using CoffeeCard.Library.Persistence;
 using CoffeeCard.Models.DataTransferObjects.v2.Ticket;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace CoffeeCard.Library.Services.v2
 {
@@ -15,11 +15,13 @@ namespace CoffeeCard.Library.Services.v2
     {
         private readonly CoffeeCardContext _context;
         private readonly IStatisticService _statisticService;
+        private readonly ILogger<TicketService> _logger;
 
-        public TicketService(CoffeeCardContext context, IStatisticService statisticService)
+        public TicketService(CoffeeCardContext context, IStatisticService statisticService, ILogger<TicketService> logger)
         {
             _context = context;
             _statisticService = statisticService;
+            _logger = logger;
         }
 
         public async Task IssueTickets(Purchase purchase)
@@ -40,7 +42,7 @@ namespace CoffeeCard.Library.Services.v2
             await _context.Tickets.AddRangeAsync(tickets);
             await _context.SaveChangesAsync();
 
-            Log.Information("Issued {NoTickets} Tickets for ProductId {ProductId}, PurchaseId {PurchaseId}", purchase.NumberOfTickets, purchase.ProductId, purchase.Id);
+            _logger.LogInformation("Issued {NoTickets} Tickets for ProductId {ProductId}, PurchaseId {PurchaseId}", purchase.NumberOfTickets, purchase.ProductId, purchase.Id);
         }
 
         public async Task<IEnumerable<TicketResponse>> GetTicketsAsync(User user, bool includeUsed)
@@ -65,7 +67,7 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task<UsedTicketResponse> UseTicketAsync(User user, int productId)
         {
-            Log.Information("UserId {UserId} uses a ticket for ProductId {ProductId}", user.Id, productId);
+            _logger.LogInformation("UserId {UserId} uses a ticket for ProductId {ProductId}", user.Id, productId);
 
             var product = await GetProductIncludingMenuItemsFromIdAsync(productId);
             var ticket = await GetFirstTicketFromProductAsync(product, user.Id);
@@ -92,7 +94,7 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task<UsedTicketResponse> UseTicketAsync(User user, int productId, int menuItemId)
         {
-            Log.Information($"UserId {user.Id} uses a ticket for MenuItemId {menuItemId} via ProductId {productId}");
+            _logger.LogInformation("UserId {userId} uses a ticket for MenuItemId {menuItemId} via ProductId {productId}", user.Id, menuItemId, productId);
 
             var product = await GetProductIncludingMenuItemsFromIdAsync(productId);
             var ticket = await GetFirstTicketFromProductAsync(product, user.Id);

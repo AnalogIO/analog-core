@@ -10,8 +10,7 @@ using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.FeatureManagement;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace CoffeeCard.Library.Services.v2
 {
@@ -26,6 +25,7 @@ namespace CoffeeCard.Library.Services.v2
         private readonly IMobilePayWebhooksService _mobilePayWebhooksService;
         private readonly MobilePaySettingsV2 _mobilePaySettings;
         private readonly IMemoryCache _memoryCache;
+        private readonly ILogger<WebhookService> _logger;
 
         public WebhookService(CoffeeCardContext context, IMobilePayWebhooksService mobilePayWebhooksService,
             MobilePaySettingsV2 mobilePaySettings, IMemoryCache memoryCache)
@@ -54,7 +54,7 @@ namespace CoffeeCard.Library.Services.v2
                     SlidingExpiration = TimeSpan.FromHours(2)
                 };
 
-                Log.Information("Set {SignatureKey} in Cache", MpSignatureKeyCacheKey);
+                _logger.LogInformation("Set {SignatureKey} in Cache", MpSignatureKeyCacheKey);
                 _memoryCache.Set(MpSignatureKeyCacheKey, signatureKey, cacheExpiryOptions);
             }
 
@@ -67,12 +67,12 @@ namespace CoffeeCard.Library.Services.v2
             if (await webhooks.AnyAsync())
             {
                 await SyncWebhook(await webhooks.FirstAsync());
-                Log.Information("A MobilePay Webhook was already registered. Configuration has been synced");
+                _logger.LogInformation("A MobilePay Webhook was already registered. Configuration has been synced");
             }
             else
             {
                 await RegisterWebhook();
-                Log.Information("A MobilePay Webhook has been registered");
+                _logger.LogInformation("A MobilePay Webhook has been registered");
             }
         }
 

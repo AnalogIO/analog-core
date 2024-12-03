@@ -9,7 +9,7 @@ using CoffeeCard.Models.DataTransferObjects.v2.User;
 using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace CoffeeCard.Library.Services.v2
 {
@@ -19,22 +19,24 @@ namespace CoffeeCard.Library.Services.v2
         private readonly IEmailService _emailService;
         private readonly IHashService _hashService;
         private readonly ITokenService _tokenService;
+        private readonly ILogger<AccountService> _logger;
 
-        public AccountService(CoffeeCardContext context, ITokenService tokenService, IEmailService emailService, IHashService hashService)
+        public AccountService(CoffeeCardContext context, ITokenService tokenService, IEmailService emailService, IHashService hashService, ILogger<AccountService> logger)
         {
             _context = context;
             _tokenService = tokenService;
             _emailService = emailService;
             _hashService = hashService;
+            _logger = logger;
         }
 
         public async Task<User> RegisterAccountAsync(string name, string email, string password, int programme)
         {
-            Log.Information("Trying to register new user. Name: {name} Email: {email}", name, email);
+            _logger.LogInformation("Trying to register new user. Name: {name} Email: {email}", name, email);
 
             if (_context.Users.Any(x => x.Email == email))
             {
-                Log.Information("Could not register user Name: {name}. Email:{email} already exists", name, email);
+                _logger.LogInformation("Could not register user Name: {name}. Email:{email} already exists", name, email);
                 throw new ApiException($"The email {email} is already being used by another user",
                 StatusCodes.Status409Conflict);
             }
@@ -82,20 +84,20 @@ namespace CoffeeCard.Library.Services.v2
             {
                 if (_context.Users.Any(x => x.Email == updateUserRequest.Email))
                     throw new ApiException($"The email {updateUserRequest.Email} is already in use!", 400);
-                Log.Information($"Changing email of user from {user.Email} to {updateUserRequest.Email}");
+                _logger.LogInformation("Changing email of user from {email} to {newEmail}", user.Email, updateUserRequest.Email);
                 user.Email = updateUserRequest.Email;
             }
 
             if (updateUserRequest.Name != null)
             {
-                Log.Information($"Changing name of user from {user.Name} to {EscapeName(updateUserRequest.Name)}");
+                _logger.LogInformation("Changing name of user from {oldName} to {newName}", user.Name, EscapeName(updateUserRequest.Name));
                 user.Name = EscapeName(updateUserRequest.Name);
             }
 
             if (updateUserRequest.PrivacyActivated != null)
             {
-                Log.Information(
-                    $"Changing privacy of user from {user.PrivacyActivated} to {(bool)updateUserRequest.PrivacyActivated}");
+                _logger.LogInformation(
+                    "Changing privacy of user from {oldPrivacy} to {newPrivacy}", user.PrivacyActivated, (bool)updateUserRequest.PrivacyActivated);
                 user.PrivacyActivated = (bool)updateUserRequest.PrivacyActivated;
             }
 
@@ -104,7 +106,7 @@ namespace CoffeeCard.Library.Services.v2
                 var programme = _context.Programmes.FirstOrDefault(x => x.Id == updateUserRequest.ProgrammeId);
                 if (programme == null)
                     throw new ApiException($"No programme with id {updateUserRequest.ProgrammeId} exists!", 400);
-                Log.Information($"Changing programme of user from {user.Programme.Id} to {programme.Id}");
+                _logger.LogInformation("Changing programme of user from {oldProgramme} to {newProgramme}", user.Programme.Id, programme.Id);
                 user.Programme = programme;
             }
 
@@ -114,7 +116,7 @@ namespace CoffeeCard.Library.Services.v2
                 var hashedPassword = _hashService.Hash(updateUserRequest.Password + salt);
                 user.Salt = salt;
                 user.Password = hashedPassword;
-                Log.Information("User changed password");
+                _logger.LogInformation("User changed password");
             }
 
             await _context.SaveChangesAsync();
@@ -146,7 +148,7 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task AnonymizeAccountAsync(string token)
         {
-            Log.Information("Trying to verify deletion with token: {token}", token);
+            _logger.LogInformation("Trying to verify deletion with token: {token}", token);
 
             var email = _tokenService.ValidateVerificationTokenAndGetEmail(token);
             var user = await GetAccountByEmailAsync(email);
@@ -263,7 +265,7 @@ namespace CoffeeCard.Library.Services.v2
 
             if (user == null)
             {
-                Log.Error("No user was found by user id: {id}", id);
+                _logger.LogError("No user was found by user id: {id}", id);
                 throw new EntityNotFoundException($"No user was found by user id: {id}");
             }
 

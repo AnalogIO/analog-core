@@ -9,6 +9,7 @@ using CoffeeCard.Models.DataTransferObjects.v2.Product;
 using CoffeeCard.Models.DataTransferObjects.v2.Products;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace CoffeeCard.Tests.Unit.Services.v2
@@ -58,7 +59,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             await context.SaveChangesAsync();
 
-            using var productService = new ProductService(context);
+            using var productService = new ProductService(context, NullLogger<ProductService>.Instance);
 
             await productService.UpdateProduct(1, new UpdateProductRequest()
             {
@@ -98,7 +99,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
 
-            using var productService = new ProductService(context);
+            using var productService = new ProductService(context, NullLogger<ProductService>.Instance);
 
             var p = new AddProductRequest
             {
@@ -136,7 +137,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
 
-            using var productService = new ProductService(context);
+            using var productService = new ProductService(context, NullLogger<ProductService>.Instance);
 
             var p1 = new AddProductRequest
             {
@@ -184,7 +185,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
 
-            using var productService = new ProductService(context);
+            using var productService = new ProductService(context, NullLogger<ProductService>.Instance);
 
             var p1 = new AddProductRequest
             {

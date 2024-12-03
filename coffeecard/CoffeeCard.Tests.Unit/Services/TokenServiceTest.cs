@@ -10,6 +10,7 @@ using CoffeeCard.Library.Services;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.IdentityModel.Tokens;
 using Xunit;
 
@@ -49,7 +50,7 @@ namespace CoffeeCard.Tests.Unit.Services
             await using (context)
             {
                 var claimsUtility = new ClaimsUtilities(context);
-                var tokenService = new TokenService(_identity, claimsUtility);
+                var tokenService = new TokenService(_identity, claimsUtility, NullLogger<TokenService>.Instance);
 
                 // Act
                 result = await tokenService.ValidateTokenIsUnusedAsync("Bogus token");
@@ -72,7 +73,7 @@ namespace CoffeeCard.Tests.Unit.Services
             await using (context)
             {
                 var claimsUtility = new ClaimsUtilities(context);
-                var tokenService = new TokenService(_identity, claimsUtility);
+                var tokenService = new TokenService(_identity, claimsUtility, NullLogger<TokenService>.Instance);
 
                 var token = tokenService.GenerateToken(claims);
                 var userTokens = new List<Token> { new Token(token) };
@@ -111,7 +112,7 @@ namespace CoffeeCard.Tests.Unit.Services
 
                 var token = new JwtSecurityTokenHandler().WriteToken(jwt);
                 var claimsUtility = new ClaimsUtilities(context);
-                var tokenService = new TokenService(_identity, claimsUtility);
+                var tokenService = new TokenService(_identity, claimsUtility, NullLogger<TokenService>.Instance);
 
                 // Act
                 var result = tokenService.ValidateToken(token);
@@ -135,7 +136,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 await using (context)
                 {
                     var claimsUtility = new ClaimsUtilities(context);
-                    var tokenService = new TokenService(_identity, claimsUtility);
+                    var tokenService = new TokenService(_identity, claimsUtility, NullLogger<TokenService>.Instance);
 
                     var key = new SymmetricSecurityKey(
                         Encoding.UTF8.GetBytes(_identity.TokenKey));
@@ -178,7 +179,7 @@ namespace CoffeeCard.Tests.Unit.Services
             await using (context)
             {
                 var claimsUtility = new ClaimsUtilities(context);
-                var tokenService = new TokenService(_identity, claimsUtility);
+                var tokenService = new TokenService(_identity, claimsUtility, NullLogger<TokenService>.Instance);
 
                 var token = tokenService.GenerateToken(claims);
 
