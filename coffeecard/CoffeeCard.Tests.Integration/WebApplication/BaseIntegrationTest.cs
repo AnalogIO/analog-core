@@ -21,7 +21,7 @@ using Xunit;
 namespace CoffeeCard.Tests.Integration.WebApplication
 {
     [Collection("Integration tests, to be run sequentially")]
-    public abstract class BaseIntegrationTest : IClassFixture<CustomWebApplicationFactory<Startup>>
+    public abstract class BaseIntegrationTest : IClassFixture<CustomWebApplicationFactory<Startup>>, IAsyncDisposable
     {
         private readonly CustomWebApplicationFactory<Startup> _factory;
         private readonly IServiceScope _scope;
@@ -123,7 +123,6 @@ namespace CoffeeCard.Tests.Integration.WebApplication
         public ValueTask DisposeAsync()
         {
             _scope.Dispose();
-            _httpClient.Dispose();
             GC.SuppressFinalize(this);
             return new ValueTask(Task.CompletedTask);
         }

@@ -16,35 +16,16 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 {
     public class TokenServiceTests : BaseUnitTests
     {
-        private CoffeeCardContext CreateTestCoffeeCardContextWithName(string name)
-        {
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(name);
-
-            var databaseSettings = new DatabaseSettings
-            {
-                SchemaName = "test"
-            };
-            var environmentSettings = new EnvironmentSettings()
-            {
-                EnvironmentType = EnvironmentType.Test
-            };
-
-            return new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
-        }
-
         [Fact(DisplayName = "GenerateMagicLink returns a link with a valid token for user")]
         public async Task GenerateMagicLink_ReturnsLinkWithValidTokenForUser()
         {
             // Arrange
             var user = UserBuilder.DefaultCustomer().Build();
 
-            using var context = CreateTestCoffeeCardContextWithName(nameof(GenerateMagicLink_ReturnsLinkWithValidTokenForUser));
+            InitialContext.Users.Add(user);
+            await InitialContext.SaveChangesAsync();
 
-            context.Users.Add(user);
-            await context.SaveChangesAsync();
-
-            var tokenService = new TokenService(context, Mock.Of<IHashService>());
+            var tokenService = new TokenService(AssertionContext, Mock.Of<IHashService>());
 
             // Act
             var result = await tokenService.GenerateMagicLink(user);
@@ -64,13 +45,11 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             // Arrange
             var user = UserBuilder.DefaultCustomer().Build();
 
-            using var context = CreateTestCoffeeCardContextWithName(nameof(GenerateRefreshTokenAsync_ReturnsValidTokenForUser));
-
-            context.Users.Add(user);
-            await context.SaveChangesAsync();
+            InitialContext.Users.Add(user);
+            await InitialContext.SaveChangesAsync();
             var hashService = new HashService();
 
-            var tokenService = new TokenService(context, hashService);
+            var tokenService = new TokenService(AssertionContext, hashService);
 
             // Act
             var result = await tokenService.GenerateRefreshTokenAsync(user);
@@ -79,7 +58,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             Assert.NotNull(result);
             Assert.NotEmpty(result);
             // We cannot assert on tokenHash since it has been hashed for security reasons. Hashing is tested elsewhere.
-            var token = user.Tokens.First();
+            var token = await AssertionContext.Tokens.FirstOrDefaultAsync();
             Assert.Equal(TokenType.Refresh, token.Type);
             Assert.False(token.Revoked, "Token should not be revoked");
         }
@@ -88,9 +67,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         public async Task GetValidTokenByHashAsync_ThrowsExceptionIfTokenDoesNotExist()
         {
             // Arrange
-            using var context = CreateTestCoffeeCardContextWithName(nameof(GetValidTokenByHashAsync_ThrowsExceptionIfTokenDoesNotExist));
-
-            var tokenService = new TokenService(context, Mock.Of<IHashService>());
+            var tokenService = new TokenService(AssertionContext, Mock.Of<IHashService>());
 
             // Act & Assert
             await Assert.ThrowsAsync<ApiException>(() => tokenService.GetValidTokenByHashAsync("token"));
@@ -100,15 +77,13 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         public async Task GetValidTokenByHashAsync_ThrowsExceptionIfTokenIsRevoked()
         {
             // Arrange
-            using var context = CreateTestCoffeeCardContextWithName(nameof(GetValidTokenByHashAsync_ThrowsExceptionIfTokenIsRevoked));
-
             var token = TokenBuilder.Simple().Build();
 
-            context.Tokens.Add(token);
+            InitialContext.Tokens.Add(token);
 
-            await context.SaveChangesAsync();
+            await InitialContext.SaveChangesAsync();
 
-            var tokenService = new TokenService(context, Mock.Of<IHashService>());
+            var tokenService = new TokenService(AssertionContext, Mock.Of<IHashService>());
 
             // Act & Assert
             await Assert.ThrowsAsync<ApiException>(() => tokenService.GetValidTokenByHashAsync("token"));
@@ -118,14 +93,12 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         public async Task GetValidTokenByHashAsync_ThrowsExceptionIfTokenHasExpired()
         {
             // Arrange
-            using var context = CreateTestCoffeeCardContextWithName(nameof(GetValidTokenByHashAsync_ThrowsExceptionIfTokenHasExpired));
-
             var token = TokenBuilder.Simple().WithExpires(DateTime.Now.AddDays(-1)).Build();
-            context.Tokens.Add(token);
+            InitialContext.Tokens.Add(token);
 
-            await context.SaveChangesAsync();
+            await InitialContext.SaveChangesAsync();
 
-            var tokenService = new TokenService(context, Mock.Of<IHashService>());
+            var tokenService = new TokenService(AssertionContext, Mock.Of<IHashService>());
 
             // Act & Assert
             await Assert.ThrowsAsync<ApiException>(() => tokenService.GetValidTokenByHashAsync("token"));
@@ -135,17 +108,15 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         public async Task GetValidTokenByHashAsync_ReturnsTokenByValidHash()
         {
             // Arrange
-            using var context = CreateTestCoffeeCardContextWithName(nameof(GetValidTokenByHashAsync_ReturnsTokenByValidHash));
-
             var token = TokenBuilder.Simple().Build();
-            context.Tokens.Add(token);
+            InitialContext.Tokens.Add(token);
 
-            await context.SaveChangesAsync();
+            await InitialContext.SaveChangesAsync();
 
             var hashService = new Mock<IHashService>();
             hashService.Setup(h => h.Hash(It.IsAny<string>())).Returns(token.TokenHash);
 
-            var tokenService = new TokenService(context, hashService.Object);
+            var tokenService = new TokenService(AssertionContext, hashService.Object);
 
             // Act & Assert
             var result = await tokenService.GetValidTokenByHashAsync(token.TokenHash);
@@ -161,10 +132,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         public async Task GetValidTokenByHashAsync_InvalidatesUsersRefreshTokensIfTokenIsInvalid()
         {
             // Arrange
-            using var context = CreateTestCoffeeCardContextWithName(nameof(GetValidTokenByHashAsync_InvalidatesUsersRefreshTokensIfTokenIsInvalid));
-
             var user = UserBuilder.DefaultCustomer().Build();
-            context.Users.Add(user);
+            InitialContext.Users.Add(user);
 
             var token = TokenBuilder.Simple().WithUser(user).WithRevoked(true).WithType(TokenType.Refresh).Build();
             var refreshToken = TokenBuilder.Simple().WithUser(user).WithType(TokenType.Refresh).Build();
@@ -175,24 +144,24 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 new ("reset", TokenType.ResetPassword) {User = user},
             };
 
-            context.Tokens.AddRange(token, refreshToken);
-            context.Tokens.AddRange(otherTokens);
+            InitialContext.Tokens.AddRange(token, refreshToken);
+            InitialContext.Tokens.AddRange(otherTokens);
 
-            await context.SaveChangesAsync();
+            await InitialContext.SaveChangesAsync();
 
             var hashService = new Mock<IHashService>();
             hashService.Setup(h => h.Hash(It.IsAny<string>())).Returns(token.TokenHash);
 
-            var tokenService = new TokenService(context, hashService.Object);
+            var tokenService = new TokenService(AssertionContext, hashService.Object);
 
             // Act & Assert
             await Assert.ThrowsAsync<ApiException>(() => tokenService.GetValidTokenByHashAsync(token.TokenHash));
 
             // Assert
-            Assert.True(refreshToken.Revoked);
+            Assert.True((await AssertionContext.Tokens.FirstOrDefaultAsync(t => t.Id == refreshToken.Id)).Revoked);
             foreach (var otherToken in otherTokens)
             {
-                Assert.False(otherToken.Revoked);
+                Assert.False((await AssertionContext.Tokens.FirstOrDefaultAsync(t => t.Id == otherToken.Id)).Revoked);
             }
         }
     }
