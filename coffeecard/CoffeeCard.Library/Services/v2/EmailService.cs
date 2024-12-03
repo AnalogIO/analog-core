@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
 using MimeKit;
-using Serilog;
 
 namespace CoffeeCard.Library.Services.v2
 {
@@ -14,18 +14,20 @@ namespace CoffeeCard.Library.Services.v2
         private readonly IWebHostEnvironment _env;
         private readonly EnvironmentSettings _environmentSettings;
         private readonly IEmailSender _emailSender;
+        private readonly ILogger<AccountService> _logger;
 
         public EmailService(IEmailSender emailSender, EnvironmentSettings environmentSettings,
-            IWebHostEnvironment env)
+            IWebHostEnvironment env, ILogger<AccountService> logger)
         {
             _emailSender = emailSender;
             _environmentSettings = environmentSettings;
             _env = env;
+            _logger = logger;
         }
 
         public async Task SendMagicLink(User user, string magicLink, LoginType loginType)
         {
-            Log.Information("Sending magic link email to {email} {userid}", user.Email, user.Id);
+            _logger.LogInformation("Sending magic link email to {email} {userid}", user.Email, user.Id);
             var message = new MimeMessage();
             var builder = RetrieveTemplate("email_magic_link_login.html");
             var baseUrl = loginType switch

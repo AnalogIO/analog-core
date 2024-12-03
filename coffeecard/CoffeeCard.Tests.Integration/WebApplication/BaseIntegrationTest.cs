@@ -21,13 +21,13 @@ using Xunit;
 namespace CoffeeCard.Tests.Integration.WebApplication
 {
     [Collection("Integration tests, to be run sequentially")]
-    public abstract class BaseIntegrationTest : CustomWebApplicationFactory<Startup>, IClassFixture<CustomWebApplicationFactory<Startup>>
+    public abstract class BaseIntegrationTest : IClassFixture<CustomWebApplicationFactory<Startup>>
     {
         private readonly CustomWebApplicationFactory<Startup> _factory;
         private readonly IServiceScope _scope;
         private HttpClient _httpClient;
-        protected CoffeeCardClient CoffeeCardClient => new(_httpClient);
-        protected CoffeeCardClientV2 CoffeeCardClientV2 => new(_httpClient);
+        protected CoffeeCardClient CoffeeCardClient;
+        protected CoffeeCardClientV2 CoffeeCardClientV2;
         protected readonly CoffeeCardContext Context;
 
         protected BaseIntegrationTest(CustomWebApplicationFactory<Startup> factory)
@@ -40,14 +40,14 @@ namespace CoffeeCard.Tests.Integration.WebApplication
             _scope = _factory.Services.CreateScope();
 
             _httpClient = GetHttpClient();
-            // CoffeeCardClient = new CoffeeCardClient(_httpClient);
-            // CoffeeCardClientV2 = new CoffeeCardClientV2(_httpClient);
+            CoffeeCardClient = new CoffeeCardClient(_httpClient);
+            CoffeeCardClientV2 = new CoffeeCardClientV2(_httpClient);
             Context = GetCoffeeCardContext();
         }
 
         private HttpClient GetHttpClient()
         {
-            var client = CreateClient();
+            var client = _factory.CreateClient();
 
             return client;
         }
@@ -122,12 +122,12 @@ namespace CoffeeCard.Tests.Integration.WebApplication
             return context;
         }
 
-        public override ValueTask DisposeAsync()
+        public ValueTask DisposeAsync()
         {
             _scope.Dispose();
             _httpClient.Dispose();
             GC.SuppressFinalize(this);
-            return base.DisposeAsync();
+            return new ValueTask(Task.CompletedTask);
         }
     }
 }
