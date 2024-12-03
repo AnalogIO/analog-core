@@ -97,8 +97,9 @@
       },
       {
         "name": "OtlpSettings__Token",
-        "value": "OtlpSettings-Token"
+        "secretName": "OtlpSettings-Token"
       }
     ]
   }
 }
+
