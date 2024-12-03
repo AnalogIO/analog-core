@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,8 +8,6 @@ namespace CoffeeCard.Models.Entities
     /// <summary>
     /// Shared Token class for different token types
     /// </summary>
-    /// <param name="tokenHash">Hash used to identify the token</param>
-    /// <param name="type"></param>
     [Index(nameof(TokenHash))]
     public class Token(string tokenHash, TokenType type)
     {

@@ -1,19 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services;
-using CoffeeCard.Library.Services.v2;
-using CoffeeCard.Library.Utils;
-using CoffeeCard.Models.DataTransferObjects.v2.Programme;
 using CoffeeCard.Models.DataTransferObjects.v2.User;
 using CoffeeCard.Models.Entities;
+using CoffeeCard.Tests.Common.Builders;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -25,7 +21,7 @@ using AccountService = CoffeeCard.Library.Services.v2.AccountService;
 
 namespace CoffeeCard.Tests.Unit.Services.v2
 {
-    public class AccountServiceTest
+    public class AccountServiceTest : BaseUnitTests
     {
         private CoffeeCardContext CreateTestCoffeeCardContextWithName(string name)
         {
@@ -48,8 +44,9 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         public async Task GetAccountByClaimsReturnsUserClaimWithEmail()
         {
             // Arrange
-            var claims = new List<Claim>() { new Claim(ClaimTypes.Email, "test@test.test") };
-            var expected = new User() { Name = "User", Email = "test@test.test" };
+            const string email = "test@test.test";
+            var claims = new List<Claim>() { new Claim(ClaimTypes.Email, email) };
+            var expected = UserBuilder.DefaultCustomer().WithEmail(email).Build();
             User result;
 
             using var context = CreateTestCoffeeCardContextWithName(nameof(GetAccountByClaimsReturnsUserClaimWithEmail));
@@ -76,7 +73,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         public async Task GetAccountByClaimsThrowsApiExceptionGivenInvalidClaim(IEnumerable<Claim> claims)
         {
             // Arrange
-            var validUser = new User() { Name = "User", Email = "test@test.test" };
+            var validUser = UserBuilder.DefaultCustomer().Build();
 
             using var context = CreateTestCoffeeCardContextWithName(nameof(GetAccountByClaimsThrowsApiExceptionGivenInvalidClaim) + claims.ToString());
             context.Users.Add(validUser);
@@ -103,22 +100,15 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         public async Task RegisterAccountReturnsUserOnValidInput(String name, String email, string password, int programmeId)
         {
             // Arrange
-            var programme = new Programme()
-            {
-                Id = programmeId,
-                FullName = "test",
-                ShortName = "t",
-                Users = new List<User>()
-            };
+            var programme = ProgrammeBuilder.Simple().WithId(programmeId).Build();
             var expectedPass = "HashedPassword";
-            var expected = new User()
-            {
-                Name = name,
-                Email = email,
-                Password = expectedPass,
-                PrivacyActivated = false,
-                Programme = programme
-            };
+            var expected = UserBuilder.DefaultCustomer()
+                .WithName(name)
+                .WithEmail(email)
+                .WithPassword(expectedPass)
+                .WithProgramme(programme)
+                .WithPrivacyActivated(false)
+                .Build();
             User result;
 
             // Using same context across all valid users to test creation of multiple users
@@ -158,7 +148,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         public async Task RegisterAccountThrowsApiExceptionWithStatus409OnExistingEmail()
         {
             // Arrange
-            var programme = new Programme() { Id = 1, FullName = "test", ShortName = "t", SortPriority = 1, Users = new List<User>() };
+            var programme = ProgrammeBuilder.Simple().Build();
             var email = "test@test.dk";
 
             using var context = CreateTestCoffeeCardContextWithName(nameof(RegisterAccountThrowsApiExceptionWithStatus409OnExistingEmail));
@@ -213,22 +203,9 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         public async Task RegisterAccountSendsVerificationEmailOnlyValidInput()
         {
             // Arrange
-            var programme = new Programme()
-            {
-                Id = 1,
-                FullName = "test",
-                ShortName = "t",
-                Users = new List<User>()
-            };
+            var programme = ProgrammeBuilder.Simple().Build();
             var expectedPass = "HashedPassword";
-            var expected = new User()
-            {
-                Name = "name",
-                Email = "email",
-                Password = expectedPass,
-                PrivacyActivated = false,
-                Programme = programme
-            };
+            var expected = UserBuilder.DefaultCustomer().WithPassword(expectedPass).WithProgramme(programme).Build();
 
             using var context = CreateTestCoffeeCardContextWithName(nameof(RegisterAccountSendsVerificationEmailOnlyValidInput));
             var emailServiceMock = new Mock<Library.Services.IEmailService>();
@@ -273,13 +250,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         public async Task UpdateAccountUpdatesAllNonNullProperties(String name, String email, String? password, bool? privacyActivated, int? programmeId)
         {
             // Arrange
-            var programme = new Programme()
-            {
-                Id = 1,
-                FullName = "test",
-                ShortName = "t",
-                Users = new List<User>()
-            };
+            var programme = ProgrammeBuilder.Simple().Build();
             var updateUserRequest = new UpdateUserRequest()
             {
                 Name = name,
@@ -288,22 +259,14 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 PrivacyActivated = privacyActivated,
                 ProgrammeId = programmeId
             };
-            var user = new User()
-            {
-                Name = "name",
-                Password = "pass",
-                PrivacyActivated = false,
-                Email = "test@test.test",
-                Programme = programme
-            };
-            var expected = new User()
-            {
-                Name = name,
-                Email = email,
-                Password = password ?? user.Password,
-                PrivacyActivated = privacyActivated ?? user.PrivacyActivated,
-                Programme = programme ?? user.Programme
-            };
+            var user = UserBuilder.DefaultCustomer().WithProgramme(programme).Build();
+            var expected = UserBuilder.DefaultCustomer()
+                .WithName(name)
+                .WithEmail(email)
+                .WithPassword(password ?? user.Password)
+                .WithPrivacyActivated(privacyActivated ?? user.PrivacyActivated)
+                .WithProgramme(programme ?? user.Programme)
+                .Build();
 
             using var context = CreateTestCoffeeCardContextWithName(nameof(UpdateAccountUpdatesAllNonNullProperties) + name);
             context.Users.Add(user);
@@ -339,13 +302,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         public async Task UpdateAccountThrowsApiExceptionOnInvalidProgrammeId()
         {
             // Arrange
-            var programme = new Programme()
-            {
-                Id = 1,
-                FullName = "test",
-                ShortName = "t",
-                Users = new List<User>()
-            };
+            var programme = ProgrammeBuilder.Simple().WithId(1).Build();
             var updateUserRequest = new UpdateUserRequest()
             {
                 Name = "name",
@@ -354,14 +311,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 PrivacyActivated = false,
                 ProgrammeId = 2 // No prgramme with Id
             };
-            var user = new User()
-            {
-                Name = "name",
-                Password = "pass",
-                PrivacyActivated = false,
-                Email = "test@test.test",
-                Programme = programme
-            };
+            var user = UserBuilder.DefaultCustomer().WithProgramme(programme).Build();
 
             using var context = CreateTestCoffeeCardContextWithName(nameof(UpdateAccountThrowsApiExceptionOnInvalidProgrammeId));
             context.Users.Add(user);
@@ -388,13 +338,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         public async Task RequestAnonymizationSendsEmail()
         {
             // Arrange
-            var user = new User()
-            {
-                Name = "name",
-                Password = "pass",
-                PrivacyActivated = false,
-                Email = "test@test.test",
-            };
+            var user = UserBuilder.DefaultCustomer().Build();
 
             using var context = CreateTestCoffeeCardContextWithName(nameof(RequestAnonymizationSendsEmail));
             context.Users.Add(user);
@@ -424,26 +368,14 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         {
             // Arrange
             var userEmail = "test@test.test";
-            var user = new User
-            {
-                Id = 1,
-                Name = "name",
-                Password = "pass",
-                Salt = "salt",
-                UserState = UserState.Active,
-                PrivacyActivated = false,
-                Email = userEmail,
-            };
-            var expected = new User
-            {
-                Id = 1,
-                Name = "",
-                Password = "",
-                Salt = "",
-                UserState = UserState.Deleted,
-                PrivacyActivated = true,
-                Email = "",
-            };
+            var user = UserBuilder.DefaultCustomer().WithEmail(userEmail).WithUserState(UserState.Active).Build();
+            var expected = UserBuilder.DefaultCustomer()
+                .WithName("")
+                .WithPassword("")
+                .WithSalt("")
+                .WithEmail("")
+                .WithUserState(UserState.Deleted)
+                .Build();
 
             await using var context = CreateTestCoffeeCardContextWithName(nameof(AnonymizeAccountRemovesIdentifyableInformationFromUser));
             context.Users.Add(user);
@@ -480,17 +412,10 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         {
             // Arrange
             const string userEmail = "test@test.test";
-            var user = new User
-            {
-                Id = 1,
-                Name = "name",
-                Password = "pass",
-                Salt = "salt",
-                UserState = UserState.Active,
-                PrivacyActivated = false,
-                Email = userEmail,
-                IsVerified = false
-            };
+            var user = UserBuilder.DefaultCustomer()
+                .WithEmail(userEmail)
+                .WithIsVerified(false)
+                .Build();
 
             await using var context = CreateTestCoffeeCardContextWithName(nameof(ResendVerificationEmailWhenAccountIsNotVerified));
             context.Users.Add(user);
@@ -521,17 +446,10 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         {
             // Arrange
             const string userEmail = "test@test.test";
-            var user = new User
-            {
-                Id = 1,
-                Name = "name",
-                Password = "pass",
-                Salt = "salt",
-                UserState = UserState.Active,
-                PrivacyActivated = false,
-                Email = userEmail,
-                IsVerified = true
-            };
+            var user = UserBuilder.DefaultCustomer()
+                .WithEmail(userEmail)
+                .WithIsVerified(true)
+                .Build();
 
             await using var context = CreateTestCoffeeCardContextWithName(nameof(ResendVerificationEmailThrowsConflictExceptionWhenAccountIsAlreadyVerified));
             context.Users.Add(user);
@@ -580,13 +498,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         {
             // Arrange
             const string userEmail = "john@cena.com";
-            var user = new User
-            {
-                Id = 1,
-                Name = "John Cena",
-                Password = "pass",
-                Email = userEmail,
-            };
+            var user = UserBuilder.DefaultCustomer().WithEmail(userEmail).Build();
 
             await using var context = CreateTestCoffeeCardContextWithName(nameof(SendMagicLinkSendsEmailWhenUserIsFound));
 
@@ -600,7 +512,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 new Mock<Library.Services.IEmailService>().Object,
                 emailService.Object,
                 new Mock<Library.Services.v2.ITokenService>().Object,
-                new Mock<IHashService>().Object);
+                new Mock<IHashService>().Object,
+                NullLogger<AccountService>.Instance);
 
             // Act
             await accountService.SendMagicLinkEmail(userEmail, LoginType.Shifty);
@@ -622,7 +535,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 new Mock<Library.Services.IEmailService>().Object,
                 emailService.Object,
                 new Mock<Library.Services.v2.ITokenService>().Object,
-                new Mock<IHashService>().Object);
+                new Mock<IHashService>().Object,
+                NullLogger<AccountService>.Instance);
 
             // Act
             await accountService.SendMagicLinkEmail("nonexisting@email.com", LoginType.Shifty);
@@ -635,15 +549,15 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         public async Task GenerateTokenPairRevokesTokenOnUse()
         {
             // Arrange
-            var user = new User
-            {
-                Id = 1,
-                Name = "John Cena",
-                Password = "pass",
-                Email = "test@test.com",
-            };
+            var user = UserBuilder.DefaultCustomer().Build();
 
-            var refreshToken = new Token("refreshToken", TokenType.Refresh) { User = user };
+            const string tokenHash = "refreshToken";
+
+            var refreshToken = TokenBuilder.Simple()
+                .WithTokenHash(tokenHash)
+                .WithType(TokenType.Refresh)
+                .WithUser(user)
+                .Build();
 
             await using var context = CreateTestCoffeeCardContextWithName(nameof(GenerateTokenPairRevokesTokenOnUse));
             await context.Users.AddAsync(user);
@@ -651,7 +565,6 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             await context.SaveChangesAsync();
 
             var tokenService = new Mock<Library.Services.v2.ITokenService>();
-            // tokenService.Setup(t => t.GenerateRefreshTokenAsync(user)).ReturnsAsync("refreshToken");
             tokenService.Setup(t => t.GetValidTokenByHashAsync("refreshToken")).ReturnsAsync(refreshToken);
 
             var accountService = new Library.Services.v2.AccountService(
@@ -660,10 +573,11 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 new Mock<Library.Services.IEmailService>().Object,
                 new Mock<Library.Services.v2.IEmailService>().Object,
                 tokenService.Object,
-                new Mock<IHashService>().Object);
+                new Mock<IHashService>().Object,
+                NullLogger<AccountService>.Instance);
 
             // Act
-            var tokenPair = await accountService.GenerateUserLoginFromToken("refreshToken");
+            var tokenPair = await accountService.GenerateUserLoginFromToken(tokenHash);
 
             // Assert
             Assert.True(refreshToken.Revoked);
@@ -673,15 +587,15 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         public async Task GenerateTokenPairReturnsTokenPair()
         {
             // Arrange
-            var user = new User
-            {
-                Id = 1,
-                Name = "John Cena",
-                Password = "pass",
-                Email = "test@test.com",
-            };
+            var user = UserBuilder.DefaultCustomer().Build();
 
-            var refreshToken = new Token("refreshToken", TokenType.Refresh) { User = user };
+            const string tokenHash = "refreshToken";
+
+            var refreshToken = TokenBuilder.Simple()
+                .WithTokenHash(tokenHash)
+                .WithType(TokenType.Refresh)
+                .WithUser(user)
+                .Build();
 
             await using var context = CreateTestCoffeeCardContextWithName(nameof(GenerateTokenPairReturnsTokenPair));
             await context.Users.AddAsync(user);
@@ -690,7 +604,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             var tokenServicev2 = new Mock<Library.Services.v2.ITokenService>();
             tokenServicev2.Setup(t => t.GenerateRefreshTokenAsync(user)).ReturnsAsync("newToken");
-            tokenServicev2.Setup(t => t.GetValidTokenByHashAsync("refreshToken")).ReturnsAsync(refreshToken);
+            tokenServicev2.Setup(t => t.GetValidTokenByHashAsync(tokenHash)).ReturnsAsync(refreshToken);
 
             var tokenServicev1 = new Mock<Library.Services.ITokenService>();
             tokenServicev1.Setup(t => t.GenerateToken(It.IsAny<IEnumerable<Claim>>())).Returns("jwtToken");
@@ -701,10 +615,11 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 new Mock<Library.Services.IEmailService>().Object,
                 new Mock<Library.Services.v2.IEmailService>().Object,
                 tokenServicev2.Object,
-                new Mock<IHashService>().Object);
+                new Mock<IHashService>().Object,
+                NullLogger<AccountService>.Instance);
 
             // Act
-            var tokenPair = await accountService.GenerateUserLoginFromToken("refreshToken");
+            var tokenPair = await accountService.GenerateUserLoginFromToken(tokenHash);
 
             // Assert
             Assert.NotNull(tokenPair);
