@@ -14,10 +14,10 @@ namespace CoffeeCard.Library.Services.v2
         private readonly IWebHostEnvironment _env;
         private readonly EnvironmentSettings _environmentSettings;
         private readonly IEmailSender _emailSender;
-        private readonly ILogger<AccountService> _logger;
+        private readonly ILogger<EmailService> _logger;
 
         public EmailService(IEmailSender emailSender, EnvironmentSettings environmentSettings,
-            IWebHostEnvironment env, ILogger<AccountService> logger)
+            IWebHostEnvironment env, ILogger<EmailService> logger)
         {
             _emailSender = emailSender;
             _environmentSettings = environmentSettings;
