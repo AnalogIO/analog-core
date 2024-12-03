@@ -9,7 +9,7 @@ namespace CoffeeCard.Models.Entities
     /// Shared Token class for different token types
     /// </summary>
     [Index(nameof(TokenHash))]
-    public class Token
+    public class Token(string tokenHash, TokenType type)
     {
         /// <summary>
         /// The ID of the token
@@ -19,8 +19,7 @@ namespace CoffeeCard.Models.Entities
         /// <summary>
         /// The randomly generated hash used to find the token
         /// </summary>
-        [Required]
-        public required string TokenHash { get; set; }
+        public string TokenHash { get; set; } = tokenHash;
 
         /// <summary>
         /// The ID of the user that the token is associated with
@@ -39,14 +38,12 @@ namespace CoffeeCard.Models.Entities
         /// <example>
         /// RefreshToken
         /// </example>
-        [Required]
-        public required TokenType Type { get; set; }
+        public TokenType Type { get; set; } = type;
 
         /// <summary>
         /// The date and time when the Token is no longer valid
         /// </summary>
-        public DateTime Expires
-            => Type.getExpiresAt();
+        public DateTime Expires { get; set; } = type.getExpiresAt();
 
         /// <summary>
         /// Whether or not the token has been revoked

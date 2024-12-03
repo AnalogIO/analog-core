@@ -7,7 +7,14 @@ namespace CoffeeCard.Tests.Common.Builders
     {
         public static TokenBuilder Simple()
         {
-            return new TokenBuilder()
+            var builder = new TokenBuilder();
+            builder.Faker.CustomInstantiator(f =>
+                    new Token("tokenHash", TokenType.Refresh))
+                    .RuleFor(o => o.TokenHash, f => f.Random.Guid().ToString())
+                    .RuleFor(o => o.Type, f => TokenType.Refresh);
+            return builder
+                .WithExpires(DateTime.Now.AddDays(1))
+                .WithRevoked(false)
                 .WithUser(UserBuilder.DefaultCustomer().Build());
         }
 
