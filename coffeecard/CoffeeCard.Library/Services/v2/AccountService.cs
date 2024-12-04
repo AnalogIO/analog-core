@@ -233,7 +233,7 @@ namespace CoffeeCard.Library.Services.v2
 
             if (totalUsers < skip)
             {
-                throw new ArgumentException($"The value of {nameof(pageNum)} is outside of the range of total users");
+                throw new BadRequestException($"The value of {nameof(pageNum)} is outside of the range of total users");
             }
 
             var usersByPage = await query
