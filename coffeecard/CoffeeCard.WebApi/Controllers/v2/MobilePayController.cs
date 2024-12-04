@@ -10,6 +10,7 @@ using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Serilog;
 
 namespace CoffeeCard.WebApi.Controllers.v2
@@ -25,16 +26,18 @@ namespace CoffeeCard.WebApi.Controllers.v2
         private readonly IPurchaseService _purchaseService;
         private readonly MobilePaySettingsV2 _mobilePaySettings;
         private readonly IWebhookService _webhookService;
+        private readonly ILogger<MobilePayController> _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MobilePayController"/> class.
         /// </summary>
         public MobilePayController(IPurchaseService purchaseService, IWebhookService webhookService,
-            MobilePaySettingsV2 mobilePaySettings)
+            MobilePaySettingsV2 mobilePaySettings, ILogger<MobilePayController> logger)
         {
             _purchaseService = purchaseService;
             _webhookService = webhookService;
             _mobilePaySettings = mobilePaySettings;
+            _logger = logger;
         }
 
         /// <summary>
@@ -82,15 +85,15 @@ namespace CoffeeCard.WebApi.Controllers.v2
                 rawRequestBody = await stream.ReadToEndAsync();
             }
 
-            Log.Debug("Raw request body (trimmed): '{Body}'", rawRequestBody.Trim());
-            Log.Debug("Endpoint Url '{EndpointUrl}', SignatureKey '{Signature}'", endpointUrl, signatureKey);
+            _logger.LogDebug("Raw request body (trimmed): '{Body}'", rawRequestBody.Trim());
+            _logger.LogDebug("Endpoint Url '{EndpointUrl}', SignatureKey '{Signature}'", endpointUrl, signatureKey);
 
             var hash = new HMACSHA1(Encoding.UTF8.GetBytes(signatureKey))
                 .ComputeHash(Encoding.UTF8.GetBytes(endpointUrl + rawRequestBody.Trim()));
             var computedSignature = Convert.ToBase64String(hash);
 
-            Log.Debug("ComputedSignature: {Signature}", computedSignature);
-            Log.Debug("mpSignatureHeader {mpSignatureHeader}", mpSignatureHeader);
+            _logger.LogDebug("ComputedSignature: {Signature}", computedSignature);
+            _logger.LogDebug("mpSignatureHeader {mpSignatureHeader}", mpSignatureHeader);
 
             return mpSignatureHeader.Equals(computedSignature);
         }
