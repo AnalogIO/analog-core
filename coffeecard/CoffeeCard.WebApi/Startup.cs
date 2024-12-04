@@ -345,6 +345,13 @@ namespace CoffeeCard.WebApi
             app.UseStaticFiles();
 
             app.UseRouting();
+            var featureManager = app.ApplicationServices.GetRequiredService<IFeatureManager>();
+
+            var isRequestLoggerEnabled = featureManager.IsEnabledAsync(FeatureFlags.RequestLoggerEnabled).Result;
+            if (isRequestLoggerEnabled)
+            {
+                app.UseMiddleware<RequestLoggerMiddleware>();
+            }
 
             app.UseCors();
 
