@@ -75,7 +75,7 @@ namespace CoffeeCard.Library.Services.v2
         /// <param name="initiateRequest">Purchase Request</param>
         /// <param name="product">Product</param>
         /// <exception cref="IllegalUserOperationException">User is not entitled to purchase product</exception>
-        /// <exception cref="ArgumentException">PaymentType FreePurchase used for a non-free product</exception>
+        /// <exception cref="BadRequestException">PaymentType FreePurchase used for a non-free product</exception>
         private void CheckUserIsAllowedToPurchaseProduct(User user, InitiatePurchaseRequest initiateRequest, ProductResponse product)
         {
             //Product does not belong to same userGroup as user
@@ -92,7 +92,7 @@ namespace CoffeeCard.Library.Services.v2
                 _logger.LogWarning(
                     "User tried to issue paid product to themselves, User {UserId}, Product {ProductId}",
                     user.Id, product.Id);
-                throw new ArgumentException($"Product '{product.Name}' is not free");
+                throw new BadRequestException($"Product '{product.Name}' is not free");
             }
         }
 
@@ -125,7 +125,7 @@ namespace CoffeeCard.Library.Services.v2
                     break;
                 default:
                     _logger.LogError("Payment Type {PaymentType} is not handled in PurchaseService", purchaseRequest.PaymentType);
-                    throw new ArgumentException($"Payment Type '{purchaseRequest.PaymentType}' is not handled");
+                    throw new BadRequestException($"Payment Type '{purchaseRequest.PaymentType}' is not handled");
             }
 
             var purchase = new Purchase
@@ -247,7 +247,7 @@ namespace CoffeeCard.Library.Services.v2
                     _logger.LogError(
                         "Unknown EventType from Webhook request. Event Type: {EventType}, Purchase Id: {PurchaseId}, Transaction Id: {TransactionId}",
                         eventTypeLowerCase, purchase.Id, webhook.Data.Id);
-                    throw new ArgumentException($"Event Type {eventTypeLowerCase} is not valid");
+                    throw new BadRequestException($"Event Type {eventTypeLowerCase} is not valid");
             }
         }
 

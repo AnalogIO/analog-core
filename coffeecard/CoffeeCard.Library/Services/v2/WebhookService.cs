@@ -28,12 +28,13 @@ namespace CoffeeCard.Library.Services.v2
         private readonly ILogger<WebhookService> _logger;
 
         public WebhookService(CoffeeCardContext context, IMobilePayWebhooksService mobilePayWebhooksService,
-            MobilePaySettingsV2 mobilePaySettings, IMemoryCache memoryCache)
+            MobilePaySettingsV2 mobilePaySettings, IMemoryCache memoryCache, ILogger<WebhookService> logger)
         {
             _context = context;
             _mobilePayWebhooksService = mobilePayWebhooksService;
             _mobilePaySettings = mobilePaySettings;
             _memoryCache = memoryCache;
+            _logger = logger;
         }
 
         /// <summary>

@@ -22,7 +22,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
     {
         [Theory(DisplayName =
             "InitiatePurchase.CheckUserIsAllowedToPurchaseProduct throws exceptions in several conditions")]
-        [InlineData(1, 1, typeof(ArgumentException))] // FreePurchase PaymentType fails when product has a price != 0
+        [InlineData(1, 1, typeof(BadRequestException))] // FreePurchase PaymentType fails when product has a price != 0
         [InlineData(1, 2, typeof(IllegalUserOperationException))] // Product not in PUG
         [InlineData(1, 3, typeof(EntityNotFoundException))] // Product not exists
         public async Task InitiatePurchaseCheckUserIsAllowedToPurchaseProductThrowsExceptionsInSeveralConditions(

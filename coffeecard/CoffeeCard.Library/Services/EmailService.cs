@@ -21,12 +21,13 @@ namespace CoffeeCard.Library.Services
         private readonly ILogger<EmailService> _logger;
 
         public EmailService(IEmailSender emailSender, EnvironmentSettings environmentSettings,
-            IWebHostEnvironment env, IMapperService mapperService)
+            IWebHostEnvironment env, IMapperService mapperService, ILogger<EmailService> logger)
         {
             _emailSender = emailSender;
             _environmentSettings = environmentSettings;
             _env = env;
             _mapperService = mapperService;
+            _logger = logger;
         }
 
         public async Task SendInvoiceAsync(UserDto user, PurchaseDto purchase)
