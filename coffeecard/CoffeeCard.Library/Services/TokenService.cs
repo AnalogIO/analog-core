@@ -7,7 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Common.Errors;
+using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Utils;
+using CoffeeCard.Models.DataTransferObjects.CoffeeCard;
 using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -40,7 +42,6 @@ namespace CoffeeCard.Library.Services
                 DateTime.UtcNow.AddHours(24),
                 new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
             );
-
             return new JwtSecurityTokenHandler().WriteToken(jwt); //the method is called WriteToken but returns a string
         }
 
@@ -101,7 +102,7 @@ namespace CoffeeCard.Library.Services
 
                 var user = await _claimsUtilities.ValidateAndReturnUserFromEmailClaimAsync(token.Claims);
 
-                if (user.Tokens.Contains(new Token(tokenString))) tokenIsUnused = true; // Tokens are removed from the user on account recovery
+                if (user.Tokens.Any((e) => e.TokenHash == tokenString)) tokenIsUnused = true; // Tokens are removed from the user on account recovery
 
                 return ValidateToken(tokenString) && tokenIsUnused;
             }
