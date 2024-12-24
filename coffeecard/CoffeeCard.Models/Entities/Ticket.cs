@@ -39,7 +39,7 @@ namespace CoffeeCard.Models.Entities
         /// The status of this ticket (e.g. has this ticket been used or refunded?)
         /// </summary>
         public TicketStatus Status { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the ID of the owner associated with the ticket.
         /// </summary>
