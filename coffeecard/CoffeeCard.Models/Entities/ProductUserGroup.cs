@@ -19,24 +19,5 @@
         /// Gets or sets the user group associated with this product user group.
         /// </summary>
         public UserGroup UserGroup { get; set; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ProductUserGroup"/> class with the specified product and user group.
-        /// </summary>
-        /// <param name="product">The product associated with this product user group.</param>
-        /// <param name="userGroup">The user group associated with this product user group.</param>
-        public ProductUserGroup(Product product, UserGroup userGroup)
-        {
-            ProductId = product.Id;
-            Product = product;
-            UserGroup = userGroup;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ProductUserGroup"/> class.
-        /// </summary>
-        public ProductUserGroup()
-        {
-        }
     }
 }
