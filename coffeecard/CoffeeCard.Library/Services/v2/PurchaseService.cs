@@ -137,7 +137,7 @@ namespace CoffeeCard.Library.Services.v2
                 ExternalTransactionId = transactionId,
                 PurchasedBy = user,
                 Status = purchaseStatus,
-                Type = purchaseRequest.PaymentType.toPurchaseType()
+                Type = purchaseRequest.PaymentType.ToPurchaseType()
             };
 
             return (purchase, paymentDetails);

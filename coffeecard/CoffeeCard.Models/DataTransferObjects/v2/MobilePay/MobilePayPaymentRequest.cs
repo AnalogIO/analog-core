@@ -10,16 +10,16 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.MobilePay
         /// <summary>
         /// The amount to pay
         /// </summary>
-        public int Amount { get; set; }
+        public required int Amount { get; set; }
 
         /// <summary>
         /// The order id
         /// </summary>
-        public Guid OrderId { get; set; }
+        public required Guid OrderId { get; set; }
 
         /// <summary>
         /// The description of the order
         /// </summary>
-        public string Description { get; set; }
+        public required string Description { get; set; }
     }
 }

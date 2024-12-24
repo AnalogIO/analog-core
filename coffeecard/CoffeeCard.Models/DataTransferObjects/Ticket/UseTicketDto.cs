@@ -18,6 +18,6 @@ namespace CoffeeCard.Models.DataTransferObjects.Ticket
         /// <value>Product Id</value>
         /// <example>1</example>
         [Required]
-        public int ProductId { get; set; }
+        public required int ProductId { get; set; }
     }
 }

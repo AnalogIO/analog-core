@@ -29,7 +29,7 @@ namespace CoffeeCard.Models.DataTransferObjects.User
         /// <value>User Id</value>
         /// <example>123</example>
         [Required]
-        public int Id { get; set; }
+        public required int Id { get; set; }
 
         /// <summary>
         /// Full Name of user
@@ -37,7 +37,7 @@ namespace CoffeeCard.Models.DataTransferObjects.User
         /// <value>Full Name</value>
         /// <example>John Doe</example>
         [Required]
-        public string Name { get; set; } = string.Empty;
+        public required string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Email of user
@@ -45,7 +45,7 @@ namespace CoffeeCard.Models.DataTransferObjects.User
         /// <value>Email</value>
         /// <example>john@doe.com</example>
         [Required]
-        public string Email { get; set; } = string.Empty;
+        public required string Email { get; set; } = string.Empty;
 
         /// <summary>
         /// Privacy Activated
@@ -53,7 +53,7 @@ namespace CoffeeCard.Models.DataTransferObjects.User
         /// <value>Privacy Activated</value>
         /// <example>true</example>
         [Required]
-        public bool PrivacyActivated { get; set; }
+        public required bool PrivacyActivated { get; set; }
 
         /// <summary>
         /// Study Programme Id of user
@@ -61,7 +61,7 @@ namespace CoffeeCard.Models.DataTransferObjects.User
         /// <value>Study Programme Id</value>
         /// <example>1</example>
         [Required]
-        public int? ProgrammeId { get; set; }
+        public required int? ProgrammeId { get; set; }
 
         /// <summary>
         /// User Level
@@ -69,7 +69,7 @@ namespace CoffeeCard.Models.DataTransferObjects.User
         /// <value>User Level</value>
         /// <example>1</example>
         [Required]
-        public int Level { get; set; }
+        public required int Level { get; set; }
 
         /// <summary>
         /// User Experience Level
@@ -77,7 +77,7 @@ namespace CoffeeCard.Models.DataTransferObjects.User
         /// <value>Experience Level</value>
         /// <example>12</example>
         [Required]
-        public int RequiredExp { get; set; }
+        public required int RequiredExp { get; set; }
 
         /// <summary>
         /// User's Rank all time

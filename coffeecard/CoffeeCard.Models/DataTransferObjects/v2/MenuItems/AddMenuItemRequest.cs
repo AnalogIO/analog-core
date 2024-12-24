@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace CoffeeCard.Models.DataTransferObjects.v2.Product
+namespace CoffeeCard.Models.DataTransferObjects.v2.MenuItems
 {
     /// <summary>
     /// Initiate a new menuitem add request.
@@ -14,6 +14,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
         /// <example>Latte</example>
         [Required]
         [MinLength(1, ErrorMessage = "Name cannot be an empty string")]
-        public string Name { get; set; }
+        public required string Name { get; set; }
     }
 }
