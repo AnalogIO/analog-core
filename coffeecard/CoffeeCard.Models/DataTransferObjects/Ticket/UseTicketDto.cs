@@ -3,17 +3,17 @@
 namespace CoffeeCard.Models.DataTransferObjects.Ticket
 {
     /// <summary>
-    /// Use ticket request
+    ///     Use ticket request
     /// </summary>
     /// <example>
-    /// {
+    ///     {
     ///     "productId": 1
-    /// }
+    ///     }
     /// </example>
-    public class UseTicketDTO
+    public class UseTicketDto
     {
         /// <summary>
-        /// Id of product to use a ticket for
+        ///     Id of product to use a ticket for
         /// </summary>
         /// <value>Product Id</value>
         /// <example>1</example>
