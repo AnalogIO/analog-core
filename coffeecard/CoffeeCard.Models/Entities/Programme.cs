@@ -37,21 +37,5 @@ namespace CoffeeCard.Models.Entities
         {
             return $"{nameof(Id)}: {Id}, {nameof(ShortName)}: {ShortName}, {nameof(FullName)}: {FullName}, {nameof(SortPriority)}: {SortPriority}";
         }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Programme"/> class.
-        /// </summary>
-        public Programme(string shortName, string fullName)
-        {
-            ShortName = shortName;
-            FullName = fullName;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Programme"/> class.
-        /// </summary>
-        public Programme()
-        {
-        }
     }
 }

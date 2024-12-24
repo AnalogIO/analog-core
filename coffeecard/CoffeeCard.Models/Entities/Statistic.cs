@@ -69,21 +69,5 @@ namespace CoffeeCard.Models.Entities
         /// Object reference to User
         /// </summary>
         public virtual User User { get; set; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Statistic"/> class with the specified associated user.
-        /// </summary>
-        public Statistic(User user)
-        {
-            User = user;
-            UserId = user.Id;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Statistic"/> class.
-        /// </summary>
-        public Statistic()
-        {
-        }
     }
 }

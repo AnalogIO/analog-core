@@ -102,27 +102,5 @@ namespace CoffeeCard.Models.Entities
         /// The <see cref="Ticket"/>s associated with the purchase.
         /// </summary>
         public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Purchase"/> class.
-        /// </summary>
-        public Purchase(Product product, User purchasedBy, string orderId)
-        {
-            Product = product;
-            ProductName = product.Name;
-            ProductId = product.Id;
-            Price = product.Price;
-            OrderId = orderId;
-            NumberOfTickets = product.NumberOfTickets;
-            PurchasedBy = purchasedBy;
-            PurchasedById = purchasedBy.Id;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Purchase"/> class.
-        /// </summary>
-        public Purchase()
-        {
-        }
     }
 }
