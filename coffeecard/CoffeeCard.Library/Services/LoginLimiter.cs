@@ -31,7 +31,7 @@ namespace CoffeeCard.Library.Services
         private (DateTime, int) UpdateAndGetLoginAttemptCount(string email)
         {
             return _loginAttempts.AddOrUpdate(email, (DateTime.UtcNow, 0),
-                (key, value) => (value.Item1, value.Item2 + 1));
+                (_, value) => (value.Item1, value.Item2 + 1));
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace CoffeeCard.Library.Services
         /// <param name="user"></param>
         public void ResetLoginAttemptsForUser(User user)
         {
-            _loginAttempts.TryRemove(user.Email, out var value);
+            _loginAttempts.TryRemove(user.Email, out _);
         }
     }
 }

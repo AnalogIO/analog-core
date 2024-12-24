@@ -98,11 +98,11 @@ namespace CoffeeCard.MobilePay.Service.v2
                     Amount = amount,
                     Description = "Refund of purchase " + purchase.Id,
                     IdempotencyKey = Guid.NewGuid(),
-                    Reference = purchase.OrderId.ToString()
+                    Reference = purchase.OrderId
                 };
                 try
                 {
-                    var response = await _paymentsApi.IssueRefundAsync(issueRefundRequest);
+                    await _paymentsApi.IssueRefundAsync(issueRefundRequest);
                     return true;
                 }
                 catch (ApiException e)

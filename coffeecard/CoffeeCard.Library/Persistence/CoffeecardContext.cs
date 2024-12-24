@@ -83,7 +83,7 @@ namespace CoffeeCard.Library.Persistence
                 .HasConversion<string>();
 
             modelBuilder.Entity<Ticket>()
-                .HasOne<User>(t => t.Owner)
+                .HasOne(t => t.Owner)
                 .WithMany(u => u.Tickets)
                 .HasForeignKey(t => t.OwnerId)
                 .OnDelete(DeleteBehavior.NoAction);
