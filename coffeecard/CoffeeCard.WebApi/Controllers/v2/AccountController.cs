@@ -251,7 +251,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <summary>
         /// Authenticates the user with the token hash from a magic link
         /// </summary>
-        /// <param name="tokenHash">The token hash from the magic link</param>
+        /// <param name="token">The token hash from the magic link</param>
         /// <returns>A JSON Web Token used to authenticate for other endpoints and a refresh token to re-authenticate without a new magic link</returns>
         [HttpPost]
         [AllowAnonymous]
