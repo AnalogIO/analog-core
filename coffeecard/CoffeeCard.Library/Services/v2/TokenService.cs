@@ -22,7 +22,7 @@ public class TokenService : ITokenService
     public async Task<string> GenerateMagicLinkToken(User user)
     {
         var guid = Guid.NewGuid().ToString();
-        var magicLinkToken = new Token(_hashService.Hash(guid), TokenType.MagicLink){User = user};
+        var magicLinkToken = new Token(_hashService.Hash(guid), TokenType.MagicLink) { User = user };
         _context.Tokens.Add(magicLinkToken);
 
         await _context.SaveChangesAsync();

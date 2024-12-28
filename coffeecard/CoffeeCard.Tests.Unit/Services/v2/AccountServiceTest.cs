@@ -578,7 +578,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 NullLogger<AccountService>.Instance);
 
             // Act
-            var tokenPair = await accountService.GenerateUserLoginFromToken(new TokenLoginRequest(){Token = tokenHash});
+            var tokenPair = await accountService.GenerateUserLoginFromToken(new TokenLoginRequest() { Token = tokenHash });
 
             // Assert
             Assert.True(refreshToken.Revoked);
@@ -620,7 +620,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 NullLogger<AccountService>.Instance);
 
             // Act
-            var tokenPair = await accountService.GenerateUserLoginFromToken(new TokenLoginRequest(){Token = tokenHash});
+            var tokenPair = await accountService.GenerateUserLoginFromToken(new TokenLoginRequest() { Token = tokenHash });
 
             // Assert
             Assert.NotNull(tokenPair);
