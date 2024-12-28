@@ -15,6 +15,7 @@ using CoffeeCard.Models.Entities;
 using CoffeeCard.WebApi.Helpers;
 using System.ComponentModel.DataAnnotations;
 using CoffeeCard.Models.DataTransferObjects.User;
+using CoffeeCard.Models.DataTransferObjects.v2.Token;
 using Microsoft.AspNetCore.Identity.Data;
 
 namespace CoffeeCard.WebApi.Controllers.v2
@@ -258,13 +259,13 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<UserLoginResponse>> Authenticate(string tokenHash)
+        public async Task<ActionResult<UserLoginResponse>> Authenticate(TokenLoginRequest token)
         {
-            if (tokenHash is null)
+            if (token is null)
                 return NotFound(new MessageResponseDto { Message = "Token required for app authentication." });
 
-            var token = await _accountService.GenerateUserLoginFromToken(tokenHash);
-            return Ok(token);
+            var userTokens = await _accountService.GenerateUserLoginFromToken(token);
+            return Ok(userTokens);
         }
     }
 }

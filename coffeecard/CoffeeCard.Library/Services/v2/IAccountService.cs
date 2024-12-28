@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
+using CoffeeCard.Models.DataTransferObjects.v2.Token;
 using CoffeeCard.Models.DataTransferObjects.v2.User;
 using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -78,7 +79,7 @@ namespace CoffeeCard.Library.Services.v2
         /// </summary>
         Task UpdatePriviligedUserGroups(WebhookUpdateUserGroupRequest request);
 
-        Task<UserLoginResponse> GenerateUserLoginFromToken(string token);
+        Task<UserLoginResponse> GenerateUserLoginFromToken(TokenLoginRequest loginRequest);
 
         Task SendMagicLinkEmail(string email, LoginType loginType);
     }

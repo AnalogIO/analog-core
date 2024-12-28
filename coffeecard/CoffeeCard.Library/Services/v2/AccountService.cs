@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
+using CoffeeCard.Models.DataTransferObjects.v2.Token;
 using CoffeeCard.Models.DataTransferObjects.v2.User;
 using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
@@ -318,10 +319,10 @@ namespace CoffeeCard.Library.Services.v2
             await _emailServiceV2.SendMagicLink(user, magicLinkTokenHash, loginType);
         }
 
-        public async Task<UserLoginResponse> GenerateUserLoginFromToken(string token)
+        public async Task<UserLoginResponse> GenerateUserLoginFromToken(TokenLoginRequest loginRequest)
         {
             // Validate token in DB
-            var foundToken = await _tokenServiceV2.GetValidTokenByHashAsync(token);
+            var foundToken = await _tokenServiceV2.GetValidTokenByHashAsync(loginRequest.Token);
 
             // Invalidate token in DB
             foundToken.Revoked = true;
