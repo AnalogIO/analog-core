@@ -22,11 +22,11 @@ public class TokenService : ITokenService
     public async Task<string> GenerateMagicLinkToken(User user)
     {
         var guid = Guid.NewGuid().ToString();
-        var magicLinkToken = new Token(guid, TokenType.MagicLink);
+        var magicLinkToken = new Token(_hashService.Hash(guid), TokenType.MagicLink);
 
         user.Tokens.Add(magicLinkToken);
         await _context.SaveChangesAsync();
-        return magicLinkToken.TokenHash;
+        return guid;
     }
 
     public async Task<string> GenerateRefreshTokenAsync(User user)
@@ -41,26 +41,14 @@ public class TokenService : ITokenService
     public async Task<Token> GetValidTokenByHashAsync(string tokenString)
     {
         var tokenHash = _hashService.Hash(tokenString);
-        var foundToken = await _context.Tokens.Include(t => t.User).FirstOrDefaultAsync(t => t.TokenHash == tokenHash);
-        if (foundToken == null || foundToken.Revoked || foundToken.Expired())
+        var foundToken = await _context.Tokens
+            .Include(t => t.User)
+            .FirstOrDefaultAsync(t => t.TokenHash == tokenHash && !t.Revoked && !Token.Expired(t.Expires));
+
+        if (foundToken == null)
         {
-            await InvalidateRefreshTokensForUser(foundToken?.User);
             throw new ApiException("Invalid token", 401);
         }
         return foundToken;
-    }
-
-    private async Task InvalidateRefreshTokensForUser(User user)
-    {
-        if (user is null) return;
-
-        var tokens = _context.Tokens.Where(t => t.UserId == user.Id && t.Type == TokenType.Refresh);
-
-        _context.Tokens.UpdateRange(tokens);
-        foreach (var token in tokens)
-        {
-            token.Revoked = true;
-        }
-        await _context.SaveChangesAsync();
     }
 }

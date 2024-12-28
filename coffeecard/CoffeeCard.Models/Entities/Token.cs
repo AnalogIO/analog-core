@@ -71,9 +71,10 @@ namespace CoffeeCard.Models.Entities
         /// Determines if the token has expired
         /// </summary>
         /// <returns>bool</returns>
-        public bool Expired()
+        [DbFunction("Expired", "dbo")]
+        public static bool Expired(DateTime expires)
         {
-            return DateTime.UtcNow > Expires;
+            return DateTime.UtcNow > expires;
         }
     }
 }

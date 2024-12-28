@@ -125,7 +125,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             Assert.NotNull(result);
             Assert.Equal(token, result);
             Assert.False(result.Revoked);
-            Assert.False(result.Expired());
+            Assert.False(Token.Expired(result.Expires));
         }
 
         [Fact(DisplayName = "GetValidTokenByHashAsync invalidates users refresh tokens if token is invalid")]

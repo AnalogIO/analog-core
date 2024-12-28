@@ -104,6 +104,10 @@ namespace CoffeeCard.Library.Persistence
 
             modelBuilder.Entity<Token>()
                 .Property(t => t.TokenHash).IsRequired();
+
+            modelBuilder.HasDbFunction(typeof(Token).GetMethod(nameof(Token.Expired)))
+                .HasSchema("dbo")
+                .HasName("Expired");
         }
     }
 }
