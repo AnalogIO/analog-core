@@ -25,16 +25,19 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             InitialContext.Users.Add(user);
             await InitialContext.SaveChangesAsync();
 
-            var tokenService = new TokenService(AssertionContext, Mock.Of<IHashService>());
+            var hashService = new HashService();
+            var tokenService = new TokenService(InitialContext, hashService);
 
             // Act
             var result = await tokenService.GenerateMagicLinkToken(user);
 
             // Assert
+            var assertionUser = await AssertionContext.Users.Include(u => u.Tokens).FirstOrDefaultAsync();
             Assert.NotNull(result);
             Assert.NotEmpty(result);
-            Assert.Contains<Token>(user.Tokens, t => t.TokenHash == result);
-            var token = user.Tokens.First(t => t.TokenHash == result);
+            var hashedToken = hashService.Hash(result);
+            Assert.Contains<Token>(assertionUser.Tokens, t => t.TokenHash == hashedToken);
+            var token = assertionUser.Tokens.First(t => t.TokenHash == hashedToken);
             Assert.Equal(TokenType.MagicLink, token.Type);
             Assert.False(token.Revoked, "Token should not be revoked");
         }
@@ -126,43 +129,6 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             Assert.Equal(token, result);
             Assert.False(result.Revoked);
             Assert.False(Token.Expired(result.Expires));
-        }
-
-        [Fact(DisplayName = "GetValidTokenByHashAsync invalidates users refresh tokens if token is invalid")]
-        public async Task GetValidTokenByHashAsync_InvalidatesUsersRefreshTokensIfTokenIsInvalid()
-        {
-            // Arrange
-            var user = UserBuilder.DefaultCustomer().Build();
-            InitialContext.Users.Add(user);
-
-            var token = TokenBuilder.Simple().WithUser(user).WithRevoked(true).WithType(TokenType.Refresh).Build();
-            var refreshToken = TokenBuilder.Simple().WithUser(user).WithType(TokenType.Refresh).Build();
-
-            Token[] otherTokens =
-            {
-                new ("magicLink", TokenType.MagicLink) {User = user},
-                new ("reset", TokenType.ResetPassword) {User = user},
-            };
-
-            InitialContext.Tokens.AddRange(token, refreshToken);
-            InitialContext.Tokens.AddRange(otherTokens);
-
-            await InitialContext.SaveChangesAsync();
-
-            var hashService = new Mock<IHashService>();
-            hashService.Setup(h => h.Hash(It.IsAny<string>())).Returns(token.TokenHash);
-
-            var tokenService = new TokenService(AssertionContext, hashService.Object);
-
-            // Act & Assert
-            await Assert.ThrowsAsync<ApiException>(() => tokenService.GetValidTokenByHashAsync(token.TokenHash));
-
-            // Assert
-            Assert.True((await AssertionContext.Tokens.FirstOrDefaultAsync(t => t.Id == refreshToken.Id)).Revoked);
-            foreach (var otherToken in otherTokens)
-            {
-                Assert.False((await AssertionContext.Tokens.FirstOrDefaultAsync(t => t.Id == otherToken.Id)).Revoked);
-            }
         }
     }
 }

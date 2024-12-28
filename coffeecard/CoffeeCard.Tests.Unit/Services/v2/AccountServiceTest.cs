@@ -7,6 +7,7 @@ using CoffeeCard.Common.Configuration;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services;
+using CoffeeCard.Models.DataTransferObjects.v2.Token;
 using CoffeeCard.Models.DataTransferObjects.v2.User;
 using CoffeeCard.Models.Entities;
 using CoffeeCard.Tests.Common.Builders;
@@ -577,7 +578,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 NullLogger<AccountService>.Instance);
 
             // Act
-            var tokenPair = await accountService.GenerateUserLoginFromToken(tokenHash);
+            var tokenPair = await accountService.GenerateUserLoginFromToken(new TokenLoginRequest(){Token = tokenHash});
 
             // Assert
             Assert.True(refreshToken.Revoked);
@@ -619,7 +620,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 NullLogger<AccountService>.Instance);
 
             // Act
-            var tokenPair = await accountService.GenerateUserLoginFromToken(tokenHash);
+            var tokenPair = await accountService.GenerateUserLoginFromToken(new TokenLoginRequest(){Token = tokenHash});
 
             // Assert
             Assert.NotNull(tokenPair);

@@ -76,7 +76,7 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2.Account
             await Context.SaveChangesAsync();
 
             // We authenticate using the non-hashed token and let the backend hash the string for us
-            var response = await CoffeeCardClientV2.Account_AuthenticateAsync(tokenString);
+            var response = await CoffeeCardClientV2.Account_AuthenticateAsync(new TokenLoginRequest(){Token = tokenString});
 
             Assert.NotNull(response.Jwt);
             Assert.NotNull(response.RefreshToken);
