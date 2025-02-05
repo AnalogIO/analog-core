@@ -10,8 +10,8 @@ namespace CoffeeCard.Models.Entities
         [Key, ForeignKey(nameof(Purchase))]
         public int PurchaseId { get; set; }
         /// The purchase that was issued by the barista
-		public virtual Purchase Purchase { get; set; }
+		public virtual required Purchase Purchase { get; set; }
         /// The ITU intials of the barista issueing the product
-		public string BaristaInitials { get; set; }
+		public required string BaristaInitials { get; set; }
     }
 }
