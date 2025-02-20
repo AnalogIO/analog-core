@@ -19,6 +19,7 @@ namespace CoffeeCard.Models.Entities
         /// <summary>
         /// The randomly generated hash used to find the token
         /// </summary>
+        [MaxLength(1000)]
         public string TokenHash { get; set; } = tokenHash;
 
         /// <summary>

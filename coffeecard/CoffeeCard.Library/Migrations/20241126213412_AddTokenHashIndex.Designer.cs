@@ -320,7 +320,7 @@ namespace CoffeeCard.Library.Migrations
 
                     b.Property<string>("TokenHash")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("Type")
                         .IsRequired()

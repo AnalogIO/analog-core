@@ -5,7 +5,7 @@
 namespace CoffeeCard.Library.Migrations
 {
     /// <inheritdoc />
-    public partial class AddTokenHashIndex : Migration
+    public partial class AddMaxLengthToTokenHash : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,33 +15,24 @@ namespace CoffeeCard.Library.Migrations
                 schema: "dbo",
                 table: "Tokens",
                 type: "nvarchar(1000)",
+                maxLength: 1000,
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(max)");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tokens_TokenHash",
-                schema: "dbo",
-                table: "Tokens",
-                column: "TokenHash");
+                oldType: "nvarchar(1000)");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
-                name: "IX_Tokens_TokenHash",
-                schema: "dbo",
-                table: "Tokens");
-
             migrationBuilder.AlterColumn<string>(
                 name: "TokenHash",
                 schema: "dbo",
                 table: "Tokens",
-                type: "nvarchar(max)",
+                type: "nvarchar(1000)",
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(1000)");
+                oldType: "nvarchar(1000)",
+                oldMaxLength: 1000);
         }
     }
 }
