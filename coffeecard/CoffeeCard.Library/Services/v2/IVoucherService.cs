@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CoffeeCard.Models.DataTransferObjects.v2.Voucher;
+using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Library.Services.v2
 {
@@ -11,6 +12,8 @@ namespace CoffeeCard.Library.Services.v2
         /// </summary>
         /// <param name="request">Request object with information on how many codes to create and for which product</param>
         /// <returns>List of response objects containing voucher codes and product information</returns>
-        Task<IEnumerable<IssueVoucherResponse>> CreateVouchers(IssueVoucherRequest request);
+        Task<IEnumerable<IssueVoucherResponse>> CreateVouchers(IssueVoucherRequest request, User user);
+
+        Task<VoucherListResponse> GetVouchers(int pageNum, int pageLength);
     }
 }

@@ -33,5 +33,8 @@ namespace CoffeeCard.Models.Entities
         public int? PurchaseId { get; set; }
 
         public virtual Purchase? Purchase { get; set; }
+
+        [Column(name: "Issuer_Id")]
+        public int IssuerId { get; set; }        
     }
 }

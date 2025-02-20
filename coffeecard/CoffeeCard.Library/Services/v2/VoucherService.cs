@@ -22,7 +22,7 @@ namespace CoffeeCard.Library.Services.v2
             _context = context;
         }
 
-        public async Task<IEnumerable<IssueVoucherResponse>> CreateVouchers(IssueVoucherRequest request)
+        public async Task<IEnumerable<IssueVoucherResponse>> CreateVouchers(IssueVoucherRequest request, User user)
         {
             var product = await _context.Products.FindAsync(request.ProductId);
             if (product == null)
@@ -41,6 +41,7 @@ namespace CoffeeCard.Library.Services.v2
             var vouchers = newCodes
                 .Select(code => new Voucher
                 {
+                    IssuerId = user.Id,
                     Code = code,
                     DateCreated = DateTime.UtcNow,
                     Product = product,
@@ -61,6 +62,43 @@ namespace CoffeeCard.Library.Services.v2
                         ProductName = v.Product.Name
                     });
             return responses;
+        }
+
+        public async Task<VoucherListResponse> GetVouchers(int pageNum, int pageLength)
+        {
+            int skip = pageNum * pageLength;
+
+            IQueryable<Voucher> query = _context.Vouchers.Include(v => v.User);
+
+            var totalVouchers = await query.CountAsync();
+
+            if (totalVouchers < skip)
+            {
+                throw new BadRequestException($"The value of {nameof(pageNum)} is outside of the range of total users");
+            }
+
+            var vouchersByPage = await query
+                .Include(v => v.User)
+                .Include(v => v.Product)
+                .OrderByDescending(v => v.Id) // Newest first
+                .Skip(skip).Take(pageLength)
+                .Select(v => new VoucherResponse
+                {
+                    Requester = v.Requester,
+                    Description = v.Description,
+                    Code = v.Code,
+                    Id = v.Id,
+                    Status = v.DateUsed == null ? VoucherStatus.UNUSED : VoucherStatus.USED,
+                    ProductName = v.Product.Name,
+                    UsedBy = v.User.Name
+                })
+                .ToListAsync();
+
+            return new VoucherListResponse
+            {
+                TotalVouchers = totalVouchers,
+                Vouchers = vouchersByPage
+            };
         }
 
         /// <summary>

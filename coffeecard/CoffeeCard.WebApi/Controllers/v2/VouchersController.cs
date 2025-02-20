@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Services.v2;
@@ -53,7 +54,8 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [HttpPost("issue-vouchers")]
         public async Task<ActionResult<IEnumerable<IssueVoucherResponse>>> IssueVouchers([FromBody] IssueVoucherRequest request)
         {
-            return Ok(await _voucherService.CreateVouchers(request));
+            var user = await _claimUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
+            return Ok(await _voucherService.CreateVouchers(request, user));
         }
 
         /// <summary>
@@ -73,6 +75,25 @@ namespace CoffeeCard.WebApi.Controllers.v2
         {
             var user = await _claimUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
             return Ok(await _purchaseService.RedeemVoucher(voucherCode, user));
+        }
+
+        /// <summary>
+        /// Retrieves a paginated list of vouchers.
+        /// </summary>
+        /// <returns>Vouchers</returns>
+        /// <response code="200">Successful request</response>
+        /// <response code="400">Bad Request. See explanation</response>
+        /// <response code="401">Invalid credentials</response>
+        /// <response code="403">Invalid role in credentials</response>
+        [HttpGet]
+        [AuthorizeRoles(UserGroup.Board)]
+        [ProducesResponseType(typeof(VoucherListResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<VoucherListResponse>> GetAllVouchers([FromQuery][Range(0, int.MaxValue)] int pageNum, [FromQuery][Range(1, 100)] int pageLength = 30)
+        {
+            return Ok(await _voucherService.GetVouchers(pageNum, pageLength));
         }
     }
 }
