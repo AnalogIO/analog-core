@@ -56,6 +56,7 @@ namespace CoffeeCard.MobilePay.GenerateApi
             var settings = new CSharpClientGeneratorSettings
             {
                 ClassName = WebhooksApi,
+                GenerateClientClasses = false,
                 CSharpGeneratorSettings =
                 {
                     Namespace = $"CoffeeCard.MobilePay.Generated.Api.{WebhooksApi}"
