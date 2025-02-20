@@ -13,16 +13,7 @@ namespace CoffeeCard.Common.Configuration
         public string ApiKey { get; set; }
 
         [Required]
-        public string ClientId { get; set; }
-
-        [Required]
-        public string ClientSecret { get; set; }
-
-        [Required]
-        public string MerchantSerialNumber { get; set; }
-
-        [Required]
-        public string OcpApimSubscriptionKey { get; set; }
+        public Guid PaymentPointId { get; set; }
 
         [Required]
         public string WebhookUrl { get; set; }
