@@ -73,7 +73,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var tokenService = new TokenService(AssertionContext, Mock.Of<IHashService>());
 
             // Act & Assert
-            await Assert.ThrowsAsync<ApiException>(() => tokenService.GetValidTokenByHashAsync("token"));
+            await Assert.ThrowsAsync<UnauthorizedException>(() => tokenService.GetValidTokenByHashAsync("token"));
         }
 
         [Fact(DisplayName = "GetValidTokenByHashAsync throws exception if token is revoked")]
@@ -89,7 +89,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var tokenService = new TokenService(AssertionContext, Mock.Of<IHashService>());
 
             // Act & Assert
-            await Assert.ThrowsAsync<ApiException>(() => tokenService.GetValidTokenByHashAsync("token"));
+            await Assert.ThrowsAsync<UnauthorizedException>(() => tokenService.GetValidTokenByHashAsync("token"));
         }
 
         [Fact(DisplayName = "GetValidTokenByHashAsync throws exception if token has expired")]
@@ -104,7 +104,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var tokenService = new TokenService(AssertionContext, Mock.Of<IHashService>());
 
             // Act & Assert
-            await Assert.ThrowsAsync<ApiException>(() => tokenService.GetValidTokenByHashAsync("token"));
+            await Assert.ThrowsAsync<UnauthorizedException>(() => tokenService.GetValidTokenByHashAsync("token"));
         }
 
         [Fact(DisplayName = "GetValidTokenByHashAsync returns token by valid hash")]

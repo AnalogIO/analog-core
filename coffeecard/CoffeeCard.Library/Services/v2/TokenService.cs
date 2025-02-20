@@ -47,7 +47,7 @@ public class TokenService : ITokenService
 
         if (foundToken == null)
         {
-            throw new ApiException("Invalid token", 401);
+            throw new UnauthorizedException("Invalid token");
         }
         return foundToken;
     }
