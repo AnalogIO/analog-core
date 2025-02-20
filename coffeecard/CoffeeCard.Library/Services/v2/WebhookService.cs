@@ -19,9 +19,6 @@ namespace CoffeeCard.Library.Services.v2
     {
         private const string MpSignatureKeyCacheKey = "MpSignatureKey";
 
-        private static readonly ISet<Events> DefaultEvents = new HashSet<Events>
-            {Events.Payment_reserved, Events.Payment_expired, Events.Payment_cancelled_by_user};
-
         private readonly CoffeeCardContext _context;
         private readonly IMobilePayWebhooksService _mobilePayWebhooksService;
         private readonly MobilePaySettingsV3 _mobilePaySettings;
@@ -82,7 +79,7 @@ namespace CoffeeCard.Library.Services.v2
             {
                 var mobilePayWebhook = await _mobilePayWebhooksService.GetWebhook(webhook.Id);
 
-                if (!mobilePayWebhook.Url.Equals(_mobilePaySettings.WebhookUrl, StringComparison.OrdinalIgnoreCase))
+                if (!mobilePayWebhook.Url.ToString().Equals(webhook.Url, StringComparison.OrdinalIgnoreCase))
                 {
                     await DisableAndRegisterNewWebhook(webhook);
                     return;
@@ -105,13 +102,13 @@ namespace CoffeeCard.Library.Services.v2
         private async Task RegisterWebhook()
         {
             var mobilePayWebhook =
-                await _mobilePayWebhooksService.RegisterWebhook(_mobilePaySettings.WebhookUrl, DefaultEvents);
+                await _mobilePayWebhooksService.RegisterWebhook(_mobilePaySettings.WebhookUrl);
 
             var webhook = new WebhookConfiguration
             {
                 Id = mobilePayWebhook.WebhookId,
-                Url = mobilePayWebhook.Url,
-                SignatureKey = mobilePayWebhook.SignatureKey,
+                Url = mobilePayWebhook.Url.ToString(),
+                SignatureKey = mobilePayWebhook.Secret,
                 Status = WebhookStatus.Active,
                 LastUpdated = DateTime.UtcNow
             };

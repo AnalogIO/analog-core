@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http.Headers;
 using CoffeeCard.Common.Configuration;
+using CoffeeCard.MobilePay.Clients;
 using CoffeeCard.MobilePay.Generated.Api.AccessTokenApi;
 using CoffeeCard.MobilePay.Generated.Api.ePaymentApi;
 using CoffeeCard.MobilePay.Generated.Api.WebhooksApi;
@@ -32,9 +33,9 @@ namespace CoffeeCard.MobilePay.Utils
                 client.BaseAddress = new Uri(mobilePaySettings.ApiUrl + "epayment/");
             }).AddHttpMessageHandler<MobilePayAuthorizationDelegatingHandler>();
 
-            services.AddHttpClient<WebhooksApi>(client =>
+            services.AddHttpClient<WebhooksClient>(client =>
             {
-                client.BaseAddress = new Uri(mobilePaySettings.ApiUrl + "webhooks/");
+                client.BaseAddress = mobilePaySettings.ApiUrl;
                 client.DefaultRequestHeaders.Authorization = apiKeyAuthentication;
             });
 

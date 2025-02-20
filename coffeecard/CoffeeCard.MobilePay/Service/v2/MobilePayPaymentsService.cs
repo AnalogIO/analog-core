@@ -74,7 +74,7 @@ namespace CoffeeCard.MobilePay.Service.v2
                     e,
                     "MobilePay CreatePayment failed with HTTP {StatusCode}. ErrorCode: {ErrorCode} Message: {Message}",
                     e.StatusCode,
-                    errorResponse.Status,   
+                    errorResponse.Status,
                     e.Message
                 );
 
@@ -223,7 +223,8 @@ namespace CoffeeCard.MobilePay.Service.v2
             try
             {
                 await _ePaymentApi.CancelPaymentAsync(
-                    new CancelModificationRequest {
+                    new CancelModificationRequest
+                    {
                         CancelTransactionOnly = true
                     },
                     reference: paymentId.ToString(),

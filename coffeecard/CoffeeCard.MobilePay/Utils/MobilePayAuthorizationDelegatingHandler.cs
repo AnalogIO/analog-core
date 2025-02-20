@@ -14,10 +14,10 @@ public class MobilePayAuthorizationDelegatingHandler(
     MobilePaySettingsV3 mobilePaySettingsV3,
     AccessTokenApi accessTokenApi,
     IMemoryCache memoryCache
-    ): DelegatingHandler
+    ) : DelegatingHandler
 {
     private const string MpAccessTokenCacheKey = "MpAccessTokenKey";
-    
+
     protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
         CancellationToken cancellationToken)

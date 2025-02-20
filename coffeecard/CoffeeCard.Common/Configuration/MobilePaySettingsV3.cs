@@ -8,7 +8,7 @@ namespace CoffeeCard.Common.Configuration
     {
         [Required]
         public Uri ApiUrl { get; set; }
-        
+
         [Required]
         public Guid ClientId { get; set; }
 
@@ -17,25 +17,25 @@ namespace CoffeeCard.Common.Configuration
 
         [Required]
         public string MerchantSerialNumber { get; set; }
-        
+
         [Required]
         public string WebhookUrl { get; set; }
 
         [Required]
         public string OcpApimSubscriptionKey { get; set; }
-        
+
         [Required]
         public string VippsSystemName { get; set; }
-        
+
         [Required]
         public string VippsSystemVersion { get; set; }
-        
+
         [Required]
         public string VippsSystemPluginName { get; set; }
-        
+
         [Required]
         public string VippsSystemPluginVersion { get; set; }
-        
+
 
         public void Validate()
         {

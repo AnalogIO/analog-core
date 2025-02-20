@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CoffeeCard.MobilePay.Generated.Api.WebhooksApi;
+using CoffeeCard.Models.DataTransferObjects.MobilePay;
 
 namespace CoffeeCard.MobilePay.Service.v2
 {
@@ -13,13 +14,13 @@ namespace CoffeeCard.MobilePay.Service.v2
         /// <param name="url">Url which MobilePay will invoke webhook on</param>
         /// <param name="events">Events which webhook should registered for</param>
         /// <returns>Response with Webhook Id</returns>
-        Task<SingleWebhookResponse> RegisterWebhook(string url, ICollection<Events> events);
+        Task<RegisterWebhookResponse> RegisterWebhook(string url);
 
         /// <summary>
         /// Get Webhook information from MobilePay
         /// </summary>
         /// <param name="webhookId">Webhook Id</param>
         /// <returns>Webhook information</returns>
-        Task<SingleWebhookResponse> GetWebhook(Guid webhookId);
+        Task<GetWebhookResponse> GetWebhook(Guid webhookId);
     }
 }
