@@ -10,8 +10,7 @@ namespace CoffeeCard.Tests.Common.Builders
             var product = ProductBuilder.Simple().Build();
             return new ProductUserGroupBuilder()
                 .WithProduct(product)
-                .WithUserGroup(f =>
-                    f.PickRandom(UserGroup.Barista, UserGroup.Board, UserGroup.Customer, UserGroup.Manager));
+                .WithUserGroup(UserGroup.Customer);
         }
 
         public static ProductUserGroupBuilder Typical()

@@ -11,7 +11,7 @@ using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
+using Microsoft.Extensions.Logging;
 using Purchase = CoffeeCard.Models.Entities.Purchase;
 
 namespace CoffeeCard.Library.Services.v2
@@ -19,19 +19,21 @@ namespace CoffeeCard.Library.Services.v2
     public sealed class PurchaseService : IPurchaseService
     {
         private readonly CoffeeCardContext _context;
-        private readonly IEmailService _emailService;
+        private readonly CoffeeCard.Library.Services.IEmailService _emailService;
         private readonly IMobilePayPaymentsService _mobilePayPaymentsService;
         private readonly ITicketService _ticketService;
         private readonly IProductService _productService;
+        private readonly ILogger<PurchaseService> _logger;
 
         public PurchaseService(CoffeeCardContext context, IMobilePayPaymentsService mobilePayPaymentsService,
-            ITicketService ticketService, IEmailService emailService, IProductService productService)
+            ITicketService ticketService, CoffeeCard.Library.Services.IEmailService emailService, IProductService productService, ILogger<PurchaseService> logger)
         {
             _context = context;
             _mobilePayPaymentsService = mobilePayPaymentsService;
             _ticketService = ticketService;
             _emailService = emailService;
             _productService = productService;
+            _logger = logger;
         }
 
         public async Task<InitiatePurchaseResponse> InitiatePurchase(InitiatePurchaseRequest initiateRequest, User user)
@@ -39,7 +41,7 @@ namespace CoffeeCard.Library.Services.v2
             var product = await _productService.GetProductAsync(initiateRequest.ProductId);
             CheckUserIsAllowedToPurchaseProduct(user, initiateRequest, product);
 
-            Log.Information("Initiating purchase of ProductId {ProductId}, PaymentType {PurchaseType} by UserId {UserId}", initiateRequest.ProductId, initiateRequest.PaymentType, user.Id);
+            _logger.LogInformation("Initiating purchase of ProductId {ProductId}, PaymentType {PurchaseType} by UserId {UserId}", initiateRequest.ProductId, initiateRequest.PaymentType, user.Id);
 
             var (purchase, paymentDetails) = await InitiatePaymentAsync(initiateRequest, product, user);
 
@@ -48,7 +50,7 @@ namespace CoffeeCard.Library.Services.v2
 
             if (purchase.Status == PurchaseStatus.Completed)
             {
-                Log.Information("Purchase {PurchaseId} has state Completed. Issues tickets", purchase.Id);
+                _logger.LogInformation("Purchase {PurchaseId} has state Completed. Issues tickets", purchase.Id);
                 await _ticketService.IssueTickets(purchase);
             }
 
@@ -72,13 +74,13 @@ namespace CoffeeCard.Library.Services.v2
         /// <param name="initiateRequest">Purchase Request</param>
         /// <param name="product">Product</param>
         /// <exception cref="IllegalUserOperationException">User is not entitled to purchase product</exception>
-        /// <exception cref="ArgumentException">PaymentType FreePurchase used for a non-free product</exception>
-        private static void CheckUserIsAllowedToPurchaseProduct(User user, InitiatePurchaseRequest initiateRequest, ProductResponse product)
+        /// <exception cref="BadRequestException">PaymentType FreePurchase used for a non-free product</exception>
+        private void CheckUserIsAllowedToPurchaseProduct(User user, InitiatePurchaseRequest initiateRequest, ProductResponse product)
         {
             //Product does not belong to same userGroup as user
             if (!product.AllowedUserGroups.Any(ug => ug == user.UserGroup))
             {
-                Log.Warning(
+                _logger.LogWarning(
                     "User {UserId} is not authorized to purchase Product Id: {ProductId} as user is not in Product User Group",
                     user.Id, product.Id);
                 throw new IllegalUserOperationException($"User is not entitled to purchase product '{product.Name}'");
@@ -86,10 +88,10 @@ namespace CoffeeCard.Library.Services.v2
 
             if (initiateRequest.PaymentType == PaymentType.FreePurchase && product.Price != 0)
             {
-                Log.Warning(
+                _logger.LogWarning(
                     "User tried to issue paid product to themselves, User {UserId}, Product {ProductId}",
                     user.Id, product.Id);
-                throw new ArgumentException($"Product '{product.Name}' is not free");
+                throw new BadRequestException($"Product '{product.Name}' is not free");
             }
         }
 
@@ -121,8 +123,8 @@ namespace CoffeeCard.Library.Services.v2
 
                     break;
                 default:
-                    Log.Error("Payment Type {PaymentType} is not handled in PurchaseService", purchaseRequest.PaymentType);
-                    throw new ArgumentException($"Payment Type '{purchaseRequest.PaymentType}' is not handled");
+                    _logger.LogError("Payment Type {PaymentType} is not handled in PurchaseService", purchaseRequest.PaymentType);
+                    throw new BadRequestException($"Payment Type '{purchaseRequest.PaymentType}' is not handled");
             }
 
             var purchase = new Purchase
@@ -151,7 +153,7 @@ namespace CoffeeCard.Library.Services.v2
                 .FirstOrDefaultAsync();
             if (purchase == null)
             {
-                Log.Error("No purchase was found by Purchase Id: {Id} and User Id: {UId}", purchaseId, user.Id);
+                _logger.LogError("No purchase was found by Purchase Id: {Id} and User Id: {UId}", purchaseId, user.Id);
                 throw new EntityNotFoundException(
                     $"No purchase was found by Purchase Id: {purchaseId} and User Id: {user.Id}");
             }
@@ -176,7 +178,7 @@ namespace CoffeeCard.Library.Services.v2
                 .FirstOrDefaultAsync();
             if (user == null)
             {
-                Log.Error("No user was found by User Id: {Id}", userId);
+                _logger.LogError("No user was found by User Id: {Id}", userId);
                 throw new EntityNotFoundException($"No user was found by User Id: {userId}");
             }
 
@@ -209,14 +211,14 @@ namespace CoffeeCard.Library.Services.v2
                 .FirstOrDefaultAsync();
             if (purchase == null)
             {
-                Log.Error("No purchase was found by TransactionId: {Id} from Webhook request", webhook.Data.Id);
+                _logger.LogError("No purchase was found by TransactionId: {Id} from Webhook request", webhook.Data.Id);
                 throw new EntityNotFoundException(
                     $"No purchase was found by Transaction Id: {webhook.Data.Id} from webhook request");
             }
 
             if (purchase.Status == PurchaseStatus.Completed)
             {
-                Log.Warning(
+                _logger.LogWarning(
                     "Purchase from Webhook request is already completed. Purchase Id: {PurchaseId}, Transaction Id: {TransactionId}",
                     purchase.Id, webhook.Data.Id);
                 return;
@@ -241,10 +243,10 @@ namespace CoffeeCard.Library.Services.v2
                         break;
                     }
                 default:
-                    Log.Error(
+                    _logger.LogError(
                         "Unknown EventType from Webhook request. Event Type: {EventType}, Purchase Id: {PurchaseId}, Transaction Id: {TransactionId}",
                         eventTypeLowerCase, purchase.Id, webhook.Data.Id);
-                    throw new ArgumentException($"Event Type {eventTypeLowerCase} is not valid");
+                    throw new BadRequestException($"Event Type {eventTypeLowerCase} is not valid");
             }
         }
 
@@ -256,7 +258,7 @@ namespace CoffeeCard.Library.Services.v2
             purchase.Status = PurchaseStatus.Completed;
             await _context.SaveChangesAsync();
 
-            Log.Information("Completed purchase with Id {Id}, TransactionId {TransactionId}", purchase.Id, purchase.ExternalTransactionId);
+            _logger.LogInformation("Completed purchase with Id {Id}, TransactionId {TransactionId}", purchase.Id, purchase.ExternalTransactionId);
 
             await _emailService.SendInvoiceAsyncV2(purchase, purchase.PurchasedBy);
         }
@@ -267,7 +269,7 @@ namespace CoffeeCard.Library.Services.v2
             purchase.Status = PurchaseStatus.Cancelled;
             await _context.SaveChangesAsync();
 
-            Log.Information("Purchase has been cancelled Purchase Id {PurchaseId}, Transaction Id {TransactionId}",
+            _logger.LogInformation("Purchase has been cancelled Purchase Id {PurchaseId}, Transaction Id {TransactionId}",
                 purchase.Id, purchase.ExternalTransactionId);
         }
 
@@ -345,21 +347,21 @@ namespace CoffeeCard.Library.Services.v2
             // Does the purchase exist?
             if (purchase == null)
             {
-                Log.Error("No purchase was found by Purchase Id: {Id}", paymentId);
+                _logger.LogError("No purchase was found by Purchase Id: {Id}", paymentId);
                 throw new EntityNotFoundException($"No purchase was found by Purchase Id: {paymentId}");
             }
 
             // Is the purchase in a state where it can be refunded?
             if (purchase.Status != PurchaseStatus.Completed)
             {
-                Log.Error("Purchase {PurchaseId} is not in state Completed. Cannot refund", purchase.Id);
+                _logger.LogError("Purchase {PurchaseId} is not in state Completed. Cannot refund", purchase.Id);
                 throw new IllegalUserOperationException($"Purchase {purchase.Id} is not in state Completed. Cannot refund");
             }
 
             // Are all of the tickets unused (i.e. refundable)?
             if (purchase.Tickets.Any(t => !t.IsConsumable))
             {
-                Log.Error("Purchase {PurchaseId} has tickets that are not unused. Cannot refund", purchase.Id);
+                _logger.LogError("Purchase {PurchaseId} has tickets that are not unused. Cannot refund", purchase.Id);
                 throw new IllegalUserOperationException($"Purchase {purchase.Id} has tickets that are not unused. Cannot refund");
             }
 
@@ -369,7 +371,7 @@ namespace CoffeeCard.Library.Services.v2
             var refundSuccess = await _mobilePayPaymentsService.RefundPayment(purchase, amountToRefund);
             if (!refundSuccess)
             {
-                Log.Error("Refund of Purchase {PurchaseId} failed", purchase.Id);
+                _logger.LogError("Refund of Purchase {PurchaseId} failed", purchase.Id);
                 throw new InvalidOperationException($"Refund of Purchase {purchase.Id} failed");
             }
 
@@ -383,7 +385,7 @@ namespace CoffeeCard.Library.Services.v2
             purchase.Status = PurchaseStatus.Refunded;
 
             await _context.SaveChangesAsync();
-            Log.Information("Refunded Purchase {PurchaseId}", purchase.Id);
+            _logger.LogInformation("Refunded Purchase {PurchaseId}", purchase.Id);
 
             return new SimplePurchaseResponse
             {

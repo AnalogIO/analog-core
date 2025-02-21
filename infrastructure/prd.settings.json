@@ -22,6 +22,10 @@
         "value": "https://core.prd.analogio.dk/"
       },
       {
+        "name": "EnvironmentSettings__ShiftyUrl",
+        "value": "https://shifty.prd.analogio.dk/"
+      },
+      {
         "name": "MailgunSettings__Domain",
         "value": "mg.cafeanalog.dk"
       },
@@ -60,6 +64,14 @@
       {
         "name": "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES",
         "value": "Microsoft.AspNetCore.ApplicationInsights.HostingStartup"
+      },
+      {
+        "name": "OtlpSettings__Endpoint",
+        "value": "https://otlp-gateway-prod-eu-north-0.grafana.net/otlp"
+      },
+      {
+        "name": "OtlpSettings__Protocol",
+        "value": "http"
       }
     ],
     "keyVaultReferences": [
@@ -86,7 +98,12 @@
       {
         "name": "MobilePaySettingsV2__PaymentPointId",
         "secretName": "MobilePaySettingsV2-PaymentPointId"
+      },
+      {
+        "name": "OtlpSettings__Token",
+        "secretName": "OtlpSettings-Token"
       }
     ]
   }
 }
+

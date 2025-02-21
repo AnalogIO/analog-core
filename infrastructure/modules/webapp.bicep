@@ -146,10 +146,6 @@ module bindCertificate 'bindCustomDomainCertificate.bicep' = {
     certificateThumbprint: certificate.outputs.certificateThumbprint
     customDomainFqdn: certificate.outputs.customDomainFqdn
   }
-
-  dependsOn: [
-    certificate
-  ]
 }
 
 resource preventDeleteLock 'Microsoft.Authorization/locks@2020-05-01' = {

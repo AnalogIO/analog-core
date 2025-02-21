@@ -309,7 +309,18 @@ namespace CoffeeCard.Library.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("Expires")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Revoked")
+                        .HasColumnType("bit");
+
                     b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -318,6 +329,8 @@ namespace CoffeeCard.Library.Migrations
                         .HasColumnName("User_Id");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TokenHash");
 
                     b.HasIndex("UserId");
 
@@ -573,7 +586,8 @@ namespace CoffeeCard.Library.Migrations
                 {
                     b.HasOne("CoffeeCard.Models.Entities.User", "User")
                         .WithMany("Tokens")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("User");
                 });

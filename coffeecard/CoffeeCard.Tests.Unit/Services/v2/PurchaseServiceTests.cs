@@ -10,6 +10,7 @@ using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Xunit;
 using PurchaseService = CoffeeCard.Library.Services.v2.PurchaseService;
@@ -20,7 +21,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
     {
         [Theory(DisplayName =
             "InitiatePurchase.CheckUserIsAllowedToPurchaseProduct throws exceptions in several conditions")]
-        [InlineData(1, 1, typeof(ArgumentException))] // FreePurchase PaymentType fails when product has a price != 0
+        [InlineData(1, 1, typeof(BadRequestException))] // FreePurchase PaymentType fails when product has a price != 0
         [InlineData(1, 2, typeof(IllegalUserOperationException))] // Product not in PUG
         [InlineData(1, 3, typeof(EntityNotFoundException))] // Product not exists
         public async Task InitiatePurchaseCheckUserIsAllowedToPurchaseProductThrowsExceptionsInSeveralConditions(
@@ -94,10 +95,10 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var mobilePayService = new Mock<IMobilePayPaymentsService>();
             var mailService = new Mock<Library.Services.IEmailService>();
 
-            var productService = new ProductService(context);
-            var ticketService = new TicketService(context, new Mock<IStatisticService>().Object);
+            var productService = new ProductService(context, NullLogger<ProductService>.Instance);
+            var ticketService = new TicketService(context, new Mock<IStatisticService>().Object, NullLogger<TicketService>.Instance);
             var purchaseService = new PurchaseService(context, mobilePayService.Object, ticketService,
-                mailService.Object, productService);
+                mailService.Object, productService, NullLogger<PurchaseService>.Instance);
 
             var request = new InitiatePurchaseRequest
             {
@@ -158,10 +159,10 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var mobilePayService = new Mock<IMobilePayPaymentsService>();
             var mailService = new Mock<Library.Services.IEmailService>();
 
-            var productService = new ProductService(context);
-            var ticketService = new TicketService(context, new Mock<IStatisticService>().Object);
+            var productService = new ProductService(context, NullLogger<ProductService>.Instance);
+            var ticketService = new TicketService(context, new Mock<IStatisticService>().Object, NullLogger<TicketService>.Instance);
             var purchaseService = new PurchaseService(context, mobilePayService.Object, ticketService,
-                mailService.Object, productService);
+                mailService.Object, productService, NullLogger<PurchaseService>.Instance);
 
             var request = new InitiatePurchaseRequest
             {
@@ -244,10 +245,10 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             var mobilePayService = new Mock<IMobilePayPaymentsService>();
             var mailService = new Mock<Library.Services.IEmailService>();
-            var productService = new ProductService(context);
-            var ticketService = new TicketService(context, new Mock<IStatisticService>().Object);
+            var productService = new ProductService(context, NullLogger<ProductService>.Instance);
+            var ticketService = new TicketService(context, new Mock<IStatisticService>().Object, NullLogger<TicketService>.Instance);
             var purchaseService = new PurchaseService(context, mobilePayService.Object, ticketService,
-                mailService.Object, productService);
+                mailService.Object, productService, NullLogger<PurchaseService>.Instance);
 
             var request = new InitiatePurchaseRequest
             {
@@ -328,10 +329,10 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             mobilePayService.Setup(mps => mps.RefundPayment(It.IsAny<Purchase>(), It.IsAny<int>()))
                 .ReturnsAsync(true);
             var mailService = new Mock<Library.Services.IEmailService>();
-            var productService = new ProductService(context);
-            var ticketService = new TicketService(context, new Mock<IStatisticService>().Object);
+            var productService = new ProductService(context, NullLogger<ProductService>.Instance);
+            var ticketService = new TicketService(context, new Mock<IStatisticService>().Object, NullLogger<TicketService>.Instance);
             var purchaseService = new PurchaseService(context, mobilePayService.Object, ticketService,
-                mailService.Object, productService);
+                mailService.Object, productService, NullLogger<PurchaseService>.Instance);
 
             // Act
             var refund = await purchaseService.RefundPurchase(purchase.Id);
@@ -394,10 +395,10 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             mobilePayService.Setup(mps => mps.RefundPayment(It.IsAny<Purchase>(), It.IsAny<int>()))
                 .ReturnsAsync(true);
             var mailService = new Mock<Library.Services.IEmailService>();
-            var productService = new ProductService(context);
-            var ticketService = new TicketService(context, new Mock<IStatisticService>().Object);
+            var productService = new ProductService(context, NullLogger<ProductService>.Instance);
+            var ticketService = new TicketService(context, new Mock<IStatisticService>().Object, NullLogger<TicketService>.Instance);
             var purchaseService = new PurchaseService(context, mobilePayService.Object, ticketService,
-                mailService.Object, productService);
+                mailService.Object, productService, NullLogger<PurchaseService>.Instance);
 
             // Act, Assert
             await Assert.ThrowsAsync<EntityNotFoundException>(() => purchaseService.RefundPurchase(2));
@@ -458,10 +459,10 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             mobilePayService.Setup(mps => mps.RefundPayment(It.IsAny<Purchase>(), It.IsAny<int>()))
                 .ReturnsAsync(true);
             var mailService = new Mock<Library.Services.IEmailService>();
-            var productService = new ProductService(context);
-            var ticketService = new TicketService(context, new Mock<IStatisticService>().Object);
+            var productService = new ProductService(context, NullLogger<ProductService>.Instance);
+            var ticketService = new TicketService(context, new Mock<IStatisticService>().Object, NullLogger<TicketService>.Instance);
             var purchaseService = new PurchaseService(context, mobilePayService.Object, ticketService,
-                mailService.Object, productService);
+                mailService.Object, productService, NullLogger<PurchaseService>.Instance);
 
             // Act, Assert
             await Assert.ThrowsAsync<IllegalUserOperationException>(() => purchaseService.RefundPurchase(product.Id));
@@ -519,10 +520,10 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             var mobilePayService = new Mock<IMobilePayPaymentsService>();
             var mailService = new Mock<Library.Services.IEmailService>();
-            var productService = new ProductService(context);
-            var ticketService = new TicketService(context, new Mock<IStatisticService>().Object);
+            var productService = new ProductService(context, NullLogger<ProductService>.Instance);
+            var ticketService = new TicketService(context, new Mock<IStatisticService>().Object, NullLogger<TicketService>.Instance);
             var purchaseService = new PurchaseService(context, mobilePayService.Object, ticketService,
-                mailService.Object, productService);
+                mailService.Object, productService, NullLogger<PurchaseService>.Instance);
 
             // act
             var result = await purchaseService.GetPurchases(user);
@@ -583,10 +584,10 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             var mobilePayService = new Mock<IMobilePayPaymentsService>();
             var mailService = new Mock<Library.Services.IEmailService>();
-            var productService = new ProductService(context);
-            var ticketService = new TicketService(context, new Mock<IStatisticService>().Object);
+            var productService = new ProductService(context, NullLogger<ProductService>.Instance);
+            var ticketService = new TicketService(context, new Mock<IStatisticService>().Object, NullLogger<TicketService>.Instance);
             var purchaseService = new PurchaseService(context, mobilePayService.Object, ticketService,
-                mailService.Object, productService);
+                mailService.Object, productService, NullLogger<PurchaseService>.Instance);
 
             // Act & Assert
             await Assert.ThrowsAsync<EntityNotFoundException>(() => purchaseService.GetPurchases(10));

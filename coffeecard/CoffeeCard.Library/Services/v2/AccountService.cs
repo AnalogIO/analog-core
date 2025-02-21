@@ -5,38 +5,53 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
+using CoffeeCard.Models.DataTransferObjects.v2.Token;
 using CoffeeCard.Models.DataTransferObjects.v2.User;
 using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace CoffeeCard.Library.Services.v2
 {
     public class AccountService : IAccountService
     {
         private readonly CoffeeCardContext _context;
-        private readonly IEmailService _emailService;
-        private readonly IHashService _hashService;
-        private readonly ITokenService _tokenService;
+        private readonly CoffeeCard.Library.Services.IEmailService _emailService;
+        private readonly CoffeeCard.Library.Services.v2.IEmailService _emailServiceV2;
+        private readonly CoffeeCard.Library.Services.IHashService _hashService;
+        private readonly CoffeeCard.Library.Services.ITokenService _tokenService;
+        private readonly CoffeeCard.Library.Services.v2.ITokenService _tokenServiceV2;
+        private readonly ILogger<AccountService> _logger;
 
-        public AccountService(CoffeeCardContext context, ITokenService tokenService, IEmailService emailService, IHashService hashService)
+        public AccountService(
+            CoffeeCardContext context,
+            CoffeeCard.Library.Services.ITokenService tokenService,
+            CoffeeCard.Library.Services.IEmailService emailService,
+            CoffeeCard.Library.Services.v2.IEmailService emailServiceV2,
+            CoffeeCard.Library.Services.v2.ITokenService tokenServiceV2,
+            CoffeeCard.Library.Services.IHashService hashService,
+            ILogger<AccountService> logger
+        )
         {
             _context = context;
             _tokenService = tokenService;
             _emailService = emailService;
+            _emailServiceV2 = emailServiceV2;
+            _tokenServiceV2 = tokenServiceV2;
             _hashService = hashService;
+            _logger = logger;
         }
 
         public async Task<User> RegisterAccountAsync(string name, string email, string password, int programme)
         {
-            Log.Information("Trying to register new user. Name: {name} Email: {email}", name, email);
+            _logger.LogInformation("Trying to register new user. Name: {name} Email: {email}", name, email);
 
             if (_context.Users.Any(x => x.Email == email))
             {
-                Log.Information("Could not register user Name: {name}. Email:{email} already exists", name, email);
+                _logger.LogInformation("Could not register user Name: {name}. Email:{email} already exists", name, email);
                 throw new ApiException($"The email {email} is already being used by another user",
-                StatusCodes.Status409Conflict);
+                    StatusCodes.Status409Conflict);
             }
 
             var salt = _hashService.GenerateSalt();
@@ -82,20 +97,20 @@ namespace CoffeeCard.Library.Services.v2
             {
                 if (_context.Users.Any(x => x.Email == updateUserRequest.Email))
                     throw new ApiException($"The email {updateUserRequest.Email} is already in use!", 400);
-                Log.Information($"Changing email of user from {user.Email} to {updateUserRequest.Email}");
+                _logger.LogInformation("Changing email of user from {email} to {newEmail}", user.Email, updateUserRequest.Email);
                 user.Email = updateUserRequest.Email;
             }
 
             if (updateUserRequest.Name != null)
             {
-                Log.Information($"Changing name of user from {user.Name} to {EscapeName(updateUserRequest.Name)}");
+                _logger.LogInformation("Changing name of user from {oldName} to {newName}", user.Name, EscapeName(updateUserRequest.Name));
                 user.Name = EscapeName(updateUserRequest.Name);
             }
 
             if (updateUserRequest.PrivacyActivated != null)
             {
-                Log.Information(
-                    $"Changing privacy of user from {user.PrivacyActivated} to {(bool)updateUserRequest.PrivacyActivated}");
+                _logger.LogInformation(
+                    "Changing privacy of user from {oldPrivacy} to {newPrivacy}", user.PrivacyActivated, (bool)updateUserRequest.PrivacyActivated);
                 user.PrivacyActivated = (bool)updateUserRequest.PrivacyActivated;
             }
 
@@ -104,7 +119,7 @@ namespace CoffeeCard.Library.Services.v2
                 var programme = _context.Programmes.FirstOrDefault(x => x.Id == updateUserRequest.ProgrammeId);
                 if (programme == null)
                     throw new ApiException($"No programme with id {updateUserRequest.ProgrammeId} exists!", 400);
-                Log.Information($"Changing programme of user from {user.Programme.Id} to {programme.Id}");
+                _logger.LogInformation("Changing programme of user from {oldProgramme} to {newProgramme}", user.Programme.Id, programme.Id);
                 user.Programme = programme;
             }
 
@@ -114,7 +129,7 @@ namespace CoffeeCard.Library.Services.v2
                 var hashedPassword = _hashService.Hash(updateUserRequest.Password + salt);
                 user.Salt = salt;
                 user.Password = hashedPassword;
-                Log.Information("User changed password");
+                _logger.LogInformation("User changed password");
             }
 
             await _context.SaveChangesAsync();
@@ -146,7 +161,7 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task AnonymizeAccountAsync(string token)
         {
-            Log.Information("Trying to verify deletion with token: {token}", token);
+            _logger.LogInformation("Trying to verify deletion with token: {token}", token);
 
             var email = _tokenService.ValidateVerificationTokenAndGetEmail(token);
             var user = await GetAccountByEmailAsync(email);
@@ -222,16 +237,16 @@ namespace CoffeeCard.Library.Services.v2
             else
             {
                 query = _context.Users
-                .Where(u => EF.Functions.Like(u.Id.ToString(), $"%{search}%") ||
-                    EF.Functions.Like(u.Name, $"%{search}%") ||
-                    EF.Functions.Like(u.Email, $"%{search}%"));
+                    .Where(u => EF.Functions.Like(u.Id.ToString(), $"%{search}%") ||
+                                EF.Functions.Like(u.Name, $"%{search}%") ||
+                                EF.Functions.Like(u.Email, $"%{search}%"));
             }
 
             var totalUsers = await query.CountAsync();
 
             if (totalUsers < skip)
             {
-                throw new ArgumentException($"The value of {nameof(pageNum)} is outside of the range of total users");
+                throw new BadRequestException($"The value of {nameof(pageNum)} is outside of the range of total users");
             }
 
             var usersByPage = await query
@@ -263,7 +278,7 @@ namespace CoffeeCard.Library.Services.v2
 
             if (user == null)
             {
-                Log.Error("No user was found by user id: {id}", id);
+                _logger.LogError("No user was found by user id: {id}", id);
                 throw new EntityNotFoundException($"No user was found by user id: {id}");
             }
 
@@ -288,6 +303,45 @@ namespace CoffeeCard.Library.Services.v2
                     .Where(u => u.Id == item.AccountId)
                     .ExecuteUpdateAsync(u => u.SetProperty(u => u.UserGroup, item.UserGroup));
             }
+        }
+
+        public async Task SendMagicLinkEmail(string email, LoginType loginType)
+        {
+            var user = await _context.Users
+                .Where(u => u.Email == email)
+                .FirstOrDefaultAsync();
+            if (user is null)
+            {
+                // Should not throw error to prevent showing a malicious user if an email is already registered
+                return;
+            }
+            var magicLinkTokenHash = await _tokenServiceV2.GenerateMagicLinkToken(user);
+            await _emailServiceV2.SendMagicLink(user, magicLinkTokenHash, loginType);
+        }
+
+        public async Task<UserLoginResponse> GenerateUserLoginFromToken(TokenLoginRequest loginRequest)
+        {
+            // Validate token in DB
+            var foundToken = await _tokenServiceV2.GetValidTokenByHashAsync(loginRequest.Token);
+
+            // Invalidate token in DB
+            foundToken.Revoked = true;
+            await _context.SaveChangesAsync();
+
+            // Generate refresh token
+            var refreshToken = await _tokenServiceV2.GenerateRefreshTokenAsync(foundToken.User);
+
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Email, foundToken.User!.Email),
+                new Claim(ClaimTypes.Name, foundToken.User.Name),
+                new Claim("UserId", foundToken.User.Id.ToString()),
+                new Claim(ClaimTypes.Role, foundToken.User.UserGroup.ToString()),
+            };
+            // Generate JWT token with user claims
+            var jwt = _tokenService.GenerateToken(claims);
+
+            return new UserLoginResponse() { Jwt = jwt, RefreshToken = refreshToken };
         }
     }
 }

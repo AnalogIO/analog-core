@@ -14,6 +14,9 @@ using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Models.Entities;
 using CoffeeCard.WebApi.Helpers;
 using System.ComponentModel.DataAnnotations;
+using CoffeeCard.Models.DataTransferObjects.User;
+using CoffeeCard.Models.DataTransferObjects.v2.Token;
+using Microsoft.AspNetCore.Identity.Data;
 
 namespace CoffeeCard.WebApi.Controllers.v2
 {
@@ -33,7 +36,8 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
         /// </summary>
-        public AccountController(IAccountService accountService, ClaimsUtilities claimsUtilities,
+        public AccountController(IAccountService accountService,
+            ClaimsUtilities claimsUtilities,
             ILeaderboardService leaderboardService)
         {
             _accountService = accountService;
@@ -155,7 +159,8 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
         [Route("{id:int}/user-group")]
-        public async Task<ActionResult> UpdateAccountUserGroup([FromRoute] int id, [FromBody] UpdateUserGroupRequest updateUserGroupRequest)
+        public async Task<ActionResult> UpdateAccountUserGroup([FromRoute] int id,
+            [FromBody] UpdateUserGroupRequest updateUserGroupRequest)
         {
             await _accountService.UpdateUserGroup(updateUserGroupRequest.UserGroup, id);
 
@@ -220,9 +225,47 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(UserSearchResponse), StatusCodes.Status200OK)]
         [Route("search")]
-        public async Task<ActionResult<UserSearchResponse>> SearchUsers([FromQuery][Range(0, int.MaxValue)] int pageNum, [FromQuery] string filter = "", [FromQuery][Range(1, 100)] int pageLength = 30)
+        public async Task<ActionResult<UserSearchResponse>> SearchUsers(
+            [FromQuery][Range(0, int.MaxValue)] int pageNum, [FromQuery] string filter = "",
+            [FromQuery][Range(1, 100)] int pageLength = 30)
         {
             return Ok(await _accountService.SearchUsers(filter, pageNum, pageLength));
+        }
+
+        /// <summary>
+        /// Sends a magic link to the user's email to login
+        /// </summary>
+        /// <param name="request">User's email</param>
+        /// <returns></returns> 
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("login")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult> Login([FromBody] UserLoginRequest request)
+        {
+            await _accountService.SendMagicLinkEmail(request.Email, request.LoginType);
+            return new NoContentResult();
+        }
+
+        /// <summary>
+        /// Authenticates the user with the token hash from a magic link
+        /// </summary>
+        /// <param name="token">The token hash from the magic link</param>
+        /// <returns>A JSON Web Token used to authenticate for other endpoints and a refresh token to re-authenticate without a new magic link</returns>
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("auth")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<UserLoginResponse>> Authenticate(TokenLoginRequest token)
+        {
+            if (token is null)
+                return NotFound(new MessageResponseDto { Message = "Token required for app authentication." });
+
+            var userTokens = await _accountService.GenerateUserLoginFromToken(token);
+            return Ok(userTokens);
         }
     }
 }

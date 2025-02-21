@@ -10,17 +10,19 @@ using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace CoffeeCard.Library.Services
 {
     public class PurchaseService : IPurchaseService
     {
         private readonly CoffeeCardContext _context;
+        private readonly ILogger<PurchaseService> _logger;
 
-        public PurchaseService(CoffeeCardContext context)
+        public PurchaseService(CoffeeCardContext context, ILogger<PurchaseService> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         public async Task<Purchase> RedeemVoucher(string voucherCode, IEnumerable<Claim> claims)
@@ -80,7 +82,7 @@ namespace CoffeeCard.Library.Services
 
         public Purchase DeliverProductToUser(Purchase purchase, User user, string transactionId)
         {
-            Log.Information(
+            _logger.LogInformation(
                 $"Delivering product ({purchase.ProductId}) to userId: {user.Id} with orderId: {purchase.OrderId}");
             var product = _context.Products.FirstOrDefault(x => x.Id == purchase.ProductId);
             if (product == null)
@@ -97,8 +99,8 @@ namespace CoffeeCard.Library.Services
             _context.Entry(user).State = EntityState.Modified;
             _context.SaveChanges();
 
-            Log.Information(
-                $"Delivery of product ({purchase.ProductId}) to userId: {user.Id} with orderId: {purchase.OrderId} succeeded!");
+            _logger.LogInformation(
+                "Delivery of product ({productId}) to userId: {userId} with orderId: {purchaseId} succeeded!", purchase.ProductId, user.Id, purchase.OrderId);
             return purchase;
         }
 

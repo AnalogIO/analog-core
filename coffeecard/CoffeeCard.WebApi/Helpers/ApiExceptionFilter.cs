@@ -28,10 +28,6 @@ namespace CoffeeCard.WebApi.Helpers
                     apiError = new ApiError("Unauthorized Access");
                     context.HttpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
                     break;
-                case ArgumentException exception:
-                    apiError = new ApiError(exception.Message);
-                    context.HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
-                    break;
                 default:
                     {
                         Log.Error(context.Exception, "Unhandled exception caught");

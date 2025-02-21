@@ -8,3 +8,8 @@ jobs:
   build:
     uses: ./.github/workflows/build.yml
     secrets: inherit
+    
+  sonarcloud:
+    name: SonarCloud
+    uses: ./.github/workflows/sonarcloud.yml
+    secrets: inherit

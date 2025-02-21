@@ -2,18 +2,20 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using CoffeeCard.MobilePay.Exception.v2;
 using CoffeeCard.MobilePay.Generated.Api.WebhooksApi;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace CoffeeCard.MobilePay.Clients;
 
 public class WebhooksClient
 {
     private readonly HttpClient _httpClient;
+    private readonly ILogger<WebhooksClient> _logger;
     private const string ControllerPath = "/v1/webhooks";
 
-    public WebhooksClient(HttpClient httpClient)
+    public WebhooksClient(HttpClient httpClient, ILogger<WebhooksClient> logger)
     {
         _httpClient = httpClient;
+        _logger = logger;
     }
 
     public async Task<RegisterResponse> CreateWebhookAsync(RegisterRequest request)
@@ -22,7 +24,7 @@ public class WebhooksClient
 
         if (!response.IsSuccessStatusCode)
         {
-            Log.Error("Failed to create webhook for url {url}", request.Url);
+            _logger.LogError("Failed to create webhook for url {url}", request.Url);
             throw new MobilePayApiException(503, $"Failed to create webhook for url {request.Url}");
         }
 
@@ -36,7 +38,7 @@ public class WebhooksClient
 
         if (!response.IsSuccessStatusCode)
         {
-            Log.Error("Failed to get all webhooks");
+            _logger.LogError("Failed to get all webhooks");
             throw new MobilePayApiException(503, "Failed to get all webhooks");
         }
 

@@ -11,7 +11,7 @@ using CoffeeCard.Models.DataTransferObjects.User;
 using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace CoffeeCard.Library.Services
 {
@@ -25,11 +25,12 @@ namespace CoffeeCard.Library.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ITokenService _tokenService;
         private readonly ILoginLimiter _loginLimiter;
+        private readonly ILogger<AccountService> _logger;
 
         public AccountService(CoffeeCardContext context, EnvironmentSettings environmentSettings,
         ITokenService tokenService,
             IEmailService emailService, IHashService hashService, IHttpContextAccessor httpContextAccessor,
-            ILoginLimiter loginLimiter, LoginLimiterSettings loginLimiterSettings)
+            ILoginLimiter loginLimiter, LoginLimiterSettings loginLimiterSettings, ILogger<AccountService> logger)
         {
             _context = context;
             _environmentSettings = environmentSettings;
@@ -39,11 +40,12 @@ namespace CoffeeCard.Library.Services
             _httpContextAccessor = httpContextAccessor;
             _loginLimiter = loginLimiter;
             _loginLimiterSettings = loginLimiterSettings;
+            _logger = logger;
         }
 
         public string Login(string email, string password, string version)
         {
-            Log.Information("Logging in user with username: {username} version: {version}", email, version);
+            _logger.LogInformation("Logging in user with username: {username} version: {version}", email, version);
 
             ValidateVersion(version);
 
@@ -52,14 +54,14 @@ namespace CoffeeCard.Library.Services
             {
                 if (user.UserState == UserState.Deleted)
                 {
-                    Log.Information("Login attempt with deleted user id = {id}", user.Id);
+                    _logger.LogInformation("Login attempt with deleted user id = {id}", user.Id);
                     throw new ApiException("The username or password does not match",
                     StatusCodes.Status401Unauthorized);
                 }
 
                 if (!user.IsVerified)
                 {
-                    Log.Information("E-mail not verified. E-mail = {username} from IP = {ipAddress} ", email,
+                    _logger.LogInformation("E-mail not verified. E-mail = {username} from IP = {ipAddress} ", email,
                         _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
                     throw new ApiException("E-mail has not been verified", StatusCodes.Status403Forbidden);
                 }
@@ -67,7 +69,7 @@ namespace CoffeeCard.Library.Services
                 if (_loginLimiterSettings.IsEnabled &&
                 !_loginLimiter.LoginAllowed(user)) //Login limiter is only called if it is enabled in the settings
                 {
-                    Log.Warning(
+                    _logger.LogWarning(
                       "Login attempts exceeding maximum allowed for e-mail = {username} from IP = {ipaddress} ",
                       email,
                         _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
@@ -94,7 +96,7 @@ namespace CoffeeCard.Library.Services
                 }
             }
 
-            Log.Information("Unsuccessful login for e-mail = {username} from IP = {ipAddress} ", email,
+            _logger.LogInformation("Unsuccessful login for e-mail = {username} from IP = {ipAddress} ", email,
                 _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
 
             throw new ApiException("The username or password does not match",
@@ -103,11 +105,11 @@ namespace CoffeeCard.Library.Services
 
         public async Task<User> RegisterAccountAsync(string name, string email, string password, int programme = 1)
         {
-            Log.Information("Trying to register new user. Name: {name} Email: {email}", name, email);
+            _logger.LogInformation("Trying to register new user. Name: {name} Email: {email}", name, email);
 
             if (_context.Users.Any(x => x.Email == email))
             {
-                Log.Information("Could not register user Name: {name}. Email:{email} already exists", name, email);
+                _logger.LogInformation("Could not register user Name: {name}. Email:{email} already exists", name, email);
                 throw new ApiException($"The email {email} is already being used by another user",
                 StatusCodes.Status409Conflict);
             }
@@ -146,7 +148,7 @@ namespace CoffeeCard.Library.Services
 
         public async Task<bool> VerifyRegistration(string token)
         {
-            Log.Information("Trying to verify registration with token: {token}", token);
+            _logger.LogInformation("Trying to verify registration with token: {token}", token);
 
             var email = _tokenService.ValidateVerificationTokenAndGetEmail(token);
             var user = GetAccountByEmail(email);
@@ -163,20 +165,20 @@ namespace CoffeeCard.Library.Services
             {
                 if (_context.Users.Any(x => x.Email == userDto.Email))
                     throw new ApiException($"The email {userDto.Email} is already in use!", 400);
-                Log.Information($"Changing email of user from {user.Email} to {userDto.Email}");
+                _logger.LogInformation("Changing email of user from {oldEmail} to {newEmail}", user.Email, userDto.Email);
                 user.Email = userDto.Email;
             }
 
             if (userDto.Name != null)
             {
-                Log.Information($"Changing name of user from {user.Name} to {EscapeName(userDto.Name)}");
+                _logger.LogInformation("Changing name of user from {oldName} to {newName}", user.Name, EscapeName(userDto.Name));
                 user.Name = EscapeName(userDto.Name);
             }
 
             if (userDto.PrivacyActivated != null)
             {
-                Log.Information(
-                    $"Changing privacy of user from {user.PrivacyActivated} to {(bool)userDto.PrivacyActivated}");
+                _logger.LogInformation(
+                    "Changing privacy of user from {oldPrivacy} to {newPrivacy}", user.PrivacyActivated, (bool)userDto.PrivacyActivated);
                 user.PrivacyActivated = (bool)userDto.PrivacyActivated;
             }
 
@@ -185,7 +187,7 @@ namespace CoffeeCard.Library.Services
                 var programme = _context.Programmes.FirstOrDefault(x => x.Id == userDto.ProgrammeId);
                 if (programme == null)
                     throw new ApiException($"No programme with id {userDto.ProgrammeId} exists!", 400);
-                Log.Information($"Changing programme of user from {user.Programme.Id} to {programme.Id}");
+                _logger.LogInformation("Changing programme of user from {oldProgrammeId} to {newProgrammeId}", user.Programme.Id, programme.Id);
                 user.Programme = programme;
             }
 
@@ -195,7 +197,7 @@ namespace CoffeeCard.Library.Services
                 var hashedPassword = _hashService.Hash(userDto.Password + salt);
                 user.Salt = salt;
                 user.Password = hashedPassword;
-                Log.Information("User changed password");
+                _logger.LogInformation("User changed password");
             }
 
             _context.SaveChanges();
@@ -236,7 +238,7 @@ namespace CoffeeCard.Library.Services
                 new Claim(ClaimTypes.Role, "verification_token")
             };
             var verificationToken = _tokenService.GenerateToken(claims);
-            user.Tokens.Add(new Token(verificationToken));
+            user.Tokens.Add(new Token(verificationToken, TokenType.ResetPassword));
             _context.SaveChanges();
             await _emailService.SendVerificationEmailForLostPwAsync(user, verificationToken);
         }
@@ -246,13 +248,13 @@ namespace CoffeeCard.Library.Services
             var tokenObj = _tokenService.ReadToken(token);
             if (tokenObj == null) return false;
 
-            Log.Information($"User tried to recover with token {token}");
+            _logger.LogInformation("User tried to recover with token {token}", token);
             if (!await _tokenService.ValidateTokenIsUnusedAsync(token)) return false;
 
             var user = GetAccountByClaims(tokenObj.Claims);
             if (user == null) return false;
 
-            Log.Information($"{user.Email} tried to recover user");
+            _logger.LogInformation("{email} tried to recover user", user.Email);
             var sha256Pw = _hashService.Hash(newPassword);
             var salt = _hashService.GenerateSalt();
             var hashedPassword = _hashService.Hash(sha256Pw + salt);
