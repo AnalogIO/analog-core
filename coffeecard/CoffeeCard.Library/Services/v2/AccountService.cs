@@ -202,6 +202,7 @@ namespace CoffeeCard.Library.Services.v2
             user.DateUpdated = DateTime.UtcNow;
             user.PrivacyActivated = true;
             user.UserState = UserState.Deleted;
+            await _tokenServiceV2.DeleteTokensByUserAsync(user);
             await _context.SaveChangesAsync();
         }
 

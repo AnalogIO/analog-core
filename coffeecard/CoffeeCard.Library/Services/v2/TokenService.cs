@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
@@ -50,5 +52,11 @@ public class TokenService : ITokenService
             throw new UnauthorizedException("Invalid token");
         }
         return foundToken;
+    }
+
+    public async Task DeleteTokensByUserAsync(User user)
+    {
+        var tokens = await _context.Tokens.Where(t => t.UserId == user.Id).ExecuteDeleteAsync();
+        await _context.SaveChangesAsync();
     }
 }
