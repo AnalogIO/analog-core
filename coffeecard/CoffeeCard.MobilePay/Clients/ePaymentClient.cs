@@ -10,7 +10,7 @@ public class ePaymentClient
 {
     private readonly HttpClient _httpClient;
     private readonly ILogger<ePaymentClient> _logger;
-    private const string ControllerPath = "/v1/payments";
+    private const string ControllerPath = "/epayment/v1/payments";
 
     public ePaymentClient(HttpClient httpClient, ILogger<ePaymentClient> logger)
     {
