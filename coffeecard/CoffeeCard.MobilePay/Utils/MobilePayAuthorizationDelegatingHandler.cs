@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.MobilePay.Generated.Api.AccessTokenApi;
+using CoffeeCard.MobilePay.Service.v2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -12,7 +13,7 @@ namespace CoffeeCard.MobilePay.Utils;
 
 public class MobilePayAuthorizationDelegatingHandler(
     MobilePaySettingsV3 mobilePaySettingsV3,
-    AccessTokenApi accessTokenApi,
+    IMobilePayAccessTokenService accessTokenService,
     IMemoryCache memoryCache
     ) : DelegatingHandler
 {
@@ -41,18 +42,10 @@ public class MobilePayAuthorizationDelegatingHandler(
     {
         return await memoryCache.GetOrCreateAsync(MpAccessTokenCacheKey, async entry =>
         {
-            var accessTokenResponse = await accessTokenApi.FetchAuthorizationTokenUsingPostAsync(
-                mobilePaySettingsV3.ClientId,
-                mobilePaySettingsV3.ClientSecret,
-                mobilePaySettingsV3.OcpApimSubscriptionKey,
-                mobilePaySettingsV3.MerchantSerialNumber,
-                mobilePaySettingsV3.VippsSystemName,
-                mobilePaySettingsV3.VippsSystemVersion,
-                mobilePaySettingsV3.VippsSystemPluginName,
-                mobilePaySettingsV3.VippsSystemPluginVersion);
+            var accessTokenResponse = await accessTokenService.GetAuthorizationTokenAsync();
 
-            entry.AbsoluteExpiration = DateTimeOffset.FromUnixTimeSeconds(long.Parse(accessTokenResponse.Expires_on));
-            return accessTokenResponse.Access_token;
+            entry.AbsoluteExpiration = accessTokenResponse.ExpiresOn;
+            return accessTokenResponse.AccessToken;
         });
     }
 }

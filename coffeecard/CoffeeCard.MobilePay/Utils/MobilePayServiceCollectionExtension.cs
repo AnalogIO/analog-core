@@ -28,7 +28,7 @@ namespace CoffeeCard.MobilePay.Utils
 
             var apiKeyAuthentication = new AuthenticationHeaderValue("Bearer", mobilePaySettings.ApiKey);
 
-            services.AddHttpClient<ePaymentApi>(client =>
+            services.AddHttpClient<ePaymentClient>(client =>
             {
                 client.BaseAddress = new Uri(mobilePaySettings.ApiUrl + "epayment/");
             }).AddHttpMessageHandler<MobilePayAuthorizationDelegatingHandler>();
@@ -39,7 +39,7 @@ namespace CoffeeCard.MobilePay.Utils
                 client.DefaultRequestHeaders.Authorization = apiKeyAuthentication;
             });
 
-            services.AddHttpClient<AccessTokenApi>(client =>
+            services.AddHttpClient<AccessTokenClient>(client =>
             {
                 client.BaseAddress = mobilePaySettings.ApiUrl;
             });

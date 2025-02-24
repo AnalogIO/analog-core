@@ -79,6 +79,7 @@ namespace CoffeeCard.MobilePay.GenerateApi
             var settings = new CSharpClientGeneratorSettings
             {
                 ClassName = ePaymentApi,
+                GenerateClientClasses = false,
                 CSharpGeneratorSettings =
                 {
                     Namespace = $"CoffeeCard.MobilePay.Generated.Api.{ePaymentApi}"
@@ -101,6 +102,7 @@ namespace CoffeeCard.MobilePay.GenerateApi
             var settings = new CSharpClientGeneratorSettings
             {
                 ClassName = AccessToken,
+                GenerateClientClasses = false,
                 CSharpGeneratorSettings =
                 {
                     Namespace = $"CoffeeCard.MobilePay.Generated.Api.{AccessToken}"

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
+using CoffeeCard.MobilePay.Clients;
 using CoffeeCard.MobilePay.Exception.v2;
 using CoffeeCard.MobilePay.Generated.Api.ePaymentApi;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
@@ -14,11 +15,11 @@ namespace CoffeeCard.MobilePay.Service.v2
     {
         private readonly MobilePaySettingsV3 _mobilePaySettings;
         private readonly MobilePaySettingsV2 _mobilePaySettingsv2;
-        private readonly ePaymentApi _ePaymentApi;
+        private readonly ePaymentClient _ePaymentApi;
         private readonly ILogger<MobilePayPaymentsService> _logger;
 
         public MobilePayPaymentsService(
-            ePaymentApi ePaymentApi,
+            ePaymentClient ePaymentApi,
             MobilePaySettingsV3 mobilePaySettings,
             MobilePaySettingsV2 mobilePaySettingsv2, 
             ILogger<MobilePayPaymentsService> logger
@@ -47,14 +48,7 @@ namespace CoffeeCard.MobilePay.Service.v2
                         // Unsure if return url is needed with given user flow
                         ReturnUrl = _mobilePaySettingsv2.AnalogAppRedirectUri,
                         PaymentDescription = paymentRequest.Description
-                    },
-                    idempotency_Key: orderId,
-                    ocp_Apim_Subscription_Key: _mobilePaySettings.OcpApimSubscriptionKey,
-                    merchant_Serial_Number: _mobilePaySettings.MerchantSerialNumber,
-                    vipps_System_Name: null,
-                    vipps_System_Version: null,
-                    vipps_System_Plugin_Name: null,
-                    vipps_System_Plugin_Version: null
+                    }
                 );
                 _logger.LogInformation(
                     "Created MobilePay Payment with Reference {Reference} of {OrerAmount} (DKK)",
@@ -95,11 +89,7 @@ namespace CoffeeCard.MobilePay.Service.v2
         {
             try
             {
-                var response = await _ePaymentApi.GetPaymentAsync(
-                    paymentId.ToString(),
-                    merchant_Serial_Number: _mobilePaySettings.MerchantSerialNumber,
-                    ocp_Apim_Subscription_Key: _mobilePaySettings.OcpApimSubscriptionKey
-                );
+                var response = await _ePaymentApi.GetPaymentAsync(paymentId.ToString());
 
                 return new MobilePayPaymentDetails
                 {
@@ -141,17 +131,10 @@ namespace CoffeeCard.MobilePay.Service.v2
                 try
                 {
                     var response = await _ePaymentApi.RefundPaymentAsync(
-                        issueRefundRequest,
                         reference: purchase.ExternalTransactionId.ToString(),
-                        merchant_Serial_Number: _mobilePaySettings.MerchantSerialNumber,
-                        ocp_Apim_Subscription_Key: _mobilePaySettings.OcpApimSubscriptionKey,
-                        idempotency_Key: purchase.ExternalTransactionId.ToString(),
-                        vipps_System_Name: null,
-                        vipps_System_Version: null,
-                        vipps_System_Plugin_Name: null,
-                        vipps_System_Plugin_Version: null
+                        issueRefundRequest
                     );
-                    return true;
+                    return true; // TODO: Do we want to return the response?
                 }
                 catch (ApiException e)
                 {
@@ -185,15 +168,8 @@ namespace CoffeeCard.MobilePay.Service.v2
             try
             {
                 await _ePaymentApi.CapturePaymentAsync(
-                    new CaptureModificationRequest { ModificationAmount = ConvertToAmount(amountInDanishKroner) },
                     reference: paymentId.ToString(),
-                    merchant_Serial_Number: _mobilePaySettings.MerchantSerialNumber,
-                    ocp_Apim_Subscription_Key: _mobilePaySettings.OcpApimSubscriptionKey,
-                    idempotency_Key: paymentId.ToString(),
-                    vipps_System_Name: null,
-                    vipps_System_Version: null,
-                    vipps_System_Plugin_Name: null,
-                    vipps_System_Plugin_Version: null
+                    new CaptureModificationRequest { ModificationAmount = ConvertToAmount(amountInDanishKroner) }
                 );
             }
             catch (ApiException<Problem> e)
@@ -225,18 +201,11 @@ namespace CoffeeCard.MobilePay.Service.v2
             try
             {
                 await _ePaymentApi.CancelPaymentAsync(
+                    reference: paymentId.ToString(),
                     new CancelModificationRequest
                     {
                         CancelTransactionOnly = true
-                    },
-                    reference: paymentId.ToString(),
-                    merchant_Serial_Number: _mobilePaySettings.MerchantSerialNumber,
-                    ocp_Apim_Subscription_Key: _mobilePaySettings.OcpApimSubscriptionKey,
-                    idempotency_Key: paymentId.ToString(),
-                    vipps_System_Name: null,
-                    vipps_System_Version: null,
-                    vipps_System_Plugin_Name: null,
-                    vipps_System_Plugin_Version: null
+                    }
                 );
             }
             catch (ApiException<Problem> e)
