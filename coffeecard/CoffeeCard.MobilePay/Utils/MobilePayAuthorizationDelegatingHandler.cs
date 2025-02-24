@@ -12,7 +12,6 @@ using Microsoft.Extensions.Caching.Memory;
 namespace CoffeeCard.MobilePay.Utils;
 
 public class MobilePayAuthorizationDelegatingHandler(
-    MobilePaySettingsV3 mobilePaySettingsV3,
     IMobilePayAccessTokenService accessTokenService,
     IMemoryCache memoryCache
     ) : DelegatingHandler
