@@ -19,6 +19,6 @@ namespace CoffeeCard.Models.DataTransferObjects.AppConfig
         /// <value>Environment Type</value>
         /// <example>Production</example>
         [Required]
-        public EnvironmentType EnvironmentType { get; set; }
+        public required EnvironmentType EnvironmentType { get; set; }
     }
 }

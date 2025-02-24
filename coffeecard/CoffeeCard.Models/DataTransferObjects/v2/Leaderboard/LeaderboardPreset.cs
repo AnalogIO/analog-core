@@ -1,6 +1,4 @@
-﻿using CoffeeCard.Models.Entities;
-
-namespace CoffeeCard.Models.DataTransferObjects.v2.Leaderboard
+﻿namespace CoffeeCard.Models.DataTransferObjects.v2.Leaderboard
 {
     /// <summary>
     /// Preset for filtering Leaderboard based on date range

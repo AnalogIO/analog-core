@@ -20,7 +20,7 @@ namespace CoffeeCard.Models.DataTransferObjects.Purchase
         /// <value>Name of issuer</value>
         /// <value>dann</value>
         [Required]
-        public string IssuedBy { get; set; } = string.Empty;
+        public required string IssuedBy { get; set; } = string.Empty;
 
         /// <summary>
         /// User id who should receive the product
@@ -28,7 +28,7 @@ namespace CoffeeCard.Models.DataTransferObjects.Purchase
         /// <value>User id</value>
         /// <example>122</example>
         [Required]
-        public int UserId { get; set; }
+        public required int UserId { get; set; }
 
         /// <summary>
         /// Id of Product to issue
@@ -36,6 +36,6 @@ namespace CoffeeCard.Models.DataTransferObjects.Purchase
         /// <value>Product Id</value>
         /// <example>1</example>
         [Required]
-        public int ProductId { get; set; }
+        public required int ProductId { get; set; }
     }
 }

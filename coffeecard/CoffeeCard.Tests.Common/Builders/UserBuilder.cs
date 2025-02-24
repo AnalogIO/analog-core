@@ -22,7 +22,6 @@ namespace CoffeeCard.Tests.Common.Builders
                 .WithProgramme(programme)
                 .WithPurchases(new List<Purchase>())
                 .WithStatistics(new List<Statistic>())
-                .WithLoginAttempts(new List<LoginAttempt>())
                 .WithTokens(new List<Token>())
                 .WithUserState(UserState.Active)
                 .WithTickets(new List<Ticket>());

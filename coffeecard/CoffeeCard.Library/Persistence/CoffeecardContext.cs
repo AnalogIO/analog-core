@@ -24,7 +24,6 @@ namespace CoffeeCard.Library.Persistence
         public DbSet<PosPurhase> PosPurchases { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Token> Tokens { get; set; }
-        public DbSet<LoginAttempt> LoginAttempts { get; set; }
         public DbSet<Programme> Programmes { get; set; }
         public DbSet<Voucher> Vouchers { get; set; }
         public DbSet<Statistic> Statistics { get; set; }
@@ -84,7 +83,7 @@ namespace CoffeeCard.Library.Persistence
                 .HasConversion<string>();
 
             modelBuilder.Entity<Ticket>()
-                .HasOne<User>(t => t.Owner)
+                .HasOne(t => t.Owner)
                 .WithMany(u => u.Tickets)
                 .HasForeignKey(t => t.OwnerId)
                 .OnDelete(DeleteBehavior.NoAction);

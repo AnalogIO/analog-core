@@ -22,7 +22,7 @@ namespace CoffeeCard.Models.DataTransferObjects.CoffeeCard
         /// <value>Product Id</value>
         /// <example>1</example>
         [Required]
-        public int ProductId { get; set; }
+        public required int ProductId { get; set; }
 
         /// <summary>
         /// Name of product
@@ -30,7 +30,7 @@ namespace CoffeeCard.Models.DataTransferObjects.CoffeeCard
         /// <value>Product Name</value>
         /// <example>Filter Coffee</example>
         [Required]
-        public string Name { get; set; } = string.Empty;
+        public required string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Remaining (if any) unused tickets left for product
@@ -38,7 +38,7 @@ namespace CoffeeCard.Models.DataTransferObjects.CoffeeCard
         /// <value>Remaining Tickets</value>
         /// <example>5</example>
         [Required]
-        public int TicketsLeft { get; set; }
+        public required int TicketsLeft { get; set; }
 
         /// <summary>
         /// Price of product
@@ -46,7 +46,7 @@ namespace CoffeeCard.Models.DataTransferObjects.CoffeeCard
         /// <value>Product Price</value>
         /// <example>50</example>
         [Required]
-        public int Price { get; set; }
+        public required int Price { get; set; }
 
         /// <summary>
         /// Quantity of tickets in product
@@ -54,6 +54,6 @@ namespace CoffeeCard.Models.DataTransferObjects.CoffeeCard
         /// <value>Quantity</value>
         /// <example>10</example>
         [Required]
-        public int Quantity { get; set; }
+        public required int Quantity { get; set; }
     }
 }

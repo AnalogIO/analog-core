@@ -9,7 +9,6 @@ using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Serilog;
 

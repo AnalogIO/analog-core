@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using CoffeeCard.MobilePay.Exception.v2;
 using CoffeeCard.MobilePay.Generated.Api.PaymentsApi;
-using CoffeeCard.MobilePay.Generated.Api.WebhooksApi;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 using CoffeeCard.Models.Entities;

@@ -20,14 +20,14 @@ namespace CoffeeCard.Models.DataTransferObjects.Programme
         /// <value>Study Programme Id</value>
         /// <example>1</example>
         [Required]
-        public int Id { get; set; }
+        public required int Id { get; set; }
 
         /// <summary>
         /// Short name of study programme
         /// </summary>
         /// <example>SWU</example>
         [Required]
-        public string ShortName { get; set; } = string.Empty;
+        public required string ShortName { get; set; } = string.Empty;
 
         /// <summary>
         /// Full name of study programme
@@ -35,6 +35,6 @@ namespace CoffeeCard.Models.DataTransferObjects.Programme
         /// <value>Full name</value>
         /// <example>Software development</example>
         [Required]
-        public string FullName { get; set; } = string.Empty;
+        public required string FullName { get; set; } = string.Empty;
     }
 }

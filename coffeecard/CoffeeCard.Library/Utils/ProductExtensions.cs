@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using CoffeeCard.Models.DataTransferObjects.v2.MenuItems;
 using CoffeeCard.Models.DataTransferObjects.v2.Products;
 using CoffeeCard.Models.Entities;
 
@@ -36,7 +37,7 @@ namespace CoffeeCard.Library.Utils
                 Visible = product.Visible,
                 AllowedUserGroups = product.ProductUserGroup.Select(pug => pug.UserGroup),
                 EligibleMenuItems = product.EligibleMenuItems.Select(
-                    mi => new MenuItemResponse { Id = mi.Id, Name = mi.Name }
+                    mi => new MenuItemResponse { Id = mi.Id, Name = mi.Name, Active = mi.Active }
                 )
             };
         }

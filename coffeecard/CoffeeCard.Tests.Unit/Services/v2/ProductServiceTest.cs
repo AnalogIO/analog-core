@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.Product;
-using CoffeeCard.Models.DataTransferObjects.v2.Products;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -61,14 +59,15 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             using var productService = new ProductService(context, NullLogger<ProductService>.Instance);
 
-            await productService.UpdateProduct(1, new UpdateProductRequest()
+            await productService.UpdateProduct(1, new UpdateProductRequest
             {
                 Visible = true,
                 Price = 10,
                 NumberOfTickets = 10,
                 Name = "Coffee",
                 Description = "Coffee Clip card",
-                AllowedUserGroups = new List<UserGroup>() { UserGroup.Customer, UserGroup.Board }
+                AllowedUserGroups = new List<UserGroup>() { UserGroup.Customer, UserGroup.Board },
+                MenuItemIds = []
             });
 
             var result = await productService.GetProductAsync(1);

@@ -31,6 +31,9 @@ namespace CoffeeCard.WebApi.Logging
     // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     // SOFTWARE.
+    /// <summary>
+    /// Enriches log events with correlation ID and user ID information from the current HTTP context.
+    /// </summary>
     public class Enricher : ILogEventEnricher
     {
         private const string CorrelationIdPropertyName = "CorrelationId";
@@ -38,14 +41,25 @@ namespace CoffeeCard.WebApi.Logging
         private static readonly string CorrelationIdItemName = $"{typeof(Enricher).Name}+CorrelationId";
         private readonly IHttpContextAccessor _contextAccessor;
 
-        public Enricher() : this(new HttpContextAccessor())
-        {
-        }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Enricher"/> class.
+        /// </summary>
+        public Enricher() : this(new HttpContextAccessor()) { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Enricher"/> class.
+        /// </summary>
+        /// <param name="httpContextAccessor">The HTTP context accessor.</param>
         public Enricher(IHttpContextAccessor httpContextAccessor)
         {
             _contextAccessor = httpContextAccessor;
         }
 
+        /// <summary>
+        /// Enriches the log event with correlation ID and user ID information from the current HTTP context.
+        /// </summary>
+        /// <param name="logEvent">The log event to enrich.</param>
+        /// <param name="propertyFactory">The property factory.</param>
         public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
         {
             if (_contextAccessor.HttpContext == null)

@@ -1,5 +1,4 @@
-﻿using CoffeeCard.Models.Entities;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.User
@@ -14,6 +13,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
         /// </summary>
 
         [Required]
-        public IEnumerable<AccountUserGroup> PrivilegedUsers { get; set; }
+        public required IEnumerable<AccountUserGroup> PrivilegedUsers { get; set; }
     }
 }

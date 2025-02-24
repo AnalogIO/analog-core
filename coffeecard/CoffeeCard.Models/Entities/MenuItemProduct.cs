@@ -13,16 +13,16 @@
         /// <summary>
         /// Menu Item
         /// </summary>
-        public MenuItem MenuItem { get; set; }
+        public required MenuItem MenuItem { get; set; }
 
         /// <summary>
         /// Product Id
         /// </summary>
-        public int ProductId { get; set; }
+        public required int ProductId { get; set; }
 
         /// <summary>
         /// Product
         /// </summary>
-        public Product Product { get; set; }
+        public required Product Product { get; set; }
     }
 }

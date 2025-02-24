@@ -23,7 +23,7 @@ namespace CoffeeCard.Library.Services
                 NumberOfTickets = purchase.NumberOfTickets,
                 DateCreated = purchase.DateCreated,
                 OrderId = purchase.OrderId,
-                TransactionId = purchase.ExternalTransactionId
+                TransactionId = purchase.ExternalTransactionId,
             };
         }
 

@@ -11,11 +11,19 @@ namespace CoffeeCard.WebApi.Helpers
     public class AuthorizeRolesAttribute : Attribute, IAuthorizationFilter
     {
         private readonly UserGroup[] _roles;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthorizeRolesAttribute"/> class.
+        /// </summary>
         public AuthorizeRolesAttribute(params UserGroup[] roles)
         {
             _roles = roles;
         }
 
+        /// <summary>
+        /// Handles the authorization of the request.
+        /// </summary>
+        /// <param name="context">The authorization filter context.</param>
         public void OnAuthorization(AuthorizationFilterContext context)
         {
             var user = context.HttpContext.User;

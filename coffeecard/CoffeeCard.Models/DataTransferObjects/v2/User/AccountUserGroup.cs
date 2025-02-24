@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
+using CoffeeCard.Models.Entities;
 
-namespace CoffeeCard.Models.Entities;
+namespace CoffeeCard.Models.DataTransferObjects.v2.User;
 
 /// <summary>
 /// Represents an account user group update
@@ -13,7 +14,7 @@ public class AccountUserGroup
     /// <value> Account id </value>
     /// <example>1</example>
     [Required]
-    public int AccountId { get; set; }
+    public required int AccountId { get; set; }
 
     /// <summary>
     /// The user group
@@ -21,5 +22,5 @@ public class AccountUserGroup
     /// <value> User group </value>
     /// <example>Barista</example>
     [Required]
-    public UserGroup UserGroup { get; set; }
+    public required UserGroup UserGroup { get; set; }
 }

@@ -20,24 +20,24 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Voucher
         /// Voucher code to be redeemed in the app
         /// </summary>
         [Required]
-        public string VoucherCode { get; set; }
+        public required string VoucherCode { get; set; }
 
         /// <summary>
         /// The id of the product the voucher code is for
         /// </summary>
         [Required]
-        public int ProductId { get; set; }
+        public required int ProductId { get; set; }
 
         /// <summary>
         /// The name of the product the voucher code is for
         /// </summary>
         [Required]
-        public string ProductName { get; set; }
+        public required string ProductName { get; set; }
 
         /// <summary>
         /// The date the voucher code was created
         /// </summary>
         [Required]
-        public DateTime IssuedAt { get; set; }
+        public required DateTime IssuedAt { get; set; }
     }
 }

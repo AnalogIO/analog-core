@@ -14,6 +14,12 @@ namespace CoffeeCard.WebApi.Helpers
     /// </summary>
     public static class PageUtils
     {
+        /// <summary>
+        /// Executes a function safely and handles any exceptions that may occur.
+        /// </summary>
+        /// <param name="func">The function to execute.</param>
+        /// <param name="model">The page model to use for setting error messages.</param>
+        /// <returns>An IActionResult representing the result of the function execution.</returns>
         public static async Task<IActionResult> SafeExecuteFunc(Func<Task<IActionResult>> func, PageModel model)
         {
             try
@@ -40,6 +46,12 @@ namespace CoffeeCard.WebApi.Helpers
             return model.RedirectToPage("result");
         }
 
+        /// <summary>
+        /// Sets the message to be displayed on the page.
+        /// </summary>
+        /// <param name="header">The header of the message.</param>
+        /// <param name="message">The message to be displayed.</param>
+        /// <param name="model">The page model to use for setting the message.</param>
         public static void setMessage(string header, string message, PageModel model)
         {
             model.TempData["resultHeader"] = header;

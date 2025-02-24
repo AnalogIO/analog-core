@@ -1,6 +1,5 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-
 namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
 {
     /// <summary>
@@ -24,7 +23,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <value>Purchase id</value>
         /// <example>1371</example>
         [Required]
-        public int Id { get; set; }
+        public required int Id { get; set; }
 
         /// <summary>
         /// Date time for purchase in Utc format
@@ -32,7 +31,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <value>Purchase date time</value>
         /// <example>2022-01-09T21:03:52.2283208Z</example>
         [Required]
-        public DateTime DateCreated { get; set; }
+        public required DateTime DateCreated { get; set; }
 
         /// <summary>
         /// Id of purchased product
@@ -40,7 +39,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <value>Product Id</value>
         /// <example>1</example>
         [Required]
-        public int ProductId { get; set; }
+        public required int ProductId { get; set; }
 
         /// <summary>
         /// Name of purchased product
@@ -48,7 +47,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <value>Product Name</value>
         /// <example>1</example>
         [Required]
-        public String ProductName { get; set; }
+        public required string ProductName { get; set; }
 
         /// <summary>
         /// Number of tickets issued in purchase
@@ -56,7 +55,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <value>Amount of tickets granted by the purchase</value>
         /// <example>10</example>
         [Required]
-        public int NumberOfTickets { get; set; }
+        public required int NumberOfTickets { get; set; }
 
         /// <summary>
         /// Total purchase price in Danish Kroner (kr)
@@ -64,7 +63,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <value>Total purchase price</value>
         /// <example>300</example>
         [Required]
-        public int TotalAmount { get; set; }
+        public required int TotalAmount { get; set; }
 
         /// <summary>
         /// Status of the purchase
@@ -72,6 +71,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <value>Purchase status</value>
         /// <example>Completed</example>
         [Required]
-        public PurchaseStatus PurchaseStatus { get; set; }
+        public required PurchaseStatus PurchaseStatus { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace CoffeeCard.Models.DataTransferObjects.v2.Products
+namespace CoffeeCard.Models.DataTransferObjects.v2.MenuItems
 {
     /// <summary>
     /// Represents a menu item that can be redeemed with a ticket
@@ -13,7 +13,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Products
         /// <value>Menu item Id</value>
         /// <example>1</example>
         [Required]
-        public int Id { get; set; }
+        public required int Id { get; set; }
 
         /// <summary>
         /// Name of menu item
@@ -21,7 +21,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Products
         /// <value>Menu item name</value>
         /// <example>Cappuccino</example>
         [Required]
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         /// <summary>
         /// Whether or not this menu item is active
@@ -29,6 +29,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Products
         /// <value>Menu item active</value>
         /// <example>true</example>
         [Required]
-        public bool Active { get; set; }
+        public required bool Active { get; set; }
     }
 }

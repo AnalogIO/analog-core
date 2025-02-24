@@ -294,14 +294,14 @@ namespace CoffeeCard.Library.Services.v2
         public async Task UpdatePriviligedUserGroups(WebhookUpdateUserGroupRequest request)
         {
             await _context.Users
-                .Where(u => u.UserGroup != UserGroup.Customer)
-                .ExecuteUpdateAsync(u => u.SetProperty(u => u.UserGroup, UserGroup.Customer));
+                .Where(user => user.UserGroup != UserGroup.Customer)
+                .ExecuteUpdateAsync(u => u.SetProperty(user => user.UserGroup, UserGroup.Customer));
 
             foreach (var item in request.PrivilegedUsers)
             {
                 await _context.Users
                     .Where(u => u.Id == item.AccountId)
-                    .ExecuteUpdateAsync(u => u.SetProperty(u => u.UserGroup, item.UserGroup));
+                    .ExecuteUpdateAsync(u => u.SetProperty(user => user.UserGroup, item.UserGroup));
             }
         }
 

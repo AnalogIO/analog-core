@@ -1,9 +1,6 @@
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using CoffeeCard.Models.Entities;
 
-namespace CoffeeCard.Models.DataTransferObjects.v2.Product
+namespace CoffeeCard.Models.DataTransferObjects.v2.MenuItems
 {
     /// /// <summary>
     /// Initiate an update product request.
@@ -18,7 +15,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
         /// <example>Espresso</example>
         [Required]
         [MinLength(1, ErrorMessage = "Name cannot be an empty string")]
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the updated active status of the product.
@@ -26,6 +23,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
         /// <value>Product Active</value>
         /// <example>true</example>
         [Required]
-        public bool Active { get; set; }
+        public required bool Active { get; set; }
     }
 }

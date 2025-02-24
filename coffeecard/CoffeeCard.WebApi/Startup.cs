@@ -32,7 +32,6 @@ using RestSharp;
 using RestSharp.Authenticators;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
-using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Resources;
@@ -47,19 +46,24 @@ using TicketService = CoffeeCard.Library.Services.TicketService;
 
 namespace CoffeeCard.WebApi
 {
-#pragma warning disable CS1591
+    /// <summary>
+    /// The class that initializes the application by configuring services and the app's request pipeline.
+    /// </summary>
     public class Startup
     {
         private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _environment;
 
+        /// <summary>
+        /// The class that initializes the application by configuring services and the app's request pipeline.
+        /// </summary>
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             _configuration = configuration;
             _environment = env;
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        /// This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddConfigurationSettings(_configuration);
@@ -247,19 +251,20 @@ namespace CoffeeCard.WebApi
                     options.KeyName = "x-api-key";
                     options.Events = new ApiKeyEvents
                     {
-                        OnValidateKey = async context =>
+                        OnValidateKey = context =>
                         {
                             var identitySettings = _configuration.GetSection(nameof(IdentitySettings))
                                 .Get<IdentitySettings>();
                             var apiKey = identitySettings.ApiKey;
                             if (apiKey == context.ApiKey)
-
                             {
                                 context.ValidationSucceeded();
+                                return Task.CompletedTask;
                             }
                             else
                             {
                                 context.ValidationFailed();
+                                return Task.CompletedTask;
                             }
                         }
                     };
@@ -326,7 +331,7 @@ namespace CoffeeCard.WebApi
             }
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)
         {
             // Important note!
@@ -376,5 +381,4 @@ namespace CoffeeCard.WebApi
             });
         }
     }
-#pragma warning restore CS1591
 }
