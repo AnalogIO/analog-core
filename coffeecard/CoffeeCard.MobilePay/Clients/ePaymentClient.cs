@@ -22,6 +22,8 @@ public class ePaymentClient
 
     public async Task<CreatePaymentResponse> CreatePaymentAsync(CreatePaymentRequest request)
     {
+        _httpClient.DefaultRequestHeaders.Add("Idempotency-Key", request.Reference);
+
         var response = await _httpClient.PostAsJsonAsync(ControllerPath, request);
         // TODO: For some reason this does not work with custom httprequest (to attach header)
         // Currently just attached using default header
@@ -32,7 +34,7 @@ public class ePaymentClient
             _logger.LogError("Failed to create payment for reference {reference}: {error}", request.Reference, problem.Title); // TODO: Request details?
             throw new MobilePayApiException(503, $"Failed to create payment for reference {request.Reference}");
         }
-        
+
         return await response.Content.ReadAsAsync<CreatePaymentResponse>();
     }
 
@@ -45,60 +47,54 @@ public class ePaymentClient
             _logger.LogError("Failed to get payment for reference {reference}", reference);
             throw new MobilePayApiException(503, $"Failed to get payment for reference {reference}");
         }
-        
+
         return await response.Content.ReadAsAsync<GetPaymentResponse>();
     }
 
     public async Task<ModificationResponse> RefundPaymentAsync(string reference, RefundModificationRequest request)
     {
-        using var requestMessage = new HttpRequestMessage(HttpMethod.Post, $"{ControllerPath}/{reference}/refund");
-        requestMessage.Content = JsonContent.Create(request);
-        requestMessage.Headers.Add("Idempotency-Key", reference);
+        _httpClient.DefaultRequestHeaders.Add("Idempotency-Key", reference);
 
-        var response = await _httpClient.SendAsync(requestMessage);
+        var response = await _httpClient.PostAsJsonAsync($"{ControllerPath}/{reference}/refund", request);
 
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError("Failed to refund payment for reference {reference}", reference);
             throw new MobilePayApiException(503, $"Failed to refund payment for reference {reference}");
         }
-        
+
         return await response.Content.ReadAsAsync<ModificationResponse>();
     }
 
     public async Task<ModificationResponse> CapturePaymentAsync(string reference, CaptureModificationRequest request)
     {
-        using var requestMessage = new HttpRequestMessage(HttpMethod.Post, $"{ControllerPath}/{reference}/capture");
-        requestMessage.Content = JsonContent.Create(request);
-        requestMessage.Headers.Add("Idempotency-Key", reference);
+        _httpClient.DefaultRequestHeaders.Add("Idempotency-Key", reference);
 
-        var response = await _httpClient.SendAsync(requestMessage);
+        var response = await _httpClient.PostAsJsonAsync($"{ControllerPath}/{reference}/capture", request);
 
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError("Failed to capture payment for reference {reference}", reference);
             throw new MobilePayApiException(503, $"Failed to capture payment for reference {reference}");
         }
-        
+
         return await response.Content.ReadAsAsync<ModificationResponse>();
     }
 
     public async Task<ModificationResponse> CancelPaymentAsync(string reference, CancelModificationRequest request)
     {
-        using var requestMessage = new HttpRequestMessage(HttpMethod.Post, $"{ControllerPath}/{reference}/cancel");
-        requestMessage.Content = JsonContent.Create(request);
-        requestMessage.Headers.Add("Idempotency-Key", reference);
+        _httpClient.DefaultRequestHeaders.Add("Idempotency-Key", reference);
 
-        var response = await _httpClient.SendAsync(requestMessage);
+        var response = await _httpClient.PostAsJsonAsync($"{ControllerPath}/{reference}/cancel", request);
 
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError("Failed to cancel payment for reference {reference}", reference);
             throw new MobilePayApiException(503, $"Failed to cancel payment for reference {reference}");
         }
-        
+
         return await response.Content.ReadAsAsync<ModificationResponse>();
     }
-    
-    
+
+
 }

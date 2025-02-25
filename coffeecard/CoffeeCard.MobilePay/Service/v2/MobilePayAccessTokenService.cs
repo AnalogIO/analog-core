@@ -12,7 +12,7 @@ namespace CoffeeCard.MobilePay.Service.v2;
 
 public class MobilePayAccessTokenService : IMobilePayAccessTokenService
 {
-    
+
     private readonly AccessTokenClient _accessTokenClient;
     private readonly MobilePaySettingsV3 _settings;
     private readonly ILogger<MobilePayAccessTokenService> _logger;
@@ -23,9 +23,9 @@ public class MobilePayAccessTokenService : IMobilePayAccessTokenService
         ILogger<MobilePayAccessTokenService> logger
     )
     {
-         _accessTokenClient = accessTokenClient;
-         _settings = mobilePaySettings;
-         _logger = logger;
+        _accessTokenClient = accessTokenClient;
+        _settings = mobilePaySettings;
+        _logger = logger;
     }
     public async Task<GetAuthorizationTokenResponse> GetAuthorizationTokenAsync()
     {
@@ -41,8 +41,8 @@ public class MobilePayAccessTokenService : IMobilePayAccessTokenService
         }
         catch (ApiException ex)
         {
-           _logger.LogError(ex, ex.Message);
-           throw new MobilePayApiException(503, $"Unable to get access token: {ex.Message}");
+            _logger.LogError(ex, ex.Message);
+            throw new MobilePayApiException(503, $"Unable to get access token: {ex.Message}");
         }
     }
 }

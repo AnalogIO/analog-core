@@ -32,10 +32,9 @@ public class AccessTokenClient
             _logger.LogError("Failed to get access token");
             throw new MobilePayApiException(503, "Failed to get access token");
         }
-        
+
         return await response.Content.ReadAsAsync<AuthorizationTokenResponse>();
-        
-        
+
+
     }
 }
-    

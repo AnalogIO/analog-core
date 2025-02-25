@@ -21,7 +21,7 @@ namespace CoffeeCard.MobilePay.Service.v2
         public MobilePayPaymentsService(
             ePaymentClient ePaymentApi,
             MobilePaySettingsV3 mobilePaySettings,
-            MobilePaySettingsV2 mobilePaySettingsv2, 
+            MobilePaySettingsV2 mobilePaySettingsv2,
             ILogger<MobilePayPaymentsService> logger
         )
         {
@@ -55,7 +55,7 @@ namespace CoffeeCard.MobilePay.Service.v2
                     response.Reference.ToString(),
                     paymentRequest.Amount
                 );
-                
+
                 var test = response.RedirectUrl;
                 return new MobilePayPaymentDetails
                 {
