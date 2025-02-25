@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CoffeeCard.MobilePay.Generated.Api.PaymentsApi;
+using CoffeeCard.MobilePay.Generated.Api.ePaymentApi;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 using CoffeeCard.Models.Entities;
@@ -45,7 +45,7 @@ namespace CoffeeCard.Library.Services.v2
         /// </summary>
         /// <param name="webhook">Webhook data object</param>
         /// <returns></returns>
-        Task HandleMobilePayPaymentUpdate(MobilePayWebhook webhook);
+        Task HandleMobilePayPaymentUpdate(WebhookEvent webhook);
 
         /// <summary>
         /// Redeem af voucher code for a purchase
