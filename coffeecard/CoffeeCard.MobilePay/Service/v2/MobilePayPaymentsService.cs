@@ -44,7 +44,7 @@ namespace CoffeeCard.MobilePay.Service.v2
                         Amount = ConvertToAmount(paymentRequest.Amount),
                         PaymentMethod = new PaymentMethod { Type = PaymentMethodType.WALLET },
                         Reference = orderId,
-                        UserFlow = CreatePaymentRequestUserFlow.NATIVE_REDIRECT,
+                        UserFlow = CreatePaymentRequestUserFlow.WEB_REDIRECT,
                         // Unsure if return url is needed with given user flow
                         ReturnUrl = _mobilePaySettingsv2.AnalogAppRedirectUri,
                         PaymentDescription = paymentRequest.Description

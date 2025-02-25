@@ -32,8 +32,6 @@ public class MobilePayAuthorizationDelegatingHandler(
             request,
             cancellationToken);
 
-        httpResponseMessage.EnsureSuccessStatusCode();
-
         return httpResponseMessage;
     }
 

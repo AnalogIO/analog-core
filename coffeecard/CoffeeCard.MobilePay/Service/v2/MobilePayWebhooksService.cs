@@ -13,13 +13,13 @@ using ApiException = CoffeeCard.MobilePay.Generated.Api.WebhooksApi.ApiException
 
 namespace CoffeeCard.MobilePay.Service.v2
 {
-    public class MobilePayWebhooksService(WebhooksClient webhooksClient, MobilePaySettingsV3 mobilePaySettings)
+    public class MobilePayWebhooksService(WebhooksClient webhooksClient, MobilePaySettingsV3 mobilePaySettings, ILogger<MobilePayWebhooksService> logger)
         : IMobilePayWebhooksService
     {
-        private readonly ILogger<MobilePayWebhooksService> _logger;
+        private readonly ILogger<MobilePayWebhooksService> _logger = logger;
 
         private static readonly ISet<WebhookEvent> DefaultEvents = new HashSet<WebhookEvent>
-            { WebhookEvent.Captured, WebhookEvent.Expired, WebhookEvent.Cancelled };
+            { WebhookEvent.Authorized };
 
         public async Task<RegisterWebhookResponse> RegisterWebhook(string url)
         {

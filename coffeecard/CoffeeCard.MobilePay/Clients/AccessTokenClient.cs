@@ -1,5 +1,6 @@
 using System.Net.Http;
 using System.Threading.Tasks;
+using CoffeeCard.MobilePay.Exception.v2;
 using CoffeeCard.MobilePay.Generated.Api.AccessTokenApi;
 using Microsoft.Extensions.Logging;
 
@@ -26,8 +27,15 @@ public class AccessTokenClient
 
         var response = await _httpClient.SendAsync(requestMessage);
 
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError("Failed to get access token");
+            throw new MobilePayApiException(503, "Failed to get access token");
+        }
+        
         return await response.Content.ReadAsAsync<AuthorizationTokenResponse>();
+        
+        
     }
 }
     

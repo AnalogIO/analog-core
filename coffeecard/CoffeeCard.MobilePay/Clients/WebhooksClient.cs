@@ -1,6 +1,8 @@
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using CoffeeCard.MobilePay.Exception.v2;
+using CoffeeCard.MobilePay.Generated.Api.ePaymentApi;
 using CoffeeCard.MobilePay.Generated.Api.WebhooksApi;
 using Microsoft.Extensions.Logging;
 
@@ -10,7 +12,7 @@ public class WebhooksClient
 {
     private readonly HttpClient _httpClient;
     private readonly ILogger<WebhooksClient> _logger;
-    private const string ControllerPath = "/v1/webhooks";
+    private const string ControllerPath = "/webhooks/v1/webhooks";
 
     public WebhooksClient(HttpClient httpClient, ILogger<WebhooksClient> logger)
     {
@@ -24,6 +26,7 @@ public class WebhooksClient
 
         if (!response.IsSuccessStatusCode)
         {
+            var problem = await response.Content.ReadFromJsonAsync<Problem>();
             _logger.LogError("Failed to create webhook for url {url}", request.Url);
             throw new MobilePayApiException(503, $"Failed to create webhook for url {request.Url}");
         }

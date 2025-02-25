@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
+using CoffeeCard.MobilePay.Generated.Api.ePaymentApi;
 using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.v2.Products;
@@ -203,49 +204,49 @@ namespace CoffeeCard.Library.Services.v2
                 .ToListAsync();
         }
 
-        public async Task HandleMobilePayPaymentUpdate(MobilePayWebhook webhook)
+        public async Task HandleMobilePayPaymentUpdate(WebhookEvent webhook)
         {
             var purchase = await _context.Purchases
                 .Include(p => p.PurchasedBy)
-                .Where(p => p.ExternalTransactionId.Equals(webhook.Data.Id))
+                .Where(p => p.ExternalTransactionId.Equals(webhook.Reference))
                 .FirstOrDefaultAsync();
             if (purchase == null)
             {
-                _logger.LogError("No purchase was found by TransactionId: {Id} from Webhook request", webhook.Data.Id);
+                _logger.LogError("No purchase was found by TransactionId: {Id} from Webhook request", webhook.Reference);
                 throw new EntityNotFoundException(
-                    $"No purchase was found by Transaction Id: {webhook.Data.Id} from webhook request");
+                    $"No purchase was found by Transaction Id: {webhook.Reference} from webhook request");
             }
 
             if (purchase.Status == PurchaseStatus.Completed)
             {
                 _logger.LogWarning(
                     "Purchase from Webhook request is already completed. Purchase Id: {PurchaseId}, Transaction Id: {TransactionId}",
-                    purchase.Id, webhook.Data.Id);
+                    purchase.Id, webhook.Reference);
                 return;
             }
 
-            var eventTypeLowerCase = webhook.EventType.ToLower();
+            var eventTypeLowerCase = webhook.Name;
             switch (eventTypeLowerCase)
             {
-                case "payment.reserved":
+                case PaymentEventName.AUTHORIZED:
                     {
                         await CompletePurchase(purchase);
                         break;
                     }
-                case "payment.cancelled_by_user":
-                    {
-                        await CancelPurchase(purchase);
-                        break;
-                    }
-                case "payment.expired":
-                    {
-                        await CancelPurchase(purchase);
-                        break;
-                    }
+                // case "payment.cancelled_by_user":
+                //     {
+                //         await CancelPurchase(purchase);
+                //         break;
+                //     }
+                // case "payment.expired":
+                //     {
+                //         await CancelPurchase(purchase);
+                //         break;
+                //     }
                 default:
                     _logger.LogError(
                         "Unknown EventType from Webhook request. Event Type: {EventType}, Purchase Id: {PurchaseId}, Transaction Id: {TransactionId}",
-                        eventTypeLowerCase, purchase.Id, webhook.Data.Id);
+                        eventTypeLowerCase, purchase.Id, webhook.Reference);
                     throw new BadRequestException($"Event Type {eventTypeLowerCase} is not valid");
             }
         }

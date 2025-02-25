@@ -1,4 +1,6 @@
 using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text;
 using System.Threading.Tasks;
 using CoffeeCard.MobilePay.Exception.v2;
 using CoffeeCard.MobilePay.Generated.Api.ePaymentApi;
@@ -20,15 +22,18 @@ public class ePaymentClient
 
     public async Task<CreatePaymentResponse> CreatePaymentAsync(CreatePaymentRequest request)
     {
-        var respose = await _httpClient.PostAsJsonAsync(ControllerPath, request);
-
-        if (!respose.IsSuccessStatusCode)
+        var response = await _httpClient.PostAsJsonAsync(ControllerPath, request);
+        // TODO: For some reason this does not work with custom httprequest (to attach header)
+        // Currently just attached using default header
+        if (!response.IsSuccessStatusCode)
         {
-            _logger.LogError("Failed to create payment for reference {reference}", request.Reference); // TODO: Request details?
+            var problem = await response.Content.ReadFromJsonAsync<Problem>();
+            // TODO: Handle errors nicely. Details are stored in problem.ExtraDetails
+            _logger.LogError("Failed to create payment for reference {reference}: {error}", request.Reference, problem.Title); // TODO: Request details?
             throw new MobilePayApiException(503, $"Failed to create payment for reference {request.Reference}");
         }
         
-        return await respose.Content.ReadAsAsync<CreatePaymentResponse>();
+        return await response.Content.ReadAsAsync<CreatePaymentResponse>();
     }
 
     public async Task<GetPaymentResponse> GetPaymentAsync(string reference)
@@ -46,7 +51,11 @@ public class ePaymentClient
 
     public async Task<ModificationResponse> RefundPaymentAsync(string reference, RefundModificationRequest request)
     {
-        var response = await _httpClient.PostAsJsonAsync($"{ControllerPath}/{reference}/refund", request);
+        using var requestMessage = new HttpRequestMessage(HttpMethod.Post, $"{ControllerPath}/{reference}/refund");
+        requestMessage.Content = JsonContent.Create(request);
+        requestMessage.Headers.Add("Idempotency-Key", reference);
+
+        var response = await _httpClient.SendAsync(requestMessage);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -59,7 +68,11 @@ public class ePaymentClient
 
     public async Task<ModificationResponse> CapturePaymentAsync(string reference, CaptureModificationRequest request)
     {
-        var response = await _httpClient.PostAsJsonAsync($"{ControllerPath}/{reference}/capture", request);
+        using var requestMessage = new HttpRequestMessage(HttpMethod.Post, $"{ControllerPath}/{reference}/capture");
+        requestMessage.Content = JsonContent.Create(request);
+        requestMessage.Headers.Add("Idempotency-Key", reference);
+
+        var response = await _httpClient.SendAsync(requestMessage);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -72,7 +85,11 @@ public class ePaymentClient
 
     public async Task<ModificationResponse> CancelPaymentAsync(string reference, CancelModificationRequest request)
     {
-        var response = await _httpClient.PostAsJsonAsync($"{ControllerPath}/{reference}/cancel", request);
+        using var requestMessage = new HttpRequestMessage(HttpMethod.Post, $"{ControllerPath}/{reference}/cancel");
+        requestMessage.Content = JsonContent.Create(request);
+        requestMessage.Headers.Add("Idempotency-Key", reference);
+
+        var response = await _httpClient.SendAsync(requestMessage);
 
         if (!response.IsSuccessStatusCode)
         {
