@@ -1,10 +1,7 @@
-using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using CoffeeCard.Common.Configuration;
-using CoffeeCard.MobilePay.Generated.Api.AccessTokenApi;
 using CoffeeCard.MobilePay.Service.v2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Caching.Memory;
@@ -14,7 +11,7 @@ namespace CoffeeCard.MobilePay.Utils;
 public class MobilePayAuthorizationDelegatingHandler(
     IMobilePayAccessTokenService accessTokenService,
     IMemoryCache memoryCache
-    ) : DelegatingHandler
+) : DelegatingHandler
 {
     private const string MpAccessTokenCacheKey = "MpAccessTokenKey";
 

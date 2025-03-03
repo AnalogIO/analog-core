@@ -14,12 +14,12 @@ public class MobilePayAccessTokenService : IMobilePayAccessTokenService
 {
 
     private readonly AccessTokenClient _accessTokenClient;
-    private readonly MobilePaySettingsV3 _settings;
+    private readonly MobilePaySettings _settings;
     private readonly ILogger<MobilePayAccessTokenService> _logger;
 
     public MobilePayAccessTokenService(
         AccessTokenClient accessTokenClient,
-        MobilePaySettingsV3 mobilePaySettings,
+        MobilePaySettings mobilePaySettings,
         ILogger<MobilePayAccessTokenService> logger
     )
     {

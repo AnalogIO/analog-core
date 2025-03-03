@@ -24,8 +24,7 @@ namespace CoffeeCard.WebApi.Helpers
             services.ConfigureValidatableSetting<LoginLimiterSettings>(configuration.GetSection("LoginLimiterSettings"));
             services.ConfigureValidatableSetting<IdentitySettings>(configuration.GetSection("IdentitySettings"));
             services.ConfigureValidatableSetting<MailgunSettings>(configuration.GetSection("MailgunSettings"));
-            services.ConfigureValidatableSetting<MobilePaySettingsV2>(configuration.GetSection("MobilePaySettingsV2"));
-            services.ConfigureValidatableSetting<MobilePaySettingsV3>(configuration.GetSection("MobilePaySettingsV3"));
+            services.ConfigureValidatableSetting<MobilePaySettings>(configuration.GetSection("MobilePaySettings"));
             services.ConfigureValidatableSetting<OtlpSettings>(configuration.GetSection("OtlpSettings"));
         }
     }

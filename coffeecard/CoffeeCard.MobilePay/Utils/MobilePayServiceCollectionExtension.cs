@@ -17,7 +17,7 @@ namespace CoffeeCard.MobilePay.Utils
         /// <param name="services">Services collection</param>
         /// <param name="mobilePaySettings">Settings class with MobilePayApi configuration</param>
         public static void AddMobilePayHttpClients(this IServiceCollection services,
-            MobilePaySettingsV3 mobilePaySettings)
+            MobilePaySettings mobilePaySettings)
         {
             mobilePaySettings.Validate();
             services.AddTransient<MobilePayAuthorizationDelegatingHandler>();
@@ -44,7 +44,7 @@ namespace CoffeeCard.MobilePay.Utils
             });
         }
 
-        private static void AddDefaultHeaders(this HttpClient httpClient, MobilePaySettingsV3 settings)
+        private static void AddDefaultHeaders(this HttpClient httpClient, MobilePaySettings settings)
         {
             httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", settings.OcpApimSubscriptionKey);
             httpClient.DefaultRequestHeaders.Add("Merchant-Serial-Number", settings.MerchantSerialNumber);
