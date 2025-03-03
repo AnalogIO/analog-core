@@ -21,12 +21,15 @@ namespace CoffeeCard.MobilePay.Utils
         {
             mobilePaySettings.Validate();
             services.AddTransient<MobilePayAuthorizationDelegatingHandler>();
+            services.AddTransient<MobilePayIdempotencyDelegatingHandler>();
 
             services.AddHttpClient<ePaymentClient>(client =>
-            {
-                client.AddDefaultHeaders(mobilePaySettings);
-                client.BaseAddress = mobilePaySettings.ApiUrl;
-            }).AddHttpMessageHandler<MobilePayAuthorizationDelegatingHandler>();
+                {
+                    client.AddDefaultHeaders(mobilePaySettings);
+                    client.BaseAddress = mobilePaySettings.ApiUrl;
+                })
+                .AddHttpMessageHandler<MobilePayAuthorizationDelegatingHandler>()
+                .AddHttpMessageHandler<MobilePayIdempotencyDelegatingHandler>();
 
             services.AddHttpClient<WebhooksClient>(client =>
             {

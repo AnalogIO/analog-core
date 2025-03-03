@@ -16,8 +16,6 @@ namespace CoffeeCard.MobilePay.Service.v2
     public class MobilePayWebhooksService(WebhooksClient webhooksClient, MobilePaySettingsV3 mobilePaySettings, ILogger<MobilePayWebhooksService> logger)
         : IMobilePayWebhooksService
     {
-        private readonly ILogger<MobilePayWebhooksService> _logger = logger;
-
         private static readonly ISet<WebhookEvent> DefaultEvents = new HashSet<WebhookEvent>
             { WebhookEvent.Authorized, WebhookEvent.Cancelled, WebhookEvent.Expired, WebhookEvent.Aborted };
 
@@ -25,7 +23,7 @@ namespace CoffeeCard.MobilePay.Service.v2
         {
             try
             {
-                _logger.LogInformation("Register new webhook for Url: {url}, Events: {@events}", url, DefaultEvents);
+                logger.LogInformation("Register new webhook for Url: {url}, Events: {@events}", url, DefaultEvents);
 
                 var response = await webhooksClient.CreateWebhookAsync(new RegisterRequest()
                 {
@@ -42,7 +40,7 @@ namespace CoffeeCard.MobilePay.Service.v2
             }
             catch (ApiException e)
             {
-                _logger.LogError(e, "Error calling Post Webhook with Url: {Url} and Events: {@Events}. Http {StatusCode} {Message}", url, DefaultEvents, e.StatusCode, e.Message);
+                logger.LogError(e, "Error calling Post Webhook with Url: {Url} and Events: {@Events}. Http {StatusCode} {Message}", url, DefaultEvents, e.StatusCode, e.Message);
                 throw new MobilePayApiException(e.StatusCode, e.Message);
             }
         }
@@ -56,7 +54,7 @@ namespace CoffeeCard.MobilePay.Service.v2
 
                 if (result == null)
                 {
-                    _logger.LogError("Webhook with Id: {Id} does not exist", webhookId);
+                    logger.LogError("Webhook with Id: {Id} does not exist", webhookId);
                     throw new EntityNotFoundException($"Webhook with Id: {webhookId} does not exist");
                 }
 
@@ -68,7 +66,7 @@ namespace CoffeeCard.MobilePay.Service.v2
             }
             catch (ApiException e)
             {
-                _logger.LogError(e, "Error calling Get Webhook with Id: {Id}. Http {StatusCode} {Message}", webhookId, e.StatusCode, e.Message);
+                logger.LogError(e, "Error calling Get Webhook with Id: {Id}. Http {StatusCode} {Message}", webhookId, e.StatusCode, e.Message);
                 throw new MobilePayApiException(e.StatusCode, e.Message);
             }
         }
