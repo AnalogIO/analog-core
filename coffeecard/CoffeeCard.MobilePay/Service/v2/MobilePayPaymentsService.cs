@@ -182,7 +182,7 @@ namespace CoffeeCard.MobilePay.Service.v2
                     e.Message
                 );
 
-                // FIXME Consider retry
+                // TODO: Consider retry
 
                 throw new MobilePayApiException(
                     e.StatusCode,
@@ -218,7 +218,7 @@ namespace CoffeeCard.MobilePay.Service.v2
                     e.Message
                 );
 
-                // FIXME Consider retry
+                // TODO: Consider retry
 
                 throw new MobilePayApiException(
                     e.StatusCode,

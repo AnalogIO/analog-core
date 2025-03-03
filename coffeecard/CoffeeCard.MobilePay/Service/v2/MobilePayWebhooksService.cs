@@ -19,7 +19,7 @@ namespace CoffeeCard.MobilePay.Service.v2
         private readonly ILogger<MobilePayWebhooksService> _logger = logger;
 
         private static readonly ISet<WebhookEvent> DefaultEvents = new HashSet<WebhookEvent>
-            { WebhookEvent.Authorized };
+            { WebhookEvent.Authorized, WebhookEvent.Cancelled, WebhookEvent.Expired, WebhookEvent.Aborted };
 
         public async Task<RegisterWebhookResponse> RegisterWebhook(string url)
         {

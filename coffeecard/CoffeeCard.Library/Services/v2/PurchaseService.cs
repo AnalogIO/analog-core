@@ -233,16 +233,22 @@ namespace CoffeeCard.Library.Services.v2
                         await CompletePurchase(purchase);
                         break;
                     }
-                // case "payment.cancelled_by_user":
-                //     {
-                //         await CancelPurchase(purchase);
-                //         break;
-                //     }
-                // case "payment.expired":
-                //     {
-                //         await CancelPurchase(purchase);
-                //         break;
-                //     }
+                case PaymentEventName.CANCELLED:
+                    {
+                        await CancelPurchase(purchase);
+                        break;
+                    }
+                case PaymentEventName.ABORTED:
+                    {
+                        await AbortPurchase(purchase);
+                        break;
+                    }
+                case PaymentEventName.EXPIRED:
+                    {
+                        // TODO: Should we cancel in this case?
+                        await CancelPurchase(purchase);
+                        break;
+                    }
                 default:
                     _logger.LogError(
                         "Unknown EventType from Webhook request. Event Type: {EventType}, Purchase Id: {PurchaseId}, Transaction Id: {TransactionId}",
@@ -270,7 +276,16 @@ namespace CoffeeCard.Library.Services.v2
             purchase.Status = PurchaseStatus.Cancelled;
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Purchase has been cancelled Purchase Id {PurchaseId}, Transaction Id {TransactionId}",
+            _logger.LogInformation("Purchase has been cancelled: Purchase Id {PurchaseId}, Transaction Id {TransactionId}",
+                purchase.Id, purchase.ExternalTransactionId);
+        }
+
+        private async Task AbortPurchase(Purchase purchase)
+        {
+            purchase.Status = PurchaseStatus.Cancelled;
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Purchase was aborted by user: Purchase Id {PurchaseId}, Transaction Id {TransactionId}",
                 purchase.Id, purchase.ExternalTransactionId);
         }
 

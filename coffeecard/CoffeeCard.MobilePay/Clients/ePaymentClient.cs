@@ -59,7 +59,8 @@ public class ePaymentClient
 
         if (!response.IsSuccessStatusCode)
         {
-            _logger.LogError("Failed to refund payment for reference {reference}", reference);
+            var problem = await response.Content.ReadFromJsonAsync<Problem>();
+            _logger.LogError("Failed to refund payment for reference {reference}: {error}", reference, problem.Title); // TODO: Request details?
             throw new MobilePayApiException(503, $"Failed to refund payment for reference {reference}");
         }
 
@@ -74,7 +75,8 @@ public class ePaymentClient
 
         if (!response.IsSuccessStatusCode)
         {
-            _logger.LogError("Failed to capture payment for reference {reference}", reference);
+            var problem = await response.Content.ReadFromJsonAsync<Problem>();
+            _logger.LogError("Failed to capture payment for reference {reference}: {error}", reference, problem.Title); // TODO: Request details?
             throw new MobilePayApiException(503, $"Failed to capture payment for reference {reference}");
         }
 
@@ -89,7 +91,9 @@ public class ePaymentClient
 
         if (!response.IsSuccessStatusCode)
         {
-            _logger.LogError("Failed to cancel payment for reference {reference}", reference);
+            var problem = await response.Content.ReadFromJsonAsync<Problem>();
+            // TODO: Handle errors nicely. Details are stored in problem.ExtraDetails
+            _logger.LogError("Failed to cancel payment for reference {reference}: {error}", reference, problem.Title); // TODO: Request details?
             throw new MobilePayApiException(503, $"Failed to cancel payment for reference {reference}");
         }
 
