@@ -120,8 +120,9 @@ namespace CoffeeCard.WebApi
 
             services.AddScoped<Library.Services.v2.IPurchaseService, Library.Services.v2.PurchaseService>();
             services.AddScoped<Library.Services.v2.ITicketService, Library.Services.v2.TicketService>();
+            services.AddTransient<IMobilePayAccessTokenService, MobilePayAccessTokenService>();
             services.AddMobilePayHttpClients(
-                _configuration.GetSection("MobilePaySettingsV2").Get<MobilePaySettingsV2>());
+                _configuration.GetSection("MobilePaySettings").Get<MobilePaySettings>());
             services.AddScoped<IMobilePayPaymentsService, MobilePayPaymentsService>();
             services.AddScoped<IMobilePayWebhooksService, MobilePayWebhooksService>();
             services.AddScoped<IWebhookService, WebhookService>();

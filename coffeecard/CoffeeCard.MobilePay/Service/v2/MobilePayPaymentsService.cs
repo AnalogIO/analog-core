@@ -1,211 +1,240 @@
 ﻿using System;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
+using CoffeeCard.MobilePay.Clients;
 using CoffeeCard.MobilePay.Exception.v2;
-using CoffeeCard.MobilePay.Generated.Api.PaymentsApi;
+using CoffeeCard.MobilePay.Generated.Api.ePaymentApi;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 using CoffeeCard.Models.Entities;
 using Microsoft.Extensions.Logging;
 
-namespace CoffeeCard.MobilePay.Service.v2
+namespace CoffeeCard.MobilePay.Service.v2;
+
+public class MobilePayPaymentsService(
+    ePaymentClient ePaymentApi,
+    MobilePaySettings mobilePaySettings,
+    ILogger<MobilePayPaymentsService> logger)
+    : IMobilePayPaymentsService
 {
-    public class MobilePayPaymentsService : IMobilePayPaymentsService
+    public async Task<MobilePayPaymentDetails> InitiatePayment(
+        MobilePayPaymentRequest paymentRequest
+    )
     {
-        private readonly MobilePaySettingsV2 _mobilePaySettings;
-        private readonly PaymentsApi _paymentsApi;
-        private readonly ILogger<MobilePayPaymentsService> _logger;
-
-        public MobilePayPaymentsService(PaymentsApi paymentsApi, MobilePaySettingsV2 mobilePaySettings, ILogger<MobilePayPaymentsService> logger)
+        try
         {
-            _paymentsApi = paymentsApi;
-            _mobilePaySettings = mobilePaySettings;
-            _logger = logger;
-        }
-
-        public async Task<MobilePayPaymentDetails> InitiatePayment(MobilePayPaymentRequest paymentRequest)
-        {
-            try
-            {
-                var response = await _paymentsApi.InitiatePaymentAsync(new InitiatePaymentRequest
+            var orderId = paymentRequest.OrderId.ToString();
+            var response = await ePaymentApi.CreatePaymentAsync(
+                new CreatePaymentRequest
                 {
-                    Amount = ConvertAmountToOrer(paymentRequest.Amount),
-                    IdempotencyKey = paymentRequest.OrderId,
-                    PaymentPointId = _mobilePaySettings.PaymentPointId,
-                    RedirectUri = _mobilePaySettings.AnalogAppRedirectUri,
-                    Reference = paymentRequest.OrderId.ToString(),
-                    Description = paymentRequest.Description
-                }, null);
-
-                _logger.LogInformation("Initiated Payment with MobilePay PaymentId {TransactionId} of {OrerAmount} Oerer kr.", response.PaymentId.ToString(), paymentRequest.Amount);
-
-                return new MobilePayPaymentDetails(paymentRequest.OrderId.ToString(), response.MobilePayAppRedirectUri,
-                    response.PaymentId.ToString());
-            }
-            catch (ApiException<ErrorResponse> e)
-            {
-                var errorResponse = e.Result;
-                _logger.LogError(e,
-                    "MobilePay InitiatePayment failed with HTTP {StatusCode}. ErrorCode: {ErrorCode} Message: {Message} CorrelationId: {CorrelationId}",
-                    e.StatusCode, errorResponse.Code, errorResponse.Message, errorResponse.CorrelationId);
-
-                // FIXME Consider retry
-
-                throw new MobilePayApiException(e.StatusCode, errorResponse.Message, errorResponse.Code);
-            }
-            catch (ApiException apiException)
-            {
-                LogMobilePayException(apiException);
-                throw new MobilePayApiException(apiException.StatusCode, apiException.Message);
-            }
-        }
-
-        public async Task<MobilePayPaymentDetails> GetPayment(Guid paymentId)
-        {
-            try
-            {
-                var response = await _paymentsApi.GetSinglePaymentAsync(paymentId, null);
-
-                return new MobilePayPaymentDetails(response.Reference, response.RedirectUri,
-                    response.PaymentId.ToString());
-            }
-            catch (ApiException<ErrorResponse> e)
-            {
-                var errorResponse = e.Result;
-                _logger.LogError(e,
-                    "MobilePay GetPayment failed with HTTP {StatusCode}. ErrorCode: {ErrorCode} Message: {Message} CorrelationId: {CorrelationId}",
-                    e.StatusCode, errorResponse.Code, errorResponse.Message, errorResponse.CorrelationId);
-
-                // FIXME Consider retry
-
-                throw new MobilePayApiException(e.StatusCode, errorResponse.Message, errorResponse.Code);
-            }
-            catch (ApiException apiException)
-            {
-                LogMobilePayException(apiException);
-                throw new MobilePayApiException(apiException.StatusCode, apiException.Message);
-            }
-        }
-
-        public async Task<bool> RefundPayment(Purchase purchase, int amount)
-        {
-            if (purchase == null || purchase.ExternalTransactionId == null) throw new ArgumentNullException(nameof(purchase));
-            try
-            {
-                IssueRefundRequest issueRefundRequest = new IssueRefundRequest
-                {
-                    PaymentId = Guid.Parse(purchase.ExternalTransactionId),
-                    Amount = amount,
-                    Description = "Refund of purchase " + purchase.Id,
-                    IdempotencyKey = Guid.NewGuid(),
-                    Reference = purchase.OrderId
-                };
-                try
-                {
-                    await _paymentsApi.IssueRefundAsync(issueRefundRequest);
-                    return true;
+                    Amount = ConvertToAmount(paymentRequest.Amount),
+                    PaymentMethod = new PaymentMethod { Type = PaymentMethodType.WALLET },
+                    Reference = orderId,
+                    UserFlow = CreatePaymentRequestUserFlow.WEB_REDIRECT,
+                    ReturnUrl = mobilePaySettings.AnalogAppRedirectUri,
+                    PaymentDescription = paymentRequest.Description
                 }
-                catch (ApiException e)
+            );
+            logger.LogInformation(
+                "Created MobilePay Payment with Reference {Reference} of {OrerAmount} (DKK)",
+                response.Reference,
+                paymentRequest.Amount
+            );
+
+            var test = response.RedirectUrl;
+            return new MobilePayPaymentDetails
+            {
+                MobilePayAppRedirectUri = response.RedirectUrl.ToString(),
+                PaymentId = orderId
+            };
+        }
+        catch (ApiException<Problem> e)
+        {
+            var errorResponse = e.Result;
+            logger.LogError(
+                e,
+                "MobilePay CreatePayment failed with HTTP {StatusCode}. ErrorCode: {ErrorCode} Message: {Message}",
+                e.StatusCode,
+                errorResponse.Status,
+                e.Message
+            );
+
+            // FIXME Consider retry
+
+            throw new MobilePayApiException(e.StatusCode, e.Message);
+        }
+        catch (ApiException apiException)
+        {
+            LogMobilePayException(apiException);
+            throw new MobilePayApiException(apiException.StatusCode, apiException.Message);
+        }
+    }
+
+    public async Task<MobilePayPaymentDetails> GetPayment(Guid paymentId)
+    {
+        try
+        {
+            var response = await ePaymentApi.GetPaymentAsync(paymentId.ToString());
+
+            return new MobilePayPaymentDetails
+            {
+                PaymentId = response.Reference,
+                MobilePayAppRedirectUri = response.RedirectUrl.ToString()
+            };
+        }
+        catch (ApiException<Problem> e)
+        {
+            var errorResponse = e.Result;
+            logger.LogError(
+                e,
+                "MobilePay GetPayment failed with HTTP {StatusCode}. ErrorCode: {ErrorCode} Message: {Message}",
+                e.StatusCode,
+                e.StatusCode,
+                e.Message
+            );
+
+            // FIXME Consider retry
+
+            throw new MobilePayApiException(e.StatusCode, e.Message);
+        }
+        catch (ApiException apiException)
+        {
+            LogMobilePayException(apiException);
+            throw new MobilePayApiException(apiException.StatusCode, apiException.Message);
+        }
+    }
+
+    public async Task<bool> RefundPayment(Purchase purchase, int amount)
+    {
+        if (purchase == null || purchase.ExternalTransactionId == null)
+            throw new ArgumentNullException(nameof(purchase));
+        try
+        {
+            var issueRefundRequest = new RefundModificationRequest
+            {
+                ModificationAmount = new Amount { Currency = Currency.DKK, Value = amount }
+            };
+            try
+            {
+                var response = await ePaymentApi.RefundPaymentAsync(
+                    purchase.ExternalTransactionId,
+                    issueRefundRequest
+                );
+                return true; // TODO: Do we want to return the response?
+            }
+            catch (ApiException e)
+            {
+                logger.LogError(
+                    e,
+                    "MobilePay RefundPayment failed with HTTP {StatusCode}. Message: {Message}",
+                    e.StatusCode,
+                    e.Message
+                );
+                return false;
+            }
+        }
+        catch (ApiException<Problem> e)
+        {
+            var errorResponse = e.Result;
+            logger.LogError(
+                e,
+                "MobilePay RefundPayment failed with HTTP {StatusCode}. Message: {Message}",
+                e.StatusCode,
+                e.Message
+            );
+            throw new MobilePayApiException(
+                e.StatusCode,
+                e.Message
+            );
+        }
+    }
+
+    public async Task CapturePayment(Guid paymentId, int amountInDanishKroner)
+    {
+        try
+        {
+            await ePaymentApi.CapturePaymentAsync(
+                paymentId.ToString(),
+                new CaptureModificationRequest { ModificationAmount = ConvertToAmount(amountInDanishKroner) }
+            );
+        }
+        catch (ApiException<Problem> e)
+        {
+            var errorResponse = e.Result;
+            logger.LogError(
+                e,
+                "MobilePay CapturePayment failed with HTTP {StatusCode}. Message: {Message}",
+                e.StatusCode,
+                e.Message
+            );
+
+            // TODO: Consider retry
+
+            throw new MobilePayApiException(
+                e.StatusCode,
+                e.Message
+            );
+        }
+        catch (ApiException apiException)
+        {
+            LogMobilePayException(apiException);
+            throw new MobilePayApiException(apiException.StatusCode, apiException.Message);
+        }
+    }
+
+    public async Task CancelPayment(Guid paymentId)
+    {
+        try
+        {
+            await ePaymentApi.CancelPaymentAsync(
+                paymentId.ToString(),
+                new CancelModificationRequest
                 {
-                    _logger.LogError(e, "MobilePay RefundPayment failed with HTTP {StatusCode}. Message: {Message}", e.StatusCode, e.Message);
-                    return false;
+                    CancelTransactionOnly = true
                 }
-            }
-            catch (ApiException<ErrorResponse> e)
-            {
-                var errorResponse = e.Result;
-                _logger.LogError(e,
-                    "MobilePay RefundPayment failed with HTTP {StatusCode}. ErrorCode: {ErrorCode} Message: {Message} CorrelationId: {CorrelationId}",
-                    e.StatusCode, errorResponse.Code, errorResponse.Message, errorResponse.CorrelationId);
-                throw new MobilePayApiException(e.StatusCode, errorResponse.Message, errorResponse.Code);
-            }
+            );
         }
-
-        public async Task CapturePayment(Guid paymentId, int amountInDanishKroner)
+        catch (ApiException<Problem> e)
         {
-            try
-            {
-                await _paymentsApi.CapturePaymentAsync(paymentId, new CapturePaymentRequest
-                {
-                    Amount = ConvertAmountToOrer(amountInDanishKroner)
-                }, null);
-            }
-            catch (ApiException<ErrorResponse> e)
-            {
-                var errorResponse = e.Result;
-                _logger.LogError(e,
-                    "MobilePay CapturePayment failed with HTTP {StatusCode}. ErrorCode: {ErrorCode} Message: {Message} CorrelationId: {CorrelationId}",
-                    e.StatusCode, errorResponse.Code, errorResponse.Message, errorResponse.CorrelationId);
+            var errorResponse = e.Result;
+            logger.LogError(
+                e,
+                "MobilePay CancelPayment failed with HTTP {StatusCode}. Message: {Message}",
+                e.StatusCode,
+                e.Message
+            );
 
-                // FIXME Consider retry
+            // TODO: Consider retry
 
-                throw new MobilePayApiException(e.StatusCode, errorResponse.Message, errorResponse.Code);
-            }
-            catch (ApiException apiException)
-            {
-                LogMobilePayException(apiException);
-                throw new MobilePayApiException(apiException.StatusCode, apiException.Message);
-            }
+            throw new MobilePayApiException(
+                e.StatusCode,
+                e.Message
+            );
         }
-
-        public async Task CancelPayment(Guid paymentId)
+        catch (ApiException apiException)
         {
-            try
-            {
-                await _paymentsApi.CancelPaymentAsync(paymentId, null);
-            }
-            catch (ApiException<ErrorResponse> e)
-            {
-                var errorResponse = e.Result;
-                _logger.LogError(e,
-                    "MobilePay CancelPayment failed with HTTP {StatusCode}. ErrorCode: {ErrorCode} Message: {Message} CorrelationId: {CorrelationId}",
-                    e.StatusCode, errorResponse.Code, errorResponse.Message, errorResponse.CorrelationId);
-
-                // FIXME Consider retry
-
-                throw new MobilePayApiException(e.StatusCode, errorResponse.Message, errorResponse.Code);
-            }
-            catch (ApiException apiException)
-            {
-                LogMobilePayException(apiException);
-                throw new MobilePayApiException(apiException.StatusCode, apiException.Message);
-            }
+            LogMobilePayException(apiException);
+            throw new MobilePayApiException(apiException.StatusCode, apiException.Message);
         }
+    }
 
-        public async Task<PaymentPointsList> GetPaymentPoints()
-        {
-            try
-            {
-                return await _paymentsApi.GetPaymentPointsAsync(null, null, null);
-            }
-            catch (ApiException<ErrorResponse> e)
-            {
-                var errorResponse = e.Result;
-                _logger.LogError(e,
-                    "MobilePay GetPaymentPoints failed with HTTP {StatusCode}. ErrorCode: {ErrorCode} Message: {Message} CorrelationId: {CorrelationId}",
-                    e.StatusCode, errorResponse.Code, errorResponse.Message, errorResponse.CorrelationId);
+    /// <summary>
+    ///     Convert Amount (in whole DKK kroner) to MobilePay-compatible amount
+    /// </summary>
+    /// <param name="amountInKroner">Amount in Danish kroner</param>
+    /// <returns>MobilePay-compatible Amount</returns>
+    private Amount ConvertToAmount(int amountInKroner)
+    {
+        return new Amount { Currency = Currency.DKK, Value = amountInKroner * 100 };
+    }
 
-                throw new MobilePayApiException(e.StatusCode, errorResponse.Message, errorResponse.Code);
-            }
-            catch (ApiException apiException)
-            {
-                LogMobilePayException(apiException);
-                throw new MobilePayApiException(apiException.StatusCode, apiException.Message);
-            }
-        }
-
-        /// <summary>
-        /// Convert Amount in kroner to amount in Danish ører
-        /// </summary>
-        /// <param name="amountInKroner">Amount in Danish kroner</param>
-        /// <returns>Amount in Danish ører</returns>
-        private static int ConvertAmountToOrer(int amountInKroner) => amountInKroner * 100;
-
-        private void LogMobilePayException(ApiException apiException)
-        {
-            _logger.LogError(apiException,
-                "MobilePay InitiatePayment failed with HTTP {StatusCode}. Message: {Message}",
-                apiException.StatusCode, apiException.Message);
-        }
+    private void LogMobilePayException(ApiException apiException)
+    {
+        logger.LogError(
+            apiException,
+            "MobilePay InitiatePayment failed with HTTP {StatusCode}. Message: {Message}",
+            apiException.StatusCode,
+            apiException.Message
+        );
     }
 }
