@@ -14,7 +14,7 @@ public class UserSearchResponse
     /// <value> Users number </value>
     /// <example>1</example>
     [Required]
-    public int TotalUsers { get; set; }
+    public required int TotalUsers { get; set; }
 
     /// <summary>
     /// The users that match the query
@@ -32,5 +32,5 @@ public class UserSearchResponse
     ///  ]
     /// </example>
     [Required]
-    public IEnumerable<SimpleUserResponse> Users { get; set; }
+    public required IEnumerable<SimpleUserResponse> Users { get; set; }
 }

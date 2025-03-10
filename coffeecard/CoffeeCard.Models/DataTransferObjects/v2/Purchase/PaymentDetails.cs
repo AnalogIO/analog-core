@@ -3,6 +3,9 @@ using System.Text.Json.Serialization;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
 {
+    /// <summary>
+    /// Payment details
+    /// </summary>
     [JsonPolymorphic(TypeDiscriminatorPropertyName = "discriminator")]
     [JsonDerivedType(typeof(MobilePayPaymentDetails), typeDiscriminator: "MobilePayPaymentDetails")]
     [JsonDerivedType(typeof(FreePurchasePaymentDetails), typeDiscriminator: "FreePurchasePaymentDetails")]

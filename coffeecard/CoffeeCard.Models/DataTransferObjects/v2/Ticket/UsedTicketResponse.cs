@@ -14,7 +14,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Ticket
         /// <value>Ticket Id</value>
         /// <example>122</example>
         [Required]
-        public int Id { get; set; }
+        public required int Id { get; set; }
 
         /// <summary>
         /// Issuing date time for ticket in Utc format
@@ -22,7 +22,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Ticket
         /// <value>Issued date time</value>
         /// <example>2022-01-09T21:03:52.2283208Z</example>
         [Required]
-        public DateTime DateCreated { get; set; }
+        public required DateTime DateCreated { get; set; }
 
         /// <summary>
         /// Used date time for ticket in Utc format
@@ -30,7 +30,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Ticket
         /// <value>Used date time</value>
         /// <example>2022-01-09T21:03:52.2283208Z</example>
         [Required]
-        public DateTime DateUsed { get; set; }
+        public required DateTime DateUsed { get; set; }
 
         /// <summary>
         /// Name of product a ticket is for
@@ -38,7 +38,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Ticket
         /// <value>Product name</value>
         /// <example>Small drink</example>
         [Required]
-        public string ProductName { get; set; }
+        public required string ProductName { get; set; }
 
         /// <summary>
         /// Name of the menu item that this ticket was used on

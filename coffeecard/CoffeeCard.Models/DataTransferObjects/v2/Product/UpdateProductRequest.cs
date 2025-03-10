@@ -17,7 +17,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
         /// <example>10</example>
         [Required]
         [Range(0, int.MaxValue, ErrorMessage = "Price must be a non-negative integer.")]
-        public int Price { get; set; }
+        public required int Price { get; set; }
 
         /// <summary>
         /// Gets or sets the updated number of tickets associated with the product.
@@ -26,7 +26,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
         /// <example>5</example>
         [Required]
         [Range(0, int.MaxValue, ErrorMessage = "Number of Tickets must be a non-negative integer.")]
-        public int NumberOfTickets { get; set; }
+        public required int NumberOfTickets { get; set; }
 
         /// <summary>
         /// Gets or sets the updated name of the product.
@@ -35,7 +35,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
         /// <example>Espresso</example>
         [Required]
         [MinLength(1, ErrorMessage = "Name cannot be an empty string.")]
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the updated description of the product.
@@ -44,7 +44,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
         /// <example>A homemade espresso from fresh beans</example>
         [Required]
         [MinLength(1, ErrorMessage = "Description cannot be an empty string.")]
-        public string Description { get; set; }
+        public required string Description { get; set; }
 
         /// <summary>
         /// Gets or sets the updated visibility of the product. Default is true.
@@ -53,7 +53,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
         /// <example>true</example>
         [Required]
         [DefaultValue(true)]
-        public bool Visible { get; set; } = true;
+        public required bool Visible { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the user groups that can access the product.
@@ -61,7 +61,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
         /// <value>Product User Groups</value>
         /// <example>["Manager", "Board"]</example>
         [Required]
-        public IEnumerable<UserGroup> AllowedUserGroups { get; set; }
+        public required IEnumerable<UserGroup> AllowedUserGroups { get; set; }
 
         /// <summary>
         /// Gets or sets the eligible menu items for the product.
@@ -69,6 +69,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Product
         /// <value> Product Menu Item Ids </value>
         /// <example>[1, 2]</example>
         [Required]
-        public IEnumerable<int> MenuItemIds { get; set; }
+        public required IEnumerable<int> MenuItemIds { get; set; }
     }
 }

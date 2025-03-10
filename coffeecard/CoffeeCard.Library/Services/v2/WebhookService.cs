@@ -83,7 +83,6 @@ namespace CoffeeCard.Library.Services.v2
                 if (!mobilePayWebhook.Url.ToString().Equals(webhook.Url, StringComparison.OrdinalIgnoreCase))
                 {
                     await DisableAndRegisterNewWebhook(webhook);
-                    return;
                 }
             }
             catch (EntityNotFoundException)

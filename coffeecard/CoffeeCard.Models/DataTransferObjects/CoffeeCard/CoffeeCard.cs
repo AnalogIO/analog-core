@@ -21,35 +21,35 @@ namespace CoffeeCard.Models.DataTransferObjects.CoffeeCard
         /// </summary>
         /// <value>Product Id</value>
         /// <example>1</example>
-        public int ProductId { get; set; }
+        public required int ProductId { get; set; }
 
         /// <summary>
         /// Name of product
         /// </summary>
         /// <value>Product Name</value>
         /// <example>Filter Coffee</example>
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         /// <summary>
         /// Remaining (if any) unused tickets left for product
         /// </summary>
         /// <value>Remaining Tickets</value>
         /// <example>5</example>
-        public int TicketsLeft { get; set; }
+        public required int TicketsLeft { get; set; }
 
         /// <summary>
         /// Price of product
         /// </summary>
         /// <value>Product Price</value>
         /// <example>50</example>
-        public int Price { get; set; }
+        public required int Price { get; set; }
 
         /// <summary>
         /// Quantity of tickets in product
         /// </summary>
         /// <value>Quantity</value>
         /// <example>10</example>
-        public int Quantity { get; set; }
+        public required int Quantity { get; set; }
     }
 
     /// <summary>

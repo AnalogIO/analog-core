@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
 {
@@ -14,7 +13,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <value>Product Id</value>
         /// <example>1</example>
         [Required]
-        public int ProductId { get; set; }
+        public required int ProductId { get; set; }
 
         /// <summary>
         /// Payment Type used to fulfill purchase
@@ -22,6 +21,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <value>Payment Type</value>
         /// <example>MobilePay</example>
         [Required]
-        public PaymentType PaymentType { get; set; }
+        public required PaymentType PaymentType { get; set; }
     }
 }

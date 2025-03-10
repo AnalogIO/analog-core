@@ -10,7 +10,6 @@ using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.v2.Products;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 using CoffeeCard.Models.Entities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Purchase = CoffeeCard.Models.Entities.Purchase;
@@ -139,7 +138,7 @@ namespace CoffeeCard.Library.Services.v2
                 ExternalTransactionId = transactionId,
                 PurchasedBy = user,
                 Status = purchaseStatus,
-                Type = purchaseRequest.PaymentType.toPurchaseType()
+                Type = purchaseRequest.PaymentType.ToPurchaseType()
             };
 
             return (purchase, paymentDetails);
