@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
@@ -42,7 +43,7 @@ namespace CoffeeCard.Library.Services
             builder.HtmlBody = builder.HtmlBody.Replace("{name}", user.Name);
             builder.HtmlBody = builder.HtmlBody.Replace("{quantity}", purchase.NumberOfTickets.ToString());
             builder.HtmlBody = builder.HtmlBody.Replace("{product}", purchase.ProductName);
-            builder.HtmlBody = builder.HtmlBody.Replace("{vat}", (purchase.Price * 0.2).ToString());
+            builder.HtmlBody = builder.HtmlBody.Replace("{vat}", (purchase.Price * 0.2).ToString(CultureInfo.InvariantCulture));
             builder.HtmlBody = builder.HtmlBody.Replace("{price}", purchase.Price.ToString());
             builder.HtmlBody = builder.HtmlBody.Replace("{orderId}", purchase.OrderId);
             builder.HtmlBody = builder.HtmlBody.Replace("{date}", dkTime.ToShortDateString());

@@ -19,10 +19,13 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         FreePurchase
     }
 
+    /// <summary>
+    /// Extension methods for the paymentType
+    /// </summary>
     public static class PaymentTypeExtension
     {
         /// Converts the payment type to a corresponding PurchasType
-        public static PurchaseType toPurchaseType(this PaymentType paymentType)
+        public static PurchaseType ToPurchaseType(this PaymentType paymentType)
         {
             return paymentType switch
             {

@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Library.Services;
-using CoffeeCard.Models.Entities;
 using CoffeeCard.Tests.Common.Builders;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;

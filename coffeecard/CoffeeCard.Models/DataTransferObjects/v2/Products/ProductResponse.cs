@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using CoffeeCard.Models.DataTransferObjects.v2.Products;
+using CoffeeCard.Models.DataTransferObjects.v2.MenuItems;
 using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.Products
@@ -32,7 +32,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Products
         /// <value>Product Id</value>
         /// <example>1</example>
         [Required]
-        public int Id { get; set; }
+        public required int Id { get; set; }
 
         /// <summary>
         /// Product price
@@ -40,7 +40,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Products
         /// <value>Product price</value>
         /// <example>300</example>
         [Required]
-        public int Price { get; set; }
+        public required int Price { get; set; }
 
         /// <summary>
         /// Number of tickets in product
@@ -48,7 +48,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Products
         /// <value>Number of tickets</value>
         /// <example>10</example>
         [Required]
-        public int NumberOfTickets { get; set; }
+        public required int NumberOfTickets { get; set; }
 
         /// <summary>
         /// Name of product
@@ -56,7 +56,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Products
         /// <value>Product name</value>
         /// <example>Coffee clip card</example>
         [Required]
-        public string Name { get; set; } = string.Empty;
+        public required string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Description of products
@@ -64,7 +64,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Products
         /// <value>Product Description</value>
         /// <example>Coffee clip card of 10 clips</example>
         [Required]
-        public string Description { get; set; } = string.Empty;
+        public required string Description { get; set; } = string.Empty;
 
         /// <summary>
         /// Eligible due to a user perk privilege 
@@ -72,7 +72,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Products
         /// <value>Perk product</value>
         /// <example>true</example>
         [Required]
-        public bool IsPerk { get; set; }
+        public required bool IsPerk { get; set; }
 
         /// <summary>
         /// Visibility of products for users
@@ -80,7 +80,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Products
         /// <value>Product visibility</value>
         /// <example>true</example>
         [Required]
-        public bool Visible { get; set; }
+        public required bool Visible { get; set; }
 
         /// <summary>
         /// Decides the user groups that can access the product.
@@ -88,7 +88,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Products
         /// <value> Product User Groups </value>
         /// <example> Manager, Board </example>
         [Required]
-        public IEnumerable<UserGroup> AllowedUserGroups { get; set; }
+        public required IEnumerable<UserGroup> AllowedUserGroups { get; set; }
 
         /// <summary>
         /// The menu items that this product can be used on.
@@ -96,6 +96,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Products
         /// <value>Menu items</value>
         /// <example>["Cappuccino", "Caffe Latte"]</example>
         /// <remarks>Optional for backwards compatibility</remarks>
-        public IEnumerable<MenuItemResponse> EligibleMenuItems { get; set; }
+        public required IEnumerable<MenuItemResponse> EligibleMenuItems { get; set; }
     }
 }

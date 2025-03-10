@@ -20,17 +20,17 @@ public class MenuItem
     /// <summary>
     /// The name of this menu item
     /// </summary>
-    public string Name { get; set; }
+    public required string Name { get; set; }
 
     /// <summary>
     /// The product(s) that are eligible to redeem this menu item
     /// </summary>
-    public ICollection<Product> AssociatedProducts { get; set; }
+    public ICollection<Product> AssociatedProducts { get; set; } = [];
 
     /// <summary>
     /// Navigational property for the join table between Menu Items and Products
     /// </summary>
-    public ICollection<MenuItemProduct> MenuItemProducts { get; set; }
+    public ICollection<MenuItemProduct> MenuItemProducts { get; set; } = [];
 
     /// <summary>
     /// Whether or not this menu item is active
