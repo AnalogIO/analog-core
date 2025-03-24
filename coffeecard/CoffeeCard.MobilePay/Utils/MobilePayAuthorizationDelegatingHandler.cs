@@ -1,3 +1,4 @@
+using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
@@ -38,7 +39,7 @@ public class MobilePayAuthorizationDelegatingHandler(
         {
             var accessTokenResponse = await accessTokenService.GetAuthorizationTokenAsync();
 
-            entry.AbsoluteExpiration = accessTokenResponse.ExpiresOn;
+            entry.AbsoluteExpiration = accessTokenResponse.ExpiresOn - TimeSpan.FromMinutes(5);
             return accessTokenResponse.AccessToken;
         });
     }
