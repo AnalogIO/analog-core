@@ -26,11 +26,8 @@ public class WebhooksClient
 
         if (!response.IsSuccessStatusCode)
         {
-            var problem = await response.Content.ReadFromJsonAsync<Problem>();
-            _logger.LogError("Failed to create webhook for url {url}", request.Url);
-            throw new MobilePayApiException(503, $"Failed to create webhook for url {request.Url}");
+            await LogMobilePayException(response);
         }
-
 
         return await response.Content.ReadAsAsync<RegisterResponse>();
     }
@@ -41,12 +38,23 @@ public class WebhooksClient
 
         if (!response.IsSuccessStatusCode)
         {
-            _logger.LogError("Failed to get all webhooks");
-            throw new MobilePayApiException(503, "Failed to get all webhooks");
+            await LogMobilePayException(response);
         }
 
-        response.EnsureSuccessStatusCode();
         return await response.Content.ReadAsAsync<QueryResponse>();
+    }
+
+    private async Task LogMobilePayException(HttpResponseMessage response)
+    {
+        var problem = await response.Content.ReadFromJsonAsync<Problem>();
+        _logger.LogError("Request to [{method}] {requestUri} failed",
+            response.RequestMessage!.Method,
+            response.RequestMessage!.RequestUri);
+        _logger.LogError("Error: {error}", problem!.Title);
+        _logger.LogError("Details: {@details}", problem.ExtraDetails);
+        throw new MobilePayApiException(
+            503,
+            $"Request to [{response.RequestMessage!.Method}] {response.RequestMessage!.RequestUri} failed for");
     }
 
 }
