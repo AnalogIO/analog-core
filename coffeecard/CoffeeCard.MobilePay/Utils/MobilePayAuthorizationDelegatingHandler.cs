@@ -10,37 +10,24 @@ using Microsoft.Extensions.Caching.Memory;
 namespace CoffeeCard.MobilePay.Utils;
 
 public class MobilePayAuthorizationDelegatingHandler(
-    IMobilePayAccessTokenService accessTokenService,
-    IMemoryCache memoryCache
+    IMobilePayAccessTokenService accessTokenService
 ) : DelegatingHandler
 {
-    private const string MpAccessTokenCacheKey = "MpAccessTokenKey";
 
     protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
         CancellationToken cancellationToken)
     {
-        var accessToken = await GetAccessTokenAsync();
+        var accessTokenResponse = await accessTokenService.GetAuthorizationTokenAsync();
 
         request.Headers.Authorization = new AuthenticationHeaderValue(
             JwtBearerDefaults.AuthenticationScheme,
-            accessToken);
+            accessTokenResponse.AccessToken);
 
         var httpResponseMessage = await base.SendAsync(
             request,
             cancellationToken);
 
         return httpResponseMessage;
-    }
-
-    private async Task<string?> GetAccessTokenAsync()
-    {
-        return await memoryCache.GetOrCreateAsync(MpAccessTokenCacheKey, async entry =>
-        {
-            var accessTokenResponse = await accessTokenService.GetAuthorizationTokenAsync();
-
-            entry.AbsoluteExpiration = accessTokenResponse.ExpiresOn - TimeSpan.FromMinutes(5);
-            return accessTokenResponse.AccessToken;
-        });
     }
 }

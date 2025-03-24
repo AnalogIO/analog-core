@@ -6,43 +6,35 @@ using CoffeeCard.MobilePay.Clients;
 using CoffeeCard.MobilePay.Exception.v2;
 using CoffeeCard.MobilePay.Generated.Api.WebhooksApi;
 using CoffeeCard.Models.DataTransferObjects.MobilePay;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 
 namespace CoffeeCard.MobilePay.Service.v2;
 
-public class MobilePayAccessTokenService : IMobilePayAccessTokenService
+public class MobilePayAccessTokenService(
+    AccessTokenClient accessTokenClient,
+    MobilePaySettings mobilePaySettings,
+    IMemoryCache memoryCache)
+    : IMobilePayAccessTokenService
 {
+    private const string MpAccessTokenCacheKey = "MpAccessTokenKey";
 
-    private readonly AccessTokenClient _accessTokenClient;
-    private readonly MobilePaySettings _settings;
-    private readonly ILogger<MobilePayAccessTokenService> _logger;
-
-    public MobilePayAccessTokenService(
-        AccessTokenClient accessTokenClient,
-        MobilePaySettings mobilePaySettings,
-        ILogger<MobilePayAccessTokenService> logger
-    )
-    {
-        _accessTokenClient = accessTokenClient;
-        _settings = mobilePaySettings;
-        _logger = logger;
-    }
     public async Task<GetAuthorizationTokenResponse> GetAuthorizationTokenAsync()
     {
-        try
+        var tokenResponse = await memoryCache.GetOrCreateAsync(MpAccessTokenCacheKey, async entry =>
         {
-            var response = await _accessTokenClient.GetToken(_settings.ClientId.ToString(), _settings.ClientSecret);
-
-            return new GetAuthorizationTokenResponse()
+            var clientResponse = await accessTokenClient.GetToken(mobilePaySettings.ClientId.ToString(),
+                mobilePaySettings.ClientSecret);
+            var tokenResponse = new GetAuthorizationTokenResponse()
             {
-                AccessToken = response.Access_token,
-                ExpiresOn = DateTimeOffset.FromUnixTimeSeconds(long.Parse(response.Expires_on))
+                AccessToken = clientResponse.Access_token,
+                ExpiresOn = DateTimeOffset.FromUnixTimeSeconds(long.Parse(clientResponse.Expires_on))
             };
-        }
-        catch (ApiException ex)
-        {
-            _logger.LogError(ex, ex.Message);
-            throw new MobilePayApiException(503, $"Unable to get access token: {ex.Message}");
-        }
+
+            entry.AbsoluteExpiration = tokenResponse.ExpiresOn - TimeSpan.FromMinutes(5);
+            return tokenResponse;
+        });
+
+        return tokenResponse!;
     }
 }
