@@ -9,10 +9,10 @@ namespace CoffeeCard.MobilePay.Clients;
 public class AccessTokenClient
 {
     private readonly HttpClient _httpClient;
-    private readonly ILogger<ePaymentClient> _logger;
+    private readonly ILogger<AccessTokenClient> _logger;
     private const string ControllerPath = "/accesstoken";
 
-    public AccessTokenClient(HttpClient httpClient, ILogger<ePaymentClient> logger)
+    public AccessTokenClient(HttpClient httpClient, ILogger<AccessTokenClient> logger)
     {
         _httpClient = httpClient;
         _logger = logger;
