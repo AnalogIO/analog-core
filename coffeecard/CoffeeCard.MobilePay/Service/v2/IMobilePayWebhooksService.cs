@@ -20,5 +20,11 @@ namespace CoffeeCard.MobilePay.Service.v2
         /// <param name="webhookId">Webhook Id</param>
         /// <returns>Webhook information</returns>
         Task<GetWebhookResponse> GetWebhook(Guid webhookId);
+
+        /// <summary>
+        /// Get All Webhooks from MobilePay
+        /// </summary>
+        /// <returns>Webhooks information</returns>
+        Task<GetAllWebhooksResponse> GetAllWebhooks();
     }
 }

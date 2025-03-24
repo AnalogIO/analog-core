@@ -8,78 +8,72 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 
-namespace CoffeeCard.WebApi.Controllers.v2
+namespace CoffeeCard.WebApi.Controllers.v2;
+
+/// <summary>
+/// Controller for health checks
+/// </summary>
+/// <remarks>
+/// Initializes a new instance of the <see cref="HealthController"/> class.
+/// </remarks>
+[ApiVersion("2")]
+[Route("api/v{version:apiVersion}/health")]
+[ApiController]
+[Authorize(AuthenticationSchemes = "apikey")]
+public class HealthController(IMobilePayWebhooksService mobilePayWebhooksService, CoffeeCardContext context) : ControllerBase
 {
     /// <summary>
-    /// Controller for health check
+    /// Ping
     /// </summary>
-    /// <remarks>
-    /// Initializes a new instance of the <see cref="HealthController"/> class.
-    /// </remarks>
-    [ApiVersion("2")]
-    [Route("api/v{version:apiVersion}/health")]
-    [ApiController]
-    [Authorize(AuthenticationSchemes = "apikey")]
-    public class HealthController(IMobilePayPaymentsService mobilePayPaymentsService, CoffeeCardContext context) : ControllerBase
+    /// <returns>pong</returns>
+    /// <response code="200">Successful request</response>
+    [HttpGet("ping")]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    public IActionResult Ping()
     {
-        private readonly CoffeeCardContext _context = context;
-        private readonly IMobilePayPaymentsService _mobilePayPaymentsService = mobilePayPaymentsService;
+        return Ok("pong");
+    }
 
-        /// <summary>
-        /// Ping
-        /// </summary>
-        /// <returns>pong</returns>
-        /// <response code="200">Successful request</response>
-        [HttpGet("ping")]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        public IActionResult Ping()
+    /// <summary>
+    /// Check service health
+    /// </summary>
+    /// <returns>pong</returns>
+    /// <response code="200">Healthy service</response>
+    /// <response code="503">Unhealthy service</response>
+    [HttpGet("check")]
+    [ProducesResponseType(typeof(ServiceHealthResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ServiceHealthResponse), StatusCodes.Status503ServiceUnavailable)]
+    [ProducesDefaultResponseType]
+    public async Task<IActionResult> Healthcheck()
+    {
+        var databaseConnected = await IsServiceCallSuccessful(async () => await context.Database.CanConnectAsync());
+        var mobilepayApiConnected = await IsServiceCallSuccessful(async () => await mobilePayWebhooksService.GetAllWebhooks());
+
+        var response = new ServiceHealthResponse()
         {
-            return Ok("pong");
+            Database = databaseConnected,
+            MobilePay = mobilepayApiConnected
+        };
+
+        if (databaseConnected && mobilepayApiConnected)
+        {
+            return Ok(response);
         }
 
-        /// <summary>
-        /// Check service health
-        /// </summary>
-        /// <returns>pong</returns>
-        /// <response code="200">Healthy service</response>
-        /// <response code="503">Unhealthy service</response>
-        // [HttpGet("check")]
-        // [ProducesResponseType(typeof(ServiceHealthResponse), StatusCodes.Status200OK)]
-        // [ProducesResponseType(typeof(ServiceHealthResponse), StatusCodes.Status503ServiceUnavailable)]
-        // [ProducesDefaultResponseType]
-        // public async Task<IActionResult> Healthcheck()
-        // {
-        //     var databaseConnected = await IsServiceCallSuccessful(async () => await _context.Database.CanConnectAsync());
-        //
-        //     // FIXME: GetPaymentPoints is removed. Consider adding a new method to check the connection to the MobilePay API
-        //     // var mobilepayApiConnected = await IsServiceCallSuccessful(async () => await _mobilePayPaymentsService.GetPaymentPoints());
-        //
-        //     var response = new ServiceHealthResponse()
-        //     {
-        //         Database = databaseConnected,
-        //         MobilePay = true
-        //     };
-        //
-        //     if (databaseConnected && true)
-        //     {
-        //         return Ok(response);
-        //     }
-        //
-        //     return StatusCode(StatusCodes.Status503ServiceUnavailable, response);
-        // }
+        return StatusCode(StatusCodes.Status503ServiceUnavailable, response);
+    }
 
-        private static async Task<bool> IsServiceCallSuccessful(Func<Task> action)
+    private static async Task<bool> IsServiceCallSuccessful(Func<Task> action)
+    {
+        try
         {
-            try
-            {
-                await action();
-                return true;
-            }
-            catch (Exception e)
-            {
-                Log.Error(e, "Health check failed");
-                return false;
-            }
+            await action();
+            return true;
+        }
+        catch (Exception e)
+        {
+            Log.Error(e, "Health check failed");
+            return false;
         }
     }
 }

@@ -53,4 +53,17 @@ public class MobilePayWebhooksService(WebhooksClient webhooksClient, ILogger<Mob
             WebhookId = result.Id,
         };
     }
+
+    public async Task<GetAllWebhooksResponse> GetAllWebhooks()
+    {
+        var allWebhooks = await webhooksClient.GetAllWebhooksAsync();
+        return new GetAllWebhooksResponse()
+        {
+            Webhooks = allWebhooks.Webhooks.Select(webhook => new GetWebhookResponse()
+            {
+                Url = webhook.Url,
+                WebhookId = webhook.Id,
+            }).ToList()
+        };
+    }
 }
