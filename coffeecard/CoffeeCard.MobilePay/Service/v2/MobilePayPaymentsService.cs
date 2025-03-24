@@ -61,7 +61,7 @@ public class MobilePayPaymentsService(
     {
         if (purchase == null || purchase.ExternalTransactionId == null)
             throw new ArgumentNullException(nameof(purchase));
-        
+
         var issueRefundRequest = new RefundModificationRequest
         {
             ModificationAmount = new Amount { Currency = Currency.DKK, Value = amount }
@@ -70,7 +70,7 @@ public class MobilePayPaymentsService(
             purchase.ExternalTransactionId,
             issueRefundRequest
         );
-        
+
         return true;
     }
 

@@ -25,10 +25,7 @@ public class ePaymentClient
 
         if (!response.IsSuccessStatusCode)
         {
-            var problem = await response.Content.ReadFromJsonAsync<Problem>();
-            _logger.LogError("Failed to create payment for reference {reference}: {error}", request.Reference, problem.Title);
-            _logger.LogError("Details: {@details}", problem.ExtraDetails);
-            throw new MobilePayApiException(503, $"Failed to create payment for reference {request.Reference}");
+            await LogMobilePayException(response, request.Reference);
         }
 
         return await response.Content.ReadAsAsync<CreatePaymentResponse>();
@@ -40,10 +37,7 @@ public class ePaymentClient
 
         if (!response.IsSuccessStatusCode)
         {
-            var problem = await response.Content.ReadFromJsonAsync<Problem>();
-            _logger.LogError("Failed to get payment for reference {reference}: {error}", reference, problem.Title);
-            _logger.LogError("Details: {@details}", problem.ExtraDetails);
-            throw new MobilePayApiException(503, $"Failed to get payment for reference {reference}");
+            await LogMobilePayException(response, reference);
         }
 
         return await response.Content.ReadAsAsync<GetPaymentResponse>();
@@ -55,10 +49,7 @@ public class ePaymentClient
 
         if (!response.IsSuccessStatusCode)
         {
-            var problem = await response.Content.ReadFromJsonAsync<Problem>();
-            _logger.LogError("Failed to refund payment for reference {reference}: {error}", reference, problem.Title);
-            _logger.LogError("Details: {@details}", problem.ExtraDetails);
-            throw new MobilePayApiException(503, $"Failed to refund payment for reference {reference}");
+            await LogMobilePayException(response, reference);
         }
 
         return await response.Content.ReadAsAsync<ModificationResponse>();
@@ -70,10 +61,7 @@ public class ePaymentClient
 
         if (!response.IsSuccessStatusCode)
         {
-            var problem = await response.Content.ReadFromJsonAsync<Problem>();
-            _logger.LogError("Failed to capture payment for reference {reference}: {error}", reference, problem.Title);
-            _logger.LogError("Details: {@details}", problem.ExtraDetails);
-            throw new MobilePayApiException(503, $"Failed to capture payment for reference {reference}");
+            await LogMobilePayException(response, reference);
         }
 
         return await response.Content.ReadAsAsync<ModificationResponse>();
@@ -85,13 +73,24 @@ public class ePaymentClient
 
         if (!response.IsSuccessStatusCode)
         {
-            var problem = await response.Content.ReadFromJsonAsync<Problem>();
-            _logger.LogError("Failed to cancel payment for reference {reference}: {error}", reference, problem.Title);
-            _logger.LogError("Details: {@details}", problem.ExtraDetails);
-            throw new MobilePayApiException(503, $"Failed to cancel payment for reference {reference}");
+            await LogMobilePayException(response, reference);
         }
 
         return await response.Content.ReadAsAsync<ModificationResponse>();
+    }
+
+    private async Task LogMobilePayException(HttpResponseMessage response, string reference)
+    {
+        var problem = await response.Content.ReadFromJsonAsync<Problem>();
+        _logger.LogError("Request to [{method}] {requestUri} failed for reference {reference}",
+            response.RequestMessage!.Method,
+            response.RequestMessage!.RequestUri,
+            reference);
+        _logger.LogError("Error: {error}", problem!.Title);
+        _logger.LogError("Details: {@details}", problem.ExtraDetails);
+        throw new MobilePayApiException(
+            503,
+            $"Request to [{response.RequestMessage!.Method}] {response.RequestMessage!.RequestUri} failed for reference {reference}");
     }
 
 

@@ -169,7 +169,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 PaymentType = PaymentType.MobilePay,
                 ProductId = product1.Id
             };
-            
+
             var mobilepayPaymentId = Guid.Parse("186d2b31-ff25-4414-9fd1-bfe9807fa8b7").ToString();
             var mpDeepLink = "mobilepay://merchant_payments?payment_id=186d2b31-ff25-4414-9fd1-bfe9807fa8b7";
             mobilePayService.Setup(mps => mps.InitiatePayment(It.IsAny<MobilePayPaymentRequest>()))
