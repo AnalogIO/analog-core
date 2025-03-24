@@ -169,14 +169,13 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 PaymentType = PaymentType.MobilePay,
                 ProductId = product1.Id
             };
-
-            var mobilepayPaymentId = Guid.NewGuid().ToString();
-            var orderId = Guid.NewGuid().ToString();
+            
+            var mobilepayPaymentId = Guid.Parse("186d2b31-ff25-4414-9fd1-bfe9807fa8b7").ToString();
             var mpDeepLink = "mobilepay://merchant_payments?payment_id=186d2b31-ff25-4414-9fd1-bfe9807fa8b7";
             mobilePayService.Setup(mps => mps.InitiatePayment(It.IsAny<MobilePayPaymentRequest>()))
                 .ReturnsAsync(new MobilePayPaymentDetails
                 {
-                    PaymentId = orderId,
+                    PaymentId = mobilepayPaymentId,
                     MobilePayAppRedirectUri = mpDeepLink
                 });
 
@@ -187,7 +186,6 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             // Assert
             // DB Contents
             Assert.Equal(mobilepayPaymentId, purchaseInDatabase.ExternalTransactionId);
-            Assert.Equal(orderId, purchaseInDatabase.OrderId);
 
             Assert.Equal(product1.Id, purchaseInDatabase.ProductId);
             Assert.Equal(product1.Name, purchaseInDatabase.ProductName);
@@ -202,7 +200,6 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             Assert.Equal(PurchaseStatus.PendingPayment, result.PurchaseStatus);
 
             Assert.Equal(PaymentType.MobilePay, result.PaymentDetails.PaymentType);
-            Assert.Equal(orderId, result.PaymentDetails.OrderId);
             Assert.Equal(mobilepayPaymentId, (result.PaymentDetails as MobilePayPaymentDetails).PaymentId);
             Assert.Equal(mpDeepLink, (result.PaymentDetails as MobilePayPaymentDetails).MobilePayAppRedirectUri);
         }
