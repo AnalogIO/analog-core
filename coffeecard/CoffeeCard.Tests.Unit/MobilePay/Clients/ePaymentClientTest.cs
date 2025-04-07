@@ -12,7 +12,7 @@ using Moq;
 using Moq.Protected;
 using Xunit;
 
-namespace CoffeeCard.Tests.Unit.MobilePay
+namespace CoffeeCard.Tests.Unit.MobilePay.Clients
 {
     public class ePaymentClientTests
     {
@@ -314,31 +314,6 @@ namespace CoffeeCard.Tests.Unit.MobilePay
 
             // Verify logging occurred
             VerifyLoggingOccurred();
-        }
-
-        private HttpClient CreateMockHttpClient<T>(HttpStatusCode statusCode, T content)
-        {
-            var handlerMock = new Mock<HttpMessageHandler>();
-
-            handlerMock
-                .Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync((HttpRequestMessage request, CancellationToken token) => new HttpResponseMessage
-                {
-                    StatusCode = statusCode,
-                    Content = JsonContent.Create(content),
-                    RequestMessage = request
-                });
-
-            var httpClient = new HttpClient(handlerMock.Object)
-            {
-                BaseAddress = new Uri(BaseUrl)
-            };
-
-            return httpClient;
         }
 
         private void VerifyLoggingOccurred()
