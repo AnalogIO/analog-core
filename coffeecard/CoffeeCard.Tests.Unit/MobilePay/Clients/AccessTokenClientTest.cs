@@ -17,7 +17,6 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
     public class AccessTokenClientTest : BaseClientTest
     {
         private readonly Mock<ILogger<AccessTokenClient>> _loggerMock;
-        private const string BaseUrl = "https://test.notvipps.dk";
 
         public AccessTokenClientTest()
         {

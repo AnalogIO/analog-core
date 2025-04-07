@@ -14,10 +14,9 @@ using Xunit;
 
 namespace CoffeeCard.Tests.Unit.MobilePay.Clients
 {
-    public class ePaymentClientTests
+    public class ePaymentClientTests : BaseClientTest
     {
         private readonly Mock<ILogger<ePaymentClient>> _loggerMock;
-        private const string BaseUrl = "https://test.notvipps.dk";
 
         public ePaymentClientTests()
         {
