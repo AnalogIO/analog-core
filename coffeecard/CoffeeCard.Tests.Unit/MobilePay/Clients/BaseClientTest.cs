@@ -13,7 +13,7 @@ public abstract class BaseClientTest
 {
     private const string BaseUrl = "https://test.notvipps.dk";
 
-    protected HttpClient CreateMockHttpClient<T>(HttpStatusCode statusCode, T content)
+    protected static HttpClient CreateMockHttpClient<T>(HttpStatusCode statusCode, T content)
     {
         var handlerMock = new Mock<HttpMessageHandler>();
 

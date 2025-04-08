@@ -16,12 +16,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
 {
     public class AccessTokenClientTest : BaseClientTest
     {
-        private readonly Mock<ILogger<AccessTokenClient>> _loggerMock;
-
-        public AccessTokenClientTest()
-        {
-            _loggerMock = new Mock<ILogger<AccessTokenClient>>();
-        }
+        private readonly Mock<ILogger<AccessTokenClient>> _loggerMock = new();
 
         [Fact(DisplayName = "GetToken returns valid response on success")]
         public async Task GetToken_ReturnsValidResponse_OnSuccess()
@@ -76,7 +71,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
                     It.IsAny<EventId>(),
                     It.Is<It.IsAnyType>((v, t) => true),
                     It.IsAny<Exception>(),
-                    It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
+                    It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)!),
                 Times.Once);
         }
     }

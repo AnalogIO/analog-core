@@ -98,7 +98,7 @@ public class MobilePayPaymentsService(
     /// </summary>
     /// <param name="amountInKroner">Amount in Danish kroner</param>
     /// <returns>MobilePay-compatible Amount</returns>
-    private Amount ConvertToAmount(int amountInKroner)
+    private static Amount ConvertToAmount(int amountInKroner)
     {
         return new Amount { Currency = Currency.DKK, Value = amountInKroner * 100 };
     }
