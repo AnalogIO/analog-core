@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 namespace CoffeeCard.MobilePay.Service.v2;
 
 public class MobilePayPaymentsService(
-    ePaymentClient ePaymentApi,
+    IEPaymentClient ePaymentApi,
     MobilePaySettings mobilePaySettings,
     ILogger<MobilePayPaymentsService> logger)
     : IMobilePayPaymentsService

@@ -23,7 +23,7 @@ namespace CoffeeCard.MobilePay.Utils
             services.AddTransient<MobilePayAuthorizationDelegatingHandler>();
             services.AddTransient<MobilePayIdempotencyDelegatingHandler>();
 
-            services.AddHttpClient<ePaymentClient>(client =>
+            services.AddHttpClient<IEPaymentClient, EPaymentClient>(client =>
                 {
                     client.AddDefaultHeaders(mobilePaySettings);
                     client.BaseAddress = mobilePaySettings.ApiUrl;
@@ -31,13 +31,13 @@ namespace CoffeeCard.MobilePay.Utils
                 .AddHttpMessageHandler<MobilePayAuthorizationDelegatingHandler>()
                 .AddHttpMessageHandler<MobilePayIdempotencyDelegatingHandler>();
 
-            services.AddHttpClient<WebhooksClient>(client =>
+            services.AddHttpClient<IWebhooksClient, WebhooksClient>(client =>
             {
                 client.AddDefaultHeaders(mobilePaySettings);
                 client.BaseAddress = mobilePaySettings.ApiUrl;
             }).AddHttpMessageHandler<MobilePayAuthorizationDelegatingHandler>();
 
-            services.AddHttpClient<AccessTokenClient>(client =>
+            services.AddHttpClient<IAccessTokenClient, AccessTokenClient>(client =>
             {
                 client.AddDefaultHeaders(mobilePaySettings);
                 client.BaseAddress = mobilePaySettings.ApiUrl;

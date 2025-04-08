@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 namespace CoffeeCard.MobilePay.Service.v2;
 
 public class MobilePayAccessTokenService(
-    AccessTokenClient accessTokenClient,
+    IAccessTokenClient accessTokenClient,
     MobilePaySettings mobilePaySettings,
     IMemoryCache memoryCache)
     : IMobilePayAccessTokenService

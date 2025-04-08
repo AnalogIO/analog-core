@@ -14,14 +14,9 @@ using Xunit;
 
 namespace CoffeeCard.Tests.Unit.MobilePay.Clients
 {
-    public class ePaymentClientTests : BaseClientTest
+    public class EPaymentClientTests : BaseClientTest
     {
-        private readonly Mock<ILogger<ePaymentClient>> _loggerMock;
-
-        public ePaymentClientTests()
-        {
-            _loggerMock = new Mock<ILogger<ePaymentClient>>();
-        }
+        private readonly Mock<ILogger<EPaymentClient>> _loggerMock = new();
 
         [Fact(DisplayName = "CreatePaymentAsync returns valid response on success")]
         public async Task CreatePaymentAsync_ReturnsValidResponse_OnSuccess()
@@ -34,7 +29,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
             };
 
             var httpClient = CreateMockHttpClient(HttpStatusCode.OK, expectedResponse);
-            var client = new ePaymentClient(httpClient, _loggerMock.Object);
+            var client = new EPaymentClient(httpClient, _loggerMock.Object);
 
             var request = new CreatePaymentRequest
             {
@@ -68,7 +63,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
             };
 
             var httpClient = CreateMockHttpClient(HttpStatusCode.BadRequest, problem);
-            var client = new ePaymentClient(httpClient, _loggerMock.Object);
+            var client = new EPaymentClient(httpClient, _loggerMock.Object);
 
             var request = new CreatePaymentRequest
             {
@@ -105,7 +100,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
             };
 
             var httpClient = CreateMockHttpClient(HttpStatusCode.OK, expectedResponse);
-            var client = new ePaymentClient(httpClient, _loggerMock.Object);
+            var client = new EPaymentClient(httpClient, _loggerMock.Object);
 
             // Act
             var result = await client.GetPaymentAsync(paymentReference);
@@ -131,7 +126,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
             };
 
             var httpClient = CreateMockHttpClient(HttpStatusCode.NotFound, problem);
-            var client = new ePaymentClient(httpClient, _loggerMock.Object);
+            var client = new EPaymentClient(httpClient, _loggerMock.Object);
 
             // Act & Assert
             await Assert.ThrowsAsync<MobilePayApiException>(() => client.GetPaymentAsync(paymentReference));
@@ -152,7 +147,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
             };
 
             var httpClient = CreateMockHttpClient(HttpStatusCode.OK, expectedResponse);
-            var client = new ePaymentClient(httpClient, _loggerMock.Object);
+            var client = new EPaymentClient(httpClient, _loggerMock.Object);
 
             var request = new RefundModificationRequest
             {
@@ -185,7 +180,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
             };
 
             var httpClient = CreateMockHttpClient(HttpStatusCode.BadRequest, problem);
-            var client = new ePaymentClient(httpClient, _loggerMock.Object);
+            var client = new EPaymentClient(httpClient, _loggerMock.Object);
 
             var request = new RefundModificationRequest
             {
@@ -215,7 +210,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
             };
 
             var httpClient = CreateMockHttpClient(HttpStatusCode.OK, expectedResponse);
-            var client = new ePaymentClient(httpClient, _loggerMock.Object);
+            var client = new EPaymentClient(httpClient, _loggerMock.Object);
 
             var request = new CaptureModificationRequest
             {
@@ -248,7 +243,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
             };
 
             var httpClient = CreateMockHttpClient(HttpStatusCode.BadRequest, problem);
-            var client = new ePaymentClient(httpClient, _loggerMock.Object);
+            var client = new EPaymentClient(httpClient, _loggerMock.Object);
 
             var request = new CaptureModificationRequest
             {
@@ -278,7 +273,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
             };
 
             var httpClient = CreateMockHttpClient(HttpStatusCode.OK, expectedResponse);
-            var client = new ePaymentClient(httpClient, _loggerMock.Object);
+            var client = new EPaymentClient(httpClient, _loggerMock.Object);
 
             var request = new CancelModificationRequest();
 
@@ -304,7 +299,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
             };
 
             var httpClient = CreateMockHttpClient(HttpStatusCode.BadRequest, problem);
-            var client = new ePaymentClient(httpClient, _loggerMock.Object);
+            var client = new EPaymentClient(httpClient, _loggerMock.Object);
 
             var request = new CancelModificationRequest();
 
