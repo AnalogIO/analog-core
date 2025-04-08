@@ -172,7 +172,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             };
 
             var mobilepayPaymentId = Guid.Parse("186d2b31-ff25-4414-9fd1-bfe9807fa8b7").ToString();
-            var mpDeepLink = "mobilepay://merchant_payments?payment_id=186d2b31-ff25-4414-9fd1-bfe9807fa8b7";
+            const string mpDeepLink = "mobilepay://merchant_payments?payment_id=186d2b31-ff25-4414-9fd1-bfe9807fa8b7";
             mobilePayService.Setup(mps => mps.InitiatePayment(It.IsAny<MobilePayPaymentRequest>()))
                 .ReturnsAsync(new MobilePayPaymentDetails
                 {
@@ -182,7 +182,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             // Act
             var result = await purchaseService.InitiatePurchase(request, user);
-            var purchaseInDatabase = await context.Purchases.FirstAsync();
+            var purchaseInDatabase = await context.Purchases.Include(purchase => purchase.PurchasedBy).FirstAsync();
 
             // Assert
             // DB Contents
@@ -201,8 +201,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             Assert.Equal(PurchaseStatus.PendingPayment, result.PurchaseStatus);
 
             Assert.Equal(PaymentType.MobilePay, result.PaymentDetails.PaymentType);
-            Assert.Equal(mobilepayPaymentId, (result.PaymentDetails as MobilePayPaymentDetails).PaymentId);
-            Assert.Equal(mpDeepLink, (result.PaymentDetails as MobilePayPaymentDetails).MobilePayAppRedirectUri);
+            Assert.Equal(mobilepayPaymentId, ((result.PaymentDetails as MobilePayPaymentDetails)!).PaymentId);
+            Assert.Equal(mpDeepLink, ((result.PaymentDetails as MobilePayPaymentDetails)!).MobilePayAppRedirectUri);
         }
 
         [Theory(DisplayName = "InitiatePurchase adds tickets to user when free")]
@@ -260,7 +260,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             // Assert
             var userUpdated = await context.Users.FindAsync(user.Id);
 
-            Assert.Single(userUpdated.Purchases);
+            Assert.Single(userUpdated!.Purchases);
             Assert.Equal(product.NumberOfTickets, userUpdated.Tickets.Count);
         }
 

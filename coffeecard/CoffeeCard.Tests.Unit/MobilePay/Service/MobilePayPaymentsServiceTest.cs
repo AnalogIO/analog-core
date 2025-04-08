@@ -140,7 +140,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Service
                 _loggerMock.Object);
 
             // Act & Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(() => service.RefundPayment(null, 25));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => service.RefundPayment(null!, 25));
         }
 
         [Fact(DisplayName = "RefundPayment throws ArgumentNullException when ExternalTransactionId is null")]
