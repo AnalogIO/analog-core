@@ -90,8 +90,8 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
             {
                 Webhooks = new List<Webhook>
                 {
-                    new Webhook { Id = webhook1Id, Url = new Uri(webhook1Url) },
-                    new Webhook { Id = webhook2Id, Url = new Uri(webhook2Url) }
+                    new() { Id = webhook1Id, Url = new Uri(webhook1Url) },
+                    new() { Id = webhook2Id, Url = new Uri(webhook2Url) }
                 }
             };
 
