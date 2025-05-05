@@ -10,7 +10,7 @@ namespace CoffeeCard.Models.DataTransferObjects.MobilePay
     ///     "orderId": "ae76a5ba-82e8-46d8-8431-6cbb3130b94a"
     /// }
     /// </example>
-    public class InitiatePurchaseResponseDto
+    public class InitiatePurchaseResponse
     {
         /// <summary>
         /// Order Id

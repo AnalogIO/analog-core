@@ -3,124 +3,67 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
+using CoffeeCard.MobilePay.Clients;
 using CoffeeCard.MobilePay.Exception.v2;
 using CoffeeCard.MobilePay.Generated.Api.WebhooksApi;
+using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using Microsoft.Extensions.Logging;
-using ApiException = CoffeeCard.MobilePay.Generated.Api.PaymentsApi.ApiException;
+using ApiException = CoffeeCard.MobilePay.Generated.Api.WebhooksApi.ApiException;
 
-namespace CoffeeCard.MobilePay.Service.v2
+namespace CoffeeCard.MobilePay.Service.v2;
+
+public class MobilePayWebhooksService(IWebhooksClient webhooksClient, ILogger<MobilePayWebhooksService> logger)
+    : IMobilePayWebhooksService
 {
-    public class MobilePayWebhooksService : IMobilePayWebhooksService
+    private static readonly ISet<WebhookEvent> DefaultEvents = new HashSet<WebhookEvent>
+        { WebhookEvent.Authorized, WebhookEvent.Cancelled, WebhookEvent.Expired, WebhookEvent.Aborted };
+
+    public async Task<RegisterWebhookResponse> RegisterWebhook(string url)
     {
-        private readonly WebhooksApi _webhooksApi;
-        private readonly ILogger<MobilePayWebhooksService> _logger;
+        logger.LogInformation("Register new webhook for Url: {url}, Events: {@events}", url, DefaultEvents);
 
-        public MobilePayWebhooksService(WebhooksApi webhooksApi, ILogger<MobilePayWebhooksService> logger)
+        var response = await webhooksClient.CreateWebhookAsync(new RegisterRequest()
         {
-            _webhooksApi = webhooksApi;
-            _logger = logger;
+            Events = DefaultEvents.Select(webhookEvent => webhookEvent.ToMpEventType()).ToList(),
+            Url = new Uri(url)
+        });
+
+        return new RegisterWebhookResponse()
+        {
+            WebhookId = response.Id,
+            Url = new Uri(url),
+            Secret = response.Secret
+        };
+    }
+
+    public async Task<GetWebhookResponse> GetWebhook(Guid webhookId)
+    {
+        var allWebhooks = await webhooksClient.GetAllWebhooksAsync();
+        var result = allWebhooks.Webhooks.FirstOrDefault(webhook => webhook.Id == webhookId);
+
+        if (result == null)
+        {
+            logger.LogError("Webhook with Id: {Id} does not exist", webhookId);
+            throw new EntityNotFoundException($"Webhook with Id: {webhookId} does not exist");
         }
 
-        public async Task<SingleWebhookResponse> RegisterWebhook(string url, ICollection<Events> events)
+        return new GetWebhookResponse()
         {
-            try
-            {
-                _logger.LogInformation("Register new webhook for Url: {url}, Events: {events}", url, events);
+            Url = result.Url,
+            WebhookId = result.Id,
+        };
+    }
 
-                return await _webhooksApi.CreateWebhookAsync(new CreateWebhookRequest
-                {
-                    Events = events,
-                    Url = url
-                });
-            }
-            catch (ApiException e)
-            {
-                _logger.LogError(e, "Error calling Post Webhook with Url: {Url} and Events: {Events}. Http {StatusCode} {Message}", url, events, e.StatusCode, e.Message);
-                throw new MobilePayApiException(e.StatusCode, e.Message);
-            }
-        }
-
-        public async Task<SingleWebhookResponse> GetWebhook(Guid webhookId)
+    public async Task<GetAllWebhooksResponse> GetAllWebhooks()
+    {
+        var allWebhooks = await webhooksClient.GetAllWebhooksAsync();
+        return new GetAllWebhooksResponse()
         {
-            try
+            Webhooks = allWebhooks.Webhooks.Select(webhook => new GetWebhookResponse()
             {
-                return await _webhooksApi.GetWebhookAsync(webhookId);
-            }
-            catch (ApiException e)
-            {
-                switch (e.StatusCode)
-                {
-                    case 404:
-                        _logger.LogError("Webhook with Id: {Id} does not exist", webhookId);
-                        throw new EntityNotFoundException(e.Message);
-                    default:
-                        _logger.LogError(e, "Error calling Get Webhook with Id: {Id}. Http {StatusCode} {Message}", webhookId, e.StatusCode, e.Message);
-                        throw new MobilePayApiException(e.StatusCode, e.Message);
-                }
-            }
-        }
-
-        public async Task DeregisterWebhook(Guid webhookId)
-        {
-            try
-            {
-                await _webhooksApi.DeleteWebhookAsync(webhookId);
-            }
-            catch (ApiException e)
-            {
-                _logger.LogError(e, "Error calling Delete Webhook with Id: {Id}. Http {StatusCode} {Message}", webhookId, e.StatusCode, e.Message);
-                throw new MobilePayApiException(e.StatusCode, e.Message);
-            }
-        }
-
-        public async Task<GetMultipleWebhooksResponse> GetAllWebhooks()
-        {
-            try
-            {
-                return await _webhooksApi.GetWebhooksListAsync();
-            }
-            catch (ApiException e)
-            {
-                _logger.LogError("Error calling GetAllWebhooks. Http {StatusCode} {Message}", e.StatusCode, e.Message);
-                throw new MobilePayApiException(e.StatusCode, e.Message);
-            }
-        }
-
-        public async Task<SingleWebhookResponse> UpdateWebhook(Guid webhookId, string url, ICollection<Events> events)
-        {
-            var events3 = events.Select(MapEventsToEvents3).ToHashSet();
-
-            _logger.LogInformation("Sync webhook subscription. Webhook: {webhookId}, Url: {url}, subscribed webhook events: {events}", webhookId, url, events3);
-
-            try
-            {
-                return await _webhooksApi.UpdateWebhookAsync(webhookId, new UpdateWebhookRequest
-                {
-                    Url = url,
-                    Events = events3
-                });
-            }
-            catch (ApiException e)
-            {
-                _logger.LogError(e, "Error calling Update Webhook with Id: {Id}. Http {StatusCode} {Message}", webhookId, e.StatusCode, e.Message);
-                throw new MobilePayApiException(e.StatusCode, e.Message);
-
-            }
-        }
-
-        private static Events3 MapEventsToEvents3(Events events)
-        {
-            var event3 = events switch
-            {
-                Events.Payment_cancelled_by_user => Events3.Payment_cancelled_by_user,
-                Events.Payment_expired => Events3.Payment_expired,
-                Events.Payment_reserved => Events3.Payment_reserved,
-                Events.Paymentpoint_activated => Events3.Paymentpoint_activated,
-                Events.Transfer_succeeded => Events3.Transfer_succeeded,
-                _ => throw new ArgumentException($"Events value {events} not mapped to Events3")
-            };
-
-            return event3;
-        }
+                Url = webhook.Url,
+                WebhookId = webhook.Id,
+            }).ToList()
+        };
     }
 }

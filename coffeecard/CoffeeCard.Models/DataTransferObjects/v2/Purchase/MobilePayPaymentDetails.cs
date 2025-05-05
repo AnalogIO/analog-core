@@ -20,24 +20,13 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// </summary>
         /// <example>mobilepay://merchant_payments?payment_id=186d2b31-ff25-4414-9fd1-bfe9807fa8b7</example>
         [Required]
-        public string MobilePayAppRedirectUri { get; }
+        public required string MobilePayAppRedirectUri { get; init; }
 
         /// <summary>
         /// MobilePay Id for a payment
         /// </summary>
         /// <example>186d2b31-ff25-4414-9fd1-bfe9807fa8b7</example>
         [Required]
-        public string PaymentId { get; }
-
-        /// <summary>
-        /// Creates a new instance of <see cref="MobilePayPaymentDetails"/>
-        /// </summary>
-        public MobilePayPaymentDetails(string orderId, string mobilePayAppRedirectUri, string paymentId)
-        {
-            PaymentType = PaymentType.MobilePay;
-            OrderId = orderId;
-            MobilePayAppRedirectUri = mobilePayAppRedirectUri;
-            PaymentId = paymentId;
-        }
+        public required string PaymentId { get; init; }
     }
 }
