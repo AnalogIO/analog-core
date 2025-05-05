@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace CoffeeCard.Models.DataTransferObjects.MobilePay;
+namespace CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 
 /// <summary>
 /// Response object containing information about a specific MobilePay webhook.

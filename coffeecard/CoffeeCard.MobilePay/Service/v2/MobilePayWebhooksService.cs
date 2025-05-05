@@ -6,7 +6,7 @@ using CoffeeCard.Common.Errors;
 using CoffeeCard.MobilePay.Clients;
 using CoffeeCard.MobilePay.Exception.v2;
 using CoffeeCard.MobilePay.Generated.Api.WebhooksApi;
-using CoffeeCard.Models.DataTransferObjects.MobilePay;
+using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using Microsoft.Extensions.Logging;
 using ApiException = CoffeeCard.MobilePay.Generated.Api.WebhooksApi.ApiException;
 

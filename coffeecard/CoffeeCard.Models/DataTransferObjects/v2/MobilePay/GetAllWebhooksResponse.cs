@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using CoffeeCard.Models.DataTransferObjects.MobilePay;
 
-namespace CoffeeCard.Models.DataTransferObjects.MobilePay;
+namespace CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 
 /// <summary>
 /// Response object for retrieving all registered MobilePay webhooks.

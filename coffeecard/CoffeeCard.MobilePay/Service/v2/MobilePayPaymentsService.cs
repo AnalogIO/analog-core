@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 namespace CoffeeCard.MobilePay.Service.v2;
 
 public class MobilePayPaymentsService(
-    IEPaymentClient ePaymentApi,
+    IEPaymentClient ePaymentClient,
     MobilePaySettings mobilePaySettings,
     ILogger<MobilePayPaymentsService> logger)
     : IMobilePayPaymentsService
@@ -22,7 +22,7 @@ public class MobilePayPaymentsService(
     )
     {
         var orderId = paymentRequest.OrderId.ToString();
-        var response = await ePaymentApi.CreatePaymentAsync(
+        var response = await ePaymentClient.CreatePaymentAsync(
             new CreatePaymentRequest
             {
                 Amount = ConvertToAmount(paymentRequest.Amount),
@@ -48,7 +48,7 @@ public class MobilePayPaymentsService(
 
     public async Task<MobilePayPaymentDetails> GetPayment(Guid paymentId)
     {
-        var response = await ePaymentApi.GetPaymentAsync(paymentId.ToString());
+        var response = await ePaymentClient.GetPaymentAsync(paymentId.ToString());
 
         return new MobilePayPaymentDetails
         {
@@ -66,7 +66,7 @@ public class MobilePayPaymentsService(
         {
             ModificationAmount = new Amount { Currency = Currency.DKK, Value = amount }
         };
-        await ePaymentApi.RefundPaymentAsync(
+        await ePaymentClient.RefundPaymentAsync(
             purchase.ExternalTransactionId,
             issueRefundRequest
         );
@@ -76,7 +76,7 @@ public class MobilePayPaymentsService(
 
     public async Task CapturePayment(Guid paymentId, int amountInDanishKroner)
     {
-        await ePaymentApi.CapturePaymentAsync(
+        await ePaymentClient.CapturePaymentAsync(
             paymentId.ToString(),
             new CaptureModificationRequest { ModificationAmount = ConvertToAmount(amountInDanishKroner) }
         );
@@ -84,7 +84,7 @@ public class MobilePayPaymentsService(
 
     public async Task CancelPayment(Guid paymentId)
     {
-        await ePaymentApi.CancelPaymentAsync(
+        await ePaymentClient.CancelPaymentAsync(
             paymentId.ToString(),
             new CancelModificationRequest
             {

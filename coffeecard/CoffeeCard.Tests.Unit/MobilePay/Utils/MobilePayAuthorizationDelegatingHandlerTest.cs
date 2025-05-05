@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.MobilePay.Utils;
-using CoffeeCard.Models.DataTransferObjects.MobilePay;
+using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Moq;
 using Moq.Protected;

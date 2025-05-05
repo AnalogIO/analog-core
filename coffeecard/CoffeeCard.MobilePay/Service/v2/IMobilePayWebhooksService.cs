@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using CoffeeCard.Models.DataTransferObjects.MobilePay;
+using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 
 namespace CoffeeCard.MobilePay.Service.v2
 {
