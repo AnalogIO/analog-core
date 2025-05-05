@@ -59,4 +59,10 @@ public class TokenService : ITokenService
         var tokens = await _context.Tokens.Where(t => t.UserId == user.Id).ExecuteDeleteAsync();
         await _context.SaveChangesAsync();
     }
+
+    public async Task DeleteTokenAsync(Token token)
+    {
+        _context.Tokens.Remove(token);
+        await _context.SaveChangesAsync();
+    }
 }

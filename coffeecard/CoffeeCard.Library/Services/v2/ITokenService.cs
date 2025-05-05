@@ -11,6 +11,8 @@ namespace CoffeeCard.Library.Services.v2
         Task<string> GenerateRefreshTokenAsync(User user);
         Task<Token> GetValidTokenByHashAsync(string tokenString);
 
+        Task DeleteTokenAsync(Token token);
+
         Task DeleteTokensByUserAsync(User user);
     }
 }
