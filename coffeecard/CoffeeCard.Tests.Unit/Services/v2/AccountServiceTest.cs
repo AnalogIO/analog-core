@@ -365,6 +365,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var userEmail = "test@test.test";
             var user = UserBuilder.DefaultCustomer().WithEmail(userEmail).WithUserState(UserState.Active).Build();
             var expected = UserBuilder.DefaultCustomer()
+                .WithPrivacyActivated(user.PrivacyActivated)
                 .WithName("")
                 .WithPassword("")
                 .WithSalt("")
