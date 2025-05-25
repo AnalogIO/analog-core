@@ -64,6 +64,10 @@
       {
         "name": "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES",
         "value": "Microsoft.AspNetCore.ApplicationInsights.HostingStartup"
+      },
+      {
+        "name": "FeatureManagement__MobilePayManageWebhookRegistration",
+        "value": true
       }
     ],
     "keyVaultReferences": [
