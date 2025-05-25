@@ -72,6 +72,10 @@
       {
         "name": "OtlpSettings__Protocol",
         "value": "http"
+      },
+      {
+        "name": "FeatureManagement__MobilePayManageWebhookRegistration",
+        "value": true
       }
     ],
     "keyVaultReferences": [
