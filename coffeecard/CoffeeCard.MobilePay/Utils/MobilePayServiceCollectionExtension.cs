@@ -1,7 +1,7 @@
-﻿using System.Net.Http.Headers;
+﻿using System;
+using System.Net.Http;
 using CoffeeCard.Common.Configuration;
-using CoffeeCard.MobilePay.Generated.Api.PaymentsApi;
-using CoffeeCard.MobilePay.Generated.Api.WebhooksApi;
+using CoffeeCard.MobilePay.Clients;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CoffeeCard.MobilePay.Utils
@@ -17,23 +17,37 @@ namespace CoffeeCard.MobilePay.Utils
         /// <param name="services">Services collection</param>
         /// <param name="mobilePaySettings">Settings class with MobilePayApi configuration</param>
         public static void AddMobilePayHttpClients(this IServiceCollection services,
-            MobilePaySettingsV2 mobilePaySettings)
+            MobilePaySettings mobilePaySettings)
         {
             mobilePaySettings.Validate();
+            services.AddTransient<MobilePayAuthorizationDelegatingHandler>();
+            services.AddTransient<MobilePayIdempotencyDelegatingHandler>();
 
-            var apiKeyAuthentication = new AuthenticationHeaderValue("Bearer", mobilePaySettings.ApiKey);
+            services.AddHttpClient<IEPaymentClient, EPaymentClient>(client =>
+                {
+                    client.AddDefaultHeaders(mobilePaySettings);
+                    client.BaseAddress = mobilePaySettings.ApiUrl;
+                })
+                .AddHttpMessageHandler<MobilePayAuthorizationDelegatingHandler>()
+                .AddHttpMessageHandler<MobilePayIdempotencyDelegatingHandler>();
 
-            services.AddHttpClient<PaymentsApi>(client =>
+            services.AddHttpClient<IWebhooksClient, WebhooksClient>(client =>
             {
+                client.AddDefaultHeaders(mobilePaySettings);
                 client.BaseAddress = mobilePaySettings.ApiUrl;
-                client.DefaultRequestHeaders.Authorization = apiKeyAuthentication;
-            });
+            }).AddHttpMessageHandler<MobilePayAuthorizationDelegatingHandler>();
 
-            services.AddHttpClient<WebhooksApi>(client =>
+            services.AddHttpClient<IAccessTokenClient, AccessTokenClient>(client =>
             {
+                client.AddDefaultHeaders(mobilePaySettings);
                 client.BaseAddress = mobilePaySettings.ApiUrl;
-                client.DefaultRequestHeaders.Authorization = apiKeyAuthentication;
             });
+        }
+
+        private static void AddDefaultHeaders(this HttpClient httpClient, MobilePaySettings settings)
+        {
+            httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", settings.OcpApimSubscriptionKey);
+            httpClient.DefaultRequestHeaders.Add("Merchant-Serial-Number", settings.MerchantSerialNumber);
         }
     }
 }

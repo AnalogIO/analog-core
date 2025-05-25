@@ -18,17 +18,14 @@ namespace CoffeeCard.Library.Services.v2
     {
         private const string MpSignatureKeyCacheKey = "MpSignatureKey";
 
-        private static readonly ISet<Events> DefaultEvents = new HashSet<Events>
-            {Events.Payment_reserved, Events.Payment_expired, Events.Payment_cancelled_by_user};
-
         private readonly CoffeeCardContext _context;
         private readonly IMobilePayWebhooksService _mobilePayWebhooksService;
-        private readonly MobilePaySettingsV2 _mobilePaySettings;
+        private readonly MobilePaySettings _mobilePaySettings;
         private readonly IMemoryCache _memoryCache;
         private readonly ILogger<WebhookService> _logger;
 
         public WebhookService(CoffeeCardContext context, IMobilePayWebhooksService mobilePayWebhooksService,
-            MobilePaySettingsV2 mobilePaySettings, IMemoryCache memoryCache, ILogger<WebhookService> logger)
+            MobilePaySettings mobilePaySettings, IMemoryCache memoryCache, ILogger<WebhookService> logger)
         {
             _context = context;
             _mobilePayWebhooksService = mobilePayWebhooksService;
@@ -83,7 +80,7 @@ namespace CoffeeCard.Library.Services.v2
             {
                 var mobilePayWebhook = await _mobilePayWebhooksService.GetWebhook(webhook.Id);
 
-                if (!mobilePayWebhook.Url.Equals(_mobilePaySettings.WebhookUrl, StringComparison.OrdinalIgnoreCase))
+                if (!mobilePayWebhook.Url.ToString().Equals(webhook.Url, StringComparison.OrdinalIgnoreCase))
                 {
                     await DisableAndRegisterNewWebhook(webhook);
                 }
@@ -105,13 +102,13 @@ namespace CoffeeCard.Library.Services.v2
         private async Task RegisterWebhook()
         {
             var mobilePayWebhook =
-                await _mobilePayWebhooksService.RegisterWebhook(_mobilePaySettings.WebhookUrl, DefaultEvents);
+                await _mobilePayWebhooksService.RegisterWebhook(_mobilePaySettings.WebhookUrl);
 
             var webhook = new WebhookConfiguration
             {
                 Id = mobilePayWebhook.WebhookId,
-                Url = mobilePayWebhook.Url,
-                SignatureKey = mobilePayWebhook.SignatureKey,
+                Url = mobilePayWebhook.Url.ToString(),
+                SignatureKey = mobilePayWebhook.Secret,
                 Status = WebhookStatus.Active,
                 LastUpdated = DateTime.UtcNow
             };

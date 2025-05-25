@@ -1,184 +1,304 @@
-﻿{
-  "openapi": "3.0.3",
+{
+  "openapi": "3.0.1",
   "info": {
     "title": "Webhooks API",
-    "description": "<br/> MobilePay Webhooks API makes it easy for you to register to webhooks.\n\nCurrently supported events about payments (those that start with `payment.*`) are only **about payments from \"App payments\"** product.\n\nEvent `transfer.succeeded` is generic and supports all products.",
-    "contact": {
-      "email": "developer@mobilepay.dk"
-    },
-    "version": ""
+    "description": "The Webhooks API enables you to get HTTP notifications for subscribed events.\nSee the [Webhooks API guide](/docs/APIs/webhooks-api/api-guide/) for more details.",
+    "version": "v1"
   },
   "servers": [
     {
-      "url": "https://api.mobilepay.dk",
-      "description": "Production server (uses **live** data)"
+      "url": "https://api.vipps.no/webhooks",
+      "description": "Production (Prod)"
     },
     {
-      "url": "https://api.sandbox.mobilepay.dk",
-      "description": "Production server (uses **test** data)"
+      "url": "https://apitest.vipps.no/webhooks",
+      "description": "Test (MT)"
     }
   ],
   "paths": {
     "/v1/webhooks": {
       "get": {
-        "summary": "fetch all webhooks",
-        "operationId": "get-webhooks-list",
+        "tags": [
+          "v1"
+        ],
+        "summary": "Get all registered webhooks",
+        "parameters": [
+          {
+            "name": "Ocp-Apim-Subscription-Key",
+            "in": "header",
+            "description": "The subscription key",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string",
+              "example": "da7d5b0e18a84aeda961c0c31b75c2a9"
+            }
+          },
+          {
+            "name": "Merchant-Serial-Number",
+            "in": "header",
+            "description": "The Merchant Serial Number (MSN) is a unique ID for the sale unit that this payment is made for.\nThis is a required parameter if you are a partner making payments on behalf of a merchant.\nThe partner must use the merchant's MSN (not the partner's MSN).\nThis parameter is optional, and recommended, for regular Vipps merchants making payments for themselves.",
+            "style": "simple",
+            "schema": {
+              "type": "string",
+              "example": "654321"
+            }
+          },
+          {
+            "name": "Vipps-System-Name",
+            "in": "header",
+            "description": "The name of the ecommerce solution.\nOne word in lowercase letters is good.\nSee [HTTP headers](/docs/knowledge-base/http-headers/).",
+            "style": "simple",
+            "schema": {
+              "maxLength": 30,
+              "type": "string",
+              "example": "woocommerce"
+            }
+          },
+          {
+            "name": "Vipps-System-Version",
+            "in": "header",
+            "description": "The version number of the ecommerce solution.\nSee [HTTP headers](/docs/knowledge-base/http-headers/).",
+            "style": "simple",
+            "schema": {
+              "maxLength": 30,
+              "type": "string",
+              "example": "5.4.0"
+            }
+          },
+          {
+            "name": "Vipps-System-Plugin-Name",
+            "in": "header",
+            "description": "The name of the ecommerce plugin (if applicable).\nOne word in lowercase letters is good.\nSee [HTTP headers](/docs/knowledge-base/http-headers/).",
+            "style": "simple",
+            "schema": {
+              "maxLength": 30,
+              "type": "string",
+              "example": "vipps-woocommerce"
+            }
+          },
+          {
+            "name": "Vipps-System-Plugin-Version",
+            "in": "header",
+            "description": "The version number of the ecommerce plugin (if applicable).\nSee [HTTP headers](/docs/knowledge-base/http-headers/).",
+            "style": "simple",
+            "schema": {
+              "maxLength": 30,
+              "type": "string",
+              "example": "1.2.1"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GetMultipleWebhooksResponse"
+                  "$ref": "#/components/schemas/QueryResponse"
                 }
               }
             }
           },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "409": {
-            "description": "Conflict"
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         }
       },
       "post": {
-        "summary": "create webhook",
-        "operationId": "create-webhook",
+        "tags": [
+          "v1"
+        ],
+        "summary": "Register webhook",
+        "description": "Register a new webhook.\nThere is a limit to the number of webhooks that can be registered per event, see the API guide for more information.",
+        "parameters": [
+          {
+            "name": "Ocp-Apim-Subscription-Key",
+            "in": "header",
+            "description": "The subscription key.\nSee [API keys](/docs/knowledge-base/api-keys/).",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string",
+              "example": "da7d5b0e18a84aeda961c0c31b75c2a9"
+            }
+          },
+          {
+            "name": "Merchant-Serial-Number",
+            "in": "header",
+            "description": "The Merchant Serial Number (MSN) is a unique ID for the sale unit that this payment is made for.\nThis is a required parameter if you are a partner making payments on behalf of a merchant.\nThe partner must use the merchant's MSN (not the partner's MSN).\nThis parameter is optional, and recommended, for regular Vipps merchants making payments for themselves.",
+            "style": "simple",
+            "schema": {
+              "type": "string",
+              "example": "654321"
+            }
+          },
+          {
+            "name": "Vipps-System-Name",
+            "in": "header",
+            "description": "The name of the ecommerce solution.\nOne word in lowercase letters is good.\nSee [HTTP headers](/docs/knowledge-base/http-headers/).",
+            "style": "simple",
+            "schema": {
+              "maxLength": 30,
+              "type": "string",
+              "example": "woocommerce"
+            }
+          },
+          {
+            "name": "Vipps-System-Version",
+            "in": "header",
+            "description": "The version number of the ecommerce solution.\nSee [HTTP headers](/docs/knowledge-base/http-headers/).",
+            "style": "simple",
+            "schema": {
+              "maxLength": 30,
+              "type": "string",
+              "example": "5.4.0"
+            }
+          },
+          {
+            "name": "Vipps-System-Plugin-Name",
+            "in": "header",
+            "description": "The name of the ecommerce plugin (if applicable).\nOne word in lowercase letters is good.\nSee [HTTP headers](/docs/knowledge-base/http-headers/).",
+            "style": "simple",
+            "schema": {
+              "maxLength": 30,
+              "type": "string",
+              "example": "vipps-woocommerce"
+            }
+          },
+          {
+            "name": "Vipps-System-Plugin-Version",
+            "in": "header",
+            "description": "The version number of the ecommerce plugin (if applicable).\nSee [HTTP headers](/docs/knowledge-base/http-headers/).",
+            "style": "simple",
+            "schema": {
+              "maxLength": 30,
+              "type": "string",
+              "example": "1.2.1"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateWebhookRequest"
+                "$ref": "#/components/schemas/RegisterRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
-          "200": {
-            "description": "OK",
+          "201": {
+            "description": "Created",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SingleWebhookResponse"
+                  "$ref": "#/components/schemas/RegisterResponse"
                 }
               }
             }
           },
           "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "409": {
-            "description": "Conflict"
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         }
       }
     },
-    "/v1/webhooks/{webhookid}": {
-      "put": {
-        "summary": "update webhook",
-        "operationId": "update-webhook",
-        "parameters": [
-          {
-            "name": "webhookid",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateWebhookRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SingleWebhookResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "409": {
-            "description": "Conflict"
-          }
-        }
-      },
-      "get": {
-        "summary": "fetch single webhook",
-        "operationId": "get-webhook",
-        "parameters": [
-          {
-            "name": "webhookid",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SingleWebhookResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "409": {
-            "description": "Conflict"
-          }
-        }
-      },
+    "/v1/webhooks/{id}": {
       "delete": {
-        "summary": "delete webhook",
-        "operationId": "delete-webhook",
+        "tags": [
+          "v1"
+        ],
+        "summary": "Delete a webhook",
         "parameters": [
           {
-            "name": "webhookid",
+            "name": "id",
             "in": "path",
             "required": true,
+            "style": "simple",
             "schema": {
               "type": "string",
               "format": "uuid"
+            }
+          },
+          {
+            "name": "Ocp-Apim-Subscription-Key",
+            "in": "header",
+            "description": "The subscription key",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string",
+              "example": "da7d5b0e18a84aeda961c0c31b75c2a9"
+            }
+          },
+          {
+            "name": "Merchant-Serial-Number",
+            "in": "header",
+            "description": "The Merchant Serial Number (MSN) is a unique ID for the sale unit that this payment is made for.\nThis is a required parameter if you are a partner making payments on behalf of a merchant.\nThe partner must use the merchant's MSN (not the partner's MSN).\nThis parameter is optional, and recommended, for regular Vipps merchants making payments for themselves.",
+            "style": "simple",
+            "schema": {
+              "type": "string",
+              "example": "654321"
+            }
+          },
+          {
+            "name": "Vipps-System-Name",
+            "in": "header",
+            "description": "The name of the ecommerce solution.\nOne word in lowercase letters is good.\nSee [HTTP headers](/docs/knowledge-base/http-headers/).",
+            "style": "simple",
+            "schema": {
+              "maxLength": 30,
+              "type": "string",
+              "example": "woocommerce"
+            }
+          },
+          {
+            "name": "Vipps-System-Version",
+            "in": "header",
+            "description": "The version number of the ecommerce solution.\nSee [HTTP headers](/docs/knowledge-base/http-headers/).",
+            "style": "simple",
+            "schema": {
+              "maxLength": 30,
+              "type": "string",
+              "example": "5.4.0"
+            }
+          },
+          {
+            "name": "Vipps-System-Plugin-Name",
+            "in": "header",
+            "description": "The name of the ecommerce plugin (if applicable).\nOne word in lowercase letters is good.\nSee [HTTP headers](/docs/knowledge-base/http-headers/).",
+            "style": "simple",
+            "schema": {
+              "maxLength": 30,
+              "type": "string",
+              "example": "vipps-woocommerce"
+            }
+          },
+          {
+            "name": "Vipps-System-Plugin-Version",
+            "in": "header",
+            "description": "The version number of the ecommerce plugin (if applicable).\nSee [HTTP headers](/docs/knowledge-base/http-headers/).",
+            "style": "simple",
+            "schema": {
+              "maxLength": 30,
+              "type": "string",
+              "example": "1.2.1"
             }
           }
         ],
@@ -186,52 +306,12 @@
           "204": {
             "description": "No Content"
           },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "409": {
-            "description": "Conflict"
-          }
-        }
-      }
-    },
-    "/v1/webhooks/{webhookid}/publishtestnotification": {
-      "post": {
-        "summary": "publish test notification to a specified webhook",
-        "operationId": "publish-test-notification",
-        "parameters": [
-          {
-            "name": "webhookid",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "409": {
-            "description": "There was an error sending the test notification to webhook.",
+          "400": {
+            "description": "Bad Request",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -241,79 +321,70 @@
     }
   },
   "components": {
-    "parameters": {
-      "correlationIdParam": {
-        "name": "CorrelationId",
-        "in": "header",
-        "required": false,
-        "description": "Correlation id used for logging (if you don't pass any value, we'll generate it)",
-        "schema": {
-          "type": "string",
-          "format": "uuid"
-        }
-      }
-    },
     "schemas": {
-      "CreateWebhookRequest": {
+      "ExtraDetail": {
         "required": [
-          "events",
-          "url"
+          "name",
+          "reason"
         ],
         "type": "object",
         "properties": {
-          "url": {
+          "name": {
             "type": "string",
-            "format": "url",
-            "description": "URL to where webhook requests will be sent. Must be HTTPS. Scheme and host will be converted to lower case. Result can be seen in the response."
+            "example": "url"
           },
-          "events": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "enum": [
-                "payment.reserved",
-                "payment.expired",
-                "paymentpoint.activated",
-                "payment.cancelled_by_user",
-                "transfer.succeeded"
-              ]
-            },
-            "description": "List of subscribed events.\n"
-          },
-          "paymentPointId": {
+          "reason": {
             "type": "string",
-            "description": "Optional. Webhook will receive notifications only coming from specified payment point.",
-            "format": "uuid",
-            "nullable": true
+            "example": "The property is required and cannot be null or empty."
           }
-        }
+        },
+        "additionalProperties": false
       },
-      "ErrorResponse": {
+      "ProblemDetails": {
         "type": "object",
         "properties": {
-          "code": {
+          "type": {
             "type": "string",
             "nullable": true,
-            "example": "1234"
+            "example": "00-bb841c551513e233de8a01472013fa9f-542c71e40916a6ce-00"
           },
-          "message": {
+          "title": {
             "type": "string",
             "nullable": true,
-            "example": "Error message explaining the error that happened while processing the request"
+            "example": "Bad Request"
           },
-          "correlationId": {
-            "type": "string",
+          "status": {
+            "type": "integer",
+            "format": "int32",
             "nullable": true,
-            "example": "91f2b05f-2171-4cea-9d5a-1cdbed6ae2cd"
+            "example": 400
           },
-          "origin": {
+          "detail": {
             "type": "string",
             "nullable": true,
-            "example": "WBH"
+            "example": "One or more validation errors occurred."
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true,
+            "example": "/v1/webhooks"
+          },
+          "traceId": {
+            "type": "string",
+            "nullable": true,
+            "example": "00-bb841c551513e233de8a01472013fa9f-542c71e40916a6ce-00"
+          },
+          "extraDetails": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExtraDetail"
+            },
+            "nullable": true
           }
-        }
+        },
+        "additionalProperties": false
       },
-      "GetMultipleWebhooksResponse": {
+      "QueryResponse": {
         "required": [
           "webhooks"
         ],
@@ -322,65 +393,13 @@
           "webhooks": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/SingleWebhookResponse"
-            },
-            "description": "The requested list of webhooks."
+              "$ref": "#/components/schemas/Webhook"
+            }
           }
-        }
+        },
+        "additionalProperties": false
       },
-      "SingleWebhookResponse": {
-        "required": [
-          "events",
-          "signatureKey",
-          "url",
-          "webhookId"
-        ],
-        "type": "object",
-        "properties": {
-          "webhookId": {
-            "type": "string",
-            "description": "Unique identifier for the object.",
-            "format": "uuid",
-            "example": "e4a2e195-74f6-42e1-a172-83291c9d2a41"
-          },
-          "url": {
-            "type": "string",
-            "format": "url",
-            "description": "The URL of the webhook endpoint.",
-            "example": "https://www.my-site.com/webhooks"
-          },
-          "events": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "enum": [
-                "payment.reserved",
-                "payment.expired",
-                "paymentpoint.activated",
-                "payment.cancelled_by_user",
-                "transfer.succeeded"
-              ]
-            },
-            "description": "List of subscribed events.",
-            "example": [
-              "payment.reserved"
-            ]
-          },
-          "signatureKey": {
-            "type": "string",
-            "description": "The webhook's secret is used to generate webhook signatures.",
-            "example": "my-secure-signature-key"
-          },
-          "paymentPointId": {
-            "type": "string",
-            "description": "Payment point for which the webhook received notifications.",
-            "format": "uuid",
-            "nullable": true,
-            "example": "bc2d4b85-3b0a-4aa4-b568-12a186a862b5"
-          }
-        }
-      },
-      "UpdateWebhookRequest": {
+      "RegisterRequest": {
         "required": [
           "events",
           "url"
@@ -389,54 +408,88 @@
         "properties": {
           "url": {
             "type": "string",
-            "format": "url",
-            "description": "URL to where webhook requests will be sent. Must be HTTPS. Scheme and host will be converted to lower case. Result can be seen in the response."
+            "description": "The URL that updates should be sent to.\nMust be a valid, world-reachable URL.\nThe URL must use HTTPS.\nThe URL must respond with a 2XX HTTP status code, like `HTTP 200 OK`.\nCan not be a URL that redirects to a different URL.\nWe don't send requests to all ports, so to be safe use common ports such as: 80, 443, 8080.",
+            "format": "uri",
+            "example": "https://example.com/webhook-callback"
           },
           "events": {
             "type": "array",
             "items": {
-              "type": "string",
-              "enum": [
-                "payment.reserved",
-                "payment.expired",
-                "paymentpoint.activated",
-                "payment.cancelled_by_user",
-                "transfer.succeeded"
-              ]
+              "type": "string"
             },
-            "description": "List of subscribed events.\n"
-          },
-          "paymentPointId": {
-            "type": "string",
-            "description": "Optional. Webhook will receive notifications only coming from specified payment point.",
-            "format": "uuid",
-            "nullable": true
+            "description": "See [Webhooks API Events](/docs/APIs/webhooks-api/events/) for details.",
+            "example": [
+              "epayments.payment.captured.v1",
+              "epayments.payment.created.v1"
+            ]
           }
-        }
+        },
+        "additionalProperties": false
+      },
+      "RegisterResponse": {
+        "required": [
+          "id",
+          "secret"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The ID of the webhook URL. Used to retrieve and delete it later.",
+            "format": "uuid"
+          },
+          "secret": {
+            "type": "string",
+            "description": "The secret of the webhook URL, used in the `Authorization` header\nfor the API request to the webhook URL.\nSee: [Request authentication](/docs/APIs/webhooks-api/request-authentication/).",
+            "example": "090a478d-37ff-4e77-970e-d457aeb26a3a"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Webhook": {
+        "required": [
+          "events",
+          "id",
+          "url"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The ID of the webhook URL.",
+            "format": "uuid"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://example.com/callbacks"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "service.payment.captured.v1",
+              "service.payment.created.v2"
+            ]
+          }
+        },
+        "additionalProperties": false
       }
     },
     "securitySchemes": {
-      "apiKey": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "API key",
-        "description": "Authorization header using the Bearer scheme, e.g., `Authorization: Bearer {api key}`"
-      },
-      "openId": {
-        "type": "openIdConnect",
-        "openIdConnectUrl": "https://api.mobilepay.dk/merchant-authentication-openidconnect/.well-known/openid-configuration",
-        "description": "Obtain a consent from your client (with scope `webhooks`), retrieve an acess token and send it in `Authorization` header using the Bearer scheme,  e.g., `Authorization: Bearer {access token}`"
+      "Bearer-Authorization": {
+        "type": "apiKey",
+        "description": "Access bearer token (JWT)",
+        "name": "Authorization",
+        "in": "header"
       }
     }
   },
   "security": [
     {
-      "apiKey": []
-    },
-    {
-      "openId": [
-        "webhooks"
-      ]
+      "Bearer-Authorization": []
     }
   ]
 }
