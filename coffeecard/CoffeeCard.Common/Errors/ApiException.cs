@@ -2,7 +2,6 @@
 
 namespace CoffeeCard.Common.Errors
 {
-    [Serializable]
     public class ApiException : Exception
     {
         public int StatusCode { get; }

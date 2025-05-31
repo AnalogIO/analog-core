@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Runtime.Serialization;
+using Microsoft.AspNetCore.Http;
 
 namespace CoffeeCard.Common.Errors
 {
-    [Serializable]
     public class UnauthorizedException : ApiException
     {
-        public UnauthorizedException(string message) : base(message, 401)
+        public UnauthorizedException(string message) : base(message, StatusCodes.Status401Unauthorized)
         { }
 
-        public UnauthorizedException(Exception ex) : base(ex.Message, 401)
+        public UnauthorizedException(Exception ex) : base(ex.Message, StatusCodes.Status401Unauthorized)
         { }
     }
 }
