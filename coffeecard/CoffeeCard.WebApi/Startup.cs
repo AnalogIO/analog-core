@@ -167,10 +167,16 @@ namespace CoffeeCard.WebApi
                 };
 
                 openTelemetryBuilder.UseOtlpExporter(otlpExportProtocol, new Uri(otlpSettings.Endpoint));
-                openTelemetryBuilder.ConfigureResource(resource => resource.AddAttributes(
-                [
-                    new KeyValuePair<string, object>("Env", environment.EnvironmentType.ToString() ?? "Env not set"),
-                ]));
+                openTelemetryBuilder.ConfigureResource(resource =>
+                {
+                    resource.AddAttributes(
+                    [
+                        new KeyValuePair<string, object>("Env",
+                            environment.EnvironmentType.ToString() ?? "Env not set"),
+                    ]);
+                    resource.AddService($"analog-core-{environment.EnvironmentType}", "analog-core");
+                    resource.AddAzureAppServiceDetector();
+                });
                 if (otlpSettings.Protocol is OtelProtocol.Http)
                 {
                     services.AddHttpClient("OtlpTraceExporter",
