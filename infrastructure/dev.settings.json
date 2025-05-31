@@ -68,6 +68,14 @@
       {
         "name": "FeatureManagement__MobilePayManageWebhookRegistration",
         "value": true
+      },
+      {
+        "name": "OtlpSettings__Endpoint",
+        "value": "https://otlp-gateway-prod-eu-north-0.grafana.net/otlp"
+      },
+      {
+        "name": "OtlpSettings__Protocol",
+        "value": "http"
       }
     ],
     "keyVaultReferences": [
@@ -102,6 +110,10 @@
       {
         "name": "MobilePaySettings__OcpApimSubscriptionKey",
         "secretName": "MobilePaySettings-OcpApimSubscriptionKey"
+      },
+      {
+        "name": "OtlpSettings__Token",
+        "secretName": "OtlpSettings-Token"
       }
     ]
   }
