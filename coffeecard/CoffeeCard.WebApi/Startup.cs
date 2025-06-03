@@ -174,8 +174,8 @@ namespace CoffeeCard.WebApi
                         new KeyValuePair<string, object>("Env",
                             environment.EnvironmentType.ToString() ?? "Env not set"),
                     ]);
-                    resource.AddService($"analog-core-{environment.EnvironmentType}", "analog-core");
                     resource.AddAzureAppServiceDetector();
+                    resource.AddService($"analog-core-{environment.EnvironmentType}", "analog-core");
                 });
                 if (otlpSettings.Protocol is OtelProtocol.Http)
                 {
