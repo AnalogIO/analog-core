@@ -56,6 +56,18 @@ module webapp 'modules/webapp.bicep' = {
   }
 }
 
+module functionApp 'modules/functionApp.bicep' = {
+  name: '${deployment().name}-function-app'
+  scope: resourceGroup(sharedResourceGroupName)
+  params: {
+    environment: environment
+    location: location
+    organizationPrefix: organizationPrefix
+    sharedResourcesAbbreviation: sharedResourcesAbbreviation
+    hostingPlanId: appservicePlan.id
+  }
+}
+
 module sqlDb 'modules/sqldatabase.bicep' = {
   name: '${deployment().name}-${applicationPrefix}-sqldb'
   params: {
