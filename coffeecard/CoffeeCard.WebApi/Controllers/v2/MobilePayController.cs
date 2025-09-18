@@ -1,100 +1,120 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using CoffeeCard.Common.Configuration;
 using CoffeeCard.Library.Services.v2;
-using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
+using CoffeeCard.MobilePay.Generated.Api.ePaymentApi;
+using CoffeeCard.Models.DataTransferObjects.MobilePay;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Serilog;
+using Newtonsoft.Json;
+using NSwag.Annotations;
 
-namespace CoffeeCard.WebApi.Controllers.v2
+namespace CoffeeCard.WebApi.Controllers.v2;
+
+/// <summary>
+///     Controller exposing Webhook endpoints for MobilePay
+/// </summary>
+[ApiController]
+[ApiVersion("2")]
+[Route("api/v{version:apiVersion}/mobilepay")]
+public class MobilePayController : ControllerBase
 {
-    /// <summary>
-    /// Controller exposing Webhook endpoints for MobilePay
-    /// </summary>
-    [ApiController]
-    [ApiVersion("2")]
-    [Route("api/v{version:apiVersion}/mobilepay")]
-    public class MobilePayController : ControllerBase
+    private static readonly JsonSerializerSettings JsonSerializerSettings = new()
     {
-        private readonly IPurchaseService _purchaseService;
-        private readonly MobilePaySettingsV2 _mobilePaySettings;
-        private readonly IWebhookService _webhookService;
-        private readonly ILogger<MobilePayController> _logger;
+        DateFormatString = "yyyy-MM-ddTHH:mm:ss.fffZ",
+        DateTimeZoneHandling = DateTimeZoneHandling.Utc
+    };
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MobilePayController"/> class.
-        /// </summary>
-        public MobilePayController(IPurchaseService purchaseService, IWebhookService webhookService,
-            MobilePaySettingsV2 mobilePaySettings, ILogger<MobilePayController> logger)
+    private readonly ILogger<MobilePayController> _logger;
+    private readonly IPurchaseService _purchaseService;
+    private readonly IWebhookService _webhookService;
+
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="MobilePayController" /> class.
+    /// </summary>
+    public MobilePayController(IPurchaseService purchaseService, IWebhookService webhookService,
+        ILogger<MobilePayController> logger)
+    {
+        _purchaseService = purchaseService;
+        _webhookService = webhookService;
+        _logger = logger;
+    }
+
+    /// <summary>
+    ///     Webhook to be invoked by MobilePay backend
+    /// </summary>
+    /// <param name="request">Webhook request</param>
+    /// <param name="contentShaHeader">Webhook content hash</param>
+    /// <param name="dateHeader">Webhook date header</param>
+    /// <param name="authorizationHeader">Webhook HMAC authorization signature</param>
+    /// <response code="204">Webhook processed</response>
+    /// <response code="400">Signature is not valid</response>
+    [HttpPost("webhook")]
+    [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+    [OpenApiIgnore]
+    [ProducesDefaultResponseType]
+    public async Task<ActionResult> Webhook(
+        [FromBody] WebhookEvent request,
+        [FromHeader(Name = "x-ms-content-sha256")]
+        string contentShaHeader,
+        [FromHeader(Name = "x-ms-date")] string dateHeader,
+        [FromHeader(Name = "Authorization")] string authorizationHeader
+    )
+    {
+        var json = JsonConvert.SerializeObject(request, JsonSerializerSettings);
+
+        var signatureIsValid = await VerifySignature(json, contentShaHeader, dateHeader, authorizationHeader);
+        if (!signatureIsValid)
         {
-            _purchaseService = purchaseService;
-            _webhookService = webhookService;
-            _mobilePaySettings = mobilePaySettings;
-            _logger = logger;
+            _logger.LogWarning("Could not verify signature for request with reference: {reference}", request.Reference);
+            return BadRequest("Could not verify signature");
         }
 
-        /// <summary>
-        /// Webhook to be invoked by MobilePay backend
-        /// </summary>
-        /// <param name="request">Webhook request</param>
-        /// <param name="mpSignatureHeader">Webhook signature</param>
-        /// <response code="204">Webhook processed</response>
-        /// <response code="400">Signature is not valid</response>
-        [HttpPost("webhook")]
-        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
-        [ProducesDefaultResponseType]
-        public async Task<ActionResult> Webhook([FromBody] MobilePayWebhook request, [FromHeader(Name = "x-mobilepay-signature")][Required] string mpSignatureHeader)
+        _logger.LogInformation("MobilePay Webhook invoked with request: '{@Request}'", request);
+        await _purchaseService.HandleMobilePayPaymentUpdate(request);
+
+        return NoContent();
+    }
+
+    private async Task<bool> VerifySignature(string requestJson, string contentShaHeader, string dateHeader,
+        string authorizationHeader)
+    {
+        var contentHashInBytes = SHA256.HashData(Encoding.UTF8.GetBytes(requestJson));
+        var computedContentHash = Convert.ToBase64String(contentHashInBytes);
+
+        if (!computedContentHash.Equals(contentShaHeader, StringComparison.OrdinalIgnoreCase))
         {
-            var isSignatureValid = await VerifySignature(mpSignatureHeader);
-            if (!isSignatureValid)
-            {
-                Log.Warning("Signature did not match the computed signature for request '{Request}', header signature: {Signature}",
-                    request, mpSignatureHeader);
-                return BadRequest("Signature is not valid");
-            }
-
-            Log.Information("MobilePay Webhook invoked with request: '{Request}'", request);
-            await _purchaseService.HandleMobilePayPaymentUpdate(request);
-
-            return NoContent();
+            _logger.LogWarning("Content hash did not match the computed hash for, header hash: {ContentSha}",
+                contentShaHeader);
+            return false;
         }
 
-        private async Task<bool> VerifySignature(string mpSignatureHeader)
+        var secret = await _webhookService.GetSignatureKey();
+        var requestPath = Request.Path + Request.QueryString;
+
+        var expectedSignedString =
+            $"{Request.Method}\n" +
+            $"{requestPath}\n" +
+            $"{dateHeader};{Request.Host};{contentShaHeader}";
+
+        using var hmacSha256 = new HMACSHA256(Encoding.UTF8.GetBytes(secret));
+        var hmacSha256Bytes = Encoding.UTF8.GetBytes(expectedSignedString);
+        var hmacSha256Hash = hmacSha256.ComputeHash(hmacSha256Bytes);
+        var computedSignature = Convert.ToBase64String(hmacSha256Hash);
+        var expectedAuthorization =
+            $"HMAC-SHA256 SignedHeaders=x-ms-date;host;x-ms-content-sha256&Signature={computedSignature}";
+
+        if (!expectedAuthorization.Equals(authorizationHeader, StringComparison.OrdinalIgnoreCase))
         {
-            var endpointUrl = _mobilePaySettings.WebhookUrl;
-            var signatureKey = await _webhookService.GetSignatureKey();
-
-            if (!Request.Body.CanSeek)
-            {
-                Request.EnableBuffering();
-            }
-
-            HttpContext.Request.Body.Seek(0, SeekOrigin.Begin);
-
-            string rawRequestBody;
-            using (var stream = new StreamReader(HttpContext.Request.Body))
-            {
-                rawRequestBody = await stream.ReadToEndAsync();
-            }
-
-            _logger.LogDebug("Raw request body (trimmed): '{Body}'", rawRequestBody.Trim());
-            _logger.LogDebug("Endpoint Url '{EndpointUrl}', SignatureKey '{Signature}'", endpointUrl, signatureKey);
-
-            var hash = new HMACSHA1(Encoding.UTF8.GetBytes(signatureKey))
-                .ComputeHash(Encoding.UTF8.GetBytes(endpointUrl + rawRequestBody.Trim()));
-            var computedSignature = Convert.ToBase64String(hash);
-
-            _logger.LogDebug("ComputedSignature: {Signature}", computedSignature);
-            _logger.LogDebug("mpSignatureHeader {mpSignatureHeader}", mpSignatureHeader);
-
-            return mpSignatureHeader.Equals(computedSignature);
+            _logger.LogWarning(
+                "Signature did not match the computed signature, header signature: {AuthorizationHeader}",
+                authorizationHeader);
+            return false;
         }
+
+        return true;
     }
 }

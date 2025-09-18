@@ -120,8 +120,9 @@ namespace CoffeeCard.WebApi
 
             services.AddScoped<Library.Services.v2.IPurchaseService, Library.Services.v2.PurchaseService>();
             services.AddScoped<Library.Services.v2.ITicketService, Library.Services.v2.TicketService>();
+            services.AddTransient<IMobilePayAccessTokenService, MobilePayAccessTokenService>();
             services.AddMobilePayHttpClients(
-                _configuration.GetSection("MobilePaySettingsV2").Get<MobilePaySettingsV2>());
+                _configuration.GetSection("MobilePaySettings").Get<MobilePaySettings>());
             services.AddScoped<IMobilePayPaymentsService, MobilePayPaymentsService>();
             services.AddScoped<IMobilePayWebhooksService, MobilePayWebhooksService>();
             services.AddScoped<IWebhookService, WebhookService>();
@@ -166,10 +167,16 @@ namespace CoffeeCard.WebApi
                 };
 
                 openTelemetryBuilder.UseOtlpExporter(otlpExportProtocol, new Uri(otlpSettings.Endpoint));
-                openTelemetryBuilder.ConfigureResource(resource => resource.AddAttributes(
-                [
-                    new KeyValuePair<string, object>("Env", environment.EnvironmentType.ToString() ?? "Env not set"),
-                ]));
+                openTelemetryBuilder.ConfigureResource(resource =>
+                {
+                    resource.AddAttributes(
+                    [
+                        new KeyValuePair<string, object>("Env",
+                            environment.EnvironmentType.ToString() ?? "Env not set"),
+                    ]);
+                    resource.AddAzureAppServiceDetector();
+                    resource.AddService($"analog-core-{environment.EnvironmentType}", "analog-core");
+                });
                 if (otlpSettings.Protocol is OtelProtocol.Http)
                 {
                     services.AddHttpClient("OtlpTraceExporter",

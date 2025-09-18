@@ -34,15 +34,15 @@
         "value": "https://core.dev.analogio.dk"
       },
       {
-        "name": "MobilePaySettingsV2__AnalogAppRedirectUri",
+        "name": "MobilePaySettings__AnalogAppRedirectUri",
         "value": "analogcoffeecard-dev://mobilepay_purchase"
       },
       {
-        "name": "MobilePaySettingsV2__ApiUrl",
-        "value": "https://api.sandbox.mobilepay.dk/"
+        "name": "MobilePaySettings__ApiUrl",
+        "value": "https://apitest.vipps.no"
       },
       {
-        "name": "MobilePaySettingsV2__WebhookUrl",
+        "name": "MobilePaySettings__WebhookUrl",
         "value": "https://core.dev.analogio.dk/api/v2/mobilepay/webhook"
       },
       {
@@ -64,6 +64,18 @@
       {
         "name": "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES",
         "value": "Microsoft.AspNetCore.ApplicationInsights.HostingStartup"
+      },
+      {
+        "name": "FeatureManagement__MobilePayManageWebhookRegistration",
+        "value": true
+      },
+      {
+        "name": "OtlpSettings__Endpoint",
+        "value": "https://otlp-gateway-prod-eu-north-0.grafana.net/otlp"
+      },
+      {
+        "name": "OtlpSettings__Protocol",
+        "value": "http"
       }
     ],
     "keyVaultReferences": [
@@ -84,12 +96,24 @@
         "secretName": "MailgunSettings-ApiKey"
       },
       {
-        "name": "MobilePaySettingsV2__ApiKey",
-        "secretName": "MobilePaySettingsV2-ApiKey"
+        "name": "MobilePaySettings__ClientId",
+        "secretName": "MobilePaySettings-ClientId"
       },
       {
-        "name": "MobilePaySettingsV2__PaymentPointId",
-        "secretName": "MobilePaySettingsV2-PaymentPointId"
+        "name": "MobilePaySettings__ClientSecret",
+        "secretName": "MobilePaySettings-ClientSecret"
+      },
+      {
+        "name": "MobilePaySettings__MerchantSerialNumber",
+        "secretName": "MobilePaySettings-MerchantSerialNumber"
+      },
+      {
+        "name": "MobilePaySettings__OcpApimSubscriptionKey",
+        "secretName": "MobilePaySettings-OcpApimSubscriptionKey"
+      },
+      {
+        "name": "OtlpSettings__Token",
+        "secretName": "OtlpSettings-Token"
       }
     ]
   }

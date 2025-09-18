@@ -34,15 +34,15 @@
         "value": "https://core.prd.analogio.dk"
       },
       {
-        "name": "MobilePaySettingsV2__AnalogAppRedirectUri",
+        "name": "MobilePaySettings__AnalogAppRedirectUri",
         "value": "analogcoffeecard://mobilepay_purchase"
       },
       {
-        "name": "MobilePaySettingsV2__ApiUrl",
-        "value": "https://api.mobilepay.dk/"
+        "name": "MobilePaySettings__ApiUrl",
+        "value": "https://api.vipps.no"
       },
       {
-        "name": "MobilePaySettingsV2__WebhookUrl",
+        "name": "MobilePaySettings__WebhookUrl",
         "value": "https://core.prd.analogio.dk/api/v2/mobilepay/webhook"
       },
       {
@@ -72,6 +72,10 @@
       {
         "name": "OtlpSettings__Protocol",
         "value": "http"
+      },
+      {
+        "name": "FeatureManagement__MobilePayManageWebhookRegistration",
+        "value": true
       }
     ],
     "keyVaultReferences": [
@@ -92,16 +96,24 @@
         "secretName": "MailgunSettings-ApiKey"
       },
       {
-        "name": "MobilePaySettingsV2__ApiKey",
-        "secretName": "MobilePaySettingsV2-ApiKey"
-      },
-      {
-        "name": "MobilePaySettingsV2__PaymentPointId",
-        "secretName": "MobilePaySettingsV2-PaymentPointId"
-      },
-      {
         "name": "OtlpSettings__Token",
         "secretName": "OtlpSettings-Token"
+      },
+      {
+        "name": "MobilePaySettings__ClientId",
+        "secretName": "MobilePaySettings-ClientId"
+      },
+      {
+        "name": "MobilePaySettings__ClientSecret",
+        "secretName": "MobilePaySettings-ClientSecret"
+      },
+      {
+        "name": "MobilePaySettings__MerchantSerialNumber",
+        "secretName": "MobilePaySettings-MerchantSerialNumber"
+      },
+      {
+        "name": "MobilePaySettings__OcpApimSubscriptionKey",
+        "secretName": "MobilePaySettings-OcpApimSubscriptionKey"
       }
     ]
   }

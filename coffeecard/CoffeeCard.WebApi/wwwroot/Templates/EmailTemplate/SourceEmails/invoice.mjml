@@ -7,7 +7,7 @@
     <!-- Logo and intro text -->
     <mj-section>
       <mj-column>
-        <mj-image src="https://analogio.dk/resources/ANALOGO.png" alt="Analog logo"></mj-image>
+        <mj-image src="https://core.prd.analogio.dk/images/AnalogLogo.svg" alt="Analog logo"></mj-image>
         <mj-text mj-class="header">Hello {name},</mj-text>
         <mj-text mj-class="header">Thank you for your purchase.</mj-text>
         <mj-text mj-class="description">Details of your order are listed below:</mj-text>

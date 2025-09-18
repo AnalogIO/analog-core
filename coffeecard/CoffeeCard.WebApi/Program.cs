@@ -54,6 +54,7 @@ namespace CoffeeCard.WebApi
                 };
                 var resource = new Dictionary<string, object>();
                 resource.Add("Env", environment.EnvironmentType.ToString() ?? "Env not set");
+                resource.Add("service.name", $"analog-core-{environment.EnvironmentType}");
                 loggerConfiguration.WriteTo.OpenTelemetry(settings =>
                 {
                     settings.ResourceAttributes = resource;
