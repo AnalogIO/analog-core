@@ -73,7 +73,7 @@ public class MobilePayController : ControllerBase
             return BadRequest("Could not verify signature");
         }
 
-        _logger.LogInformation("MobilePay Webhook invoked with request: '{Request}'", request);
+        _logger.LogInformation("MobilePay Webhook invoked with request: '{@Request}'", request);
         await _purchaseService.HandleMobilePayPaymentUpdate(request);
 
         return NoContent();
