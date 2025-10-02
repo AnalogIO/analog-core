@@ -23,6 +23,11 @@
         /// <summary>
         /// Purchase has been cancelled and deduction has been refunded on user's account
         /// </summary>
-        Refunded
+        Refunded,
+
+        /// <summary>
+        /// Purchase expired due to no completion by the user within the required time
+        /// </summary>
+        Expired
     }
 }

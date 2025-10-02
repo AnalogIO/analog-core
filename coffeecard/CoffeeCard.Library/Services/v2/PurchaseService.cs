@@ -244,8 +244,7 @@ namespace CoffeeCard.Library.Services.v2
                     }
                 case PaymentEventName.EXPIRED:
                     {
-                        // TODO: Should we cancel in this case?
-                        await CancelPurchase(purchase);
+                        await ExpirePurchase(purchase);
                         break;
                     }
                 default:
@@ -285,6 +284,15 @@ namespace CoffeeCard.Library.Services.v2
             await _context.SaveChangesAsync();
 
             _logger.LogInformation("Purchase was aborted by user: Purchase Id {PurchaseId}, Transaction Id {TransactionId}",
+                purchase.Id, purchase.ExternalTransactionId);
+        }
+
+        private async Task ExpirePurchase(Purchase purchase)
+        {
+            purchase.Status = PurchaseStatus.Expired;
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("User failed to complete purchase within expected: Purchase Id {PurchaseId}, Transaction Id {TransactionId}",
                 purchase.Id, purchase.ExternalTransactionId);
         }
 
