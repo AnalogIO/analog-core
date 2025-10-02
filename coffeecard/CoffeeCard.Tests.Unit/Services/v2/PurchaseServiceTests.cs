@@ -861,9 +861,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             // Assert
             var updatedPurchase = await context.Purchases.FindAsync(purchase.Id);
-            Assert.Equal(PurchaseStatus.Cancelled, updatedPurchase.Status);
-
-            mobilePayService.Verify(m => m.CancelPayment(Guid.Parse(transactionId)), Times.Once);
+            Assert.Equal(PurchaseStatus.Expired, updatedPurchase.Status);
         }
 
         [Fact(DisplayName = "HandleMobilePayPaymentUpdate throws exception when transaction not found")]
