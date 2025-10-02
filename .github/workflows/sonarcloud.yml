@@ -52,5 +52,4 @@ jobs:
           coverlet ./coffeecard/CoffeeCard.Tests.Unit/bin/Debug/net8.0/CoffeeCard.Tests.Unit.dll --target "dotnet" --targetargs "test --no-build coffeecard/CoffeeCard.Tests.Unit" -f=opencover -o="coverageunit.xml"
           coverlet ./coffeecard/CoffeeCard.Tests.Integration/bin/Debug/net8.0/CoffeeCard.Tests.Integration.dll --target "dotnet" --targetargs "test --no-build coffeecard/CoffeeCard.Tests.Integration" -f=opencover -o="coverageintegration.xml"
 
-          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
-
+          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
