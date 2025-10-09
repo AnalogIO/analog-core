@@ -15,8 +15,18 @@ namespace CoffeeCard.Library.Migrations
                 schema: "dbo",
                 table: "Tickets",
                 type: "int",
-                nullable: false,
-                defaultValue: 0);
+                nullable: true);
+            
+            migrationBuilder.Sql(
+                @"UPDATE dbo.Tickets 
+                SET PurchasedBy_Id = Owner_Id 
+                WHERE PurchasedBy_Id IS NULL");
+            
+            migrationBuilder.AlterColumn<int>(
+                name: "PurchasedBy_Id",
+                schema: "dbo",
+                table: "Tickets",
+                nullable: false);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tickets_PurchasedBy_Id",
