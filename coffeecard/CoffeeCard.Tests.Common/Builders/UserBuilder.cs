@@ -24,7 +24,8 @@ namespace CoffeeCard.Tests.Common.Builders
                 .WithStatistics(new List<Statistic>())
                 .WithTokens(new List<Token>())
                 .WithUserState(UserState.Active)
-                .WithTickets(new List<Ticket>());
+                .WithOwnedTickets(new List<Ticket>())
+                .WithPurchasedTickets(new List<Ticket>());
         }
 
         public static UserBuilder DefaultCustomer()

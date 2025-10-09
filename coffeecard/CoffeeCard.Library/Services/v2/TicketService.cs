@@ -9,158 +9,146 @@ using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace CoffeeCard.Library.Services.v2
+namespace CoffeeCard.Library.Services.v2;
+
+public sealed class TicketService(
+    CoffeeCardContext context,
+    IStatisticService statisticService,
+    ILogger<TicketService> logger)
+    : ITicketService
 {
-    public sealed class TicketService : ITicketService
+    public async Task IssueTickets(Purchase purchase)
     {
-        private readonly CoffeeCardContext _context;
-        private readonly IStatisticService _statisticService;
-        private readonly ILogger<TicketService> _logger;
-
-        public TicketService(CoffeeCardContext context, IStatisticService statisticService, ILogger<TicketService> logger)
-        {
-            _context = context;
-            _statisticService = statisticService;
-            _logger = logger;
-        }
-
-        public async Task IssueTickets(Purchase purchase)
-        {
-            var tickets = new List<Ticket>();
-            for (var i = 0; i < purchase.NumberOfTickets; i++)
+        var tickets = new List<Ticket>();
+        for (var i = 0; i < purchase.NumberOfTickets; i++)
+            tickets.Add(new Ticket
             {
-                tickets.Add(new Ticket
-                {
-                    DateCreated = DateTime.UtcNow,
-                    ProductId = purchase.ProductId,
-                    Status = TicketStatus.Unused,
-                    Owner = purchase.PurchasedBy,
-                    Purchase = purchase
-                });
-            }
+                DateCreated = DateTime.UtcNow,
+                ProductId = purchase.ProductId,
+                Status = TicketStatus.Unused,
+                PurchasedBy = purchase.PurchasedBy,
+                Owner = purchase.PurchasedBy,
+                Purchase = purchase
+            });
 
-            await _context.Tickets.AddRangeAsync(tickets);
-            await _context.SaveChangesAsync();
+        await context.Tickets.AddRangeAsync(tickets);
+        await context.SaveChangesAsync();
 
-            _logger.LogInformation("Issued {NoTickets} Tickets for ProductId {ProductId}, PurchaseId {PurchaseId}", purchase.NumberOfTickets, purchase.ProductId, purchase.Id);
-        }
+        logger.LogInformation("Issued {NoTickets} Tickets for ProductId {ProductId}, PurchaseId {PurchaseId}",
+            purchase.NumberOfTickets, purchase.ProductId, purchase.Id);
+    }
 
-        public async Task<IEnumerable<TicketResponse>> GetTicketsAsync(User user, bool includeUsed)
-        {
-            // (Never return refunded tickets)
-            var status = includeUsed ? TicketStatus.Used : TicketStatus.Unused;
-            return await _context.Tickets
-                .Where(t => t.Owner.Equals(user) && t.Status == status)
-                .Include(t => t.Purchase)
-                .Include(t => t.UsedOnMenuItem)
-                .Select(t => new TicketResponse
-                {
-                    Id = t.Id,
-                    DateCreated = t.DateCreated,
-                    DateUsed = t.DateUsed,
-                    ProductId = t.ProductId,
-                    ProductName = t.Purchase.ProductName,
-                    UsedOnMenuItemName = t.UsedOnMenuItem != null ? t.UsedOnMenuItem.Name : null
-                })
-                .ToListAsync();
-        }
-
-        public async Task<UsedTicketResponse> UseTicketAsync(User user, int productId)
-        {
-            _logger.LogInformation("UserId {UserId} uses a ticket for ProductId {ProductId}", user.Id, productId);
-
-            var product = await GetProductIncludingMenuItemsFromIdAsync(productId);
-            var ticket = await GetFirstTicketFromProductAsync(product, user.Id);
-
-            ticket.Status = TicketStatus.Used;
-            var timeUsed = DateTime.UtcNow;
-            ticket.DateUsed = timeUsed;
-
-            if (ticket.Purchase.Price > 0) //Paid products increases your rank on the leaderboard
+    public async Task<IEnumerable<TicketResponse>> GetTicketsAsync(User user, bool includeUsed)
+    {
+        // (Never return refunded tickets)
+        var status = includeUsed ? TicketStatus.Used : TicketStatus.Unused;
+        return await context.Tickets
+            .Where(t => t.Owner.Equals(user) && t.Status == status)
+            .Include(t => t.Purchase)
+            .Include(t => t.UsedOnMenuItem)
+            .Select(t => new TicketResponse
             {
-                await _statisticService.IncreaseStatisticsBy(user.Id, 1);
-            }
+                Id = t.Id,
+                DateCreated = t.DateCreated,
+                DateUsed = t.DateUsed,
+                ProductId = t.ProductId,
+                ProductName = t.Purchase.ProductName,
+                UsedOnMenuItemName = t.UsedOnMenuItem != null ? t.UsedOnMenuItem.Name : null
+            })
+            .ToListAsync();
+    }
 
-            await _context.SaveChangesAsync();
+    public async Task<UsedTicketResponse> UseTicketAsync(User user, int productId)
+    {
+        logger.LogInformation("UserId {UserId} uses a ticket for ProductId {ProductId}", user.Id, productId);
 
-            return new UsedTicketResponse
-            {
-                Id = ticket.Id,
-                DateCreated = ticket.DateCreated,
-                DateUsed = timeUsed,
-                ProductName = ticket.Purchase.ProductName
-            };
-        }
+        var product = await GetProductIncludingMenuItemsFromIdAsync(productId);
+        var ticket = await GetFirstTicketFromProductAsync(product, user.Id);
 
-        public async Task<UsedTicketResponse> UseTicketAsync(User user, int productId, int menuItemId)
+        ticket.Status = TicketStatus.Used;
+        var timeUsed = DateTime.UtcNow;
+        ticket.DateUsed = timeUsed;
+
+        if (ticket.Purchase.Price > 0) //Paid products increases your rank on the leaderboard
+            await statisticService.IncreaseStatisticsBy(user.Id, 1);
+
+        await context.SaveChangesAsync();
+
+        return new UsedTicketResponse
         {
-            _logger.LogInformation("UserId {userId} uses a ticket for MenuItemId {menuItemId} via ProductId {productId}", user.Id, menuItemId, productId);
+            Id = ticket.Id,
+            DateCreated = ticket.DateCreated,
+            DateUsed = timeUsed,
+            ProductName = ticket.Purchase.ProductName
+        };
+    }
 
-            var product = await GetProductIncludingMenuItemsFromIdAsync(productId);
-            var ticket = await GetFirstTicketFromProductAsync(product, user.Id);
-            var menuItem = await GetMenuItemByIdAsync(menuItemId);
+    public async Task<UsedTicketResponse> UseTicketAsync(User user, int productId, int menuItemId)
+    {
+        logger.LogInformation("UserId {userId} uses a ticket for MenuItemId {menuItemId} via ProductId {productId}",
+            user.Id, menuItemId, productId);
 
-            if (!product.EligibleMenuItems.Any(mi => mi.Id == menuItem.Id))
-            {
-                throw new IllegalUserOperationException("This ticket cannot be used on this menu item");
-            }
+        var product = await GetProductIncludingMenuItemsFromIdAsync(productId);
+        var ticket = await GetFirstTicketFromProductAsync(product, user.Id);
+        var menuItem = await GetMenuItemByIdAsync(menuItemId);
 
-            ticket.Status = TicketStatus.Used;
-            var timeUsed = DateTime.UtcNow;
-            ticket.DateUsed = timeUsed;
-            ticket.UsedOnMenuItemId = menuItemId;
+        if (product.EligibleMenuItems.All(mi => mi.Id != menuItem.Id))
+            throw new IllegalUserOperationException("This ticket cannot be used on this menu item");
 
-            if (ticket.Purchase.Price > 0) //Paid products increases your rank on the leaderboard
-            {
-                await _statisticService.IncreaseStatisticsBy(user.Id, 1);
-            }
+        ticket.Status = TicketStatus.Used;
+        var timeUsed = DateTime.UtcNow;
+        ticket.DateUsed = timeUsed;
+        ticket.UsedOnMenuItemId = menuItemId;
 
-            await _context.SaveChangesAsync();
+        if (ticket.Purchase.Price > 0) //Paid products increases your rank on the leaderboard
+            await statisticService.IncreaseStatisticsBy(user.Id, 1);
 
-            return new UsedTicketResponse
-            {
-                Id = ticket.Id,
-                DateCreated = ticket.DateCreated,
-                DateUsed = timeUsed,
-                ProductName = ticket.Purchase.ProductName,
-                MenuItemName = menuItem.Name
-            };
-        }
+        await context.SaveChangesAsync();
 
-        private async Task<Product> GetProductIncludingMenuItemsFromIdAsync(int productId)
+        return new UsedTicketResponse
         {
-            return await _context.Products
-                .Include(p => p.EligibleMenuItems)
-                .FirstOrDefaultAsync(p => p.Id == productId)
-                ?? throw new EntityNotFoundException("Product not found");
-        }
+            Id = ticket.Id,
+            DateCreated = ticket.DateCreated,
+            DateUsed = timeUsed,
+            ProductName = ticket.Purchase.ProductName,
+            MenuItemName = menuItem.Name
+        };
+    }
 
-        private async Task<Ticket> GetFirstTicketFromProductAsync(Product product, int userId)
-        {
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Id == userId)
-                ?? throw new EntityNotFoundException("User not found");
+    public void Dispose()
+    {
+        context?.Dispose();
+    }
 
-            var ticket = await _context.Tickets
-                .Include(t => t.Purchase)
-                .FirstOrDefaultAsync(t => t.Owner.Id == user.Id && t.ProductId == product.Id && t.Status == TicketStatus.Unused)
-                ?? throw new IllegalUserOperationException("User has no tickets for this product");
+    private async Task<Product> GetProductIncludingMenuItemsFromIdAsync(int productId)
+    {
+        return await context.Products
+                   .Include(p => p.EligibleMenuItems)
+                   .FirstOrDefaultAsync(p => p.Id == productId)
+               ?? throw new EntityNotFoundException("Product not found");
+    }
 
-            return ticket;
-        }
+    private async Task<Ticket> GetFirstTicketFromProductAsync(Product product, int userId)
+    {
+        var user = await context.Users
+                       .FirstOrDefaultAsync(u => u.Id == userId)
+                   ?? throw new EntityNotFoundException("User not found");
 
-        private async Task<MenuItem> GetMenuItemByIdAsync(int menuItemId)
-        {
-            var menuItem = await _context.MenuItems
-                .FirstOrDefaultAsync(m => m.Id == menuItemId)
-                ?? throw new EntityNotFoundException("Menu item not found");
+        var ticket = await context.Tickets
+                         .Include(t => t.Purchase)
+                         .FirstOrDefaultAsync(t =>
+                             t.Owner.Id == user.Id && t.ProductId == product.Id && t.Status == TicketStatus.Unused)
+                     ?? throw new IllegalUserOperationException("User has no tickets for this product");
 
-            return menuItem;
-        }
+        return ticket;
+    }
 
-        public void Dispose()
-        {
-            _context?.Dispose();
-        }
+    private async Task<MenuItem> GetMenuItemByIdAsync(int menuItemId)
+    {
+        var menuItem = await context.MenuItems
+                           .FirstOrDefaultAsync(m => m.Id == menuItemId)
+                       ?? throw new EntityNotFoundException("Menu item not found");
+
+        return menuItem;
     }
 }

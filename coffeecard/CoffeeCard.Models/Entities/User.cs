@@ -92,9 +92,15 @@ namespace CoffeeCard.Models.Entities
         public virtual ICollection<Token> Tokens { get; set; } = new List<Token>();
 
         /// <summary>
-        /// Gets or sets the user's tickets.
+        /// Gets or sets the user's owned tickets.
         /// </summary>
-        public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
+        public virtual ICollection<Ticket> OwnedTickets { get; set; } = new List<Ticket>();
+
+
+        /// <summary>
+        /// Gets or sets the tickets where the user is the original purchaser.
+        /// </summary>
+        public virtual ICollection<Ticket> PurchasedTickets { get; set; } = new List<Ticket>();
 
         /// <summary>
         /// Gets or sets the user's purchases.
