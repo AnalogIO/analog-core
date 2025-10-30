@@ -16,12 +16,12 @@ namespace CoffeeCard.Library.Migrations
                 table: "Tickets",
                 type: "int",
                 nullable: true);
-            
+
             migrationBuilder.Sql(
                 @"UPDATE dbo.Tickets 
                 SET PurchasedBy_Id = Owner_Id 
                 WHERE PurchasedBy_Id IS NULL");
-            
+
             migrationBuilder.AlterColumn<int>(
                 name: "PurchasedBy_Id",
                 schema: "dbo",

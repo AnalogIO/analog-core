@@ -11,16 +11,26 @@ using Microsoft.Extensions.Logging;
 
 namespace CoffeeCard.Library.Services.v2;
 
-public sealed class TicketService(
-    CoffeeCardContext context,
-    IStatisticService statisticService,
-    ILogger<TicketService> logger)
-    : ITicketService
+public sealed class TicketService : ITicketService
 {
+    private readonly CoffeeCardContext _context;
+    private readonly ILogger<TicketService> _logger;
+    private readonly IStatisticService _statisticService;
+
+    public TicketService(CoffeeCardContext context,
+        IStatisticService statisticService,
+        ILogger<TicketService> logger)
+    {
+        _context = context;
+        _statisticService = statisticService;
+        _logger = logger;
+    }
+
     public async Task IssueTickets(Purchase purchase)
     {
         var tickets = new List<Ticket>();
         for (var i = 0; i < purchase.NumberOfTickets; i++)
+        {
             tickets.Add(new Ticket
             {
                 DateCreated = DateTime.UtcNow,
@@ -30,11 +40,12 @@ public sealed class TicketService(
                 Owner = purchase.PurchasedBy,
                 Purchase = purchase
             });
+        }
 
-        await context.Tickets.AddRangeAsync(tickets);
-        await context.SaveChangesAsync();
+        await _context.Tickets.AddRangeAsync(tickets);
+        await _context.SaveChangesAsync();
 
-        logger.LogInformation("Issued {NoTickets} Tickets for ProductId {ProductId}, PurchaseId {PurchaseId}",
+        _logger.LogInformation("Issued {NoTickets} Tickets for ProductId {ProductId}, PurchaseId {PurchaseId}",
             purchase.NumberOfTickets, purchase.ProductId, purchase.Id);
     }
 
@@ -42,7 +53,7 @@ public sealed class TicketService(
     {
         // (Never return refunded tickets)
         var status = includeUsed ? TicketStatus.Used : TicketStatus.Unused;
-        return await context.Tickets
+        return await _context.Tickets
             .Where(t => t.Owner.Equals(user) && t.Status == status)
             .Include(t => t.Purchase)
             .Include(t => t.UsedOnMenuItem)
@@ -60,7 +71,7 @@ public sealed class TicketService(
 
     public async Task<UsedTicketResponse> UseTicketAsync(User user, int productId)
     {
-        logger.LogInformation("UserId {UserId} uses a ticket for ProductId {ProductId}", user.Id, productId);
+        _logger.LogInformation("UserId {UserId} uses a ticket for ProductId {ProductId}", user.Id, productId);
 
         var product = await GetProductIncludingMenuItemsFromIdAsync(productId);
         var ticket = await GetFirstTicketFromProductAsync(product, user.Id);
@@ -70,9 +81,9 @@ public sealed class TicketService(
         ticket.DateUsed = timeUsed;
 
         if (ticket.Purchase.Price > 0) //Paid products increases your rank on the leaderboard
-            await statisticService.IncreaseStatisticsBy(user.Id, 1);
+            await _statisticService.IncreaseStatisticsBy(user.Id, 1);
 
-        await context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
 
         return new UsedTicketResponse
         {
@@ -85,7 +96,7 @@ public sealed class TicketService(
 
     public async Task<UsedTicketResponse> UseTicketAsync(User user, int productId, int menuItemId)
     {
-        logger.LogInformation("UserId {userId} uses a ticket for MenuItemId {menuItemId} via ProductId {productId}",
+        _logger.LogInformation("UserId {userId} uses a ticket for MenuItemId {menuItemId} via ProductId {productId}",
             user.Id, menuItemId, productId);
 
         var product = await GetProductIncludingMenuItemsFromIdAsync(productId);
@@ -101,9 +112,9 @@ public sealed class TicketService(
         ticket.UsedOnMenuItemId = menuItemId;
 
         if (ticket.Purchase.Price > 0) //Paid products increases your rank on the leaderboard
-            await statisticService.IncreaseStatisticsBy(user.Id, 1);
+            await _statisticService.IncreaseStatisticsBy(user.Id, 1);
 
-        await context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
 
         return new UsedTicketResponse
         {
@@ -117,12 +128,12 @@ public sealed class TicketService(
 
     public void Dispose()
     {
-        context?.Dispose();
+        _context?.Dispose();
     }
 
     private async Task<Product> GetProductIncludingMenuItemsFromIdAsync(int productId)
     {
-        return await context.Products
+        return await _context.Products
                    .Include(p => p.EligibleMenuItems)
                    .FirstOrDefaultAsync(p => p.Id == productId)
                ?? throw new EntityNotFoundException("Product not found");
@@ -130,11 +141,11 @@ public sealed class TicketService(
 
     private async Task<Ticket> GetFirstTicketFromProductAsync(Product product, int userId)
     {
-        var user = await context.Users
+        var user = await _context.Users
                        .FirstOrDefaultAsync(u => u.Id == userId)
                    ?? throw new EntityNotFoundException("User not found");
 
-        var ticket = await context.Tickets
+        var ticket = await _context.Tickets
                          .Include(t => t.Purchase)
                          .FirstOrDefaultAsync(t =>
                              t.Owner.Id == user.Id && t.ProductId == product.Id && t.Status == TicketStatus.Unused)
@@ -145,7 +156,7 @@ public sealed class TicketService(
 
     private async Task<MenuItem> GetMenuItemByIdAsync(int menuItemId)
     {
-        var menuItem = await context.MenuItems
+        var menuItem = await _context.MenuItems
                            .FirstOrDefaultAsync(m => m.Id == menuItemId)
                        ?? throw new EntityNotFoundException("Menu item not found");
 
