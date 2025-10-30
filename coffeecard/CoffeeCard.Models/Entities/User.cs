@@ -96,7 +96,6 @@ namespace CoffeeCard.Models.Entities
         /// </summary>
         public virtual ICollection<Ticket> OwnedTickets { get; set; } = new List<Ticket>();
 
-
         /// <summary>
         /// Gets or sets the tickets where the user is the original purchaser.
         /// </summary>
