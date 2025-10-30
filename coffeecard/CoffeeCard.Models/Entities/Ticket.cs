@@ -49,7 +49,7 @@ namespace CoffeeCard.Models.Entities
         /// <summary>
         /// Gets or sets the owner associated with the ticket.
         /// </summary>
-        public User Owner { get; set; }
+        public required User Owner { get; set; }
 
         /// <summary>
         /// Gets or sets the ID of the purchase associated with the ticket.
@@ -60,7 +60,18 @@ namespace CoffeeCard.Models.Entities
         /// <summary>
         /// Gets or sets the purchase associated with the ticket.
         /// </summary>
-        public Purchase Purchase { get; set; }
+        public required Purchase Purchase { get; init; }
+
+        /// <summary>
+        /// Gets or sets the ID of the original purchaser associated with the ticket.
+        /// </summary>
+        [Column(name: "PurchasedBy_Id")]
+        public int PurchasedById { get; init; }
+
+        /// <summary>
+        /// Gets or sets the original purchaser of the ticket.
+        /// </summary>
+        public required User PurchasedBy { get; init; }
 
         /// <summary>
         /// The ID of the menu item that this ticket was used on, if any

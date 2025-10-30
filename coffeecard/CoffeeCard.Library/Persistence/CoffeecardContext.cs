@@ -84,8 +84,14 @@ namespace CoffeeCard.Library.Persistence
 
             modelBuilder.Entity<Ticket>()
                 .HasOne(t => t.Owner)
-                .WithMany(u => u.Tickets)
+                .WithMany(u => u.OwnedTickets)
                 .HasForeignKey(t => t.OwnerId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Ticket>()
+                .HasOne(t => t.PurchasedBy)
+                .WithMany(u => u.PurchasedTickets)
+                .HasForeignKey(t => t.PurchasedById)
                 .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Token>()
