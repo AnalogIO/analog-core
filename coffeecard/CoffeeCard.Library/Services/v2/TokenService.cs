@@ -22,7 +22,10 @@ public class TokenService : ITokenService
     public async Task<string> GenerateMagicLinkToken(User user)
     {
         var guid = Guid.NewGuid().ToString();
-        var magicLinkToken = new Token(_hashService.Hash(guid), TokenType.MagicLink) { User = user };
+        var magicLinkToken = new Token(_hashService.Hash(guid), TokenType.MagicLink)
+        {
+            User = user,
+        };
         _context.Tokens.Add(magicLinkToken);
 
         await _context.SaveChangesAsync();
@@ -41,9 +44,11 @@ public class TokenService : ITokenService
     public async Task<Token> GetValidTokenByHashAsync(string tokenString)
     {
         var tokenHash = _hashService.Hash(tokenString);
-        var foundToken = await _context.Tokens
-            .Include(t => t.User)
-            .FirstOrDefaultAsync(t => t.TokenHash == tokenHash && !t.Revoked && !Token.Expired(t.Expires));
+        var foundToken = await _context
+            .Tokens.Include(t => t.User)
+            .FirstOrDefaultAsync(t =>
+                t.TokenHash == tokenHash && !t.Revoked && !Token.Expired(t.Expires)
+            );
 
         if (foundToken == null)
         {

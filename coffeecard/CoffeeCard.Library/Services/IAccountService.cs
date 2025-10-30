@@ -17,7 +17,12 @@ namespace CoffeeCard.Library.Services
         /// <param name="name">Username, to be created</param>
         /// <param name="password">Un-hashed password</param>
         /// <param name="email">Email of the user</param>
-        Task<User> RegisterAccountAsync(string name, string email, string password, int programme = 1);
+        Task<User> RegisterAccountAsync(
+            string name,
+            string email,
+            string password,
+            int programme = 1
+        );
         string Login(string email, string password, string version);
         Task<bool> VerifyRegistration(string token);
         User UpdateAccount(IEnumerable<Claim> claims, UpdateUserDto userDto);

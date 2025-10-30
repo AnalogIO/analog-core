@@ -10,9 +10,22 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NJsonSchema" Version="11.0.0" />
-    <PackageReference Include="Microsoft.NETCore.Targets" Version="5.0.0" ExcludeAssets="all" PrivateAssets="all" />
+    <PackageReference
+      Include="Microsoft.NETCore.Targets"
+      Version="5.0.0"
+      ExcludeAssets="all"
+      PrivateAssets="all"
+    />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="8.0.0" />
-    <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" PrivateAssets="all" />
-    <PackageReference Include="System.Text.Encoding.Extensions" Version="4.3.0" PrivateAssets="all" />
+    <PackageReference
+      Include="System.IO.FileSystem.Primitives"
+      Version="4.3.0"
+      PrivateAssets="all"
+    />
+    <PackageReference
+      Include="System.Text.Encoding.Extensions"
+      Version="4.3.0"
+      PrivateAssets="all"
+    />
   </ItemGroup>
 </Project>

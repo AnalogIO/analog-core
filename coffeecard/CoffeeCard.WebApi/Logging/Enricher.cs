@@ -11,9 +11,9 @@ namespace CoffeeCard.WebApi.Logging
     // https://github.com/ekmsystems/serilog-enrichers-correlation-id
     //
     // MIT License
-    // 
+    //
     // Copyright (c) 2017 Steven Atkinson
-    // 
+    //
     // Permission is hereby granted, free of charge, to any person obtaining a copy
     // of this software and associated documentation files (the "Software"), to deal
     // in the Software without restriction, including without limitation the rights
@@ -38,13 +38,15 @@ namespace CoffeeCard.WebApi.Logging
     {
         private const string CorrelationIdPropertyName = "CorrelationId";
         private const string UserIdPropertyName = "UserId";
-        private static readonly string CorrelationIdItemName = $"{typeof(Enricher).Name}+CorrelationId";
+        private static readonly string CorrelationIdItemName =
+            $"{typeof(Enricher).Name}+CorrelationId";
         private readonly IHttpContextAccessor _contextAccessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Enricher"/> class.
         /// </summary>
-        public Enricher() : this(new HttpContextAccessor()) { }
+        public Enricher()
+            : this(new HttpContextAccessor()) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Enricher"/> class.
@@ -65,9 +67,14 @@ namespace CoffeeCard.WebApi.Logging
             if (_contextAccessor.HttpContext == null)
                 return;
 
-            var correlationIdProperty =
-                new LogEventProperty(CorrelationIdPropertyName, new ScalarValue(GetCorrelationId()));
-            var userIdProperty = new LogEventProperty(UserIdPropertyName, new ScalarValue(GetUserId()));
+            var correlationIdProperty = new LogEventProperty(
+                CorrelationIdPropertyName,
+                new ScalarValue(GetCorrelationId())
+            );
+            var userIdProperty = new LogEventProperty(
+                UserIdPropertyName,
+                new ScalarValue(GetUserId())
+            );
 
             logEvent.AddOrUpdateProperty(correlationIdProperty);
             logEvent.AddOrUpdateProperty(userIdProperty);
@@ -75,7 +82,8 @@ namespace CoffeeCard.WebApi.Logging
 
         private string GetUserId()
         {
-            var id = _contextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == Constants.UserId)
+            var id = _contextAccessor
+                .HttpContext.User.Claims.FirstOrDefault(x => x.Type == Constants.UserId)
                 ?.Value;
 
             return id != null ? $" userid:{id}" : string.Empty;
@@ -85,8 +93,10 @@ namespace CoffeeCard.WebApi.Logging
         {
             var id = $"correlationid:{Guid.NewGuid().ToString().Substring(0, 8)}";
 
-            return (string)(_contextAccessor.HttpContext.Items[CorrelationIdItemName] ??
-                             (_contextAccessor.HttpContext.Items[CorrelationIdItemName] = id));
+            return (string)(
+                _contextAccessor.HttpContext.Items[CorrelationIdItemName]
+                ?? (_contextAccessor.HttpContext.Items[CorrelationIdItemName] = id)
+            );
         }
     }
 }

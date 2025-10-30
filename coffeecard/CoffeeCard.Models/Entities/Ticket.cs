@@ -34,7 +34,6 @@ namespace CoffeeCard.Models.Entities
         [Obsolete("Use Status instead", true)]
         public bool IsUsed { get; set; }
 
-
         /// <summary>
         /// The status of this ticket (e.g. has this ticket been used or refunded?)
         /// </summary>

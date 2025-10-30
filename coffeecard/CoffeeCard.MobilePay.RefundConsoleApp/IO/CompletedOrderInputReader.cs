@@ -27,7 +27,11 @@ namespace CoffeeCard.MobilePay.RefundConsoleApp.IO
                 }
 
                 var completedOrders = ParseInputToTransactions(lines);
-                _log.LogInformation("{size} MobilePay transactions read from {path}", completedOrders.Count, path);
+                _log.LogInformation(
+                    "{size} MobilePay transactions read from {path}",
+                    completedOrders.Count,
+                    path
+                );
 
                 return completedOrders;
             }

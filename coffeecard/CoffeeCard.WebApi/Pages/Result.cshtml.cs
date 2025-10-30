@@ -8,7 +8,6 @@ namespace CoffeeCard.WebApi.Pages
     /// </summary>
     public class Result : PageModel
     {
-
         /// <summary>
         /// Handles GET requests for the result page.
         /// </summary>

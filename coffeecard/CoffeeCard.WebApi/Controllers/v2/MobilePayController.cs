@@ -24,7 +24,7 @@ public class MobilePayController : ControllerBase
     private static readonly JsonSerializerSettings JsonSerializerSettings = new()
     {
         DateFormatString = "yyyy-MM-ddTHH:mm:ss.fffZ",
-        DateTimeZoneHandling = DateTimeZoneHandling.Utc
+        DateTimeZoneHandling = DateTimeZoneHandling.Utc,
     };
 
     private readonly ILogger<MobilePayController> _logger;
@@ -34,8 +34,11 @@ public class MobilePayController : ControllerBase
     /// <summary>
     ///     Initializes a new instance of the <see cref="MobilePayController" /> class.
     /// </summary>
-    public MobilePayController(IPurchaseService purchaseService, IWebhookService webhookService,
-        ILogger<MobilePayController> logger)
+    public MobilePayController(
+        IPurchaseService purchaseService,
+        IWebhookService webhookService,
+        ILogger<MobilePayController> logger
+    )
     {
         _purchaseService = purchaseService;
         _webhookService = webhookService;
@@ -58,18 +61,25 @@ public class MobilePayController : ControllerBase
     [ProducesDefaultResponseType]
     public async Task<ActionResult> Webhook(
         [FromBody] WebhookEvent request,
-        [FromHeader(Name = "x-ms-content-sha256")]
-        string contentShaHeader,
+        [FromHeader(Name = "x-ms-content-sha256")] string contentShaHeader,
         [FromHeader(Name = "x-ms-date")] string dateHeader,
         [FromHeader(Name = "Authorization")] string authorizationHeader
     )
     {
         var json = JsonConvert.SerializeObject(request, JsonSerializerSettings);
 
-        var signatureIsValid = await VerifySignature(json, contentShaHeader, dateHeader, authorizationHeader);
+        var signatureIsValid = await VerifySignature(
+            json,
+            contentShaHeader,
+            dateHeader,
+            authorizationHeader
+        );
         if (!signatureIsValid)
         {
-            _logger.LogWarning("Could not verify signature for request with reference: {reference}", request.Reference);
+            _logger.LogWarning(
+                "Could not verify signature for request with reference: {reference}",
+                request.Reference
+            );
             return BadRequest("Could not verify signature");
         }
 
@@ -79,16 +89,22 @@ public class MobilePayController : ControllerBase
         return NoContent();
     }
 
-    private async Task<bool> VerifySignature(string requestJson, string contentShaHeader, string dateHeader,
-        string authorizationHeader)
+    private async Task<bool> VerifySignature(
+        string requestJson,
+        string contentShaHeader,
+        string dateHeader,
+        string authorizationHeader
+    )
     {
         var contentHashInBytes = SHA256.HashData(Encoding.UTF8.GetBytes(requestJson));
         var computedContentHash = Convert.ToBase64String(contentHashInBytes);
 
         if (!computedContentHash.Equals(contentShaHeader, StringComparison.OrdinalIgnoreCase))
         {
-            _logger.LogWarning("Content hash did not match the computed hash for, header hash: {ContentSha}",
-                contentShaHeader);
+            _logger.LogWarning(
+                "Content hash did not match the computed hash for, header hash: {ContentSha}",
+                contentShaHeader
+            );
             return false;
         }
 
@@ -96,9 +112,9 @@ public class MobilePayController : ControllerBase
         var requestPath = Request.Path + Request.QueryString;
 
         var expectedSignedString =
-            $"{Request.Method}\n" +
-            $"{requestPath}\n" +
-            $"{dateHeader};{Request.Host};{contentShaHeader}";
+            $"{Request.Method}\n"
+            + $"{requestPath}\n"
+            + $"{dateHeader};{Request.Host};{contentShaHeader}";
 
         using var hmacSha256 = new HMACSHA256(Encoding.UTF8.GetBytes(secret));
         var hmacSha256Bytes = Encoding.UTF8.GetBytes(expectedSignedString);
@@ -111,7 +127,8 @@ public class MobilePayController : ControllerBase
         {
             _logger.LogWarning(
                 "Signature did not match the computed signature, header signature: {AuthorizationHeader}",
-                authorizationHeader);
+                authorizationHeader
+            );
             return false;
         }
 

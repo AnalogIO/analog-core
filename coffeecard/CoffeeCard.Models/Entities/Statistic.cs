@@ -18,14 +18,16 @@ namespace CoffeeCard.Models.Entities
         /// Statistic preset for a month
         /// </summary>
         Monthly,
+
         /// <summary>
         /// Statistic preset for a semester
         /// </summary>
         Semester,
+
         /// <summary>
         /// All Statistics
         /// </summary>
-        Total
+        Total,
     }
 
     /// <summary>

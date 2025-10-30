@@ -12,7 +12,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.AdminStatistics
         /// <example> 1 </example>
         public required int ProductId { get; set; }
 
-
         /// <summary>
         /// The name of the product
         /// </summary>
@@ -35,4 +34,3 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.AdminStatistics
         public required decimal UnusedPurchasesValue { get; set; }
     }
 }
-

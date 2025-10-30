@@ -25,7 +25,7 @@ namespace CoffeeCard.Models.Entities
         /// <summary>
         /// Token used to refresh a JWT token
         /// </summary>
-        Refresh
+        Refresh,
     }
 
     /// <summary>
@@ -44,7 +44,7 @@ namespace CoffeeCard.Models.Entities
                 TokenType.DeleteAccount => DateTime.UtcNow.AddDays(1),
                 TokenType.MagicLink => DateTime.UtcNow.AddMinutes(30),
                 TokenType.Refresh => DateTime.UtcNow.AddMonths(1),
-                _ => DateTime.UtcNow.AddDays(1)
+                _ => DateTime.UtcNow.AddDays(1),
             };
         }
     }

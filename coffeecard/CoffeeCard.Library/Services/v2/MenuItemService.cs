@@ -23,13 +23,13 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task<IEnumerable<MenuItemResponse>> GetAllMenuItemsAsync()
         {
-            return await _context.MenuItems
-                .OrderBy(p => p.Id)
+            return await _context
+                .MenuItems.OrderBy(p => p.Id)
                 .Select(p => new MenuItemResponse
                 {
                     Id = p.Id,
                     Name = p.Name,
-                    Active = p.Active
+                    Active = p.Active,
                 })
                 .ToListAsync();
         }
@@ -39,13 +39,12 @@ namespace CoffeeCard.Library.Services.v2
             var nameExists = await CheckMenuItemNameExists(newMenuItem.Name);
             if (nameExists)
             {
-                throw new ConflictException($"Menu item already exists with name {newMenuItem.Name}");
+                throw new ConflictException(
+                    $"Menu item already exists with name {newMenuItem.Name}"
+                );
             }
 
-            var menuItem = new MenuItem()
-            {
-                Name = newMenuItem.Name
-            };
+            var menuItem = new MenuItem() { Name = newMenuItem.Name };
 
             _context.MenuItems.Add(menuItem);
             await _context.SaveChangesAsync();
@@ -54,7 +53,7 @@ namespace CoffeeCard.Library.Services.v2
             {
                 Id = menuItem.Id,
                 Name = menuItem.Name,
-                Active = true
+                Active = true,
             };
 
             return result;
@@ -62,11 +61,13 @@ namespace CoffeeCard.Library.Services.v2
 
         private async Task<bool> CheckMenuItemNameExists(string name)
         {
-            return await _context.MenuItems
-                .AnyAsync(p => p.Name == name);
+            return await _context.MenuItems.AnyAsync(p => p.Name == name);
         }
 
-        public async Task<MenuItemResponse> UpdateMenuItemAsync(int id, UpdateMenuItemRequest changedMenuItem)
+        public async Task<MenuItemResponse> UpdateMenuItemAsync(
+            int id,
+            UpdateMenuItemRequest changedMenuItem
+        )
         {
             var menuItem = await _context.MenuItems.FirstOrDefaultAsync(p => p.Id == id);
 
@@ -79,11 +80,14 @@ namespace CoffeeCard.Library.Services.v2
             var nameExists = await CheckMenuItemNameExists(changedMenuItem.Name);
             if (changedMenuItem.Name != menuItem.Name && nameExists)
             {
-                throw new ConflictException($"Menu item already exists with name {changedMenuItem.Name}");
+                throw new ConflictException(
+                    $"Menu item already exists with name {changedMenuItem.Name}"
+                );
             }
 
-
-            var menuItemIsUsed = await _context.Products.AnyAsync(p => p.EligibleMenuItems.Any(menuItem => menuItem.Id == id));
+            var menuItemIsUsed = await _context.Products.AnyAsync(p =>
+                p.EligibleMenuItems.Any(menuItem => menuItem.Id == id)
+            );
             if (!changedMenuItem.Active && menuItemIsUsed)
             {
                 throw new ConflictException("Menu item is in use and cannot be disabled");
@@ -98,7 +102,7 @@ namespace CoffeeCard.Library.Services.v2
             {
                 Id = id,
                 Name = menuItem.Name,
-                Active = menuItem.Active
+                Active = menuItem.Active,
             };
 
             return result;

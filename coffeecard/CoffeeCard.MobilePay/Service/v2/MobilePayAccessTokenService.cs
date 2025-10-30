@@ -14,26 +14,33 @@ namespace CoffeeCard.MobilePay.Service.v2;
 public class MobilePayAccessTokenService(
     IAccessTokenClient accessTokenClient,
     MobilePaySettings mobilePaySettings,
-    IMemoryCache memoryCache)
-    : IMobilePayAccessTokenService
+    IMemoryCache memoryCache
+) : IMobilePayAccessTokenService
 {
     private const string MpAccessTokenCacheKey = "MpAccessTokenKey";
 
     public async Task<GetAuthorizationTokenResponse> GetAuthorizationTokenAsync()
     {
-        var tokenResponse = await memoryCache.GetOrCreateAsync(MpAccessTokenCacheKey, async entry =>
-        {
-            var clientResponse = await accessTokenClient.GetToken(mobilePaySettings.ClientId.ToString(),
-                mobilePaySettings.ClientSecret);
-            var tokenResponse = new GetAuthorizationTokenResponse()
+        var tokenResponse = await memoryCache.GetOrCreateAsync(
+            MpAccessTokenCacheKey,
+            async entry =>
             {
-                AccessToken = clientResponse.Access_token,
-                ExpiresOn = DateTimeOffset.FromUnixTimeSeconds(long.Parse(clientResponse.Expires_on))
-            };
+                var clientResponse = await accessTokenClient.GetToken(
+                    mobilePaySettings.ClientId.ToString(),
+                    mobilePaySettings.ClientSecret
+                );
+                var tokenResponse = new GetAuthorizationTokenResponse()
+                {
+                    AccessToken = clientResponse.Access_token,
+                    ExpiresOn = DateTimeOffset.FromUnixTimeSeconds(
+                        long.Parse(clientResponse.Expires_on)
+                    ),
+                };
 
-            entry.AbsoluteExpiration = tokenResponse.ExpiresOn - TimeSpan.FromMinutes(5);
-            return tokenResponse;
-        });
+                entry.AbsoluteExpiration = tokenResponse.ExpiresOn - TimeSpan.FromMinutes(5);
+                return tokenResponse;
+            }
+        );
 
         return tokenResponse!;
     }

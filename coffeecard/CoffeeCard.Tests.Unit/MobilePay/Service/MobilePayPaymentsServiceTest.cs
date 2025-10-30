@@ -19,7 +19,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Service
         private readonly Mock<ILogger<MobilePayPaymentsService>> _loggerMock = new();
         private readonly MobilePaySettings _mobilePaySettings = new()
         {
-            AnalogAppRedirectUri = "analogcoffeecard-test://mobilepay_purchase"
+            AnalogAppRedirectUri = "analogcoffeecard-test://mobilepay_purchase",
         };
 
         [Fact(DisplayName = "InitiatePayment creates correct payment request")]
@@ -29,19 +29,20 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Service
             var service = new MobilePayPaymentsService(
                 _ePaymentClientMock.Object,
                 _mobilePaySettings,
-                _loggerMock.Object);
+                _loggerMock.Object
+            );
 
             var paymentRequest = new MobilePayPaymentRequest
             {
                 OrderId = Guid.NewGuid(),
                 Amount = 50,
-                Description = "Test payment"
+                Description = "Test payment",
             };
 
             var expectedResponse = new CreatePaymentResponse
             {
                 Reference = paymentRequest.OrderId.ToString(),
-                RedirectUrl = new Uri("https://notmobilepay.app/redirect")
+                RedirectUrl = new Uri("https://notmobilepay.app/redirect"),
             };
 
             _ePaymentClientMock
@@ -56,15 +57,21 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Service
             Assert.Equal(expectedResponse.RedirectUrl.ToString(), result.MobilePayAppRedirectUri);
 
             // Verify correct request was made
-            _ePaymentClientMock.Verify(x => x.CreatePaymentAsync(It.Is<CreatePaymentRequest>(req =>
-                req.Amount.Value == paymentRequest.Amount * 100 &&
-                req.Amount.Currency == Currency.DKK &&
-                req.Reference == paymentRequest.OrderId.ToString() &&
-                req.PaymentDescription == paymentRequest.Description &&
-                req.ReturnUrl == _mobilePaySettings.AnalogAppRedirectUri &&
-                req.UserFlow == CreatePaymentRequestUserFlow.WEB_REDIRECT &&
-                req.PaymentMethod.Type == PaymentMethodType.WALLET
-            )), Times.Once);
+            _ePaymentClientMock.Verify(
+                x =>
+                    x.CreatePaymentAsync(
+                        It.Is<CreatePaymentRequest>(req =>
+                            req.Amount.Value == paymentRequest.Amount * 100
+                            && req.Amount.Currency == Currency.DKK
+                            && req.Reference == paymentRequest.OrderId.ToString()
+                            && req.PaymentDescription == paymentRequest.Description
+                            && req.ReturnUrl == _mobilePaySettings.AnalogAppRedirectUri
+                            && req.UserFlow == CreatePaymentRequestUserFlow.WEB_REDIRECT
+                            && req.PaymentMethod.Type == PaymentMethodType.WALLET
+                        )
+                    ),
+                Times.Once
+            );
         }
 
         [Fact(DisplayName = "GetPayment returns payment details")]
@@ -74,13 +81,14 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Service
             var service = new MobilePayPaymentsService(
                 _ePaymentClientMock.Object,
                 _mobilePaySettings,
-                _loggerMock.Object);
+                _loggerMock.Object
+            );
 
             var paymentId = Guid.NewGuid();
             var expectedResponse = new GetPaymentResponse
             {
                 Reference = paymentId.ToString(),
-                RedirectUrl = new Uri("https://notmobilepay.app/redirect")
+                RedirectUrl = new Uri("https://notmobilepay.app/redirect"),
             };
 
             _ePaymentClientMock
@@ -105,12 +113,10 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Service
             var service = new MobilePayPaymentsService(
                 _ePaymentClientMock.Object,
                 _mobilePaySettings,
-                _loggerMock.Object);
+                _loggerMock.Object
+            );
 
-            var purchase = new Purchase
-            {
-                ExternalTransactionId = "transaction-123"
-            };
+            var purchase = new Purchase { ExternalTransactionId = "transaction-123" };
 
             var refundAmount = 25;
 
@@ -121,13 +127,17 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Service
             Assert.True(result);
 
             // Verify correct refund request was made
-            _ePaymentClientMock.Verify(x => x.RefundPaymentAsync(
-                purchase.ExternalTransactionId,
-                It.Is<RefundModificationRequest>(req =>
-                    req.ModificationAmount.Currency == Currency.DKK &&
-                    req.ModificationAmount.Value == refundAmount
-                )
-            ), Times.Once);
+            _ePaymentClientMock.Verify(
+                x =>
+                    x.RefundPaymentAsync(
+                        purchase.ExternalTransactionId,
+                        It.Is<RefundModificationRequest>(req =>
+                            req.ModificationAmount.Currency == Currency.DKK
+                            && req.ModificationAmount.Value == refundAmount
+                        )
+                    ),
+                Times.Once
+            );
         }
 
         [Fact(DisplayName = "RefundPayment throws ArgumentNullException when purchase is null")]
@@ -137,28 +147,31 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Service
             var service = new MobilePayPaymentsService(
                 _ePaymentClientMock.Object,
                 _mobilePaySettings,
-                _loggerMock.Object);
+                _loggerMock.Object
+            );
 
             // Act & Assert
             await Assert.ThrowsAsync<ArgumentNullException>(() => service.RefundPayment(null!, 25));
         }
 
-        [Fact(DisplayName = "RefundPayment throws ArgumentNullException when ExternalTransactionId is null")]
+        [Fact(
+            DisplayName = "RefundPayment throws ArgumentNullException when ExternalTransactionId is null"
+        )]
         public async Task RefundPayment_ThrowsArgumentNullException_WhenExternalTransactionIdIsNull()
         {
             // Arrange
             var service = new MobilePayPaymentsService(
                 _ePaymentClientMock.Object,
                 _mobilePaySettings,
-                _loggerMock.Object);
+                _loggerMock.Object
+            );
 
-            var purchase = new Purchase
-            {
-                ExternalTransactionId = null
-            };
+            var purchase = new Purchase { ExternalTransactionId = null };
 
             // Act & Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(() => service.RefundPayment(purchase, 25));
+            await Assert.ThrowsAsync<ArgumentNullException>(() =>
+                service.RefundPayment(purchase, 25)
+            );
         }
 
         [Fact(DisplayName = "CapturePayment calls API correctly")]
@@ -168,7 +181,8 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Service
             var service = new MobilePayPaymentsService(
                 _ePaymentClientMock.Object,
                 _mobilePaySettings,
-                _loggerMock.Object);
+                _loggerMock.Object
+            );
 
             var paymentId = Guid.NewGuid();
             var captureAmount = 50;
@@ -178,13 +192,17 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Service
 
             // Assert
             // Verify correct capture request was made
-            _ePaymentClientMock.Verify(x => x.CapturePaymentAsync(
-                paymentId.ToString(),
-                It.Is<CaptureModificationRequest>(req =>
-                    req.ModificationAmount.Currency == Currency.DKK &&
-                    req.ModificationAmount.Value == captureAmount * 100
-                )
-            ), Times.Once);
+            _ePaymentClientMock.Verify(
+                x =>
+                    x.CapturePaymentAsync(
+                        paymentId.ToString(),
+                        It.Is<CaptureModificationRequest>(req =>
+                            req.ModificationAmount.Currency == Currency.DKK
+                            && req.ModificationAmount.Value == captureAmount * 100
+                        )
+                    ),
+                Times.Once
+            );
         }
 
         [Fact(DisplayName = "CancelPayment calls API correctly")]
@@ -194,7 +212,8 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Service
             var service = new MobilePayPaymentsService(
                 _ePaymentClientMock.Object,
                 _mobilePaySettings,
-                _loggerMock.Object);
+                _loggerMock.Object
+            );
 
             var paymentId = Guid.NewGuid();
 
@@ -203,10 +222,14 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Service
 
             // Assert
             // Verify correct cancel request was made
-            _ePaymentClientMock.Verify(x => x.CancelPaymentAsync(
-                paymentId.ToString(),
-                It.Is<CancelModificationRequest>(req => req.CancelTransactionOnly == true)
-            ), Times.Once);
+            _ePaymentClientMock.Verify(
+                x =>
+                    x.CancelPaymentAsync(
+                        paymentId.ToString(),
+                        It.Is<CancelModificationRequest>(req => req.CancelTransactionOnly == true)
+                    ),
+                Times.Once
+            );
         }
 
         [Fact(DisplayName = "ConvertToAmount correctly converts kroner to øre")]
@@ -216,7 +239,8 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Service
             var service = new MobilePayPaymentsService(
                 _ePaymentClientMock.Object,
                 _mobilePaySettings,
-                _loggerMock.Object);
+                _loggerMock.Object
+            );
 
             var paymentId = Guid.NewGuid();
             var amountInKroner = 50;
@@ -227,13 +251,17 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Service
 
             // Assert
             // Verify amount was converted correctly (kroner to øre)
-            _ePaymentClientMock.Verify(x => x.CapturePaymentAsync(
-                paymentId.ToString(),
-                It.Is<CaptureModificationRequest>(req =>
-                    req.ModificationAmount.Currency == Currency.DKK &&
-                    req.ModificationAmount.Value == expectedAmountInOre
-                )
-            ), Times.Once);
+            _ePaymentClientMock.Verify(
+                x =>
+                    x.CapturePaymentAsync(
+                        paymentId.ToString(),
+                        It.Is<CaptureModificationRequest>(req =>
+                            req.ModificationAmount.Currency == Currency.DKK
+                            && req.ModificationAmount.Value == expectedAmountInOre
+                        )
+                    ),
+                Times.Once
+            );
         }
     }
 }

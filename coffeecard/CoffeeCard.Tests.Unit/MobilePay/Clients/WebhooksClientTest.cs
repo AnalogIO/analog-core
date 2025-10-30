@@ -5,8 +5,8 @@ using System.Net;
 using System.Threading.Tasks;
 using CoffeeCard.MobilePay.Clients;
 using CoffeeCard.MobilePay.Exception.v2;
-using CoffeeCard.MobilePay.Generated.Api.WebhooksApi;
 using CoffeeCard.MobilePay.Generated.Api.ePaymentApi;
+using CoffeeCard.MobilePay.Generated.Api.WebhooksApi;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
@@ -29,14 +29,10 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
             var request = new RegisterRequest
             {
                 Events = new List<string> { "epayments.payment.authorized.v1" },
-                Url = new Uri(webhookUrl)
+                Url = new Uri(webhookUrl),
             };
 
-            var expectedResponse = new RegisterResponse
-            {
-                Id = webhookId,
-                Secret = webhookSecret
-            };
+            var expectedResponse = new RegisterResponse { Id = webhookId, Secret = webhookSecret };
 
             var httpClient = CreateMockHttpClient(HttpStatusCode.OK, expectedResponse);
             var client = new WebhooksClient(httpClient, _loggerMock.Object);
@@ -56,7 +52,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
             var request = new RegisterRequest
             {
                 Events = new List<string> { "epayments.payment.authorized.v1" },
-                Url = new Uri("https://example.com/webhook")
+                Url = new Uri("https://example.com/webhook"),
             };
 
             var problem = new Problem
@@ -64,14 +60,16 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
                 Title = "Bad Request",
                 Status = 400,
                 Detail = "Invalid webhook URL",
-                ExtraDetails = [new ExtraDetail { Name = "Error", Reason = "Invalid URL" }]
+                ExtraDetails = [new ExtraDetail { Name = "Error", Reason = "Invalid URL" }],
             };
 
             var httpClient = CreateMockHttpClient(HttpStatusCode.BadRequest, problem);
             var client = new WebhooksClient(httpClient, _loggerMock.Object);
 
             // Act & Assert
-            await Assert.ThrowsAsync<MobilePayApiException>(() => client.CreateWebhookAsync(request));
+            await Assert.ThrowsAsync<MobilePayApiException>(() =>
+                client.CreateWebhookAsync(request)
+            );
 
             // Verify logging occurred
             VerifyLoggingOccurred();
@@ -91,8 +89,8 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
                 Webhooks = new List<Webhook>
                 {
                     new() { Id = webhook1Id, Url = new Uri(webhook1Url) },
-                    new() { Id = webhook2Id, Url = new Uri(webhook2Url) }
-                }
+                    new() { Id = webhook2Id, Url = new Uri(webhook2Url) },
+                },
             };
 
             var httpClient = CreateMockHttpClient(HttpStatusCode.OK, expectedResponse);
@@ -118,7 +116,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
                 Title = "Internal Server Error",
                 Status = 500,
                 Detail = "An error occurred while retrieving webhooks",
-                ExtraDetails = [new ExtraDetail { Name = "Error", Reason = "Database error" }]
+                ExtraDetails = [new ExtraDetail { Name = "Error", Reason = "Database error" }],
             };
 
             var httpClient = CreateMockHttpClient(HttpStatusCode.InternalServerError, problem);
@@ -140,7 +138,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
                 Title = "Bad Request",
                 Status = 400,
                 Detail = "Invalid webhook URL",
-                ExtraDetails = [new ExtraDetail { Name = "Error", Reason = "Invalid URL" }]
+                ExtraDetails = [new ExtraDetail { Name = "Error", Reason = "Invalid URL" }],
             };
 
             var httpClient = CreateMockHttpClient(HttpStatusCode.BadRequest, problem);
@@ -164,13 +162,16 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
         private void VerifyLoggingOccurred()
         {
             _loggerMock.Verify(
-                x => x.Log(
-                    LogLevel.Error,
-                    It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((v, t) => true),
-                    It.IsAny<Exception>(),
-                    It.IsAny<Func<It.IsAnyType, Exception, string>>()!),
-                Times.AtLeast(1));
+                x =>
+                    x.Log(
+                        LogLevel.Error,
+                        It.IsAny<EventId>(),
+                        It.Is<It.IsAnyType>((v, t) => true),
+                        It.IsAny<Exception>(),
+                        It.IsAny<Func<It.IsAnyType, Exception, string>>()!
+                    ),
+                Times.AtLeast(1)
+            );
         }
     }
 }

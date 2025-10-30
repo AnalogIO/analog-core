@@ -25,7 +25,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
             var expectedResponse = new CreatePaymentResponse
             {
                 Reference = "test-payment-123",
-                RedirectUrl = new Uri("https://redirect.example.com")
+                RedirectUrl = new Uri("https://redirect.example.com"),
             };
 
             var httpClient = CreateMockHttpClient(HttpStatusCode.OK, expectedResponse);
@@ -34,12 +34,8 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
             var request = new CreatePaymentRequest
             {
                 Reference = "test-payment-123",
-                Amount = new Amount
-                {
-                    Currency = Currency.DKK,
-                    Value = 10000
-                },
-                PaymentDescription = "Test payment"
+                Amount = new Amount { Currency = Currency.DKK, Value = 10000 },
+                PaymentDescription = "Test payment",
             };
 
             // Act
@@ -59,7 +55,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
                 Title = "Bad Request",
                 Status = 400,
                 Detail = "Invalid payment request",
-                Type = new Uri("https://developer.mobilepay.dk/errors/bad-request")
+                Type = new Uri("https://developer.mobilepay.dk/errors/bad-request"),
             };
 
             var httpClient = CreateMockHttpClient(HttpStatusCode.BadRequest, problem);
@@ -68,16 +64,14 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
             var request = new CreatePaymentRequest
             {
                 Reference = "invalid-reference",
-                Amount = new Amount
-                {
-                    Currency = Currency.DKK,
-                    Value = 10000
-                },
-                PaymentDescription = "Test payment with error"
+                Amount = new Amount { Currency = Currency.DKK, Value = 10000 },
+                PaymentDescription = "Test payment with error",
             };
 
             // Act & Assert
-            await Assert.ThrowsAsync<MobilePayApiException>(() => client.CreatePaymentAsync(request));
+            await Assert.ThrowsAsync<MobilePayApiException>(() =>
+                client.CreatePaymentAsync(request)
+            );
 
             // Verify logging occurred
             VerifyLoggingOccurred();
@@ -92,11 +86,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
             {
                 Reference = paymentReference,
                 State = State.CREATED,
-                Amount = new Amount
-                {
-                    Currency = Currency.DKK,
-                    Value = 10000
-                }
+                Amount = new Amount { Currency = Currency.DKK, Value = 10000 },
             };
 
             var httpClient = CreateMockHttpClient(HttpStatusCode.OK, expectedResponse);
@@ -122,14 +112,16 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
                 Title = "Not Found",
                 Status = 404,
                 Detail = "Payment not found",
-                Type = new Uri("https://developer.mobilepay.dk/errors/not-found")
+                Type = new Uri("https://developer.mobilepay.dk/errors/not-found"),
             };
 
             var httpClient = CreateMockHttpClient(HttpStatusCode.NotFound, problem);
             var client = new EPaymentClient(httpClient, _loggerMock.Object);
 
             // Act & Assert
-            await Assert.ThrowsAsync<MobilePayApiException>(() => client.GetPaymentAsync(paymentReference));
+            await Assert.ThrowsAsync<MobilePayApiException>(() =>
+                client.GetPaymentAsync(paymentReference)
+            );
 
             // Verify logging occurred
             VerifyLoggingOccurred();
@@ -143,7 +135,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
             var expectedResponse = new ModificationResponse
             {
                 Reference = "refund-123",
-                State = State.AUTHORIZED
+                State = State.AUTHORIZED,
             };
 
             var httpClient = CreateMockHttpClient(HttpStatusCode.OK, expectedResponse);
@@ -151,11 +143,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
 
             var request = new RefundModificationRequest
             {
-                ModificationAmount = new Amount
-                {
-                    Currency = Currency.DKK,
-                    Value = 5000
-                },
+                ModificationAmount = new Amount { Currency = Currency.DKK, Value = 5000 },
             };
 
             // Act
@@ -176,7 +164,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
                 Title = "Bad Request",
                 Status = 400,
                 Detail = "Cannot refund more than the captured amount",
-                Type = new Uri("https://developer.mobilepay.dk/errors/bad-request")
+                Type = new Uri("https://developer.mobilepay.dk/errors/bad-request"),
             };
 
             var httpClient = CreateMockHttpClient(HttpStatusCode.BadRequest, problem);
@@ -184,15 +172,13 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
 
             var request = new RefundModificationRequest
             {
-                ModificationAmount = new Amount
-                {
-                    Currency = Currency.DKK,
-                    Value = 20000
-                }
+                ModificationAmount = new Amount { Currency = Currency.DKK, Value = 20000 },
             };
 
             // Act & Assert
-            await Assert.ThrowsAsync<MobilePayApiException>(() => client.RefundPaymentAsync(paymentReference, request));
+            await Assert.ThrowsAsync<MobilePayApiException>(() =>
+                client.RefundPaymentAsync(paymentReference, request)
+            );
 
             // Verify logging occurred
             VerifyLoggingOccurred();
@@ -206,7 +192,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
             var expectedResponse = new ModificationResponse
             {
                 Reference = "capture-123",
-                State = State.AUTHORIZED
+                State = State.AUTHORIZED,
             };
 
             var httpClient = CreateMockHttpClient(HttpStatusCode.OK, expectedResponse);
@@ -214,11 +200,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
 
             var request = new CaptureModificationRequest
             {
-                ModificationAmount = new Amount
-                {
-                    Currency = Currency.DKK,
-                    Value = 10000
-                }
+                ModificationAmount = new Amount { Currency = Currency.DKK, Value = 10000 },
             };
 
             // Act
@@ -239,7 +221,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
                 Title = "Bad Request",
                 Status = 400,
                 Detail = "Payment is not in a capturable state",
-                Type = new Uri("https://developer.mobilepay.dk/errors/bad-request")
+                Type = new Uri("https://developer.mobilepay.dk/errors/bad-request"),
             };
 
             var httpClient = CreateMockHttpClient(HttpStatusCode.BadRequest, problem);
@@ -247,15 +229,13 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
 
             var request = new CaptureModificationRequest
             {
-                ModificationAmount = new Amount
-                {
-                    Currency = Currency.DKK,
-                    Value = 10000
-                },
+                ModificationAmount = new Amount { Currency = Currency.DKK, Value = 10000 },
             };
 
             // Act & Assert
-            await Assert.ThrowsAsync<MobilePayApiException>(() => client.CapturePaymentAsync(paymentReference, request));
+            await Assert.ThrowsAsync<MobilePayApiException>(() =>
+                client.CapturePaymentAsync(paymentReference, request)
+            );
 
             // Verify logging occurred
             VerifyLoggingOccurred();
@@ -269,7 +249,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
             var expectedResponse = new ModificationResponse
             {
                 Reference = "cancel-123",
-                State = State.AUTHORIZED
+                State = State.AUTHORIZED,
             };
 
             var httpClient = CreateMockHttpClient(HttpStatusCode.OK, expectedResponse);
@@ -295,7 +275,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
                 Title = "Bad Request",
                 Status = 400,
                 Detail = "Payment is not in a cancelable state",
-                Type = new Uri("https://developer.mobilepay.dk/errors/bad-request")
+                Type = new Uri("https://developer.mobilepay.dk/errors/bad-request"),
             };
 
             var httpClient = CreateMockHttpClient(HttpStatusCode.BadRequest, problem);
@@ -304,7 +284,9 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
             var request = new CancelModificationRequest();
 
             // Act & Assert
-            await Assert.ThrowsAsync<MobilePayApiException>(() => client.CancelPaymentAsync(paymentReference, request));
+            await Assert.ThrowsAsync<MobilePayApiException>(() =>
+                client.CancelPaymentAsync(paymentReference, request)
+            );
 
             // Verify logging occurred
             VerifyLoggingOccurred();
@@ -313,13 +295,16 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
         private void VerifyLoggingOccurred()
         {
             _loggerMock.Verify(
-                x => x.Log(
-                    LogLevel.Error,
-                    It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((v, t) => true),
-                    It.IsAny<Exception>(),
-                    It.IsAny<Func<It.IsAnyType, Exception, string>>()!),
-                Times.AtLeast(1));
+                x =>
+                    x.Log(
+                        LogLevel.Error,
+                        It.IsAny<EventId>(),
+                        It.Is<It.IsAnyType>((v, t) => true),
+                        It.IsAny<Exception>(),
+                        It.IsAny<Func<It.IsAnyType, Exception, string>>()!
+                    ),
+                Times.AtLeast(1)
+            );
         }
     }
 }

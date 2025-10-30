@@ -12,7 +12,7 @@ namespace CoffeeCard.Library.Utils
                 LeaderboardPreset.Month => StatisticPreset.Monthly,
                 LeaderboardPreset.Semester => StatisticPreset.Semester,
                 LeaderboardPreset.Total => StatisticPreset.Total,
-                _ => StatisticPreset.Monthly
+                _ => StatisticPreset.Monthly,
             };
         }
     }

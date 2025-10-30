@@ -12,8 +12,8 @@ using Xunit;
 
 namespace CoffeeCard.Tests.Integration.Controllers.Account
 {
-
-    public class LoginTest(CustomWebApplicationFactory<Startup> factory) : BaseIntegrationTest(factory)
+    public class LoginTest(CustomWebApplicationFactory<Startup> factory)
+        : BaseIntegrationTest(factory)
     {
         [Fact]
         public async Task Unknown_user_login_fails()
@@ -22,10 +22,12 @@ namespace CoffeeCard.Tests.Integration.Controllers.Account
             {
                 Password = "test",
                 Email = "test@email.dk",
-                Version = "2.1.0"
+                Version = "2.1.0",
             };
 
-            var apiException = await Assert.ThrowsAsync<ApiException>(() => CoffeeCardClient.Account_LoginAsync(loginRequest));
+            var apiException = await Assert.ThrowsAsync<ApiException>(() =>
+                CoffeeCardClient.Account_LoginAsync(loginRequest)
+            );
             Assert.Equal((int)HttpStatusCode.Unauthorized, apiException.StatusCode);
         }
 
@@ -43,7 +45,7 @@ namespace CoffeeCard.Tests.Integration.Controllers.Account
             {
                 Password = plaintextPassword,
                 Email = user.Email,
-                Version = "2.1.0"
+                Version = "2.1.0",
             };
             var response = await CoffeeCardClient.Account_LoginAsync(loginRequest);
 

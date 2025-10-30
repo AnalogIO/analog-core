@@ -26,7 +26,8 @@ namespace CoffeeCard.WebApi.Pages
         /// <summary>
         /// Token used to verify and delete a user's account.
         /// </summary>
-        [BindProperty(SupportsGet = true)] public string Token { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public string Token { get; set; }
 
         /// <summary>
         /// Handles the GET request for verifying and deleting a user's account.
@@ -34,7 +35,7 @@ namespace CoffeeCard.WebApi.Pages
         /// <returns>The result of the action.</returns>
         public async Task<IActionResult> OnGet()
         {
-            Func<Task<IActionResult>> func = async delegate ()
+            Func<Task<IActionResult>> func = async delegate()
             {
                 await _accountService.AnonymizeAccountAsync(Token);
 

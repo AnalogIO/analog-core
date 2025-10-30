@@ -12,36 +12,48 @@ public class BuilderGenerator : IIncrementalGenerator
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        var namedTypeSymbols = context.SyntaxProvider
-            .ForAttributeWithMetadataName(
+        var namedTypeSymbols = context
+            .SyntaxProvider.ForAttributeWithMetadataName(
                 fullyQualifiedMetadataName: BuilderForAttribute,
                 predicate: IsSyntaxTargetForGeneration,
-                transform: GetSemanticTargetForGeneration)
-            .Where(t => t is not null).Collect();
+                transform: GetSemanticTargetForGeneration
+            )
+            .Where(t => t is not null)
+            .Collect();
 
-        context.RegisterSourceOutput(namedTypeSymbols, (productionContext, array) =>
-        {
-            foreach (var typeSymbol in array)
+        context.RegisterSourceOutput(
+            namedTypeSymbols,
+            (productionContext, array) =>
             {
-                //Retrieve the entity it is a builder for
-                var entity = (INamedTypeSymbol)typeSymbol.GetAttributes()
-                    .Single(attr => attr.AttributeClass.Name == "BuilderForAttribute").ConstructorArguments[0].Value;
-                var code = GenerateBuilderCode(typeSymbol, entity);
-                var sourceText = SourceText.From(code, Encoding.UTF8);
-                productionContext.AddSource($"{typeSymbol.Name}.g.cs", sourceText);
+                foreach (var typeSymbol in array)
+                {
+                    //Retrieve the entity it is a builder for
+                    var entity = (INamedTypeSymbol)
+                        typeSymbol
+                            .GetAttributes()
+                            .Single(attr => attr.AttributeClass.Name == "BuilderForAttribute")
+                            .ConstructorArguments[0]
+                            .Value;
+                    var code = GenerateBuilderCode(typeSymbol, entity);
+                    var sourceText = SourceText.From(code, Encoding.UTF8);
+                    productionContext.AddSource($"{typeSymbol.Name}.g.cs", sourceText);
+                }
             }
-        });
+        );
     }
 
     private static bool IsSyntaxTargetForGeneration(
         SyntaxNode syntaxNode,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         return syntaxNode is ClassDeclarationSyntax classDeclaration;
     }
 
-    private static INamedTypeSymbol GetSemanticTargetForGeneration(GeneratorAttributeSyntaxContext context,
-        CancellationToken cancellationToken)
+    private static INamedTypeSymbol GetSemanticTargetForGeneration(
+        GeneratorAttributeSyntaxContext context,
+        CancellationToken cancellationToken
+    )
     {
         return (INamedTypeSymbol)context.TargetSymbol;
     }
@@ -59,11 +71,16 @@ public class BuilderGenerator : IIncrementalGenerator
         codeBuilder.AppendLine($"namespace {typeSymbol.ContainingNamespace};");
         codeBuilder.AppendLine();
 
-        codeBuilder.AppendLine($"public partial class {typeSymbol.Name} : BaseBuilder<{entity.Name}>, IBuilder<{typeSymbol.Name}>");
+        codeBuilder.AppendLine(
+            $"public partial class {typeSymbol.Name} : BaseBuilder<{entity.Name}>, IBuilder<{typeSymbol.Name}>"
+        );
         codeBuilder.AppendLine("{");
 
         // Retrieve all properties of the given entity
-        var properties = entity.GetMembers().OfType<IPropertySymbol>().Where(p => p.Kind == SymbolKind.Property);
+        var properties = entity
+            .GetMembers()
+            .OfType<IPropertySymbol>()
+            .Where(p => p.Kind == SymbolKind.Property);
 
         var entityNameChar = entity.Name.ToLowerInvariant()[0];
         // Generate builder methods for all properties
@@ -72,18 +89,23 @@ public class BuilderGenerator : IIncrementalGenerator
         {
             if (property.Name.Contains("Id"))
             {
-                configBuilder.AppendLine($"            .Ignore({entity.Name} => {entity.Name}.{property.Name})");
+                configBuilder.AppendLine(
+                    $"            .Ignore({entity.Name} => {entity.Name}.{property.Name})"
+                );
             }
-            AddWithPropertyValueToCodeBuilder(codeBuilder: codeBuilder,
-                    typeSymbol: typeSymbol,
-                    property: property,
-                    entityNameChar: entityNameChar);
+            AddWithPropertyValueToCodeBuilder(
+                codeBuilder: codeBuilder,
+                typeSymbol: typeSymbol,
+                property: property,
+                entityNameChar: entityNameChar
+            );
 
             AddWithPropertySetterToCodeBuilder(
                 codeBuilder: codeBuilder,
                 typeSymbol: typeSymbol,
                 property: property,
-                entityNameChar: entityNameChar);
+                entityNameChar: entityNameChar
+            );
         }
         AddPrivateConstructorToCodeBuilder(codeBuilder, typeSymbol, configBuilder);
 
@@ -99,39 +121,57 @@ public class BuilderGenerator : IIncrementalGenerator
     /// <param name="codeBuilder"></param>
     /// <param name="typeSymbol"></param>
     /// <param name="configBuilder"></param>
-    private void AddPrivateConstructorToCodeBuilder(StringBuilder codeBuilder, ITypeSymbol typeSymbol, StringBuilder configBuilder)
+    private void AddPrivateConstructorToCodeBuilder(
+        StringBuilder codeBuilder,
+        ITypeSymbol typeSymbol,
+        StringBuilder configBuilder
+    )
     {
-        codeBuilder.AppendLine(
-            $"    private {typeSymbol.Name} ()");
+        codeBuilder.AppendLine($"    private {typeSymbol.Name} ()");
         codeBuilder.AppendLine("    {");
         codeBuilder.Append("        Faker");
         codeBuilder.Append($"{configBuilder};");
         codeBuilder.AppendLine("    }");
     }
 
-    private void AddWithPropertyValueToCodeBuilder(StringBuilder codeBuilder, ITypeSymbol typeSymbol, IPropertySymbol property, char entityNameChar)
+    private void AddWithPropertyValueToCodeBuilder(
+        StringBuilder codeBuilder,
+        ITypeSymbol typeSymbol,
+        IPropertySymbol property,
+        char entityNameChar
+    )
     {
         MarkObsoleteAsObsolete(codeBuilder, property);
 
         codeBuilder.AppendLine(
-            $"    public {typeSymbol.Name} With{property.Name}({property.Type} {property.Name}Value)");
+            $"    public {typeSymbol.Name} With{property.Name}({property.Type} {property.Name}Value)"
+        );
         codeBuilder.AppendLine("    {");
 
         codeBuilder.AppendLine(
-            $"        Faker.RuleFor({entityNameChar} => {entityNameChar}.{property.Name}, {property.Name}Value);");
+            $"        Faker.RuleFor({entityNameChar} => {entityNameChar}.{property.Name}, {property.Name}Value);"
+        );
         codeBuilder.AppendLine("        return this;");
         codeBuilder.AppendLine("    }");
     }
-    private void AddWithPropertySetterToCodeBuilder(StringBuilder codeBuilder, ITypeSymbol typeSymbol, IPropertySymbol property, char entityNameChar)
+
+    private void AddWithPropertySetterToCodeBuilder(
+        StringBuilder codeBuilder,
+        ITypeSymbol typeSymbol,
+        IPropertySymbol property,
+        char entityNameChar
+    )
     {
         MarkObsoleteAsObsolete(codeBuilder, property);
 
         codeBuilder.AppendLine(
-            $"    public {typeSymbol.Name} With{property.Name}(Func<Bogus.Faker, {property.Type}> {property.Name}Setter)");
+            $"    public {typeSymbol.Name} With{property.Name}(Func<Bogus.Faker, {property.Type}> {property.Name}Setter)"
+        );
         codeBuilder.AppendLine("    {");
 
         codeBuilder.AppendLine(
-            $"        Faker.RuleFor({entityNameChar} => {entityNameChar}.{property.Name}, {property.Name}Setter);");
+            $"        Faker.RuleFor({entityNameChar} => {entityNameChar}.{property.Name}, {property.Name}Setter);"
+        );
         codeBuilder.AppendLine("        return this;");
         codeBuilder.AppendLine("    }");
     }

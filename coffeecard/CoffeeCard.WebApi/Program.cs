@@ -23,34 +23,35 @@ namespace CoffeeCard.WebApi
     /// </summary>
     public class Program
     {
-        private static IConfiguration Configuration { get; } = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile($"appsettings.json", false, true)
-            .AddEnvironmentVariables()
-            .Build();
+        private static IConfiguration Configuration { get; } =
+            new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile($"appsettings.json", false, true)
+                .AddEnvironmentVariables()
+                .Build();
 
         /// <summary>
         /// The entry point for the CoffeeCard.WebApi application.
         /// </summary>
         public static async Task<int> Main(string[] args)
         {
-            Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console()
-                .CreateBootstrapLogger();
+            Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateBootstrapLogger();
 
             var loggerConfiguration = new LoggerConfiguration()
                 .ReadFrom.Configuration(Configuration)
                 .Enrich.WithEnrichers();
 
             var otlpSettings = Configuration.GetSection("OtlpSettings").Get<OtlpSettings>();
-            var environment = Configuration.GetSection("EnvironmentSettings").Get<EnvironmentSettings>();
+            var environment = Configuration
+                .GetSection("EnvironmentSettings")
+                .Get<EnvironmentSettings>();
             if (otlpSettings is not null)
             {
                 var otlpExportProtocol = otlpSettings.Protocol switch
                 {
                     OtelProtocol.Grpc => OtlpProtocol.Grpc,
                     OtelProtocol.Http => OtlpProtocol.HttpProtobuf,
-                    _ => throw new ArgumentOutOfRangeException("Unspecified protocol for export")
+                    _ => throw new ArgumentOutOfRangeException("Unspecified protocol for export"),
                 };
                 var resource = new Dictionary<string, object>();
                 resource.Add("Env", environment.EnvironmentType.ToString() ?? "Env not set");
@@ -89,11 +90,19 @@ namespace CoffeeCard.WebApi
         private static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration(((context, builder) =>
-                {
-                    builder.AddJsonFile(path: "appsettings.json", optional: false, reloadOnChange: true);
-                    builder.AddEnvironmentVariables();
-                }))
+                .ConfigureAppConfiguration(
+                    (
+                        (context, builder) =>
+                        {
+                            builder.AddJsonFile(
+                                path: "appsettings.json",
+                                optional: false,
+                                reloadOnChange: true
+                            );
+                            builder.AddEnvironmentVariables();
+                        }
+                    )
+                )
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
@@ -104,28 +113,39 @@ namespace CoffeeCard.WebApi
         private static async Task PreStartupTasks(IHost webhost)
         {
             using var serviceScope = webhost.Services.CreateScope();
-            var environment = serviceScope.ServiceProvider.GetRequiredService<EnvironmentSettings>();
+            var environment =
+                serviceScope.ServiceProvider.GetRequiredService<EnvironmentSettings>();
             var featureManager = serviceScope.ServiceProvider.GetRequiredService<IFeatureManager>();
 
             Log.Information("Apply Database Migrations if any");
-            await using var context = serviceScope.ServiceProvider.GetRequiredService<CoffeeCardContext>();
+            await using var context =
+                serviceScope.ServiceProvider.GetRequiredService<CoffeeCardContext>();
             if (context.Database.IsRelational())
             {
                 context.Database.Migrate();
             }
 
-            var isMobilePayWebhookRegistrationManagementEnabled = await featureManager.IsEnabledAsync(FeatureFlags.MobilePayManageWebhookRegistration);
-            Log.Information("FeatureFlag {flag} has enablement state '{value}'", nameof(FeatureFlags.MobilePayManageWebhookRegistration), isMobilePayWebhookRegistrationManagementEnabled);
+            var isMobilePayWebhookRegistrationManagementEnabled =
+                await featureManager.IsEnabledAsync(
+                    FeatureFlags.MobilePayManageWebhookRegistration
+                );
+            Log.Information(
+                "FeatureFlag {flag} has enablement state '{value}'",
+                nameof(FeatureFlags.MobilePayManageWebhookRegistration),
+                isMobilePayWebhookRegistrationManagementEnabled
+            );
 
-            if (environment.EnvironmentType != EnvironmentType.LocalDevelopment && isMobilePayWebhookRegistrationManagementEnabled)
+            if (
+                environment.EnvironmentType != EnvironmentType.LocalDevelopment
+                && isMobilePayWebhookRegistrationManagementEnabled
+            )
             {
-                var webhookService = serviceScope.ServiceProvider.GetRequiredService<IWebhookService>();
+                var webhookService =
+                    serviceScope.ServiceProvider.GetRequiredService<IWebhookService>();
                 await webhookService.EnsureWebhookIsRegistered();
             }
         }
 
-        protected Program()
-        {
-        }
+        protected Program() { }
     }
 }

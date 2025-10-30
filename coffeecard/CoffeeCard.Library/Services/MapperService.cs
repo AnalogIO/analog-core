@@ -38,7 +38,7 @@ namespace CoffeeCard.Library.Services
             {
                 Id = progamme.Id,
                 ShortName = progamme.ShortName,
-                FullName = progamme.FullName
+                FullName = progamme.FullName,
             };
         }
 
@@ -57,7 +57,7 @@ namespace CoffeeCard.Library.Services
                 PrivacyActivated = user.PrivacyActivated,
                 ProgrammeId = user.Programme?.Id,
                 Level = StatisticUtils.CalculateLevelFromXp(user.Experience),
-                RequiredExp = StatisticUtils.CalculateRequiredXpByLevel(user.Experience)
+                RequiredExp = StatisticUtils.CalculateRequiredXpByLevel(user.Experience),
             };
         }
 
@@ -69,7 +69,7 @@ namespace CoffeeCard.Library.Services
                 Id = product.Id,
                 Name = product.Name,
                 NumberOfTickets = product.NumberOfTickets,
-                Price = product.Price
+                Price = product.Price,
             };
         }
 
@@ -85,7 +85,7 @@ namespace CoffeeCard.Library.Services
                 Id = ticket.Id,
                 DateCreated = ticket.DateCreated,
                 DateUsed = ticket.DateUsed,
-                ProductName = ticket.Purchase?.ProductName
+                ProductName = ticket.Purchase?.ProductName,
             };
         }
 

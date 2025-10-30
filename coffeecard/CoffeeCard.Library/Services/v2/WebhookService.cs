@@ -24,8 +24,13 @@ namespace CoffeeCard.Library.Services.v2
         private readonly IMemoryCache _memoryCache;
         private readonly ILogger<WebhookService> _logger;
 
-        public WebhookService(CoffeeCardContext context, IMobilePayWebhooksService mobilePayWebhooksService,
-            MobilePaySettings mobilePaySettings, IMemoryCache memoryCache, ILogger<WebhookService> logger)
+        public WebhookService(
+            CoffeeCardContext context,
+            IMobilePayWebhooksService mobilePayWebhooksService,
+            MobilePaySettings mobilePaySettings,
+            IMemoryCache memoryCache,
+            ILogger<WebhookService> logger
+        )
         {
             _context = context;
             _mobilePayWebhooksService = mobilePayWebhooksService;
@@ -43,13 +48,15 @@ namespace CoffeeCard.Library.Services.v2
         {
             if (!_memoryCache.TryGetValue(MpSignatureKeyCacheKey, out string signatureKey))
             {
-                signatureKey = await _context.WebhookConfigurations.Where(w => w.Status == WebhookStatus.Active)
-                    .Select(w => w.SignatureKey).FirstAsync();
+                signatureKey = await _context
+                    .WebhookConfigurations.Where(w => w.Status == WebhookStatus.Active)
+                    .Select(w => w.SignatureKey)
+                    .FirstAsync();
 
                 var cacheExpiryOptions = new MemoryCacheEntryOptions
                 {
                     AbsoluteExpiration = DateTime.UtcNow.AddHours(24),
-                    SlidingExpiration = TimeSpan.FromHours(2)
+                    SlidingExpiration = TimeSpan.FromHours(2),
                 };
 
                 _logger.LogInformation("Set {SignatureKey} in Cache", MpSignatureKeyCacheKey);
@@ -61,11 +68,15 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task EnsureWebhookIsRegistered()
         {
-            var webhooks = _context.WebhookConfigurations.Where(w => w.Status == WebhookStatus.Active);
+            var webhooks = _context.WebhookConfigurations.Where(w =>
+                w.Status == WebhookStatus.Active
+            );
             if (await webhooks.AnyAsync())
             {
                 await SyncWebhook(await webhooks.FirstAsync());
-                _logger.LogInformation("A MobilePay Webhook was already registered. Configuration has been synced");
+                _logger.LogInformation(
+                    "A MobilePay Webhook was already registered. Configuration has been synced"
+                );
             }
             else
             {
@@ -80,7 +91,11 @@ namespace CoffeeCard.Library.Services.v2
             {
                 var mobilePayWebhook = await _mobilePayWebhooksService.GetWebhook(webhook.Id);
 
-                if (!mobilePayWebhook.Url.ToString().Equals(webhook.Url, StringComparison.OrdinalIgnoreCase))
+                if (
+                    !mobilePayWebhook
+                        .Url.ToString()
+                        .Equals(webhook.Url, StringComparison.OrdinalIgnoreCase)
+                )
                 {
                     await DisableAndRegisterNewWebhook(webhook);
                 }
@@ -101,8 +116,9 @@ namespace CoffeeCard.Library.Services.v2
 
         private async Task RegisterWebhook()
         {
-            var mobilePayWebhook =
-                await _mobilePayWebhooksService.RegisterWebhook(_mobilePaySettings.WebhookUrl);
+            var mobilePayWebhook = await _mobilePayWebhooksService.RegisterWebhook(
+                _mobilePaySettings.WebhookUrl
+            );
 
             var webhook = new WebhookConfiguration
             {
@@ -110,7 +126,7 @@ namespace CoffeeCard.Library.Services.v2
                 Url = mobilePayWebhook.Url.ToString(),
                 SignatureKey = mobilePayWebhook.Secret,
                 Status = WebhookStatus.Active,
-                LastUpdated = DateTime.UtcNow
+                LastUpdated = DateTime.UtcNow,
             };
 
             await _context.WebhookConfigurations.AddAsync(webhook);

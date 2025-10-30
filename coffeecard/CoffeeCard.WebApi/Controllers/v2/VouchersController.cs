@@ -33,7 +33,11 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <param name="voucherService">The voucher service</param>
         /// <param name="purchaseService">The purchase service</param>
         /// <param name="claimUtilities">The claims utilities</param>
-        public VouchersController(IVoucherService voucherService, IPurchaseService purchaseService, ClaimsUtilities claimUtilities)
+        public VouchersController(
+            IVoucherService voucherService,
+            IPurchaseService purchaseService,
+            ClaimsUtilities claimUtilities
+        )
         {
             _voucherService = voucherService;
             _purchaseService = purchaseService;
@@ -55,7 +59,9 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
         [AuthorizeRoles(UserGroup.Board, UserGroup.Manager)]
         [HttpPost("issue-vouchers")]
-        public async Task<ActionResult<IEnumerable<IssueVoucherResponse>>> IssueVouchers([FromBody] IssueVoucherRequest request)
+        public async Task<ActionResult<IEnumerable<IssueVoucherResponse>>> IssueVouchers(
+            [FromBody] IssueVoucherRequest request
+        )
         {
             return Ok(await _voucherService.CreateVouchers(request));
         }
@@ -73,7 +79,9 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<SimplePurchaseResponse>> RedeemVoucher([FromRoute(Name = "voucher-code")] string voucherCode)
+        public async Task<ActionResult<SimplePurchaseResponse>> RedeemVoucher(
+            [FromRoute(Name = "voucher-code")] string voucherCode
+        )
         {
             var user = await _claimUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
             return Ok(await _purchaseService.RedeemVoucher(voucherCode, user));

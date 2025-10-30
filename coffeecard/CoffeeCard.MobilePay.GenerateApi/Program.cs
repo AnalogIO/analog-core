@@ -25,9 +25,7 @@ namespace CoffeeCard.MobilePay.GenerateApi
         /// <exception cref="FileNotFoundException">OpenApi specification file could not be found</exception>
         public static async Task Main(string[] args)
         {
-            var openApiSpecDirectory = Path.Combine(
-                Environment.CurrentDirectory, "OpenApiSpecs"
-                );
+            var openApiSpecDirectory = Path.Combine(Environment.CurrentDirectory, "OpenApiSpecs");
             var outputDirectory = Path.Combine(
                 Directory.GetParent(Environment.CurrentDirectory)!.FullName,
                 "CoffeeCard.MobilePay",
@@ -36,7 +34,10 @@ namespace CoffeeCard.MobilePay.GenerateApi
 
             var paymentApiInput = Path.Combine(openApiSpecDirectory, ePaymentApi + ".tojson.json");
             var webhooksApiInput = Path.Combine(openApiSpecDirectory, WebhooksApi + ".tojson.json");
-            var accessTokenApiInput = Path.Combine(openApiSpecDirectory, AccessToken + ".tojson.json");
+            var accessTokenApiInput = Path.Combine(
+                openApiSpecDirectory,
+                AccessToken + ".tojson.json"
+            );
 
             var paymentApiOutput = Path.Combine(outputDirectory, ePaymentApi + ".cs");
             var webhooksApiOutput = Path.Combine(outputDirectory, WebhooksApi + ".cs");
@@ -59,9 +60,9 @@ namespace CoffeeCard.MobilePay.GenerateApi
                 GenerateClientClasses = false,
                 CSharpGeneratorSettings =
                 {
-                    Namespace = $"CoffeeCard.MobilePay.Generated.Api.{WebhooksApi}"
+                    Namespace = $"CoffeeCard.MobilePay.Generated.Api.{WebhooksApi}",
                 },
-                UseBaseUrl = false
+                UseBaseUrl = false,
             };
 
             var generator = new CSharpClientGenerator(document, settings);
@@ -82,9 +83,9 @@ namespace CoffeeCard.MobilePay.GenerateApi
                 GenerateClientClasses = false,
                 CSharpGeneratorSettings =
                 {
-                    Namespace = $"CoffeeCard.MobilePay.Generated.Api.{ePaymentApi}"
+                    Namespace = $"CoffeeCard.MobilePay.Generated.Api.{ePaymentApi}",
                 },
-                UseBaseUrl = false
+                UseBaseUrl = false,
             };
 
             var generator = new CSharpClientGenerator(document, settings);
@@ -105,9 +106,9 @@ namespace CoffeeCard.MobilePay.GenerateApi
                 GenerateClientClasses = false,
                 CSharpGeneratorSettings =
                 {
-                    Namespace = $"CoffeeCard.MobilePay.Generated.Api.{AccessToken}"
+                    Namespace = $"CoffeeCard.MobilePay.Generated.Api.{AccessToken}",
                 },
-                UseBaseUrl = false
+                UseBaseUrl = false,
             };
 
             var generator = new CSharpClientGenerator(document, settings);

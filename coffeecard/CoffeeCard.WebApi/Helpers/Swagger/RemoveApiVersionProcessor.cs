@@ -18,7 +18,9 @@ namespace CoffeeCard.WebApi.Helpers.Swagger
         public bool Process(OperationProcessorContext context)
         {
             var operationDescription = context.OperationDescription;
-            var versionParameter = operationDescription.Operation.Parameters.Where(p => p.Name == "version").ToList();
+            var versionParameter = operationDescription
+                .Operation.Parameters.Where(p => p.Name == "version")
+                .ToList();
 
             if (versionParameter.Any())
             {

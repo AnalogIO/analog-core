@@ -14,8 +14,8 @@ namespace CoffeeCard.MobilePay.Service.v2;
 public class MobilePayPaymentsService(
     IEPaymentClient ePaymentClient,
     MobilePaySettings mobilePaySettings,
-    ILogger<MobilePayPaymentsService> logger)
-    : IMobilePayPaymentsService
+    ILogger<MobilePayPaymentsService> logger
+) : IMobilePayPaymentsService
 {
     public async Task<MobilePayPaymentDetails> InitiatePayment(
         MobilePayPaymentRequest paymentRequest
@@ -30,7 +30,7 @@ public class MobilePayPaymentsService(
                 Reference = orderId,
                 UserFlow = CreatePaymentRequestUserFlow.WEB_REDIRECT,
                 ReturnUrl = mobilePaySettings.AnalogAppRedirectUri,
-                PaymentDescription = paymentRequest.Description
+                PaymentDescription = paymentRequest.Description,
             }
         );
         logger.LogInformation(
@@ -42,7 +42,7 @@ public class MobilePayPaymentsService(
         return new MobilePayPaymentDetails
         {
             MobilePayAppRedirectUri = response.RedirectUrl.ToString(),
-            PaymentId = orderId
+            PaymentId = orderId,
         };
     }
 
@@ -53,7 +53,7 @@ public class MobilePayPaymentsService(
         return new MobilePayPaymentDetails
         {
             PaymentId = response.Reference,
-            MobilePayAppRedirectUri = response.RedirectUrl.ToString()
+            MobilePayAppRedirectUri = response.RedirectUrl.ToString(),
         };
     }
 
@@ -64,12 +64,9 @@ public class MobilePayPaymentsService(
 
         var issueRefundRequest = new RefundModificationRequest
         {
-            ModificationAmount = new Amount { Currency = Currency.DKK, Value = amount }
+            ModificationAmount = new Amount { Currency = Currency.DKK, Value = amount },
         };
-        await ePaymentClient.RefundPaymentAsync(
-            purchase.ExternalTransactionId,
-            issueRefundRequest
-        );
+        await ePaymentClient.RefundPaymentAsync(purchase.ExternalTransactionId, issueRefundRequest);
 
         return true;
     }
@@ -78,7 +75,10 @@ public class MobilePayPaymentsService(
     {
         await ePaymentClient.CapturePaymentAsync(
             paymentId.ToString(),
-            new CaptureModificationRequest { ModificationAmount = ConvertToAmount(amountInDanishKroner) }
+            new CaptureModificationRequest
+            {
+                ModificationAmount = ConvertToAmount(amountInDanishKroner),
+            }
         );
     }
 
@@ -86,10 +86,7 @@ public class MobilePayPaymentsService(
     {
         await ePaymentClient.CancelPaymentAsync(
             paymentId.ToString(),
-            new CancelModificationRequest
-            {
-                CancelTransactionOnly = true
-            }
+            new CancelModificationRequest { CancelTransactionOnly = true }
         );
     }
 

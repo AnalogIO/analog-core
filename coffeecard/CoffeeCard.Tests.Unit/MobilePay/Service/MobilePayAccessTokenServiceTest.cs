@@ -16,7 +16,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Service
         private readonly MobilePaySettings _mobilePaySettings = new()
         {
             ClientId = Guid.NewGuid(),
-            ClientSecret = "test-client-secret"
+            ClientSecret = "test-client-secret",
         };
         private readonly IMemoryCache _memoryCache = new MemoryCache(new MemoryCacheOptions());
 
@@ -30,33 +30,43 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Service
                 Access_token = "test-access-token",
                 Token_type = "Bearer",
                 Expires_in = "3600",
-                Expires_on = expiresOn
+                Expires_on = expiresOn,
             };
 
             _accessTokenClientMock
-                .Setup(x => x.GetToken(
-                    _mobilePaySettings.ClientId.ToString(),
-                    _mobilePaySettings.ClientSecret))
+                .Setup(x =>
+                    x.GetToken(
+                        _mobilePaySettings.ClientId.ToString(),
+                        _mobilePaySettings.ClientSecret
+                    )
+                )
                 .ReturnsAsync(expectedToken);
 
             var service = new MobilePayAccessTokenService(
                 _accessTokenClientMock.Object,
                 _mobilePaySettings,
-                _memoryCache);
+                _memoryCache
+            );
 
             // Act
             var result = await service.GetAuthorizationTokenAsync();
 
             // Assert
             Assert.Equal(expectedToken.Access_token, result.AccessToken);
-            Assert.Equal(DateTimeOffset.FromUnixTimeSeconds(long.Parse(expiresOn)), result.ExpiresOn);
+            Assert.Equal(
+                DateTimeOffset.FromUnixTimeSeconds(long.Parse(expiresOn)),
+                result.ExpiresOn
+            );
 
             // Verify client was called
             _accessTokenClientMock.Verify(
-                x => x.GetToken(
-                    _mobilePaySettings.ClientId.ToString(),
-                    _mobilePaySettings.ClientSecret),
-                Times.Once);
+                x =>
+                    x.GetToken(
+                        _mobilePaySettings.ClientId.ToString(),
+                        _mobilePaySettings.ClientSecret
+                    ),
+                Times.Once
+            );
         }
 
         [Fact(DisplayName = "GetAuthorizationTokenAsync caches token")]
@@ -69,19 +79,23 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Service
                 Access_token = "test-access-token",
                 Token_type = "Bearer",
                 Expires_in = "3600",
-                Expires_on = expiresOn
+                Expires_on = expiresOn,
             };
 
             _accessTokenClientMock
-                .Setup(x => x.GetToken(
-                    _mobilePaySettings.ClientId.ToString(),
-                    _mobilePaySettings.ClientSecret))
+                .Setup(x =>
+                    x.GetToken(
+                        _mobilePaySettings.ClientId.ToString(),
+                        _mobilePaySettings.ClientSecret
+                    )
+                )
                 .ReturnsAsync(expectedToken);
 
             var service = new MobilePayAccessTokenService(
                 _accessTokenClientMock.Object,
                 _mobilePaySettings,
-                _memoryCache);
+                _memoryCache
+            );
 
             // Act
             var result1 = await service.GetAuthorizationTokenAsync();
@@ -93,10 +107,13 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Service
 
             // Verify client was called only once due to caching
             _accessTokenClientMock.Verify(
-                x => x.GetToken(
-                    _mobilePaySettings.ClientId.ToString(),
-                    _mobilePaySettings.ClientSecret),
-                Times.Once);
+                x =>
+                    x.GetToken(
+                        _mobilePaySettings.ClientId.ToString(),
+                        _mobilePaySettings.ClientSecret
+                    ),
+                Times.Once
+            );
         }
     }
 }

@@ -6,6 +6,8 @@ namespace CoffeeCard.Library.Services.v2
 {
     public interface IAdminStatisticsService
     {
-        public Task<List<UnusedClipsResponse>> GetUsableClips(UnusedClipsRequest unusedClipsRequest);
+        public Task<List<UnusedClipsResponse>> GetUsableClips(
+            UnusedClipsRequest unusedClipsRequest
+        );
     }
 }

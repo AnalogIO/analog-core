@@ -5,7 +5,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User;
 
 /// <summary>
 /// Represents a search result
-/// </summary>  
+/// </summary>
 public class UserSearchResponse
 {
     /// <summary>

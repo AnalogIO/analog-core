@@ -15,8 +15,11 @@ namespace CoffeeCard.MobilePay.RefundConsoleApp.Handler
         private readonly IMobilePayService _mobilePayService;
         private readonly IOutputWriter<IList<RefundResponse>> _outputWriter;
 
-        public RefundHandler(ILogger<RefundHandler> log, IOutputWriter<IList<RefundResponse>> outputWriter,
-            IMobilePayService mobilePayService)
+        public RefundHandler(
+            ILogger<RefundHandler> log,
+            IOutputWriter<IList<RefundResponse>> outputWriter,
+            IMobilePayService mobilePayService
+        )
         {
             _log = log;
             _mobilePayService = mobilePayService;
@@ -32,16 +35,22 @@ namespace CoffeeCard.MobilePay.RefundConsoleApp.Handler
                     var result = await _mobilePayService.RefundPayment(completedOrder.OrderId);
                     _log.LogInformation("SUCCESS Refunded order={result}", result);
 
-                    results.Add(new RefundResponse(completedOrder.OrderId, Status.Success)
-                    {
-                        OriginalTransactionId = result.OriginalTransactionId,
-                        RefundTransactionId = result.TransactionId,
-                        Remainder = result.Remainder
-                    });
+                    results.Add(
+                        new RefundResponse(completedOrder.OrderId, Status.Success)
+                        {
+                            OriginalTransactionId = result.OriginalTransactionId,
+                            RefundTransactionId = result.TransactionId,
+                            Remainder = result.Remainder,
+                        }
+                    );
                 }
                 catch (MobilePayException ex)
                 {
-                    _log.LogError("FAILED Could not refund order={order}. Error={ex}", completedOrder.OrderId, ex);
+                    _log.LogError(
+                        "FAILED Could not refund order={order}. Error={ex}",
+                        completedOrder.OrderId,
+                        ex
+                    );
                     results.Add(new RefundResponse(completedOrder.OrderId, Status.Failed));
                 }
 

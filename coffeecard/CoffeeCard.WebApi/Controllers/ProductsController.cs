@@ -28,8 +28,11 @@ namespace CoffeeCard.WebApi.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="ProductsController"/> class.
         /// </summary>
-        public ProductsController(IProductService productService, IMapperService mapper,
-            ClaimsUtilities claimsUtilities)
+        public ProductsController(
+            IProductService productService,
+            IMapperService mapper,
+            ClaimsUtilities claimsUtilities
+        )
         {
             _productService = productService;
             _mapperService = mapper;
@@ -37,7 +40,7 @@ namespace CoffeeCard.WebApi.Controllers
         }
 
         /// <summary>
-        /// Returns a list of available products based on a account's user group 
+        /// Returns a list of available products based on a account's user group
         /// </summary>
         /// <returns>List of available products</returns>
         /// <response code="200">Successful request</response>
@@ -63,7 +66,7 @@ namespace CoffeeCard.WebApi.Controllers
         }
 
         /// <summary>
-        /// Returns a list of available products based on a account's user group 
+        /// Returns a list of available products based on a account's user group
         /// </summary>
         /// <returns>List of available product</returns>
         /// <response code="200">Successful request</response>

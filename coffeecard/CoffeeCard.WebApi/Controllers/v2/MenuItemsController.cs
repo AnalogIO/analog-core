@@ -58,7 +58,10 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(MenuItemResponse), StatusCodes.Status201Created)]
         public async Task<ActionResult<MenuItemResponse>> AddMenuItem(AddMenuItemRequest menuItem)
         {
-            return CreatedAtAction(nameof(GetAllMenuItems), await _menuItemService.AddMenuItemAsync(menuItem));
+            return CreatedAtAction(
+                nameof(GetAllMenuItems),
+                await _menuItemService.AddMenuItemAsync(menuItem)
+            );
         }
 
         /// <summary>
@@ -75,7 +78,10 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [HttpPut("{id}")]
         [AuthorizeRoles(UserGroup.Board)]
         [ProducesResponseType(typeof(MenuItemResponse), StatusCodes.Status200OK)]
-        public async Task<ActionResult<MenuItemResponse>> UpdateMenuItem([FromRoute] int id, UpdateMenuItemRequest menuItem)
+        public async Task<ActionResult<MenuItemResponse>> UpdateMenuItem(
+            [FromRoute] int id,
+            UpdateMenuItemRequest menuItem
+        )
         {
             return Ok(await _menuItemService.UpdateMenuItemAsync(id, menuItem));
         }

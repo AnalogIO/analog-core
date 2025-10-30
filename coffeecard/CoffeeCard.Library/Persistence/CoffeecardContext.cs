@@ -11,7 +11,11 @@ namespace CoffeeCard.Library.Persistence
 
         private readonly EnvironmentSettings _environmentSettings;
 
-        public CoffeeCardContext(DbContextOptions<CoffeeCardContext> options, DatabaseSettings databaseSettings, EnvironmentSettings environmentSettings)
+        public CoffeeCardContext(
+            DbContextOptions<CoffeeCardContext> options,
+            DatabaseSettings databaseSettings,
+            EnvironmentSettings environmentSettings
+        )
             : base(options)
         {
             _databaseSettings = databaseSettings;
@@ -38,17 +42,16 @@ namespace CoffeeCard.Library.Persistence
             modelBuilder.HasDefaultSchema(_databaseSettings.SchemaName);
 
             // Setup PUG compound primary key
-            modelBuilder.Entity<ProductUserGroup>()
-                .HasKey(pug => new
-                {
-                    pug.ProductId,
-                    pug.UserGroup
-                });
+            modelBuilder
+                .Entity<ProductUserGroup>()
+                .HasKey(pug => new { pug.ProductId, pug.UserGroup });
 
-            modelBuilder.Entity<MenuItemProduct>()
+            modelBuilder
+                .Entity<MenuItemProduct>()
                 .HasKey(mip => new { mip.MenuItemId, mip.ProductId });
 
-            modelBuilder.Entity<MenuItem>()
+            modelBuilder
+                .Entity<MenuItem>()
                 .HasMany(mi => mi.AssociatedProducts)
                 .WithMany(p => p.EligibleMenuItems)
                 .UsingEntity<MenuItemProduct>();
@@ -60,51 +63,55 @@ namespace CoffeeCard.Library.Persistence
 
             var tokenTypeStringConverter = new EnumToStringConverter<TokenType>();
 
-            modelBuilder.Entity<User>()
+            modelBuilder
+                .Entity<User>()
                 .Property(u => u.UserGroup)
                 .HasConversion(userGroupIntConverter);
 
-            modelBuilder.Entity<Purchase>()
+            modelBuilder
+                .Entity<Purchase>()
                 .Property(p => p.Type)
                 .HasConversion(purchaseTypeStringConverter);
 
             modelBuilder.Entity<User>().Property(u => u.UserState).HasConversion<string>();
 
-            modelBuilder.Entity<ProductUserGroup>()
+            modelBuilder
+                .Entity<ProductUserGroup>()
                 .Property(pug => pug.UserGroup)
                 .HasConversion(userGroupIntConverter);
 
-            modelBuilder.Entity<WebhookConfiguration>()
+            modelBuilder
+                .Entity<WebhookConfiguration>()
                 .Property(w => w.Status)
                 .HasConversion<string>();
 
-            modelBuilder.Entity<Purchase>()
-                .Property(p => p.Status)
-                .HasConversion<string>();
+            modelBuilder.Entity<Purchase>().Property(p => p.Status).HasConversion<string>();
 
-            modelBuilder.Entity<Ticket>()
+            modelBuilder
+                .Entity<Ticket>()
                 .HasOne(t => t.Owner)
                 .WithMany(u => u.Tickets)
                 .HasForeignKey(t => t.OwnerId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<Token>()
+            modelBuilder
+                .Entity<Token>()
                 .Property(t => t.Type)
                 .HasConversion(tokenTypeStringConverter);
 
-            modelBuilder.Entity<Token>()
+            modelBuilder
+                .Entity<Token>()
                 .HasOne(t => t.User)
                 .WithMany(u => u.Tokens)
                 .HasForeignKey(t => t.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<Token>()
-                .Property(t => t.Expires).IsRequired();
+            modelBuilder.Entity<Token>().Property(t => t.Expires).IsRequired();
 
-            modelBuilder.Entity<Token>()
-                .Property(t => t.TokenHash).IsRequired();
+            modelBuilder.Entity<Token>().Property(t => t.TokenHash).IsRequired();
 
-            modelBuilder.HasDbFunction(typeof(Token).GetMethod(nameof(Token.Expired)))
+            modelBuilder
+                .HasDbFunction(typeof(Token).GetMethod(nameof(Token.Expired)))
                 .HasSchema("dbo")
                 .HasName("Expired");
         }

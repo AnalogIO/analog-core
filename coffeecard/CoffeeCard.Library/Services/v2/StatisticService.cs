@@ -19,8 +19,8 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task IncreaseStatisticsBy(int userId, int increaseBy)
         {
-            var user = await _context.Users
-                .Where(u => u.Id == userId)
+            var user = await _context
+                .Users.Where(u => u.Id == userId)
                 .Include(u => u.Statistics)
                 .Include(u => u.Tickets)
                 .FirstOrDefaultAsync();
@@ -28,7 +28,9 @@ namespace CoffeeCard.Library.Services.v2
             var utcNow = DateTime.UtcNow;
 
             // total statistics
-            var totalStatistics = user.Statistics.FirstOrDefault(x => x.Preset == StatisticPreset.Total);
+            var totalStatistics = user.Statistics.FirstOrDefault(x =>
+                x.Preset == StatisticPreset.Total
+            );
             if (totalStatistics == null)
             {
                 totalStatistics = new Statistic
@@ -36,7 +38,7 @@ namespace CoffeeCard.Library.Services.v2
                     ExpiryDate = DateTime.UtcNow.AddYears(100),
                     Preset = StatisticPreset.Total,
                     SwipeCount = user.Tickets.Count(t => t.IsConsumed) - increaseBy,
-                    LastSwipe = utcNow
+                    LastSwipe = utcNow,
                 };
                 user.Statistics.Add(totalStatistics);
             }
@@ -47,7 +49,9 @@ namespace CoffeeCard.Library.Services.v2
             // semester statistics
             var semesterStart = SemesterUtils.GetSemesterStart(utcNow);
             var semesterEnd = SemesterUtils.GetSemesterEnd(utcNow);
-            var semesterStatistics = user.Statistics.FirstOrDefault(x => x.Preset == StatisticPreset.Semester);
+            var semesterStatistics = user.Statistics.FirstOrDefault(x =>
+                x.Preset == StatisticPreset.Semester
+            );
 
             if (semesterStatistics == null)
             {
@@ -56,9 +60,10 @@ namespace CoffeeCard.Library.Services.v2
                     ExpiryDate = semesterEnd,
                     Preset = StatisticPreset.Semester,
                     SwipeCount =
-                        user.Tickets.Count(t => t.IsConsumed && t.DateUsed > semesterStart && t.DateUsed < semesterEnd) -
-                        increaseBy,
-                    LastSwipe = utcNow
+                        user.Tickets.Count(t =>
+                            t.IsConsumed && t.DateUsed > semesterStart && t.DateUsed < semesterEnd
+                        ) - increaseBy,
+                    LastSwipe = utcNow,
                 };
                 user.Statistics.Add(semesterStatistics);
             }
@@ -75,11 +80,14 @@ namespace CoffeeCard.Library.Services.v2
             semesterStatistics.SwipeCount += increaseBy;
             semesterStatistics.LastSwipe = utcNow;
 
-
             // monthly statistics
             var monthStart = new DateTime(utcNow.Year, utcNow.Month, 1);
-            var monthEnd = new DateTime(utcNow.Year, utcNow.Month, 1, 23, 59, 59).AddMonths(1).AddDays(-1);
-            var monthStatistics = user.Statistics.FirstOrDefault(x => x.Preset == StatisticPreset.Monthly);
+            var monthEnd = new DateTime(utcNow.Year, utcNow.Month, 1, 23, 59, 59)
+                .AddMonths(1)
+                .AddDays(-1);
+            var monthStatistics = user.Statistics.FirstOrDefault(x =>
+                x.Preset == StatisticPreset.Monthly
+            );
 
             if (monthStatistics == null)
             {
@@ -87,9 +95,11 @@ namespace CoffeeCard.Library.Services.v2
                 {
                     ExpiryDate = monthEnd,
                     Preset = StatisticPreset.Monthly,
-                    SwipeCount = user.Tickets.Count(t => t.IsConsumed && t.DateUsed > monthStart && t.DateUsed < monthEnd) -
-                                 increaseBy,
-                    LastSwipe = utcNow
+                    SwipeCount =
+                        user.Tickets.Count(t =>
+                            t.IsConsumed && t.DateUsed > monthStart && t.DateUsed < monthEnd
+                        ) - increaseBy,
+                    LastSwipe = utcNow,
                 };
                 user.Statistics.Add(monthStatistics);
             }

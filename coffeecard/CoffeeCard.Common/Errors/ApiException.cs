@@ -7,12 +7,14 @@ namespace CoffeeCard.Common.Errors
     {
         public int StatusCode { get; }
 
-        public ApiException(string message, int statusCode = 500) : base(message)
+        public ApiException(string message, int statusCode = 500)
+            : base(message)
         {
             StatusCode = statusCode;
         }
 
-        public ApiException(Exception ex, int statusCode = 500) : base(ex.Message)
+        public ApiException(Exception ex, int statusCode = 500)
+            : base(ex.Message)
         {
             StatusCode = statusCode;
         }

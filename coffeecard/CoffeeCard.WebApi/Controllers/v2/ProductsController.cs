@@ -61,7 +61,10 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [HttpPut("{id}")]
         [AuthorizeRoles(UserGroup.Board)]
         [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
-        public async Task<ActionResult<ProductResponse>> UpdateProduct([FromRoute(Name = "id")] int productId, UpdateProductRequest product)
+        public async Task<ActionResult<ProductResponse>> UpdateProduct(
+            [FromRoute(Name = "id")] int productId,
+            UpdateProductRequest product
+        )
         {
             return Ok(await _productService.UpdateProduct(productId, product));
         }
@@ -95,7 +98,9 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ProductResponse>> GetProduct([FromRoute(Name = "id")] int productId)
+        public async Task<ActionResult<ProductResponse>> GetProduct(
+            [FromRoute(Name = "id")] int productId
+        )
         {
             await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
             var product = await _productService.GetProductAsync(productId);

@@ -17,15 +17,24 @@ public abstract class BaseUnitTests : IDisposable, IAsyncDisposable
             .EnableSensitiveDataLogging()
             .UseInMemoryDatabase(Guid.NewGuid().ToString());
 
-        var databaseSettings = new DatabaseSettings
-        {
-            SchemaName = "test"
-        };
+        var databaseSettings = new DatabaseSettings { SchemaName = "test" };
         var environmentSettings = new EnvironmentSettings()
-        { DeploymentUrl = "test", EnvironmentType = EnvironmentType.Test, MinAppVersion = "2.1.0" };
+        {
+            DeploymentUrl = "test",
+            EnvironmentType = EnvironmentType.Test,
+            MinAppVersion = "2.1.0",
+        };
 
-        InitialContext = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
-        AssertionContext = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+        InitialContext = new CoffeeCardContext(
+            builder.Options,
+            databaseSettings,
+            environmentSettings
+        );
+        AssertionContext = new CoffeeCardContext(
+            builder.Options,
+            databaseSettings,
+            environmentSettings
+        );
 
         // Set the random seed used for generation of data in the builders
         // This ensures our tests are deterministic within a specific version of the code
@@ -41,7 +50,9 @@ public abstract class BaseUnitTests : IDisposable, IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        if (InitialContext != null) await InitialContext.DisposeAsync();
-        if (AssertionContext != null) await AssertionContext.DisposeAsync();
+        if (InitialContext != null)
+            await InitialContext.DisposeAsync();
+        if (AssertionContext != null)
+            await AssertionContext.DisposeAsync();
     }
 }

@@ -33,10 +33,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         public ActionResult<AppConfig> Get()
         {
             var environment = _environmentSettings.EnvironmentType;
-            return Ok(new AppConfig
-            {
-                EnvironmentType = environment
-            });
+            return Ok(new AppConfig { EnvironmentType = environment });
         }
     }
 }

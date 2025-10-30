@@ -8,9 +8,7 @@ namespace CoffeeCard.Tests.Common.Builders
         public static VoucherBuilder Simple()
         {
             var product = ProductBuilder.Simple().Build();
-            return new VoucherBuilder()
-                .WithProduct(product)
-                .WithUser(f => null);
+            return new VoucherBuilder().WithProduct(product).WithUser(f => null);
         }
 
         public static VoucherBuilder Typical()

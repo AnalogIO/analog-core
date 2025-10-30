@@ -44,6 +44,6 @@ namespace CoffeeCard.Models.Entities
         Active,
 
         /// Webhook is disabled
-        Disabled
+        Disabled,
     }
 }

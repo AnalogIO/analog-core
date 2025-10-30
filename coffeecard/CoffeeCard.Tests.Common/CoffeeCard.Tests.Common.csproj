@@ -1,6 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <ProjectReference Include="..\CoffeeCard.Generators\CoffeeCard.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference
+      Include="..\CoffeeCard.Generators\CoffeeCard.Generators.csproj"
+      OutputItemType="Analyzer"
+      ReferenceOutputAssembly="false"
+    />
     <ProjectReference Include="..\CoffeeCard.Models\CoffeeCard.Models.csproj" />
   </ItemGroup>
   <ItemGroup>

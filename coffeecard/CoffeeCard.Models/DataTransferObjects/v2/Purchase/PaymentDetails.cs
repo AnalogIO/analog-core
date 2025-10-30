@@ -8,7 +8,10 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
     /// </summary>
     [JsonPolymorphic(TypeDiscriminatorPropertyName = "discriminator")]
     [JsonDerivedType(typeof(MobilePayPaymentDetails), typeDiscriminator: "MobilePayPaymentDetails")]
-    [JsonDerivedType(typeof(FreePurchasePaymentDetails), typeDiscriminator: "FreePurchasePaymentDetails")]
+    [JsonDerivedType(
+        typeof(FreePurchasePaymentDetails),
+        typeDiscriminator: "FreePurchasePaymentDetails"
+    )]
     public abstract class PaymentDetails
     {
         /// <summary>

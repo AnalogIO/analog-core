@@ -21,7 +21,9 @@ using Xunit;
 namespace CoffeeCard.Tests.Integration.WebApplication
 {
     [Collection("Integration tests, to be run sequentially")]
-    public abstract class BaseIntegrationTest : IClassFixture<CustomWebApplicationFactory<Startup>>, IAsyncDisposable
+    public abstract class BaseIntegrationTest
+        : IClassFixture<CustomWebApplicationFactory<Startup>>,
+            IAsyncDisposable
     {
         private readonly CustomWebApplicationFactory<Startup> _factory;
         private readonly IServiceScope _scope;
@@ -62,36 +64,42 @@ namespace CoffeeCard.Tests.Integration.WebApplication
         protected void SetDefaultAuthHeader(User user)
         {
             var claims = new[]
-                    {
-                        new Claim(ClaimTypes.Email, user.Email),
-                        new Claim(ClaimTypes.Name, user.Name),
-                        new Claim("UserId", user.Id.ToString()),
-                        new Claim(ClaimTypes.Role, user.UserGroup.ToString())
-                    };
+            {
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Name, user.Name),
+                new Claim("UserId", user.Id.ToString()),
+                new Claim(ClaimTypes.Role, user.UserGroup.ToString()),
+            };
             var token = GenerateToken(claims);
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", token);
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", token);
         }
 
-        protected void ConfigureMockService<TService>(TService service) where TService : class
+        protected void ConfigureMockService<TService>(TService service)
+            where TService : class
         {
-            _httpClient = _factory.WithWebHostBuilder(services =>
-            {
-                services.ConfigureTestServices(services =>
+            _httpClient = _factory
+                .WithWebHostBuilder(services =>
                 {
-                    services.Remove(services.SingleOrDefault(d => d.ServiceType == typeof(TService)));
-                    services.AddSingleton(service);
-                });
-            }).CreateClient();
+                    services.ConfigureTestServices(services =>
+                    {
+                        services.Remove(
+                            services.SingleOrDefault(d => d.ServiceType == typeof(TService))
+                        );
+                        services.AddSingleton(service);
+                    });
+                })
+                .CreateClient();
         }
 
         private string GenerateToken(IEnumerable<Claim> claims)
         {
             var scopedServices = _scope.ServiceProvider;
             var identitySettings = scopedServices.GetRequiredService<IdentitySettings>();
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(identitySettings.TokenKey)); // get token from appsettings.json
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(identitySettings.TokenKey)); // get token from appsettings.json
 
-            var jwt = new JwtSecurityToken("AnalogIO",
+            var jwt = new JwtSecurityToken(
+                "AnalogIO",
                 "Everyone",
                 claims,
                 DateTime.UtcNow,

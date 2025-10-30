@@ -131,6 +131,6 @@ namespace CoffeeCard.Models.Entities
         /// <summary>
         /// Represents a user who is pending activation.
         /// </summary>
-        PendingActivition
+        PendingActivition,
     }
 }

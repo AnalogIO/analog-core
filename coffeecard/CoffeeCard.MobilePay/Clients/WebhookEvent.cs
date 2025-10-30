@@ -11,7 +11,7 @@ internal enum WebhookEvent
     Captured = 4,
     Refunded = 5,
     Authorized = 6,
-    Terminated = 7
+    Terminated = 7,
 }
 
 internal static class WebhookEventsExtension
@@ -28,7 +28,7 @@ internal static class WebhookEventsExtension
             WebhookEvent.Refunded => "epayments.payment.refunded.v1",
             WebhookEvent.Authorized => "epayments.payment.authorized.v1",
             WebhookEvent.Terminated => "epayments.payment.terminated.v1",
-            _ => throw new ArgumentOutOfRangeException(nameof(webhookEvent), webhookEvent, null)
+            _ => throw new ArgumentOutOfRangeException(nameof(webhookEvent), webhookEvent, null),
         };
     }
 }

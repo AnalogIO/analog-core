@@ -10,7 +10,6 @@ namespace CoffeeCard.Tests.Unit.Services
 {
     public class LoginLimiterTests
     {
-
         [Fact(DisplayName = "LoginLimiter allows logins after timeout expired")]
         public async Task LoginAllowsLoginsAfterTimeout()
         {
@@ -19,11 +18,14 @@ namespace CoffeeCard.Tests.Unit.Services
             {
                 IsEnabled = true,
                 MaximumLoginAttemptsWithinTimeOut = 5,
-                TimeOutPeriodInSeconds = 1
+                TimeOutPeriodInSeconds = 1,
             };
             var user = UserBuilder.DefaultCustomer().Build();
 
-            var loginLimiter = new LoginLimiter(loginLimiterSettings, NullLogger<LoginLimiter>.Instance);
+            var loginLimiter = new LoginLimiter(
+                loginLimiterSettings,
+                NullLogger<LoginLimiter>.Instance
+            );
 
             const bool lockedOutExpected = false;
             const bool loginAllowedAgainExpected = true;
@@ -52,11 +54,14 @@ namespace CoffeeCard.Tests.Unit.Services
             {
                 IsEnabled = true,
                 MaximumLoginAttemptsWithinTimeOut = 5,
-                TimeOutPeriodInSeconds = 1
+                TimeOutPeriodInSeconds = 1,
             };
             var user = UserBuilder.DefaultCustomer().Build();
 
-            var loginLimiter = new LoginLimiter(loginLimiterSettings, NullLogger<LoginLimiter>.Instance);
+            var loginLimiter = new LoginLimiter(
+                loginLimiterSettings,
+                NullLogger<LoginLimiter>.Instance
+            );
 
             // Act
             var allowedLoginResults = new List<bool>();
@@ -67,7 +72,6 @@ namespace CoffeeCard.Tests.Unit.Services
             }
             var actualFirstLockoutResult = loginLimiter.LoginAllowed(user); //Checks that you are actually locked after the first series of attempts
             await Task.Delay(1100); //Passes the lockout time
-
 
             //Triggers the lockout again by another 5 attempted logins in a row
             for (var i = 0; i < loginLimiterSettings.MaximumLoginAttemptsWithinTimeOut; i++)

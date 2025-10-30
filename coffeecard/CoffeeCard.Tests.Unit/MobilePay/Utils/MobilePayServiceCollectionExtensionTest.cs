@@ -22,7 +22,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Utils
             OcpApimSubscriptionKey = "test-subscription-key",
             MerchantSerialNumber = "test-merchant-serial-number",
             WebhookUrl = "test-webhook-url",
-            AnalogAppRedirectUri = "analogcoffeecard-test://notapp"
+            AnalogAppRedirectUri = "analogcoffeecard-test://notapp",
         };
 
         [Fact(DisplayName = "AddMobilePayHttpClients registers the delegating handlers")]
@@ -41,7 +41,8 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Utils
 
             // Assert
             var authHandler = serviceProvider.GetService<MobilePayAuthorizationDelegatingHandler>();
-            var idempotencyHandler = serviceProvider.GetService<MobilePayIdempotencyDelegatingHandler>();
+            var idempotencyHandler =
+                serviceProvider.GetService<MobilePayIdempotencyDelegatingHandler>();
 
             Assert.NotNull(authHandler);
             Assert.NotNull(idempotencyHandler);
@@ -79,7 +80,9 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Utils
             var invalidSettings = new MobilePaySettings(); // Empty settings
 
             // Act & Assert
-            Assert.Throws<ValidationException>(() => services.AddMobilePayHttpClients(invalidSettings));
+            Assert.Throws<ValidationException>(() =>
+                services.AddMobilePayHttpClients(invalidSettings)
+            );
         }
     }
 }

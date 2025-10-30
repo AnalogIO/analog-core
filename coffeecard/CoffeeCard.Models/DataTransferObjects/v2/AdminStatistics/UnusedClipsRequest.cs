@@ -22,5 +22,3 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.AdminStatistics
         public required DateTime EndDate { get; set; }
     }
 }
-
-

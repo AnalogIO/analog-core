@@ -6,7 +6,8 @@ using Microsoft.Extensions.Logging;
 
 namespace CoffeeCard.MobilePay.Clients;
 
-public class AccessTokenClient(HttpClient httpClient, ILogger<AccessTokenClient> logger) : IAccessTokenClient
+public class AccessTokenClient(HttpClient httpClient, ILogger<AccessTokenClient> logger)
+    : IAccessTokenClient
 {
     private const string ControllerPath = "/accesstoken";
 
@@ -26,7 +27,5 @@ public class AccessTokenClient(HttpClient httpClient, ILogger<AccessTokenClient>
         }
 
         return await response.Content.ReadAsAsync<AuthorizationTokenResponse>();
-
-
     }
 }

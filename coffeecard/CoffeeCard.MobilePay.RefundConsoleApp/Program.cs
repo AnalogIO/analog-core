@@ -58,19 +58,32 @@ namespace CoffeeCard.MobilePay.RefundConsoleApp
             var builder = new ContainerBuilder();
 
             // Load MobilePaySettings from Configuration
-            builder.Register(c => configuration.GetSection("MobilePaySettings").Get<MobilePaySettings>())
+            builder
+                .Register(c =>
+                    configuration.GetSection("MobilePaySettings").Get<MobilePaySettings>()
+                )
                 .SingleInstance();
 
             // setup DI for MobilePay services
             builder.RegisterType<CompletedOrderInputReader>().As<IInputReader<CompletedOrder>>();
-            builder.RegisterType<MobilePayRefundOutputWriter>().As<IOutputWriter<IList<RefundResponse>>>();
+            builder
+                .RegisterType<MobilePayRefundOutputWriter>()
+                .As<IOutputWriter<IList<RefundResponse>>>();
             builder.RegisterType<MobilePayService>().As<IMobilePayService>();
             builder.RegisterType<RefundHandler>();
             builder.RegisterType<HttpClient>().SingleInstance();
-            builder.RegisterType<MobilePayApiHttpClient>().As<IMobilePayApiHttpClient>().SingleInstance();
-            builder.Register(c => new PhysicalFileProvider(Directory.GetCurrentDirectory())).As<IFileProvider>();
+            builder
+                .RegisterType<MobilePayApiHttpClient>()
+                .As<IMobilePayApiHttpClient>()
+                .SingleInstance();
+            builder
+                .Register(c => new PhysicalFileProvider(Directory.GetCurrentDirectory()))
+                .As<IFileProvider>();
 
-            builder.Register(l => LoggerFactory.Create(c => c.AddConsole())).As<ILoggerFactory>().SingleInstance();
+            builder
+                .Register(l => LoggerFactory.Create(c => c.AddConsole()))
+                .As<ILoggerFactory>()
+                .SingleInstance();
             builder.RegisterGeneric(typeof(Logger<>)).As(typeof(ILogger<>)).SingleInstance();
 
             return new Program(builder.Build());

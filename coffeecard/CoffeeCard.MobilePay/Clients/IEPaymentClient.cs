@@ -9,9 +9,18 @@ public interface IEPaymentClient
 
     public Task<GetPaymentResponse> GetPaymentAsync(string reference);
 
-    public Task<ModificationResponse> RefundPaymentAsync(string reference, RefundModificationRequest request);
+    public Task<ModificationResponse> RefundPaymentAsync(
+        string reference,
+        RefundModificationRequest request
+    );
 
-    public Task<ModificationResponse> CapturePaymentAsync(string reference, CaptureModificationRequest request);
+    public Task<ModificationResponse> CapturePaymentAsync(
+        string reference,
+        CaptureModificationRequest request
+    );
 
-    public Task<ModificationResponse> CancelPaymentAsync(string reference, CancelModificationRequest request);
+    public Task<ModificationResponse> CancelPaymentAsync(
+        string reference,
+        CancelModificationRequest request
+    );
 }
