@@ -69,7 +69,7 @@ namespace CoffeeCard.Models.Entities
         public int PurchasedById { get; init; }
 
         /// <summary>
-        /// Gets or sets the owner associated with the ticket.
+        /// Gets or sets the original purchaser of the ticket.
         /// </summary>
         public required User PurchasedBy { get; init; }
 
