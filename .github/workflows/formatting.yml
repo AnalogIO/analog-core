@@ -13,6 +13,10 @@ jobs:
         with:
           dotnet-version: 8
       - name: Install CSharpier tool
-        run: dotnet tool restore
+        run: |
+          cd coffeecard/
+          dotnet tool restore
       - name: Check code formatting
-        run: dotnet csharpier --check coffeecard/
+        run: |
+          cd coffeecard/
+          dotnet csharpier check .
