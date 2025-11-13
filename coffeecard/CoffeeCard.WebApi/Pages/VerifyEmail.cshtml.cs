@@ -34,25 +34,18 @@ namespace CoffeeCard.WebApi.Pages
         /// </summary>
         public async Task<IActionResult> OnGet()
         {
-            Func<Task<IActionResult>> func = async delegate()
+            return await PageUtils.SafeExecuteFunc(Func, this);
+
+            async Task<IActionResult> Func()
             {
                 var emailVerified = await _accountService.VerifyRegistration(Token);
-                if (emailVerified)
-                {
-                    TempData["resultHeader"] = "Success";
-                    TempData["result"] = @"Your email has been successfully verified";
-                }
-                else
-                {
-                    PageUtils.setMessage(
-                        "Error",
-                        "Looks like the link you used has expired or already been used. Request a new password in the app to verify your email.",
-                        this
-                    );
-                }
-                return RedirectToPage("result");
-            };
-            return await PageUtils.SafeExecuteFunc(func, this);
+                return RedirectToPage(
+                    "Result",
+                    emailVerified
+                        ? new { action = "verifyEmail", outcome = "success" }
+                        : new { action = "verifyEmail", outcome = "error" }
+                );
+            }
         }
     }
 }

@@ -1,19 +1,28 @@
-﻿@page
+﻿@page "{action?}/{outcome?}"
 @model CoffeeCard.WebApi.Pages.Result
 @{
     Layout = "Shared/_Layout";
     ViewData["Title"] = "Result of request";
 }
 
+@functions {
+    private (string Header, string Message) GetContent(string? action, string? outcome) =>
+        (action, outcome) switch
+        {
+            ("verifyEmail", "success") => ("Success", "Your email has been successfully verified"),
+            ("verifyEmail", "error")   => ("Error", "Looks like the link you used has expired or already been used. Request a new password in the app to verify your email."),
+            ("verifyDelete", "success") => ("Success", "Your account has been successfully deleted"),
+            _ => ("Something went wrong", "This is not the web page you are looking for")
+        };
+}
+
+@{
+    var action = (string?)RouteData.Values["action"];
+    var outcome = (string?)RouteData.Values["outcome"];
+    var content = GetContent(action, outcome);
+}
+
 <div id="results">
-    @if (TempData["result"] != null)
-    {
-        <h1>@TempData["resultHeader"]</h1>
-        <p>@TempData["result"]</p>
-    }
-    else
-    {
-        <h1>Something went wrong</h1>
-        <p>This is not the web page you are looking for</p>
-    }
+    <h1>@content.Header</h1>
+    <p>@content.Message</p>
 </div>
