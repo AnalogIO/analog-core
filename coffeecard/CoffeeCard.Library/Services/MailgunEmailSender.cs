@@ -6,13 +6,16 @@ using RestSharp;
 
 namespace CoffeeCard.Library.Services;
 
-public class MailgunEmailSender(MailgunSettings mailgunSettings, IRestClient restClient, ILogger<MailgunEmailSender> logger) : IEmailSender
+public class MailgunEmailSender(
+    MailgunSettings mailgunSettings,
+    IRestClient restClient,
+    ILogger<MailgunEmailSender> logger
+) : IEmailSender
 {
     private readonly ILogger<MailgunEmailSender> _logger = logger;
 
     public async Task SendEmailAsync(MimeMessage mail)
     {
-
         var request = new RestRequest();
         request.AddParameter("domain", mailgunSettings.Domain, ParameterType.UrlSegment);
         request.Resource = "{domain}/messages";
@@ -34,4 +37,3 @@ public class MailgunEmailSender(MailgunSettings mailgunSettings, IRestClient res
         }
     }
 }
-

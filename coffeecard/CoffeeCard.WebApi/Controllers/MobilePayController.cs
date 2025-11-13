@@ -20,9 +20,7 @@ namespace CoffeeCard.WebApi.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="MobilePayController"/> class.
         /// </summary>
-        public MobilePayController()
-        {
-        }
+        public MobilePayController() { }
 
         /// <summary>
         /// Initiates a purchase from the given productId and returns an orderId

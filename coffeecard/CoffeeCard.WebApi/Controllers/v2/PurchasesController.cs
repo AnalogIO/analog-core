@@ -28,7 +28,10 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <summary>
         /// Initializes a new instance of the <see cref="PurchasesController"/> class.
         /// </summary>
-        public PurchasesController(IPurchaseService purchaseService, ClaimsUtilities claimsUtilities)
+        public PurchasesController(
+            IPurchaseService purchaseService,
+            ClaimsUtilities claimsUtilities
+        )
         {
             _purchaseService = purchaseService;
             _claimsUtilities = claimsUtilities;
@@ -46,7 +49,9 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesDefaultResponseType]
         public async Task<ActionResult<IEnumerable<SimplePurchaseResponse>>> GetAllPurchases()
         {
-            var purchases = await _purchaseService.GetPurchases(await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims));
+            var purchases = await _purchaseService.GetPurchases(
+                await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims)
+            );
 
             return Ok(purchases);
         }
@@ -66,7 +71,9 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<IEnumerable<SimplePurchaseResponse>>> GetAllPurchasesForUser([FromRoute] int userId)
+        public async Task<ActionResult<IEnumerable<SimplePurchaseResponse>>> GetAllPurchasesForUser(
+            [FromRoute] int userId
+        )
         {
             var purchases = await _purchaseService.GetPurchases(userId);
 
@@ -87,7 +94,10 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(MessageResponseDto), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<SinglePurchaseResponse>> GetPurchase([FromRoute] int id)
         {
-            var purchase = await _purchaseService.GetPurchase(id, await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims));
+            var purchase = await _purchaseService.GetPurchase(
+                id,
+                await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims)
+            );
 
             return Ok(purchase);
         }
@@ -104,7 +114,9 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(InitiatePurchaseResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult<InitiatePurchaseResponse>> InitiatePurchase([FromBody] InitiatePurchaseRequest initiateRequest)
+        public async Task<ActionResult<InitiatePurchaseResponse>> InitiatePurchase(
+            [FromBody] InitiatePurchaseRequest initiateRequest
+        )
         {
             var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
             var purchaseResponse = await _purchaseService.InitiatePurchase(initiateRequest, user);
@@ -112,7 +124,6 @@ namespace CoffeeCard.WebApi.Controllers.v2
             // TODO Return CreatedAtAction
             return Ok(purchaseResponse);
         }
-
 
         /// <summary>
         /// Refunds a payment

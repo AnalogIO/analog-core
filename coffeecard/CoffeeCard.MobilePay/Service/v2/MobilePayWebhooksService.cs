@@ -12,27 +12,42 @@ using ApiException = CoffeeCard.MobilePay.Generated.Api.WebhooksApi.ApiException
 
 namespace CoffeeCard.MobilePay.Service.v2;
 
-public class MobilePayWebhooksService(IWebhooksClient webhooksClient, ILogger<MobilePayWebhooksService> logger)
-    : IMobilePayWebhooksService
+public class MobilePayWebhooksService(
+    IWebhooksClient webhooksClient,
+    ILogger<MobilePayWebhooksService> logger
+) : IMobilePayWebhooksService
 {
     private static readonly ISet<WebhookEvent> DefaultEvents = new HashSet<WebhookEvent>
-        { WebhookEvent.Authorized, WebhookEvent.Cancelled, WebhookEvent.Expired, WebhookEvent.Aborted };
+    {
+        WebhookEvent.Authorized,
+        WebhookEvent.Cancelled,
+        WebhookEvent.Expired,
+        WebhookEvent.Aborted,
+    };
 
     public async Task<RegisterWebhookResponse> RegisterWebhook(string url)
     {
-        logger.LogInformation("Register new webhook for Url: {url}, Events: {@events}", url, DefaultEvents);
+        logger.LogInformation(
+            "Register new webhook for Url: {url}, Events: {@events}",
+            url,
+            DefaultEvents
+        );
 
-        var response = await webhooksClient.CreateWebhookAsync(new RegisterRequest()
-        {
-            Events = DefaultEvents.Select(webhookEvent => webhookEvent.ToMpEventType()).ToList(),
-            Url = new Uri(url)
-        });
+        var response = await webhooksClient.CreateWebhookAsync(
+            new RegisterRequest()
+            {
+                Events = DefaultEvents
+                    .Select(webhookEvent => webhookEvent.ToMpEventType())
+                    .ToList(),
+                Url = new Uri(url),
+            }
+        );
 
         return new RegisterWebhookResponse()
         {
             WebhookId = response.Id,
             Url = new Uri(url),
-            Secret = response.Secret
+            Secret = response.Secret,
         };
     }
 
@@ -47,11 +62,7 @@ public class MobilePayWebhooksService(IWebhooksClient webhooksClient, ILogger<Mo
             throw new EntityNotFoundException($"Webhook with Id: {webhookId} does not exist");
         }
 
-        return new GetWebhookResponse()
-        {
-            Url = result.Url,
-            WebhookId = result.Id,
-        };
+        return new GetWebhookResponse() { Url = result.Url, WebhookId = result.Id };
     }
 
     public async Task<GetAllWebhooksResponse> GetAllWebhooks()
@@ -59,11 +70,13 @@ public class MobilePayWebhooksService(IWebhooksClient webhooksClient, ILogger<Mo
         var allWebhooks = await webhooksClient.GetAllWebhooksAsync();
         return new GetAllWebhooksResponse()
         {
-            Webhooks = allWebhooks.Webhooks.Select(webhook => new GetWebhookResponse()
-            {
-                Url = webhook.Url,
-                WebhookId = webhook.Id,
-            }).ToList()
+            Webhooks = allWebhooks
+                .Webhooks.Select(webhook => new GetWebhookResponse()
+                {
+                    Url = webhook.Url,
+                    WebhookId = webhook.Id,
+                })
+                .ToList(),
         };
     }
 }

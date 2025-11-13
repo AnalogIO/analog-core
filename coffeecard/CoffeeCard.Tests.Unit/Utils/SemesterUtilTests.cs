@@ -6,7 +6,9 @@ namespace CoffeeCard.Tests.Unit.Utils
 {
     public class SemesterUtilTests
     {
-        [Theory(DisplayName = "GetSemesterStart returns the correct semester start date based on currentDate")]
+        [Theory(
+            DisplayName = "GetSemesterStart returns the correct semester start date based on currentDate"
+        )]
         [InlineData("2022/01/31", "2022/01/31")]
         [InlineData("2023/01/31", "2023/01/30")]
         [InlineData("2024/05/12", "2024/01/29")]
@@ -25,7 +27,9 @@ namespace CoffeeCard.Tests.Unit.Utils
             Assert.Equal(expectedDate, actualDate);
         }
 
-        [Theory(DisplayName = "GetSemesterEnd returns the correct semester start date based on currentDate")]
+        [Theory(
+            DisplayName = "GetSemesterEnd returns the correct semester start date based on currentDate"
+        )]
         [InlineData("2022/01/01", "2022/06/30")]
         [InlineData("2023/01/31", "2023/06/30")]
         [InlineData("2025/06/30", "2025/06/30")]

@@ -41,7 +41,9 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<TicketResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<IEnumerable<TicketResponse>>> Get([FromQuery] bool includeUsed)
+        public async Task<ActionResult<IEnumerable<TicketResponse>>> Get(
+            [FromQuery] bool includeUsed
+        )
         {
             var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
 
@@ -62,11 +64,15 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
         [HttpPost("use")]
-        public async Task<ActionResult<UsedTicketResponse>> UseTicket([FromBody] UseTicketRequest request)
+        public async Task<ActionResult<UsedTicketResponse>> UseTicket(
+            [FromBody] UseTicketRequest request
+        )
         {
             var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
 
-            return Ok(await _ticketService.UseTicketAsync(user, request.ProductId, request.MenuItemId));
+            return Ok(
+                await _ticketService.UseTicketAsync(user, request.ProductId, request.MenuItemId)
+            );
         }
     }
 }

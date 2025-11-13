@@ -11,7 +11,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
         /// <summary>
         /// List of accounts and their new user groups
         /// </summary>
-
         [Required]
         public required IEnumerable<AccountUserGroup> PrivilegedUsers { get; set; }
     }

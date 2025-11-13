@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -28,14 +29,13 @@ using Microsoft.IdentityModel.Tokens;
 using NJsonSchema.Generation;
 using NSwag;
 using NSwag.Generation.Processors.Security;
-using RestSharp;
-using RestSharp.Authenticators;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Metrics;
-using OpenTelemetry.Trace;
 using OpenTelemetry.Resources;
-using System.Collections.Generic;
+using OpenTelemetry.Trace;
+using RestSharp;
+using RestSharp.Authenticators;
 using Serilog;
 using AccountService = CoffeeCard.Library.Services.AccountService;
 using IAccountService = CoffeeCard.Library.Services.IAccountService;
@@ -69,10 +69,19 @@ namespace CoffeeCard.WebApi
             services.AddConfigurationSettings(_configuration);
 
             // Setup database connection
-            var databaseSettings = _configuration.GetSection(nameof(DatabaseSettings)).Get<DatabaseSettings>();
+            var databaseSettings = _configuration
+                .GetSection(nameof(DatabaseSettings))
+                .Get<DatabaseSettings>();
             services.AddDbContext<CoffeeCardContext>(opt =>
-                opt.UseSqlServer(databaseSettings.ConnectionString,
-                    c => c.MigrationsHistoryTable("__EFMigrationsHistory", databaseSettings.SchemaName)));
+                opt.UseSqlServer(
+                    databaseSettings.ConnectionString,
+                    c =>
+                        c.MigrationsHistoryTable(
+                            "__EFMigrationsHistory",
+                            databaseSettings.SchemaName
+                        )
+                )
+            );
 
             // Setup cache
             services.AddMemoryCache();
@@ -82,27 +91,41 @@ namespace CoffeeCard.WebApi
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IHashService, HashService>();
             services.AddTransient<Library.Services.ITokenService, Library.Services.TokenService>();
-            services.AddScoped<Library.Services.v2.ITokenService, Library.Services.v2.TokenService>();
+            services.AddScoped<
+                Library.Services.v2.ITokenService,
+                Library.Services.v2.TokenService
+            >();
             services.AddSingleton<ILoginLimiter, LoginLimiter>();
             services.AddScoped<IAccountService, AccountService>();
-            services.AddScoped<Library.Services.v2.IAccountService, Library.Services.v2.AccountService>();
+            services.AddScoped<
+                Library.Services.v2.IAccountService,
+                Library.Services.v2.AccountService
+            >();
             services.AddScoped<IPurchaseService, PurchaseService>();
             services.AddScoped<IMapperService, MapperService>();
             if (_environment.IsDevelopment())
             {
                 services.AddTransient<IEmailSender, SmtpEmailSender>();
-                services.AddSingleton(_configuration.GetSection("SmtpSettings").Get<SmtpSettings>());
+                services.AddSingleton(
+                    _configuration.GetSection("SmtpSettings").Get<SmtpSettings>()
+                );
             }
             else
             {
                 services.AddTransient<IEmailSender, MailgunEmailSender>();
             }
             services.AddScoped<Library.Services.IEmailService, Library.Services.EmailService>();
-            services.AddScoped<Library.Services.v2.IEmailService, Library.Services.v2.EmailService>();
+            services.AddScoped<
+                Library.Services.v2.IEmailService,
+                Library.Services.v2.EmailService
+            >();
             services.AddScoped<IVoucherService, VoucherService>();
             services.AddScoped<IProgrammeService, ProgrammeService>();
             services.AddScoped<Library.Services.IProductService, Library.Services.ProductService>();
-            services.AddScoped<Library.Services.v2.IProductService, Library.Services.v2.ProductService>();
+            services.AddScoped<
+                Library.Services.v2.IProductService,
+                Library.Services.v2.ProductService
+            >();
             services.AddScoped<IMenuItemService, MenuItemService>();
             services.AddScoped<ITicketService, TicketService>();
             services.AddScoped<ClaimsUtilities>();
@@ -118,15 +141,25 @@ namespace CoffeeCard.WebApi
                 return new RestClient(options);
             });
 
-            services.AddScoped<Library.Services.v2.IPurchaseService, Library.Services.v2.PurchaseService>();
-            services.AddScoped<Library.Services.v2.ITicketService, Library.Services.v2.TicketService>();
+            services.AddScoped<
+                Library.Services.v2.IPurchaseService,
+                Library.Services.v2.PurchaseService
+            >();
+            services.AddScoped<
+                Library.Services.v2.ITicketService,
+                Library.Services.v2.TicketService
+            >();
             services.AddTransient<IMobilePayAccessTokenService, MobilePayAccessTokenService>();
             services.AddMobilePayHttpClients(
-                _configuration.GetSection("MobilePaySettings").Get<MobilePaySettings>());
+                _configuration.GetSection("MobilePaySettings").Get<MobilePaySettings>()
+            );
             services.AddScoped<IMobilePayPaymentsService, MobilePayPaymentsService>();
             services.AddScoped<IMobilePayWebhooksService, MobilePayWebhooksService>();
             services.AddScoped<IWebhookService, WebhookService>();
-            services.AddScoped<Library.Services.v2.ILeaderboardService, Library.Services.v2.LeaderboardService>();
+            services.AddScoped<
+                Library.Services.v2.ILeaderboardService,
+                Library.Services.v2.LeaderboardService
+            >();
             services.AddScoped<IStatisticService, StatisticService>();
             services.AddScoped<IDateTimeProvider, DateTimeProvider>();
             services.AddScoped<IAdminStatisticsService, AdminStatisticsService>();
@@ -134,27 +167,40 @@ namespace CoffeeCard.WebApi
 
             // Azure Application Insights/ OpenTelemetry
             var otlpSettings = _configuration.GetSection("OtlpSettings").Get<OtlpSettings>();
-            var applicationInsightsConnectionString = _configuration.GetRequiredSection("ApplicationInsights").GetValue<string>("ConnectionString");
-            var environment = _configuration.GetSection("EnvironmentSettings").Get<EnvironmentSettings>();
-            var openTelemetryBuilder = services.AddOpenTelemetry()
+            var applicationInsightsConnectionString = _configuration
+                .GetRequiredSection("ApplicationInsights")
+                .GetValue<string>("ConnectionString");
+            var environment = _configuration
+                .GetSection("EnvironmentSettings")
+                .Get<EnvironmentSettings>();
+            var openTelemetryBuilder = services
+                .AddOpenTelemetry()
                 .WithMetrics(metrics =>
                 {
-                    metrics.AddAspNetCoreInstrumentation()
+                    metrics
+                        .AddAspNetCoreInstrumentation()
                         // Metrics provides by ASP.NET Core in .NET 8
                         .AddMeter("Microsoft.AspNetCore.Hosting")
                         .AddMeter("Microsoft.AspNetCore.Server.Kestrel");
-                    if (applicationInsightsConnectionString is null or "") return;
-                    metrics.AddAzureMonitorMetricExporter(options => options.ConnectionString = applicationInsightsConnectionString);
+                    if (applicationInsightsConnectionString is null or "")
+                        return;
+                    metrics.AddAzureMonitorMetricExporter(options =>
+                        options.ConnectionString = applicationInsightsConnectionString
+                    );
                 })
                 .WithTracing(traces =>
                 {
-                    var builder = traces.AddSqlClientInstrumentation()
+                    var builder = traces
+                        .AddSqlClientInstrumentation()
                         .AddSqlClientInstrumentation()
                         .AddHttpClientInstrumentation()
                         .AddAspNetCoreInstrumentation();
 
-                    if (applicationInsightsConnectionString is null or "") return;
-                    builder.AddAzureMonitorTraceExporter(options => options.ConnectionString = applicationInsightsConnectionString);
+                    if (applicationInsightsConnectionString is null or "")
+                        return;
+                    builder.AddAzureMonitorTraceExporter(options =>
+                        options.ConnectionString = applicationInsightsConnectionString
+                    );
                 });
 
             if (otlpSettings is not null)
@@ -163,33 +209,57 @@ namespace CoffeeCard.WebApi
                 {
                     OtelProtocol.Grpc => OtlpExportProtocol.Grpc,
                     OtelProtocol.Http => OtlpExportProtocol.HttpProtobuf,
-                    _ => throw new ArgumentOutOfRangeException("Unspecified protocol for export")
+                    _ => throw new ArgumentOutOfRangeException("Unspecified protocol for export"),
                 };
 
-                openTelemetryBuilder.UseOtlpExporter(otlpExportProtocol, new Uri(otlpSettings.Endpoint));
+                openTelemetryBuilder.UseOtlpExporter(
+                    otlpExportProtocol,
+                    new Uri(otlpSettings.Endpoint)
+                );
                 openTelemetryBuilder.ConfigureResource(resource =>
                 {
                     resource.AddAttributes(
-                    [
-                        new KeyValuePair<string, object>("Env",
-                            environment.EnvironmentType.ToString() ?? "Env not set"),
-                    ]);
+                        [
+                            new KeyValuePair<string, object>(
+                                "Env",
+                                environment.EnvironmentType.ToString() ?? "Env not set"
+                            ),
+                        ]
+                    );
                     resource.AddAzureAppServiceDetector();
-                    resource.AddService($"analog-core-{environment.EnvironmentType}", "analog-core");
+                    resource.AddService(
+                        $"analog-core-{environment.EnvironmentType}",
+                        "analog-core"
+                    );
                 });
                 if (otlpSettings.Protocol is OtelProtocol.Http)
                 {
-                    services.AddHttpClient("OtlpTraceExporter",
-                        client => client.DefaultRequestHeaders.Add("Authorization", $"Basic {otlpSettings.Token}"))
+                    services
+                        .AddHttpClient(
+                            "OtlpTraceExporter",
+                            client =>
+                                client.DefaultRequestHeaders.Add(
+                                    "Authorization",
+                                    $"Basic {otlpSettings.Token}"
+                                )
+                        )
                         .RemoveAllLoggers();
-                    services.AddHttpClient("OtlpMetricExporter",
-                        client => client.DefaultRequestHeaders.Add("Authorization", $"Basic {otlpSettings.Token}"))
+                    services
+                        .AddHttpClient(
+                            "OtlpMetricExporter",
+                            client =>
+                                client.DefaultRequestHeaders.Add(
+                                    "Authorization",
+                                    $"Basic {otlpSettings.Token}"
+                                )
+                        )
                         .RemoveAllLoggers();
                 }
             }
 
             // Setup filter to catch outgoing exceptions
-            services.AddControllers(options =>
+            services
+                .AddControllers(options =>
                 {
                     options.Filters.Add(new ApiExceptionFilter());
                     options.Filters.Add(new ReadableBodyFilter());
@@ -197,13 +267,17 @@ namespace CoffeeCard.WebApi
                 .AddJsonOptions(options =>
                 {
                     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-                    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.Never;
+                    options.JsonSerializerOptions.DefaultIgnoreCondition =
+                        JsonIgnoreCondition.Never;
                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                     options.JsonSerializerOptions.Converters.Add(new DateTimeConverter());
                 });
 
-            services.AddCors(options => options.AddDefaultPolicy(builder =>
-                builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
+            services.AddCors(options =>
+                options.AddDefaultPolicy(builder =>
+                    builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
+                )
+            );
 
             services.AddApiVersioning(config =>
             {
@@ -216,7 +290,10 @@ namespace CoffeeCard.WebApi
                 setup.GroupNameFormat = "'v'VVV";
                 setup.SubstituteApiVersionInUrl = true;
             });
-            services.Configure<ApiBehaviorOptions>(config => { config.SuppressMapClientErrors = true; });
+            services.Configure<ApiBehaviorOptions>(config =>
+            {
+                config.SuppressMapClientErrors = true;
+            });
 
             GenerateOpenApiDocument(services);
 
@@ -225,57 +302,73 @@ namespace CoffeeCard.WebApi
             services.AddServerSideBlazor();
 
             // Setup Authentication
-            var identitySettings = _configuration.GetSection("IdentitySettings").Get<IdentitySettings>();
-            services.AddAuthentication(options =>
+            var identitySettings = _configuration
+                .GetSection("IdentitySettings")
+                .Get<IdentitySettings>();
+            services
+                .AddAuthentication(options =>
                 {
                     options.DefaultAuthenticateScheme = "jwt";
                     options.DefaultChallengeScheme = "jwt";
-                }).AddJwtBearer("jwt", options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateAudience = false,
-                        ValidateIssuer = false,
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(identitySettings.TokenKey)),
-                        ValidateLifetime = true,
-                        ClockSkew = TimeSpan.Zero //the default for this setting is 5 minutes
-                    };
-                    options.Events = new JwtBearerEvents
-                    {
-                        OnAuthenticationFailed = context =>
-                        {
-                            if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
-                                context.Response.Headers.Append("Token-Expired", "true");
-
-                            return Task.CompletedTask;
-                        }
-                    };
                 })
-                .AddApiKeyInHeaderOrQueryParams("apikey", options =>
-                {
-                    options.Realm = "Analog Core";
-                    options.KeyName = "x-api-key";
-                    options.Events = new ApiKeyEvents
+                .AddJwtBearer(
+                    "jwt",
+                    options =>
                     {
-                        OnValidateKey = context =>
+                        options.TokenValidationParameters = new TokenValidationParameters
                         {
-                            var identitySettings = _configuration.GetSection(nameof(IdentitySettings))
-                                .Get<IdentitySettings>();
-                            var apiKey = identitySettings.ApiKey;
-                            if (apiKey == context.ApiKey)
+                            ValidateAudience = false,
+                            ValidateIssuer = false,
+                            ValidateIssuerSigningKey = true,
+                            IssuerSigningKey = new SymmetricSecurityKey(
+                                Encoding.UTF8.GetBytes(identitySettings.TokenKey)
+                            ),
+                            ValidateLifetime = true,
+                            ClockSkew = TimeSpan.Zero, //the default for this setting is 5 minutes
+                        };
+                        options.Events = new JwtBearerEvents
+                        {
+                            OnAuthenticationFailed = context =>
                             {
-                                context.ValidationSucceeded();
+                                if (
+                                    context.Exception.GetType()
+                                    == typeof(SecurityTokenExpiredException)
+                                )
+                                    context.Response.Headers.Append("Token-Expired", "true");
+
                                 return Task.CompletedTask;
-                            }
-                            else
+                            },
+                        };
+                    }
+                )
+                .AddApiKeyInHeaderOrQueryParams(
+                    "apikey",
+                    options =>
+                    {
+                        options.Realm = "Analog Core";
+                        options.KeyName = "x-api-key";
+                        options.Events = new ApiKeyEvents
+                        {
+                            OnValidateKey = context =>
                             {
-                                context.ValidationFailed();
-                                return Task.CompletedTask;
-                            }
-                        }
-                    };
-                });
+                                var identitySettings = _configuration
+                                    .GetSection(nameof(IdentitySettings))
+                                    .Get<IdentitySettings>();
+                                var apiKey = identitySettings.ApiKey;
+                                if (apiKey == context.ApiKey)
+                                {
+                                    context.ValidationSucceeded();
+                                    return Task.CompletedTask;
+                                }
+                                else
+                                {
+                                    context.ValidationFailed();
+                                    return Task.CompletedTask;
+                                }
+                            },
+                        };
+                    }
+                );
         }
 
         /// <summary>
@@ -283,13 +376,16 @@ namespace CoffeeCard.WebApi
         /// </summary>
         private static void GenerateOpenApiDocument(IServiceCollection services)
         {
-            var apiVersions = services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>();
+            var apiVersions = services
+                .BuildServiceProvider()
+                .GetRequiredService<IApiVersionDescriptionProvider>();
             foreach (var apiVersion in apiVersions.ApiVersionDescriptions)
             {
                 // Add an OpenApi document per API version
                 services.AddOpenApiDocument(config =>
                 {
-                    config.DefaultResponseReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull;
+                    config.DefaultResponseReferenceTypeNullHandling =
+                        ReferenceTypeNullHandling.NotNull;
                     config.Title = apiVersion.GroupName;
                     config.Version = apiVersion.ApiVersion.ToString();
                     config.DocumentName = apiVersion.GroupName;
@@ -303,34 +399,48 @@ namespace CoffeeCard.WebApi
                         {
                             Name = "AnalogIO",
                             Email = "support@analogio.dk",
-                            Url = "https://github.com/analogio"
+                            Url = "https://github.com/analogio",
                         };
                         document.Info.License = new OpenApiLicense
                         {
                             Name = "Use under MIT",
-                            Url = "https://github.com/AnalogIO/analog-core/blob/master/LICENSE"
+                            Url = "https://github.com/AnalogIO/analog-core/blob/master/LICENSE",
                         };
                     };
 
-                    config.DocumentProcessors.Add(new SecurityDefinitionAppender("jwt", new OpenApiSecurityScheme
-                    {
-                        Description = "JWT Bearer token",
-                        Name = "Authorization",
-                        Scheme = "bearer",
-                        BearerFormat = "JWT",
-                        In = OpenApiSecurityApiKeyLocation.Header,
-                        Type = OpenApiSecuritySchemeType.Http
-                    }));
-                    config.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("jwt"));
+                    config.DocumentProcessors.Add(
+                        new SecurityDefinitionAppender(
+                            "jwt",
+                            new OpenApiSecurityScheme
+                            {
+                                Description = "JWT Bearer token",
+                                Name = "Authorization",
+                                Scheme = "bearer",
+                                BearerFormat = "JWT",
+                                In = OpenApiSecurityApiKeyLocation.Header,
+                                Type = OpenApiSecuritySchemeType.Http,
+                            }
+                        )
+                    );
+                    config.OperationProcessors.Add(
+                        new AspNetCoreOperationSecurityScopeProcessor("jwt")
+                    );
 
-                    config.DocumentProcessors.Add(new SecurityDefinitionAppender("apikey", new OpenApiSecurityScheme
-                    {
-                        Description = "Api Key used for health endpoints",
-                        Name = "x-api-key",
-                        In = OpenApiSecurityApiKeyLocation.Header,
-                        Type = OpenApiSecuritySchemeType.ApiKey
-                    }));
-                    config.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("apikey"));
+                    config.DocumentProcessors.Add(
+                        new SecurityDefinitionAppender(
+                            "apikey",
+                            new OpenApiSecurityScheme
+                            {
+                                Description = "Api Key used for health endpoints",
+                                Name = "x-api-key",
+                                In = OpenApiSecurityApiKeyLocation.Header,
+                                Type = OpenApiSecuritySchemeType.ApiKey,
+                            }
+                        )
+                    );
+                    config.OperationProcessors.Add(
+                        new AspNetCoreOperationSecurityScopeProcessor("apikey")
+                    );
 
                     // Assume not null as default unless parameter is marked as nullable
                     // config.DefaultReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull;
@@ -339,7 +449,11 @@ namespace CoffeeCard.WebApi
         }
 
         /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)
+        public void Configure(
+            IApplicationBuilder app,
+            IWebHostEnvironment env,
+            IApiVersionDescriptionProvider provider
+        )
         {
             // Important note!
             // The order of the below app configuration is sensitive and should be changed with care
@@ -361,7 +475,9 @@ namespace CoffeeCard.WebApi
             app.UseRouting();
             var featureManager = app.ApplicationServices.GetRequiredService<IFeatureManager>();
 
-            var isRequestLoggerEnabled = featureManager.IsEnabledAsync(FeatureFlags.RequestLoggerEnabled).Result;
+            var isRequestLoggerEnabled = featureManager
+                .IsEnabledAsync(FeatureFlags.RequestLoggerEnabled)
+                .Result;
             if (isRequestLoggerEnabled)
             {
                 app.UseMiddleware<RequestLoggerMiddleware>();
@@ -381,11 +497,13 @@ namespace CoffeeCard.WebApi
             });
 
             // Enable Request Buffering so that a raw request body can be read after aspnet model binding
-            app.Use(next => context =>
-            {
-                context.Request.EnableBuffering();
-                return next(context);
-            });
+            app.Use(next =>
+                context =>
+                {
+                    context.Request.EnableBuffering();
+                    return next(context);
+                }
+            );
         }
     }
 }

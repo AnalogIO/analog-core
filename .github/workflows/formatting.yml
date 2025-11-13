@@ -1,0 +1,22 @@
+name: Code is formated with CSharpier
+on:
+  workflow_call:
+
+jobs:
+  check_formatting:
+    name: Check code formatting
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8
+      - name: Install CSharpier tool
+        run: |
+          cd coffeecard/
+          dotnet tool restore
+      - name: Check code formatting
+        run: |
+          cd coffeecard/
+          dotnet csharpier check .

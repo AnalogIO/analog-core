@@ -16,7 +16,10 @@ namespace CoffeeCard.Library.Services.v2
         /// <param name="initiateRequest">Initiate request with information on purchasable product and payment type</param>
         /// <param name="user">User</param>
         /// <returns>Response with Purchase details, status and payment details</returns>
-        Task<InitiatePurchaseResponse> InitiatePurchase(InitiatePurchaseRequest initiateRequest, User user);
+        Task<InitiatePurchaseResponse> InitiatePurchase(
+            InitiatePurchaseRequest initiateRequest,
+            User user
+        );
 
         /// <summary>
         /// Get purchase by Purchase Id

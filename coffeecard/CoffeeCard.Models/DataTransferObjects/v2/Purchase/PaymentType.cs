@@ -16,7 +16,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// <summary>
         /// Free purchase
         /// </summary>
-        FreePurchase
+        FreePurchase,
     }
 
     /// <summary>

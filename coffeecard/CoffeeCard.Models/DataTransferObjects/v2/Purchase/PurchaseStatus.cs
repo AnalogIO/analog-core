@@ -28,6 +28,6 @@
         /// <summary>
         /// Purchase expired due to no completion by the user within the required time
         /// </summary>
-        Expired
+        Expired,
     }
 }

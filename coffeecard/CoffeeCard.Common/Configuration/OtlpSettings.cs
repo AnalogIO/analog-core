@@ -9,6 +9,7 @@ public class OtlpSettings : IValidatable
     [Required]
     public string Endpoint { get; set; }
     public string Token { get; set; }
+
     [Required]
     public OtelProtocol Protocol { get; set; }
 
@@ -17,8 +18,9 @@ public class OtlpSettings : IValidatable
         Validator.ValidateObject(this, new ValidationContext(this), true);
     }
 }
+
 public enum OtelProtocol
 {
     Http,
-    Grpc
+    Grpc,
 }

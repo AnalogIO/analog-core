@@ -18,8 +18,16 @@ namespace CoffeeCard.Tests.Unit.Services
 
             IList<ProductUserGroup> productUserGroups =
             [
-                ProductUserGroupBuilder.Simple().WithUserGroup(UserGroup.Barista).WithProduct(p1).Build(),
-                ProductUserGroupBuilder.Simple().WithUserGroup(UserGroup.Barista).WithProduct(p2).Build()
+                ProductUserGroupBuilder
+                    .Simple()
+                    .WithUserGroup(UserGroup.Barista)
+                    .WithProduct(p1)
+                    .Build(),
+                ProductUserGroupBuilder
+                    .Simple()
+                    .WithUserGroup(UserGroup.Barista)
+                    .WithProduct(p2)
+                    .Build(),
             ];
 
             await InitialContext.ProductUserGroups.AddRangeAsync(productUserGroups);
@@ -66,10 +74,9 @@ namespace CoffeeCard.Tests.Unit.Services
             IList<Product> products =
             [
                 ProductBuilder.Simple().WithVisible(true).Build(),
-                ProductBuilder.Simple().WithVisible(false).Build()
+                ProductBuilder.Simple().WithVisible(false).Build(),
             ];
-            var pugs = ProductUserGroupBuilder.Simple()
-                .WithUserGroup(UserGroup.Customer).Build(2);
+            var pugs = ProductUserGroupBuilder.Simple().WithUserGroup(UserGroup.Customer).Build(2);
             for (var i = 0; i < products.Count; i++)
             {
                 products[i].ProductUserGroup = [pugs[i]];
@@ -86,7 +93,7 @@ namespace CoffeeCard.Tests.Unit.Services
             var expected = new List<Product>
             {
                 // We only expect the first element, since that is the only visible one
-                products.First()
+                products.First(),
             };
             Assert.Equal(expected, result);
         }
@@ -97,8 +104,10 @@ namespace CoffeeCard.Tests.Unit.Services
             var products = ProductBuilder.Simple().Build(3);
             var pugs = ProductUserGroupBuilder
                 .Simple()
-                .WithUserGroup(UserGroup.Customer).Build(2)
-                .Concat(ProductUserGroupBuilder.Simple().WithUserGroup(UserGroup.Barista).Build(1)).ToList();
+                .WithUserGroup(UserGroup.Customer)
+                .Build(2)
+                .Concat(ProductUserGroupBuilder.Simple().WithUserGroup(UserGroup.Barista).Build(1))
+                .ToList();
             for (var i = 0; i < products.Count; i++)
             {
                 products[i].ProductUserGroup = [pugs[i]];

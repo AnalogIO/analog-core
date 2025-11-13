@@ -20,16 +20,23 @@ namespace CoffeeCard.Library.Services.v2
             _context = context;
         }
 
-        public async Task<IEnumerable<IssueVoucherResponse>> CreateVouchers(IssueVoucherRequest request)
+        public async Task<IEnumerable<IssueVoucherResponse>> CreateVouchers(
+            IssueVoucherRequest request
+        )
         {
             var product = await _context.Products.FindAsync(request.ProductId);
             if (product == null)
             {
-                throw new EntityNotFoundException("No product was found by Id " + request.ProductId);
+                throw new EntityNotFoundException(
+                    "No product was found by Id " + request.ProductId
+                );
             }
 
             var newCodes = new HashSet<string>();
-            var existingVouchers = _context.Vouchers.Where(v => v.Code.StartsWith(request.VoucherPrefix)).Select(v => v.Code).ToHashSet();
+            var existingVouchers = _context
+                .Vouchers.Where(v => v.Code.StartsWith(request.VoucherPrefix))
+                .Select(v => v.Code)
+                .ToHashSet();
             while (newCodes.Count < request.Amount)
             {
                 var code = GenerateUniqueVoucherCode(8, request.VoucherPrefix, existingVouchers); // 8 character length gives 36^8 combos
@@ -43,21 +50,20 @@ namespace CoffeeCard.Library.Services.v2
                     DateCreated = DateTime.UtcNow,
                     Product = product,
                     Description = request.Description,
-                    Requester = request.Requester
-                }).ToList();
+                    Requester = request.Requester,
+                })
+                .ToList();
 
             await _context.Vouchers.AddRangeAsync(vouchers);
             await _context.SaveChangesAsync();
 
-            var responses = vouchers.
-                Select(v =>
-                    new IssueVoucherResponse
-                    {
-                        VoucherCode = v.Code,
-                        IssuedAt = v.DateCreated,
-                        ProductId = v.Product.Id,
-                        ProductName = v.Product.Name
-                    });
+            var responses = vouchers.Select(v => new IssueVoucherResponse
+            {
+                VoucherCode = v.Code,
+                IssuedAt = v.DateCreated,
+                ProductId = v.Product.Id,
+                ProductName = v.Product.Name,
+            });
             return responses;
         }
 
@@ -68,7 +74,11 @@ namespace CoffeeCard.Library.Services.v2
         /// <param name="voucherPrefix">The user defined prefix of the generated code</param>
         /// <param name="existingCodes">A set of existing voucher codes</param>
         /// <returns>A string representing a voucher code</returns>
-        private string GenerateUniqueVoucherCode(int codeLength, string voucherPrefix, HashSet<string> existingCodes)
+        private string GenerateUniqueVoucherCode(
+            int codeLength,
+            string voucherPrefix,
+            HashSet<string> existingCodes
+        )
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             StringBuilder code = new StringBuilder();

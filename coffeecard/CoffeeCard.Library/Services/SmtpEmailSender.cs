@@ -7,7 +7,8 @@ using MimeKit;
 
 namespace CoffeeCard.Library.Services;
 
-public class SmtpEmailSender(SmtpSettings smtpSettings, ILogger<SmtpEmailSender> logger) : IEmailSender
+public class SmtpEmailSender(SmtpSettings smtpSettings, ILogger<SmtpEmailSender> logger)
+    : IEmailSender
 {
     private readonly ILogger<SmtpEmailSender> _logger = logger;
 
@@ -24,7 +25,10 @@ public class SmtpEmailSender(SmtpSettings smtpSettings, ILogger<SmtpEmailSender>
         }
         catch (Exception ex)
         {
-            _logger.LogError("Error sending request to SMTP server. Error: {errorMessage}", ex.Message);
+            _logger.LogError(
+                "Error sending request to SMTP server. Error: {errorMessage}",
+                ex.Message
+            );
         }
     }
 }

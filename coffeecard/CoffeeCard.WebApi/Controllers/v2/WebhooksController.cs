@@ -1,10 +1,10 @@
-﻿using CoffeeCard.Library.Services.v2;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
+using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.User;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CoffeeCard.WebApi.Controllers.v2
 {
@@ -39,7 +39,9 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateUserGroupsAsync([FromBody][Required] WebhookUpdateUserGroupRequest request)
+        public async Task<IActionResult> UpdateUserGroupsAsync(
+            [FromBody] [Required] WebhookUpdateUserGroupRequest request
+        )
         {
             await _accountService.UpdatePriviligedUserGroups(request);
             return NoContent();

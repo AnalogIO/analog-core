@@ -2,12 +2,13 @@ using Bogus;
 
 namespace CoffeeCard.Tests.Common.Builders
 {
-    public abstract class BaseBuilder<T> where T : class
+    public abstract class BaseBuilder<T>
+        where T : class
     {
         protected readonly Faker<T> Faker = new();
 
         /// <summary>
-        /// Creates a new instance of type T, 
+        /// Creates a new instance of type T,
         /// using the configuration set by using the builderMethods
         /// </summary>
         public T Build()
@@ -16,7 +17,7 @@ namespace CoffeeCard.Tests.Common.Builders
         }
 
         /// <summary>
-        /// Creates a new list of type T, 
+        /// Creates a new list of type T,
         /// using the configuration set by using the builderMethods
         /// </summary>
         public List<T> Build(int count)
@@ -25,7 +26,8 @@ namespace CoffeeCard.Tests.Common.Builders
         }
     }
 
-    public interface IBuilder<T> where T : class
+    public interface IBuilder<T>
+        where T : class
     {
         /// <summary>
         /// Gives a standard configured builder,

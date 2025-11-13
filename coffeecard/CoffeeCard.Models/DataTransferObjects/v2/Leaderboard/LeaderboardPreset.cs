@@ -18,6 +18,6 @@
         /// <summary>
         /// Total
         /// </summary>
-        Total
+        Total,
     }
 }

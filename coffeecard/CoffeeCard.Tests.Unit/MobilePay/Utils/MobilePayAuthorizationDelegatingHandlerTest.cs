@@ -27,7 +27,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Utils
             var accessTokenResponse = new GetAuthorizationTokenResponse
             {
                 AccessToken = accessToken,
-                ExpiresOn = DateTimeOffset.UtcNow.AddHours(1)
+                ExpiresOn = DateTimeOffset.UtcNow.AddHours(1),
             };
 
             _accessTokenServiceMock
@@ -40,12 +40,15 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Utils
                 .Setup<Task<HttpResponseMessage>>(
                     "SendAsync",
                     ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>())
+                    ItExpr.IsAny<CancellationToken>()
+                )
                 .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
-            var handler = new MobilePayAuthorizationDelegatingHandler(_accessTokenServiceMock.Object)
+            var handler = new MobilePayAuthorizationDelegatingHandler(
+                _accessTokenServiceMock.Object
+            )
             {
-                InnerHandler = _innerHandlerMock.Object
+                InnerHandler = _innerHandlerMock.Object,
             };
 
             var invoker = new HttpMessageInvoker(handler);
@@ -57,14 +60,19 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Utils
             // Assert
             _accessTokenServiceMock.Verify(x => x.GetAuthorizationTokenAsync(), Times.Once);
 
-            _innerHandlerMock.Protected().Verify(
-                "SendAsync",
-                Times.Once(),
-                ItExpr.Is<HttpRequestMessage>(req =>
-                    req.Headers.Authorization != null &&
-                    req.Headers.Authorization.Scheme == JwtBearerDefaults.AuthenticationScheme &&
-                    req.Headers.Authorization.Parameter == accessToken),
-                ItExpr.IsAny<CancellationToken>());
+            _innerHandlerMock
+                .Protected()
+                .Verify(
+                    "SendAsync",
+                    Times.Once(),
+                    ItExpr.Is<HttpRequestMessage>(req =>
+                        req.Headers.Authorization != null
+                        && req.Headers.Authorization.Scheme
+                            == JwtBearerDefaults.AuthenticationScheme
+                        && req.Headers.Authorization.Parameter == accessToken
+                    ),
+                    ItExpr.IsAny<CancellationToken>()
+                );
         }
 
         [Fact(DisplayName = "SendAsync returns response from inner handler")]
@@ -77,7 +85,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Utils
             var accessTokenResponse = new GetAuthorizationTokenResponse
             {
                 AccessToken = "any-token",
-                ExpiresOn = DateTimeOffset.UtcNow.AddHours(1)
+                ExpiresOn = DateTimeOffset.UtcNow.AddHours(1),
             };
 
             _accessTokenServiceMock
@@ -87,7 +95,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Utils
             // Set up inner handler to return specific response
             var expectedResponse = new HttpResponseMessage(expectedStatusCode)
             {
-                Content = new StringContent(expectedContent)
+                Content = new StringContent(expectedContent),
             };
 
             _innerHandlerMock
@@ -95,12 +103,15 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Utils
                 .Setup<Task<HttpResponseMessage>>(
                     "SendAsync",
                     ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>())
+                    ItExpr.IsAny<CancellationToken>()
+                )
                 .ReturnsAsync(expectedResponse);
 
-            var handler = new MobilePayAuthorizationDelegatingHandler(_accessTokenServiceMock.Object)
+            var handler = new MobilePayAuthorizationDelegatingHandler(
+                _accessTokenServiceMock.Object
+            )
             {
-                InnerHandler = _innerHandlerMock.Object
+                InnerHandler = _innerHandlerMock.Object,
             };
 
             var invoker = new HttpMessageInvoker(handler);
@@ -123,9 +134,11 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Utils
                 .Setup(x => x.GetAuthorizationTokenAsync())
                 .ThrowsAsync(new InvalidOperationException("Token service failed"));
 
-            var handler = new MobilePayAuthorizationDelegatingHandler(_accessTokenServiceMock.Object)
+            var handler = new MobilePayAuthorizationDelegatingHandler(
+                _accessTokenServiceMock.Object
+            )
             {
-                InnerHandler = _innerHandlerMock.Object
+                InnerHandler = _innerHandlerMock.Object,
             };
 
             var invoker = new HttpMessageInvoker(handler);
@@ -133,14 +146,18 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Utils
 
             // Act & Assert
             await Assert.ThrowsAsync<InvalidOperationException>(() =>
-                invoker.SendAsync(request, CancellationToken.None));
+                invoker.SendAsync(request, CancellationToken.None)
+            );
 
             // Verify the inner handler was never called
-            _innerHandlerMock.Protected().Verify(
-                "SendAsync",
-                Times.Never(),
-                ItExpr.IsAny<HttpRequestMessage>(),
-                ItExpr.IsAny<CancellationToken>());
+            _innerHandlerMock
+                .Protected()
+                .Verify(
+                    "SendAsync",
+                    Times.Never(),
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>()
+                );
         }
 
         [Fact(DisplayName = "SendAsync preserves original request headers")]
@@ -150,7 +167,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Utils
             var accessTokenResponse = new GetAuthorizationTokenResponse
             {
                 AccessToken = "test-token",
-                ExpiresOn = DateTimeOffset.UtcNow.AddHours(1)
+                ExpiresOn = DateTimeOffset.UtcNow.AddHours(1),
             };
 
             _accessTokenServiceMock
@@ -162,12 +179,15 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Utils
                 .Setup<Task<HttpResponseMessage>>(
                     "SendAsync",
                     ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>())
+                    ItExpr.IsAny<CancellationToken>()
+                )
                 .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
-            var handler = new MobilePayAuthorizationDelegatingHandler(_accessTokenServiceMock.Object)
+            var handler = new MobilePayAuthorizationDelegatingHandler(
+                _accessTokenServiceMock.Object
+            )
             {
-                InnerHandler = _innerHandlerMock.Object
+                InnerHandler = _innerHandlerMock.Object,
             };
 
             var invoker = new HttpMessageInvoker(handler);
@@ -181,15 +201,19 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Utils
             await invoker.SendAsync(request, CancellationToken.None);
 
             // Assert
-            _innerHandlerMock.Protected().Verify(
-                "SendAsync",
-                Times.Once(),
-                ItExpr.Is<HttpRequestMessage>(req =>
-                    req.Headers.Contains("X-Custom-Header") &&
-                    req.Headers.GetValues("X-Custom-Header").First() == "custom-value" &&
-                    req.Headers.Accept.First().MediaType == "application/json" &&
-                    req.Headers.Authorization != null),
-                ItExpr.IsAny<CancellationToken>());
+            _innerHandlerMock
+                .Protected()
+                .Verify(
+                    "SendAsync",
+                    Times.Once(),
+                    ItExpr.Is<HttpRequestMessage>(req =>
+                        req.Headers.Contains("X-Custom-Header")
+                        && req.Headers.GetValues("X-Custom-Header").First() == "custom-value"
+                        && req.Headers.Accept.First().MediaType == "application/json"
+                        && req.Headers.Authorization != null
+                    ),
+                    ItExpr.IsAny<CancellationToken>()
+                );
         }
 
         [Fact(DisplayName = "SendAsync correctly handles cancellation token")]
@@ -199,7 +223,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Utils
             var accessTokenResponse = new GetAuthorizationTokenResponse
             {
                 AccessToken = "test-token",
-                ExpiresOn = DateTimeOffset.UtcNow.AddHours(1)
+                ExpiresOn = DateTimeOffset.UtcNow.AddHours(1),
             };
 
             _accessTokenServiceMock
@@ -214,12 +238,15 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Utils
                 .Setup<Task<HttpResponseMessage>>(
                     "SendAsync",
                     ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>())
+                    ItExpr.IsAny<CancellationToken>()
+                )
                 .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
-            var handler = new MobilePayAuthorizationDelegatingHandler(_accessTokenServiceMock.Object)
+            var handler = new MobilePayAuthorizationDelegatingHandler(
+                _accessTokenServiceMock.Object
+            )
             {
-                InnerHandler = _innerHandlerMock.Object
+                InnerHandler = _innerHandlerMock.Object,
             };
 
             var invoker = new HttpMessageInvoker(handler);
@@ -229,11 +256,14 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Utils
             await invoker.SendAsync(request, cancellationToken);
 
             // Assert - verify cancellation token is passed through
-            _innerHandlerMock.Protected().Verify(
-                "SendAsync",
-                Times.Once(),
-                ItExpr.IsAny<HttpRequestMessage>(),
-                ItExpr.Is<CancellationToken>(ct => ct.Equals(cancellationToken)));
+            _innerHandlerMock
+                .Protected()
+                .Verify(
+                    "SendAsync",
+                    Times.Once(),
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.Is<CancellationToken>(ct => ct.Equals(cancellationToken))
+                );
         }
     }
 }

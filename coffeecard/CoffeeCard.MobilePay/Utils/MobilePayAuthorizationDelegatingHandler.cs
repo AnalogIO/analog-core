@@ -13,20 +13,19 @@ public class MobilePayAuthorizationDelegatingHandler(
     IMobilePayAccessTokenService accessTokenService
 ) : DelegatingHandler
 {
-
     protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         var accessTokenResponse = await accessTokenService.GetAuthorizationTokenAsync();
 
         request.Headers.Authorization = new AuthenticationHeaderValue(
             JwtBearerDefaults.AuthenticationScheme,
-            accessTokenResponse.AccessToken);
+            accessTokenResponse.AccessToken
+        );
 
-        var httpResponseMessage = await base.SendAsync(
-            request,
-            cancellationToken);
+        var httpResponseMessage = await base.SendAsync(request, cancellationToken);
 
         return httpResponseMessage;
     }

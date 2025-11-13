@@ -26,15 +26,15 @@ namespace CoffeeCard.WebApi.Pages
         /// <summary>
         /// Gets or sets the token used for email verification.
         /// </summary>
-        [BindProperty(SupportsGet = true)] public string Token { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public string Token { get; set; }
 
         /// <summary>
         /// Handles GET requests for email verification.
         /// </summary>
         public async Task<IActionResult> OnGet()
         {
-
-            Func<Task<IActionResult>> func = async delegate ()
+            Func<Task<IActionResult>> func = async delegate()
             {
                 var emailVerified = await _accountService.VerifyRegistration(Token);
                 if (emailVerified)
@@ -44,10 +44,13 @@ namespace CoffeeCard.WebApi.Pages
                 }
                 else
                 {
-                    PageUtils.setMessage("Error", "Looks like the link you used has expired or already been used. Request a new password in the app to verify your email.", this);
+                    PageUtils.setMessage(
+                        "Error",
+                        "Looks like the link you used has expired or already been used. Request a new password in the app to verify your email.",
+                        this
+                    );
                 }
                 return RedirectToPage("result");
-
             };
             return await PageUtils.SafeExecuteFunc(func, this);
         }

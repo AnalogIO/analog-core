@@ -7,7 +7,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.MenuItems
     /// </summary>
     public class UpdateMenuItemRequest
     {
-
         /// <summary>
         /// Gets or sets the updated name of the product.
         /// </summary>

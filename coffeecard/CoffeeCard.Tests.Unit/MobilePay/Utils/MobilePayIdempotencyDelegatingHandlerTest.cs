@@ -23,12 +23,13 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Utils
                 .Setup<Task<HttpResponseMessage>>(
                     "SendAsync",
                     ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>())
+                    ItExpr.IsAny<CancellationToken>()
+                )
                 .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
             var handler = new MobilePayIdempotencyDelegatingHandler
             {
-                InnerHandler = _innerHandlerMock.Object
+                InnerHandler = _innerHandlerMock.Object,
             };
 
             var invoker = new HttpMessageInvoker(handler);
@@ -38,13 +39,17 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Utils
             await invoker.SendAsync(request, CancellationToken.None);
 
             // Assert
-            _innerHandlerMock.Protected().Verify(
-                "SendAsync",
-                Times.Once(),
-                ItExpr.Is<HttpRequestMessage>(req =>
-                    req.Headers.Contains("Idempotency-Key") &&
-                    !string.IsNullOrEmpty(req.Headers.GetValues("Idempotency-Key").First())),
-                ItExpr.IsAny<CancellationToken>());
+            _innerHandlerMock
+                .Protected()
+                .Verify(
+                    "SendAsync",
+                    Times.Once(),
+                    ItExpr.Is<HttpRequestMessage>(req =>
+                        req.Headers.Contains("Idempotency-Key")
+                        && !string.IsNullOrEmpty(req.Headers.GetValues("Idempotency-Key").First())
+                    ),
+                    ItExpr.IsAny<CancellationToken>()
+                );
         }
 
         [Fact(DisplayName = "SendAsync adds different idempotency keys for different requests")]
@@ -59,23 +64,26 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Utils
                 .Setup<Task<HttpResponseMessage>>(
                     "SendAsync",
                     ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>())
+                    ItExpr.IsAny<CancellationToken>()
+                )
                 .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK))
-                .Callback<HttpRequestMessage, CancellationToken>((req, _) =>
-                {
-                    if (firstIdempotencyKey == null)
+                .Callback<HttpRequestMessage, CancellationToken>(
+                    (req, _) =>
                     {
-                        firstIdempotencyKey = req.Headers.GetValues("Idempotency-Key").First();
+                        if (firstIdempotencyKey == null)
+                        {
+                            firstIdempotencyKey = req.Headers.GetValues("Idempotency-Key").First();
+                        }
+                        else
+                        {
+                            secondIdempotencyKey = req.Headers.GetValues("Idempotency-Key").First();
+                        }
                     }
-                    else
-                    {
-                        secondIdempotencyKey = req.Headers.GetValues("Idempotency-Key").First();
-                    }
-                });
+                );
 
             var handler = new MobilePayIdempotencyDelegatingHandler
             {
-                InnerHandler = _innerHandlerMock.Object
+                InnerHandler = _innerHandlerMock.Object,
             };
 
             var invoker = new HttpMessageInvoker(handler);
@@ -102,7 +110,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Utils
             // Set up inner handler to return specific response
             var expectedResponse = new HttpResponseMessage(expectedStatusCode)
             {
-                Content = new StringContent(expectedContent)
+                Content = new StringContent(expectedContent),
             };
 
             _innerHandlerMock
@@ -110,12 +118,13 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Utils
                 .Setup<Task<HttpResponseMessage>>(
                     "SendAsync",
                     ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>())
+                    ItExpr.IsAny<CancellationToken>()
+                )
                 .ReturnsAsync(expectedResponse);
 
             var handler = new MobilePayIdempotencyDelegatingHandler
             {
-                InnerHandler = _innerHandlerMock.Object
+                InnerHandler = _innerHandlerMock.Object,
             };
 
             var invoker = new HttpMessageInvoker(handler);
@@ -139,12 +148,13 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Utils
                 .Setup<Task<HttpResponseMessage>>(
                     "SendAsync",
                     ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>())
+                    ItExpr.IsAny<CancellationToken>()
+                )
                 .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
 
             var handler = new MobilePayIdempotencyDelegatingHandler
             {
-                InnerHandler = _innerHandlerMock.Object
+                InnerHandler = _innerHandlerMock.Object,
             };
 
             var invoker = new HttpMessageInvoker(handler);
@@ -156,11 +166,14 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Utils
             await invoker.SendAsync(request, cancellationToken);
 
             // Assert
-            _innerHandlerMock.Protected().Verify(
-                "SendAsync",
-                Times.Once(),
-                ItExpr.IsAny<HttpRequestMessage>(),
-                ItExpr.Is<CancellationToken>(ct => ct.Equals(cancellationToken)));
+            _innerHandlerMock
+                .Protected()
+                .Verify(
+                    "SendAsync",
+                    Times.Once(),
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.Is<CancellationToken>(ct => ct.Equals(cancellationToken))
+                );
         }
     }
 }

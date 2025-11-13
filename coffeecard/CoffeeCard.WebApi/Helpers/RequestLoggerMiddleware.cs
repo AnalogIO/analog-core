@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace CoffeeCard.WebApi.Helpers;
 
@@ -61,8 +61,7 @@ public class RequestLoggerMiddleware
 
         var headers = FormatHeaders(request.Headers);
 
-        return
-            $"Method: {request.Method}, Path: {request.Path}, QueryString: {request.QueryString}, Headers: {headers}, Body: {bodyAsText}";
+        return $"Method: {request.Method}, Path: {request.Path}, QueryString: {request.QueryString}, Headers: {headers}, Body: {bodyAsText}";
     }
 
     private async Task<string> FormatResponse(HttpResponse response)
@@ -78,7 +77,9 @@ public class RequestLoggerMiddleware
     {
         var formattedHeaders = new StringBuilder();
 
-        foreach (KeyValuePair<string, Microsoft.Extensions.Primitives.StringValues> header in headers)
+        foreach (
+            KeyValuePair<string, Microsoft.Extensions.Primitives.StringValues> header in headers
+        )
         {
             formattedHeaders.AppendLine($"{header.Key}: {header.Value}");
         }

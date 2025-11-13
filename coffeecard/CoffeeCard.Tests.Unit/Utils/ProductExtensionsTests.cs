@@ -8,12 +8,18 @@ namespace CoffeeCard.Tests.Unit.Utils
 {
     public class ProductExtensionsTests
     {
-        [Fact(DisplayName = "IsPerk returns true if the product is not valid for regular customers")]
+        [Fact(
+            DisplayName = "IsPerk returns true if the product is not valid for regular customers"
+        )]
         public void TestIsPerkReturnsTrue()
         {
             var product = new Product
             {
-                ProductUserGroup = new[] { new ProductUserGroup { UserGroup = UserGroup.Manager }, new ProductUserGroup { UserGroup = UserGroup.Board } }
+                ProductUserGroup = new[]
+                {
+                    new ProductUserGroup { UserGroup = UserGroup.Manager },
+                    new ProductUserGroup { UserGroup = UserGroup.Board },
+                },
             };
 
             Assert.True(product.IsPerk());
@@ -24,7 +30,10 @@ namespace CoffeeCard.Tests.Unit.Utils
         {
             var product = new Product
             {
-                ProductUserGroup = new[] { new ProductUserGroup { UserGroup = UserGroup.Customer } }
+                ProductUserGroup = new[]
+                {
+                    new ProductUserGroup { UserGroup = UserGroup.Customer },
+                },
             };
 
             Assert.False(product.IsPerk());
@@ -33,10 +42,7 @@ namespace CoffeeCard.Tests.Unit.Utils
         [Fact(DisplayName = "IsPerk throws ArgumentNullException if ProductUserGroup is null")]
         public void TestIsPerkThrowsArgumentNullException()
         {
-            var product = new Product
-            {
-                ProductUserGroup = null
-            };
+            var product = new Product { ProductUserGroup = null };
 
             Assert.Throws<ArgumentNullException>(() => product.IsPerk());
         }
@@ -54,7 +60,10 @@ namespace CoffeeCard.Tests.Unit.Utils
                 ExperienceWorth = 10,
                 Visible = true,
                 ProductUserGroup = new[] { new ProductUserGroup { UserGroup = UserGroup.Manager } },
-                EligibleMenuItems = new[] { new MenuItem { Id = 1, Name = "Coffee" } }
+                EligibleMenuItems = new[]
+                {
+                    new MenuItem { Id = 1, Name = "Coffee" },
+                },
             };
 
             var productResponse = product.ToProductResponse();
@@ -62,7 +71,9 @@ namespace CoffeeCard.Tests.Unit.Utils
             Assert.IsType<ProductResponse>(productResponse);
         }
 
-        [Fact(DisplayName = "ToProductResponse converts ProductUserGroup to list of allowed user groups")]
+        [Fact(
+            DisplayName = "ToProductResponse converts ProductUserGroup to list of allowed user groups"
+        )]
         public void TestToProductResponseConvertsProductUserGroup()
         {
             var product = new Product
@@ -74,18 +85,29 @@ namespace CoffeeCard.Tests.Unit.Utils
                 Price = 10,
                 ExperienceWorth = 10,
                 Visible = true,
-                ProductUserGroup = new[] { new ProductUserGroup { UserGroup = UserGroup.Manager }, new ProductUserGroup { UserGroup = UserGroup.Board } },
-                EligibleMenuItems = new[] { new MenuItem { Id = 1, Name = "Coffee" } }
+                ProductUserGroup = new[]
+                {
+                    new ProductUserGroup { UserGroup = UserGroup.Manager },
+                    new ProductUserGroup { UserGroup = UserGroup.Board },
+                },
+                EligibleMenuItems = new[]
+                {
+                    new MenuItem { Id = 1, Name = "Coffee" },
+                },
             };
 
             var productResponse = product.ToProductResponse();
 
-            Assert.Collection(productResponse.AllowedUserGroups,
+            Assert.Collection(
+                productResponse.AllowedUserGroups,
                 userGroup => Assert.Equal(UserGroup.Manager, userGroup),
-                userGroup => Assert.Equal(UserGroup.Board, userGroup));
+                userGroup => Assert.Equal(UserGroup.Board, userGroup)
+            );
         }
 
-        [Fact(DisplayName = "ToProductResponse converts EligibleMenuItems to list of MenuItemResponse")]
+        [Fact(
+            DisplayName = "ToProductResponse converts EligibleMenuItems to list of MenuItemResponse"
+        )]
         public void TestToProductResponseConvertsEligibleMenuItems()
         {
             var product = new Product
@@ -98,15 +120,17 @@ namespace CoffeeCard.Tests.Unit.Utils
                 ExperienceWorth = 10,
                 Visible = true,
                 ProductUserGroup = new[] { new ProductUserGroup { UserGroup = UserGroup.Manager } },
-                EligibleMenuItems = new[] {
+                EligibleMenuItems = new[]
+                {
                     new MenuItem { Id = 1, Name = "Coffee" },
-                    new MenuItem { Id = 2, Name = "Tea" }
-                 }
+                    new MenuItem { Id = 2, Name = "Tea" },
+                },
             };
 
             var productResponse = product.ToProductResponse();
 
-            Assert.Collection(productResponse.EligibleMenuItems,
+            Assert.Collection(
+                productResponse.EligibleMenuItems,
                 menuItem =>
                 {
                     Assert.Equal(1, menuItem.Id);
@@ -116,7 +140,8 @@ namespace CoffeeCard.Tests.Unit.Utils
                 {
                     Assert.Equal(2, menuItem.Id);
                     Assert.Equal("Tea", menuItem.Name);
-                });
+                }
+            );
         }
     }
 }

@@ -1,12 +1,13 @@
 using System.Threading.Tasks;
+using CoffeeCard.Models.Entities;
 using CoffeeCard.Tests.Integration.WebApplication;
 using CoffeeCard.WebApi;
 using Xunit;
-using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Tests.Integration.Controllers.Account
 {
-    public class GetAccountTest(CustomWebApplicationFactory<Startup> factory) : BaseIntegrationTest(factory)
+    public class GetAccountTest(CustomWebApplicationFactory<Startup> factory)
+        : BaseIntegrationTest(factory)
     {
         [Fact]
         public async Task Get_account_succeeds_when_authenticated_for_existing_account()
@@ -20,6 +21,5 @@ namespace CoffeeCard.Tests.Integration.Controllers.Account
             Assert.Equal(user.Programme.FullName, account.Programme.FullName);
             Assert.Equal(user.UserGroup.toUserRole().ToString(), account.Role.ToString());
         }
-
     }
 }

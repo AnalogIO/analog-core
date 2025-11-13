@@ -16,8 +16,8 @@ using LoginType = CoffeeCard.Tests.ApiClient.v2.Generated.LoginType;
 
 namespace CoffeeCard.Tests.Integration.Controllers.v2.Account
 {
-
-    public class LoginTest(CustomWebApplicationFactory<Startup> factory) : BaseIntegrationTest(factory)
+    public class LoginTest(CustomWebApplicationFactory<Startup> factory)
+        : BaseIntegrationTest(factory)
     {
         [Fact]
         public async Task Unknown_user_login_doesnt_fail_but_no_token_is_created()
@@ -29,7 +29,9 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2.Account
                 LoginType = LoginType.Shifty,
             };
 
-            var exception = await Record.ExceptionAsync(async () => await CoffeeCardClientV2.Account_LoginAsync(loginRequest));
+            var exception = await Record.ExceptionAsync(async () =>
+                await CoffeeCardClientV2.Account_LoginAsync(loginRequest)
+            );
             Assert.Null(exception);
             Assert.Empty(Context.Tokens);
         }
@@ -76,7 +78,9 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2.Account
             await Context.SaveChangesAsync();
 
             // We authenticate using the non-hashed token and let the backend hash the string for us
-            var response = await CoffeeCardClientV2.Account_AuthenticateAsync(new TokenLoginRequest() { Token = tokenString });
+            var response = await CoffeeCardClientV2.Account_AuthenticateAsync(
+                new TokenLoginRequest() { Token = tokenString }
+            );
 
             Assert.NotNull(response.Jwt);
             Assert.NotNull(response.RefreshToken);

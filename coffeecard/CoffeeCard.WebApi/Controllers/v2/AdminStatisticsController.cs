@@ -1,18 +1,18 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.AdminStatistics;
 using CoffeeCard.Models.Entities;
 using CoffeeCard.WebApi.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CoffeeCard.WebApi.Controllers.v2
 {
     /// <summary>
-    /// Controller for creating statistics endpoints 
+    /// Controller for creating statistics endpoints
     /// </summary>
     [ApiController]
     [ApiVersion("2")]
@@ -22,7 +22,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
     {
         private readonly IAdminStatisticsService _adminStatisticsService;
 
-        /// <summary> 
+        /// <summary>
         /// Initializes a new instance of the <see cref="AdminStatisticsController"/> class.
         /// </summary>
         public AdminStatisticsController(IAdminStatisticsService adminStatisticsService)
@@ -41,7 +41,9 @@ namespace CoffeeCard.WebApi.Controllers.v2
         [AuthorizeRoles(UserGroup.Board)]
         [ProducesResponseType(typeof(IEnumerable<UnusedClipsResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<IEnumerable<UnusedClipsResponse>>> GetUnusedClips([FromBody] UnusedClipsRequest unusedClipsRequest)
+        public async Task<ActionResult<IEnumerable<UnusedClipsResponse>>> GetUnusedClips(
+            [FromBody] UnusedClipsRequest unusedClipsRequest
+        )
         {
             var tickets = await _adminStatisticsService.GetUsableClips(unusedClipsRequest);
             return Ok(tickets);

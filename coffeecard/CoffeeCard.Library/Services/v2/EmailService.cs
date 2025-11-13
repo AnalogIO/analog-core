@@ -16,8 +16,12 @@ namespace CoffeeCard.Library.Services.v2
         private readonly IEmailSender _emailSender;
         private readonly ILogger<EmailService> _logger;
 
-        public EmailService(IEmailSender emailSender, EnvironmentSettings environmentSettings,
-            IWebHostEnvironment env, ILogger<EmailService> logger)
+        public EmailService(
+            IEmailSender emailSender,
+            EnvironmentSettings environmentSettings,
+            IWebHostEnvironment env,
+            ILogger<EmailService> logger
+        )
         {
             _emailSender = emailSender;
             _environmentSettings = environmentSettings;
@@ -27,7 +31,11 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task SendMagicLink(User user, string magicLink, LoginType loginType)
         {
-            _logger.LogInformation("Sending magic link email to {email} {userid}", user.Email, user.Id);
+            _logger.LogInformation(
+                "Sending magic link email to {email} {userid}",
+                user.Email,
+                user.Id
+            );
             var message = new MimeMessage();
             var builder = RetrieveTemplate("email_magic_link_login.html");
             var baseUrl = loginType switch
@@ -49,7 +57,12 @@ namespace CoffeeCard.Library.Services.v2
             await _emailSender.SendEmailAsync(message);
         }
 
-        private static BodyBuilder BuildMagicLinkEmail(BodyBuilder builder, string email, string name, string deeplink)
+        private static BodyBuilder BuildMagicLinkEmail(
+            BodyBuilder builder,
+            string email,
+            string name,
+            string deeplink
+        )
         {
             builder.HtmlBody = builder.HtmlBody.Replace("{email}", email);
             builder.HtmlBody = builder.HtmlBody.Replace("{name}", name);
@@ -61,15 +74,16 @@ namespace CoffeeCard.Library.Services.v2
 
         private BodyBuilder RetrieveTemplate(string templateName)
         {
-            var pathToTemplate = _env.WebRootPath
-                                 + Path.DirectorySeparatorChar
-                                 + "Templates"
-                                 + Path.DirectorySeparatorChar
-                                 + "EmailTemplate"
-                                 + Path.DirectorySeparatorChar
-                                 + "GeneratedEmails"
-                                 + Path.DirectorySeparatorChar
-                                 + templateName;
+            var pathToTemplate =
+                _env.WebRootPath
+                + Path.DirectorySeparatorChar
+                + "Templates"
+                + Path.DirectorySeparatorChar
+                + "EmailTemplate"
+                + Path.DirectorySeparatorChar
+                + "GeneratedEmails"
+                + Path.DirectorySeparatorChar
+                + templateName;
 
             var builder = new BodyBuilder();
 

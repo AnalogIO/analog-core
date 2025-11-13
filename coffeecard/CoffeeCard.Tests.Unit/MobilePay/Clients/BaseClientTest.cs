@@ -22,24 +22,24 @@ public abstract class BaseClientTest
             .Setup<Task<HttpResponseMessage>>(
                 "SendAsync",
                 ItExpr.IsAny<HttpRequestMessage>(),
-                ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync((HttpRequestMessage request, CancellationToken token) =>
-            {
-                // Create a response with the RequestMessage property set
-                var response = new HttpResponseMessage
+                ItExpr.IsAny<CancellationToken>()
+            )
+            .ReturnsAsync(
+                (HttpRequestMessage request, CancellationToken token) =>
                 {
-                    StatusCode = statusCode,
-                    Content = JsonContent.Create(content),
-                    RequestMessage = request // Set the RequestMessage to avoid NullReferenceException
-                };
+                    // Create a response with the RequestMessage property set
+                    var response = new HttpResponseMessage
+                    {
+                        StatusCode = statusCode,
+                        Content = JsonContent.Create(content),
+                        RequestMessage = request, // Set the RequestMessage to avoid NullReferenceException
+                    };
 
-                return response;
-            });
+                    return response;
+                }
+            );
 
-        var httpClient = new HttpClient(handlerMock.Object)
-        {
-            BaseAddress = new Uri(BaseUrl)
-        };
+        var httpClient = new HttpClient(handlerMock.Object) { BaseAddress = new Uri(BaseUrl) };
 
         return httpClient;
     }

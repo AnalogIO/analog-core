@@ -20,7 +20,10 @@ namespace CoffeeCard.WebApi.Controllers.v2;
 [Route("api/v{version:apiVersion}/health")]
 [ApiController]
 [Authorize(AuthenticationSchemes = "apikey")]
-public class HealthController(IMobilePayWebhooksService mobilePayWebhooksService, CoffeeCardContext context) : ControllerBase
+public class HealthController(
+    IMobilePayWebhooksService mobilePayWebhooksService,
+    CoffeeCardContext context
+) : ControllerBase
 {
     /// <summary>
     /// Ping
@@ -46,13 +49,17 @@ public class HealthController(IMobilePayWebhooksService mobilePayWebhooksService
     [ProducesDefaultResponseType]
     public async Task<IActionResult> Healthcheck()
     {
-        var databaseConnected = await IsServiceCallSuccessful(async () => await context.Database.CanConnectAsync());
-        var mobilepayApiConnected = await IsServiceCallSuccessful(async () => await mobilePayWebhooksService.GetAllWebhooks());
+        var databaseConnected = await IsServiceCallSuccessful(async () =>
+            await context.Database.CanConnectAsync()
+        );
+        var mobilepayApiConnected = await IsServiceCallSuccessful(async () =>
+            await mobilePayWebhooksService.GetAllWebhooks()
+        );
 
         var response = new ServiceHealthResponse()
         {
             Database = databaseConnected,
-            MobilePay = mobilepayApiConnected
+            MobilePay = mobilepayApiConnected,
         };
 
         if (databaseConnected && mobilepayApiConnected)

@@ -11,7 +11,8 @@ namespace CoffeeCard.Tests.Integration.WebApplication
 {
     // Based on https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-3.1
 
-    public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
+    public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup>
+        where TStartup : class
     {
         private IConfiguration Configuration { get; set; }
 
@@ -29,18 +30,26 @@ namespace CoffeeCard.Tests.Integration.WebApplication
                 services.UseConfigurationValidation();
 
                 // Parse and setup settings from configuration
-                services.ConfigureValidatableSetting<DatabaseSettings>(Configuration.GetSection("DatabaseSettings"));
+                services.ConfigureValidatableSetting<DatabaseSettings>(
+                    Configuration.GetSection("DatabaseSettings")
+                );
                 services.ConfigureValidatableSetting<EnvironmentSettings>(
-                    Configuration.GetSection("EnvironmentSettings"));
-                services.ConfigureValidatableSetting<IdentitySettings>(Configuration.GetSection("IdentitySettings"));
-                services.ConfigureValidatableSetting<MailgunSettings>(Configuration.GetSection("MailgunSettings"));
+                    Configuration.GetSection("EnvironmentSettings")
+                );
+                services.ConfigureValidatableSetting<IdentitySettings>(
+                    Configuration.GetSection("IdentitySettings")
+                );
+                services.ConfigureValidatableSetting<MailgunSettings>(
+                    Configuration.GetSection("MailgunSettings")
+                );
 
                 // Remove the app's ApplicationDbContext registration.
-                var descriptor = services.SingleOrDefault(
-                    d => d.ServiceType ==
-                         typeof(DbContextOptions<CoffeeCardContext>));
+                var descriptor = services.SingleOrDefault(d =>
+                    d.ServiceType == typeof(DbContextOptions<CoffeeCardContext>)
+                );
 
-                if (descriptor != null) services.Remove(descriptor);
+                if (descriptor != null)
+                    services.Remove(descriptor);
 
                 // Add ApplicationDbContext using an in-memory database for testing.
                 services.AddDbContext<CoffeeCardContext>(options =>
@@ -50,7 +59,6 @@ namespace CoffeeCard.Tests.Integration.WebApplication
 
                 // Build the service provider
                 var sp = services.BuildServiceProvider();
-
             });
         }
     }

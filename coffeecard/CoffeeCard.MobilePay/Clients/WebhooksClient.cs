@@ -39,13 +39,16 @@ public class WebhooksClient(HttpClient httpClient, ILogger<WebhooksClient> logge
     private async Task LogMobilePayException(HttpResponseMessage response)
     {
         var problem = await response.Content.ReadFromJsonAsync<Problem>();
-        logger.LogError("Request to [{method}] {requestUri} failed",
+        logger.LogError(
+            "Request to [{method}] {requestUri} failed",
             response.RequestMessage!.Method,
-            response.RequestMessage!.RequestUri);
+            response.RequestMessage!.RequestUri
+        );
         logger.LogError("Error: {error}", problem!.Title);
         logger.LogError("Details: {@details}", problem.ExtraDetails);
         throw new MobilePayApiException(
             503,
-            $"Request to [{response.RequestMessage!.Method}] {response.RequestMessage!.RequestUri} failed for");
+            $"Request to [{response.RequestMessage!.Method}] {response.RequestMessage!.RequestUri} failed for"
+        );
     }
 }

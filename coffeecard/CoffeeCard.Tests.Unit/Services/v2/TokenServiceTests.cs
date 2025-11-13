@@ -32,7 +32,9 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var result = await tokenService.GenerateMagicLinkToken(user);
 
             // Assert
-            var assertionUser = await AssertionContext.Users.Include(u => u.Tokens).FirstOrDefaultAsync();
+            var assertionUser = await AssertionContext
+                .Users.Include(u => u.Tokens)
+                .FirstOrDefaultAsync();
             Assert.NotNull(result);
             Assert.NotEmpty(result);
             var hashedToken = hashService.Hash(result);
@@ -73,7 +75,9 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var tokenService = new TokenService(AssertionContext, Mock.Of<IHashService>());
 
             // Act & Assert
-            await Assert.ThrowsAsync<UnauthorizedException>(() => tokenService.GetValidTokenByHashAsync("token"));
+            await Assert.ThrowsAsync<UnauthorizedException>(() =>
+                tokenService.GetValidTokenByHashAsync("token")
+            );
         }
 
         [Fact(DisplayName = "GetValidTokenByHashAsync throws exception if token is revoked")]
@@ -89,7 +93,9 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var tokenService = new TokenService(AssertionContext, Mock.Of<IHashService>());
 
             // Act & Assert
-            await Assert.ThrowsAsync<UnauthorizedException>(() => tokenService.GetValidTokenByHashAsync("token"));
+            await Assert.ThrowsAsync<UnauthorizedException>(() =>
+                tokenService.GetValidTokenByHashAsync("token")
+            );
         }
 
         [Fact(DisplayName = "GetValidTokenByHashAsync throws exception if token has expired")]
@@ -104,7 +110,9 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var tokenService = new TokenService(AssertionContext, Mock.Of<IHashService>());
 
             // Act & Assert
-            await Assert.ThrowsAsync<UnauthorizedException>(() => tokenService.GetValidTokenByHashAsync("token"));
+            await Assert.ThrowsAsync<UnauthorizedException>(() =>
+                tokenService.GetValidTokenByHashAsync("token")
+            );
         }
 
         [Fact(DisplayName = "GetValidTokenByHashAsync returns token by valid hash")]

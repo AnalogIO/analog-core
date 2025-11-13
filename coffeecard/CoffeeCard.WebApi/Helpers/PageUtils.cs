@@ -1,11 +1,10 @@
 using System;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Serilog;
-
 
 namespace CoffeeCard.WebApi.Helpers
 {
@@ -20,7 +19,10 @@ namespace CoffeeCard.WebApi.Helpers
         /// <param name="func">The function to execute.</param>
         /// <param name="model">The page model to use for setting error messages.</param>
         /// <returns>An IActionResult representing the result of the function execution.</returns>
-        public static async Task<IActionResult> SafeExecuteFunc(Func<Task<IActionResult>> func, PageModel model)
+        public static async Task<IActionResult> SafeExecuteFunc(
+            Func<Task<IActionResult>> func,
+            PageModel model
+        )
         {
             try
             {
@@ -31,7 +33,11 @@ namespace CoffeeCard.WebApi.Helpers
                 // Not logging this, since we should have logged the cause when we created it.
                 if (ex.StatusCode == StatusCodes.Status401Unauthorized)
                 {
-                    setMessage("Error", "Looks like the link you used has expired or already been used. Request a new link and try again", model);
+                    setMessage(
+                        "Error",
+                        "Looks like the link you used has expired or already been used. Request a new link and try again",
+                        model
+                    );
                 }
                 else
                 {
@@ -58,5 +64,4 @@ namespace CoffeeCard.WebApi.Helpers
             model.TempData["result"] = message;
         }
     }
-
 }

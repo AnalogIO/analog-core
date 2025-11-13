@@ -21,21 +21,27 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         public async void CreateVouchersReturnsUniqueResponses(int amount, int productId)
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(nameof(CreateVouchersReturnsUniqueResponses) +
-                                     amount + productId);
-            var databaseSettings = new DatabaseSettings
-            {
-                SchemaName = "test"
-            };
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseInMemoryDatabase(
+                nameof(CreateVouchersReturnsUniqueResponses) + amount + productId
+            );
+            var databaseSettings = new DatabaseSettings { SchemaName = "test" };
             var environmentSettings = new EnvironmentSettings()
             {
-                EnvironmentType = EnvironmentType.Test
+                EnvironmentType = EnvironmentType.Test,
             };
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            await using var context = new CoffeeCardContext(
+                builder.Options,
+                databaseSettings,
+                environmentSettings
+            );
 
-            var product = new Product { Id = 1, Name = "product", Description = "desc" };
+            var product = new Product
+            {
+                Id = 1,
+                Name = "product",
+                Description = "desc",
+            };
             await context.Products.AddAsync(product);
             await context.SaveChangesAsync();
             var voucherService = new VoucherService(context);
@@ -53,76 +59,102 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         public async void CreateVouchersThrowsApiExceptionWhenNoProductIsFound()
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(nameof(CreateVouchersHaveGivenLength));
-            var databaseSettings = new DatabaseSettings
-            {
-                SchemaName = "test"
-            };
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseInMemoryDatabase(
+                nameof(CreateVouchersHaveGivenLength)
+            );
+            var databaseSettings = new DatabaseSettings { SchemaName = "test" };
             var environmentSettings = new EnvironmentSettings()
             {
-                EnvironmentType = EnvironmentType.Test
+                EnvironmentType = EnvironmentType.Test,
             };
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            await using var context = new CoffeeCardContext(
+                builder.Options,
+                databaseSettings,
+                environmentSettings
+            );
 
             var voucherService = new VoucherService(context);
 
             // Act
             var request = new IssueVoucherRequest { ProductId = 1, Amount = 10 };
 
-            await Assert.ThrowsAsync<EntityNotFoundException>(() => voucherService.CreateVouchers(request));
+            await Assert.ThrowsAsync<EntityNotFoundException>(() =>
+                voucherService.CreateVouchers(request)
+            );
         }
 
         [Fact(DisplayName = "CreateVouchers have length of 8 + 4 from userPrefix")]
         public async void CreateVouchersHaveGivenLength()
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(nameof(CreateVouchersHaveGivenLength));
-            var databaseSettings = new DatabaseSettings
-            {
-                SchemaName = "test"
-            };
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseInMemoryDatabase(
+                nameof(CreateVouchersHaveGivenLength)
+            );
+            var databaseSettings = new DatabaseSettings { SchemaName = "test" };
             var environmentSettings = new EnvironmentSettings()
             {
-                EnvironmentType = EnvironmentType.Test
+                EnvironmentType = EnvironmentType.Test,
             };
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            await using var context = new CoffeeCardContext(
+                builder.Options,
+                databaseSettings,
+                environmentSettings
+            );
 
-            var product = new Product { Id = 1, Name = "product", Description = "desc" };
+            var product = new Product
+            {
+                Id = 1,
+                Name = "product",
+                Description = "desc",
+            };
             await context.Products.AddAsync(product);
             await context.SaveChangesAsync();
             var voucherService = new VoucherService(context);
 
             // Act
-            var request = new IssueVoucherRequest { ProductId = 1, Amount = 10, VoucherPrefix = "ABC" };
+            var request = new IssueVoucherRequest
+            {
+                ProductId = 1,
+                Amount = 10,
+                VoucherPrefix = "ABC",
+            };
             var response = await voucherService.CreateVouchers(request);
 
             const int codeLength = 4 + 8; //ABC-XXXXXXXX
 
-            Assert.All(response, voucherResponse => Assert.Equal(codeLength, voucherResponse.VoucherCode.Length));
+            Assert.All(
+                response,
+                voucherResponse => Assert.Equal(codeLength, voucherResponse.VoucherCode.Length)
+            );
         }
 
         [Fact(DisplayName = "CreateVouchers saves to database")]
         public async void CreateVouchersSavesToDatabase()
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(nameof(CreateVouchersSavesToDatabase));
-            var databaseSettings = new DatabaseSettings
-            {
-                SchemaName = "test"
-            };
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseInMemoryDatabase(
+                nameof(CreateVouchersSavesToDatabase)
+            );
+            var databaseSettings = new DatabaseSettings { SchemaName = "test" };
             var environmentSettings = new EnvironmentSettings()
             {
-                EnvironmentType = EnvironmentType.Test
+                EnvironmentType = EnvironmentType.Test,
             };
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            await using var context = new CoffeeCardContext(
+                builder.Options,
+                databaseSettings,
+                environmentSettings
+            );
 
-            var product = new Product { Id = 1, Name = "product", Description = "desc" };
+            var product = new Product
+            {
+                Id = 1,
+                Name = "product",
+                Description = "desc",
+            };
             await context.Products.AddAsync(product);
             await context.SaveChangesAsync();
             var voucherService = new VoucherService(context);
@@ -131,37 +163,56 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var request = new IssueVoucherRequest { ProductId = 1, Amount = 10 };
             var response = await voucherService.CreateVouchers(request);
 
-            Assert.All(response, voucherResponse => Assert.True(context.Vouchers.Any(v => v.Code == voucherResponse.VoucherCode)));
+            Assert.All(
+                response,
+                voucherResponse =>
+                    Assert.True(context.Vouchers.Any(v => v.Code == voucherResponse.VoucherCode))
+            );
         }
 
         [Fact(DisplayName = "All generated vouchers start with user chosen Prefix")]
         public async void CreateVouchersCreatesVouchersWithPrefix()
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(nameof(CreateVouchersCreatesVouchersWithPrefix));
-            var databaseSettings = new DatabaseSettings
-            {
-                SchemaName = "test"
-            };
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseInMemoryDatabase(
+                nameof(CreateVouchersCreatesVouchersWithPrefix)
+            );
+            var databaseSettings = new DatabaseSettings { SchemaName = "test" };
             var environmentSettings = new EnvironmentSettings()
             {
-                EnvironmentType = EnvironmentType.Test
+                EnvironmentType = EnvironmentType.Test,
             };
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            await using var context = new CoffeeCardContext(
+                builder.Options,
+                databaseSettings,
+                environmentSettings
+            );
 
-            var product = new Product { Id = 1, Name = "product", Description = "desc" };
+            var product = new Product
+            {
+                Id = 1,
+                Name = "product",
+                Description = "desc",
+            };
             await context.Products.AddAsync(product);
             await context.SaveChangesAsync();
             var voucherService = new VoucherService(context);
 
             //Act
-            var request = new IssueVoucherRequest { ProductId = 1, Amount = 10, VoucherPrefix = "ACT" };
+            var request = new IssueVoucherRequest
+            {
+                ProductId = 1,
+                Amount = 10,
+                VoucherPrefix = "ACT",
+            };
             var response = await voucherService.CreateVouchers(request);
 
             //Assert
-            Assert.All(response, voucherResponse => Assert.StartsWith("ACT-", voucherResponse.VoucherCode));
+            Assert.All(
+                response,
+                voucherResponse => Assert.StartsWith("ACT-", voucherResponse.VoucherCode)
+            );
         }
     }
 }

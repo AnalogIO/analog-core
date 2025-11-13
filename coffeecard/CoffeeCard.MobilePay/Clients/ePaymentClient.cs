@@ -35,9 +35,15 @@ public class EPaymentClient(HttpClient httpClient, ILogger<EPaymentClient> logge
         return await response.Content.ReadAsAsync<GetPaymentResponse>();
     }
 
-    public async Task<ModificationResponse> RefundPaymentAsync(string reference, RefundModificationRequest request)
+    public async Task<ModificationResponse> RefundPaymentAsync(
+        string reference,
+        RefundModificationRequest request
+    )
     {
-        var response = await httpClient.PostAsJsonAsync($"{ControllerPath}/{reference}/refund", request);
+        var response = await httpClient.PostAsJsonAsync(
+            $"{ControllerPath}/{reference}/refund",
+            request
+        );
 
         if (!response.IsSuccessStatusCode)
         {
@@ -47,9 +53,15 @@ public class EPaymentClient(HttpClient httpClient, ILogger<EPaymentClient> logge
         return await response.Content.ReadAsAsync<ModificationResponse>();
     }
 
-    public async Task<ModificationResponse> CapturePaymentAsync(string reference, CaptureModificationRequest request)
+    public async Task<ModificationResponse> CapturePaymentAsync(
+        string reference,
+        CaptureModificationRequest request
+    )
     {
-        var response = await httpClient.PostAsJsonAsync($"{ControllerPath}/{reference}/capture", request);
+        var response = await httpClient.PostAsJsonAsync(
+            $"{ControllerPath}/{reference}/capture",
+            request
+        );
 
         if (!response.IsSuccessStatusCode)
         {
@@ -59,9 +71,15 @@ public class EPaymentClient(HttpClient httpClient, ILogger<EPaymentClient> logge
         return await response.Content.ReadAsAsync<ModificationResponse>();
     }
 
-    public async Task<ModificationResponse> CancelPaymentAsync(string reference, CancelModificationRequest request)
+    public async Task<ModificationResponse> CancelPaymentAsync(
+        string reference,
+        CancelModificationRequest request
+    )
     {
-        var response = await httpClient.PostAsJsonAsync($"{ControllerPath}/{reference}/cancel", request);
+        var response = await httpClient.PostAsJsonAsync(
+            $"{ControllerPath}/{reference}/cancel",
+            request
+        );
 
         if (!response.IsSuccessStatusCode)
         {
@@ -74,16 +92,17 @@ public class EPaymentClient(HttpClient httpClient, ILogger<EPaymentClient> logge
     private async Task LogMobilePayException(HttpResponseMessage response, string reference)
     {
         var problem = await response.Content.ReadFromJsonAsync<Problem>();
-        logger.LogError("Request to [{method}] {requestUri} failed for reference {reference}",
+        logger.LogError(
+            "Request to [{method}] {requestUri} failed for reference {reference}",
             response.RequestMessage!.Method,
             response.RequestMessage!.RequestUri,
-            reference);
+            reference
+        );
         logger.LogError("Error: {error}", problem!.Title);
         logger.LogError("Details: {@details}", problem.ExtraDetails);
         throw new MobilePayApiException(
             503,
-            $"Request to [{response.RequestMessage!.Method}] {response.RequestMessage!.RequestUri} failed for reference {reference}");
+            $"Request to [{response.RequestMessage!.Method}] {response.RequestMessage!.RequestUri} failed for reference {reference}"
+        );
     }
-
-
 }

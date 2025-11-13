@@ -18,7 +18,9 @@ namespace CoffeeCard.Library.Utils
         {
             if (product.ProductUserGroup == null)
             {
-                throw new ArgumentNullException($"{nameof(Product.ProductUserGroup)} must not be null");
+                throw new ArgumentNullException(
+                    $"{nameof(Product.ProductUserGroup)} must not be null"
+                );
             }
 
             return product.ProductUserGroup.All(pug => pug.UserGroup != UserGroup.Customer);
@@ -36,9 +38,12 @@ namespace CoffeeCard.Library.Utils
                 IsPerk = product.IsPerk(),
                 Visible = product.Visible,
                 AllowedUserGroups = product.ProductUserGroup.Select(pug => pug.UserGroup),
-                EligibleMenuItems = product.EligibleMenuItems.Select(
-                    mi => new MenuItemResponse { Id = mi.Id, Name = mi.Name, Active = mi.Active }
-                )
+                EligibleMenuItems = product.EligibleMenuItems.Select(mi => new MenuItemResponse
+                {
+                    Id = mi.Id,
+                    Name = mi.Name,
+                    Active = mi.Active,
+                }),
             };
         }
     }

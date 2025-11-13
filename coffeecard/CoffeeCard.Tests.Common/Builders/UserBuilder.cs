@@ -29,9 +29,7 @@ namespace CoffeeCard.Tests.Common.Builders
 
         public static UserBuilder DefaultCustomer()
         {
-            return Simple()
-                .WithUserGroup(UserGroup.Customer)
-                .WithIsVerified(true);
+            return Simple().WithUserGroup(UserGroup.Customer).WithIsVerified(true);
         }
 
         public static UserBuilder Typical()

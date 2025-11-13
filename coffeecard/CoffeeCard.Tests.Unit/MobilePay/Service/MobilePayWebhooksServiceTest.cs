@@ -24,17 +24,14 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Service
             // Arrange
             var service = new MobilePayWebhooksService(
                 _webhooksClientMock.Object,
-                _loggerMock.Object);
+                _loggerMock.Object
+            );
 
             var webhookUrl = "https://example.com/webhook";
             var webhookId = Guid.NewGuid();
             var webhookSecret = "webhook-secret-123";
 
-            var expectedResponse = new RegisterResponse
-            {
-                Id = webhookId,
-                Secret = webhookSecret
-            };
+            var expectedResponse = new RegisterResponse { Id = webhookId, Secret = webhookSecret };
 
             _webhooksClientMock
                 .Setup(x => x.CreateWebhookAsync(It.IsAny<RegisterRequest>()))
@@ -49,14 +46,20 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Service
             Assert.Equal(webhookSecret, result.Secret);
 
             // Verify client was called with correct events
-            _webhooksClientMock.Verify(x => x.CreateWebhookAsync(It.Is<RegisterRequest>(req =>
-                req.Url.ToString() == webhookUrl &&
-                req.Events.Count == 4 &&
-                req.Events.Contains("epayments.payment.authorized.v1") &&
-                req.Events.Contains("epayments.payment.cancelled.v1") &&
-                req.Events.Contains("epayments.payment.expired.v1") &&
-                req.Events.Contains("epayments.payment.aborted.v1")
-            )), Times.Once);
+            _webhooksClientMock.Verify(
+                x =>
+                    x.CreateWebhookAsync(
+                        It.Is<RegisterRequest>(req =>
+                            req.Url.ToString() == webhookUrl
+                            && req.Events.Count == 4
+                            && req.Events.Contains("epayments.payment.authorized.v1")
+                            && req.Events.Contains("epayments.payment.cancelled.v1")
+                            && req.Events.Contains("epayments.payment.expired.v1")
+                            && req.Events.Contains("epayments.payment.aborted.v1")
+                        )
+                    ),
+                Times.Once
+            );
         }
 
         [Fact(DisplayName = "GetWebhook returns webhook when it exists")]
@@ -65,7 +68,8 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Service
             // Arrange
             var service = new MobilePayWebhooksService(
                 _webhooksClientMock.Object,
-                _loggerMock.Object);
+                _loggerMock.Object
+            );
 
             var webhookId = Guid.NewGuid();
             var webhookUrl = "https://example.com/webhook";
@@ -74,22 +78,16 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Service
             {
                 Webhooks = new List<Webhook>
                 {
-                    new Webhook
-                    {
-                        Id = webhookId,
-                        Url = new Uri(webhookUrl)
-                    },
+                    new Webhook { Id = webhookId, Url = new Uri(webhookUrl) },
                     new Webhook
                     {
                         Id = Guid.NewGuid(),
-                        Url = new Uri("https://other-url.com/webhook")
-                    }
-                }
+                        Url = new Uri("https://other-url.com/webhook"),
+                    },
+                },
             };
 
-            _webhooksClientMock
-                .Setup(x => x.GetAllWebhooksAsync())
-                .ReturnsAsync(allWebhooks);
+            _webhooksClientMock.Setup(x => x.GetAllWebhooksAsync()).ReturnsAsync(allWebhooks);
 
             // Act
             var result = await service.GetWebhook(webhookId);
@@ -108,7 +106,8 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Service
             // Arrange
             var service = new MobilePayWebhooksService(
                 _webhooksClientMock.Object,
-                _loggerMock.Object);
+                _loggerMock.Object
+            );
 
             var webhookId = Guid.NewGuid();
 
@@ -119,18 +118,17 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Service
                     new Webhook
                     {
                         Id = Guid.NewGuid(),
-                        Url = new Uri("https://other-url.com/webhook")
-                    }
-                }
+                        Url = new Uri("https://other-url.com/webhook"),
+                    },
+                },
             };
 
-            _webhooksClientMock
-                .Setup(x => x.GetAllWebhooksAsync())
-                .ReturnsAsync(allWebhooks);
+            _webhooksClientMock.Setup(x => x.GetAllWebhooksAsync()).ReturnsAsync(allWebhooks);
 
             // Act & Assert
-            var exception = await Assert.ThrowsAsync<EntityNotFoundException>(
-                () => service.GetWebhook(webhookId));
+            var exception = await Assert.ThrowsAsync<EntityNotFoundException>(() =>
+                service.GetWebhook(webhookId)
+            );
 
             Assert.Contains(webhookId.ToString(), exception.Message);
 
@@ -139,13 +137,16 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Service
 
             // Verify error was logged
             _loggerMock.Verify(
-                x => x.Log(
-                    LogLevel.Error,
-                    It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((v, t) => true),
-                    It.IsAny<Exception>(),
-                    It.IsAny<Func<It.IsAnyType, Exception, string>>()!),
-                Times.Once);
+                x =>
+                    x.Log(
+                        LogLevel.Error,
+                        It.IsAny<EventId>(),
+                        It.Is<It.IsAnyType>((v, t) => true),
+                        It.IsAny<Exception>(),
+                        It.IsAny<Func<It.IsAnyType, Exception, string>>()!
+                    ),
+                Times.Once
+            );
         }
 
         [Fact(DisplayName = "GetAllWebhooks returns all webhooks")]
@@ -154,7 +155,8 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Service
             // Arrange
             var service = new MobilePayWebhooksService(
                 _webhooksClientMock.Object,
-                _loggerMock.Object);
+                _loggerMock.Object
+            );
 
             var webhook1Id = Guid.NewGuid();
             var webhook1Url = "https://example.com/webhook1";
@@ -165,22 +167,12 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Service
             {
                 Webhooks = new List<Webhook>
                 {
-                    new Webhook
-                    {
-                        Id = webhook1Id,
-                        Url = new Uri(webhook1Url)
-                    },
-                    new Webhook
-                    {
-                        Id = webhook2Id,
-                        Url = new Uri(webhook2Url)
-                    }
-                }
+                    new Webhook { Id = webhook1Id, Url = new Uri(webhook1Url) },
+                    new Webhook { Id = webhook2Id, Url = new Uri(webhook2Url) },
+                },
             };
 
-            _webhooksClientMock
-                .Setup(x => x.GetAllWebhooksAsync())
-                .ReturnsAsync(allWebhooks);
+            _webhooksClientMock.Setup(x => x.GetAllWebhooksAsync()).ReturnsAsync(allWebhooks);
 
             // Act
             var result = await service.GetAllWebhooks();
@@ -204,16 +196,12 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Service
             // Arrange
             var service = new MobilePayWebhooksService(
                 _webhooksClientMock.Object,
-                _loggerMock.Object);
+                _loggerMock.Object
+            );
 
-            var allWebhooks = new QueryResponse
-            {
-                Webhooks = new List<Webhook>()
-            };
+            var allWebhooks = new QueryResponse { Webhooks = new List<Webhook>() };
 
-            _webhooksClientMock
-                .Setup(x => x.GetAllWebhooksAsync())
-                .ReturnsAsync(allWebhooks);
+            _webhooksClientMock.Setup(x => x.GetAllWebhooksAsync()).ReturnsAsync(allWebhooks);
 
             // Act
             var result = await service.GetAllWebhooks();

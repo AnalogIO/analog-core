@@ -21,8 +21,13 @@ namespace CoffeeCard.Library.Services
         private readonly IMapperService _mapperService;
         private readonly ILogger<EmailService> _logger;
 
-        public EmailService(IEmailSender emailSender, EnvironmentSettings environmentSettings,
-            IWebHostEnvironment env, IMapperService mapperService, ILogger<EmailService> logger)
+        public EmailService(
+            IEmailSender emailSender,
+            EnvironmentSettings environmentSettings,
+            IWebHostEnvironment env,
+            IMapperService mapperService,
+            ILogger<EmailService> logger
+        )
         {
             _emailSender = emailSender;
             _environmentSettings = environmentSettings;
@@ -41,9 +46,15 @@ namespace CoffeeCard.Library.Services
 
             builder.HtmlBody = builder.HtmlBody.Replace("{email}", user.Email);
             builder.HtmlBody = builder.HtmlBody.Replace("{name}", user.Name);
-            builder.HtmlBody = builder.HtmlBody.Replace("{quantity}", purchase.NumberOfTickets.ToString());
+            builder.HtmlBody = builder.HtmlBody.Replace(
+                "{quantity}",
+                purchase.NumberOfTickets.ToString()
+            );
             builder.HtmlBody = builder.HtmlBody.Replace("{product}", purchase.ProductName);
-            builder.HtmlBody = builder.HtmlBody.Replace("{vat}", (purchase.Price * 0.2).ToString(CultureInfo.InvariantCulture));
+            builder.HtmlBody = builder.HtmlBody.Replace(
+                "{vat}",
+                (purchase.Price * 0.2).ToString(CultureInfo.InvariantCulture)
+            );
             builder.HtmlBody = builder.HtmlBody.Replace("{price}", purchase.Price.ToString());
             builder.HtmlBody = builder.HtmlBody.Replace("{orderId}", purchase.OrderId);
             builder.HtmlBody = builder.HtmlBody.Replace("{date}", dkTime.ToShortDateString());
@@ -53,14 +64,23 @@ namespace CoffeeCard.Library.Services
 
             message.Body = builder.ToMessageBody();
 
-            _logger.LogInformation("Sending invoice for PurchaseId {PurchaseId} to UserId {UserId}, E-mail {Email}", purchase.Id, user.Id, user.Email);
+            _logger.LogInformation(
+                "Sending invoice for PurchaseId {PurchaseId} to UserId {UserId}, E-mail {Email}",
+                purchase.Id,
+                user.Id,
+                user.Email
+            );
 
             await _emailSender.SendEmailAsync(message);
         }
 
         public async Task SendRegistrationVerificationEmailAsync(User user, string token)
         {
-            _logger.LogInformation("Sending registration verification email to {email} {userid}", user.Email, user.Id);
+            _logger.LogInformation(
+                "Sending registration verification email to {email} {userid}",
+                user.Email,
+                user.Id
+            );
             var message = new MimeMessage();
             var builder = RetrieveTemplate("email_verify_registration.html");
             const string endpoint = "verifyemail?token=";
@@ -93,7 +113,11 @@ namespace CoffeeCard.Library.Services
 
         public async Task SendVerificationEmailForDeleteAccount(User user, string token)
         {
-            _logger.LogInformation("Sending delete verification email to {email} {userid}", user.Email, user.Id);
+            _logger.LogInformation(
+                "Sending delete verification email to {email} {userid}",
+                user.Email,
+                user.Id
+            );
             var message = new MimeMessage();
             var builder = RetrieveTemplate("email_verify_account_deletion.html");
             const string endpoint = "verifydelete?token=";
@@ -116,7 +140,13 @@ namespace CoffeeCard.Library.Services
             await SendInvoiceAsync(userDto, purchaseDto);
         }
 
-        private BodyBuilder BuildVerifyEmail(BodyBuilder builder, string token, string email, string name, string endpoint)
+        private BodyBuilder BuildVerifyEmail(
+            BodyBuilder builder,
+            string token,
+            string email,
+            string name,
+            string endpoint
+        )
         {
             var baseUrl = _environmentSettings.DeploymentUrl;
 
@@ -132,15 +162,16 @@ namespace CoffeeCard.Library.Services
 
         private BodyBuilder RetrieveTemplate(string templateName)
         {
-            var pathToTemplate = _env.WebRootPath
-                                 + Path.DirectorySeparatorChar
-                                 + "Templates"
-                                 + Path.DirectorySeparatorChar
-                                 + "EmailTemplate"
-                                 + Path.DirectorySeparatorChar
-                                 + "GeneratedEmails"
-                                 + Path.DirectorySeparatorChar
-                                 + templateName;
+            var pathToTemplate =
+                _env.WebRootPath
+                + Path.DirectorySeparatorChar
+                + "Templates"
+                + Path.DirectorySeparatorChar
+                + "EmailTemplate"
+                + Path.DirectorySeparatorChar
+                + "GeneratedEmails"
+                + Path.DirectorySeparatorChar
+                + templateName;
 
             var builder = new BodyBuilder();
 

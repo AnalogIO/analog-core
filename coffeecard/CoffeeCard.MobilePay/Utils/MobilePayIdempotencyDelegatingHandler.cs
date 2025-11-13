@@ -9,13 +9,12 @@ public class MobilePayIdempotencyDelegatingHandler : DelegatingHandler
 {
     protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         request.Headers.Add("Idempotency-Key", Guid.NewGuid().ToString());
 
-        var httpResponseMessage = await base.SendAsync(
-            request,
-            cancellationToken);
+        var httpResponseMessage = await base.SendAsync(request, cancellationToken);
 
         return httpResponseMessage;
     }

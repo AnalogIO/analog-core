@@ -16,28 +16,32 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 {
     public class LeaderboardServiceTests
     {
-        [Theory(DisplayName = "GetLeaderboardEntry given user and preset returns Leaderboard Entry")]
+        [Theory(
+            DisplayName = "GetLeaderboardEntry given user and preset returns Leaderboard Entry"
+        )]
         [InlineData(LeaderboardPreset.Month)]
         [InlineData(LeaderboardPreset.Semester)]
         [InlineData(LeaderboardPreset.Total)]
         public async Task GetLeaderboardEntryGivenUserAndPresetReturnsLeaderboardEntry(
-            LeaderboardPreset inputPreset)
+            LeaderboardPreset inputPreset
+        )
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(nameof(GetLeaderboardEntryGivenUserAndPresetReturnsLeaderboardEntry) +
-                                     inputPreset);
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseInMemoryDatabase(
+                nameof(GetLeaderboardEntryGivenUserAndPresetReturnsLeaderboardEntry) + inputPreset
+            );
 
-            var databaseSettings = new DatabaseSettings
-            {
-                SchemaName = "test"
-            };
+            var databaseSettings = new DatabaseSettings { SchemaName = "test" };
             var environmentSettings = new EnvironmentSettings()
             {
-                EnvironmentType = EnvironmentType.Test
+                EnvironmentType = EnvironmentType.Test,
             };
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            await using var context = new CoffeeCardContext(
+                builder.Options,
+                databaseSettings,
+                environmentSettings
+            );
             var user1 = new User
             {
                 Id = 1,
@@ -49,7 +53,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 IsVerified = true,
                 PrivacyActivated = false,
                 UserGroup = UserGroup.Customer,
-                UserState = UserState.Active
+                UserState = UserState.Active,
             };
             context.Add(user1);
 
@@ -64,7 +68,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 IsVerified = true,
                 PrivacyActivated = false,
                 UserGroup = UserGroup.Customer,
-                UserState = UserState.Active
+                UserState = UserState.Active,
             };
             context.Add(user2);
 
@@ -75,7 +79,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 SwipeCount = 10,
                 LastSwipe = new DateTime(year: 2020, month: 11, day: 11),
                 ExpiryDate = new DateTime(year: 2020, month: 11, day: 11),
-                User = user1
+                User = user1,
             };
             context.Add(user1Statistics);
 
@@ -86,7 +90,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 SwipeCount = 20,
                 LastSwipe = new DateTime(year: 2020, month: 11, day: 11),
                 ExpiryDate = new DateTime(year: 2020, month: 11, day: 11),
-                User = user2
+                User = user2,
             };
             context.Add(user2Statistics);
 
@@ -101,39 +105,46 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var result = await leaderboardService.GetLeaderboardEntry(user1, inputPreset);
 
             // Assert
-            Assert.Equal(new LeaderboardEntry
-            {
-                Id = user1.Id,
-                Name = user1.Name,
-                Rank = 2,
-                Score = 10
-            }, result);
+            Assert.Equal(
+                new LeaderboardEntry
+                {
+                    Id = user1.Id,
+                    Name = user1.Name,
+                    Rank = 2,
+                    Score = 10,
+                },
+                result
+            );
         }
 
-        [Theory(DisplayName =
-            "GetLeaderboardEntry given user and preset when user has no score returns Leaderboard Entry with rank 0")]
+        [Theory(
+            DisplayName = "GetLeaderboardEntry given user and preset when user has no score returns Leaderboard Entry with rank 0"
+        )]
         [InlineData(LeaderboardPreset.Month)]
         [InlineData(LeaderboardPreset.Semester)]
         [InlineData(LeaderboardPreset.Total)]
         public async Task GetLeaderboardEntryGivenUserAndPresetWhenUserHasNoScoreReturnsLeaderboardEntryWithRank0(
-            LeaderboardPreset inputPreset)
+            LeaderboardPreset inputPreset
+        )
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(
-                    nameof(GetLeaderboardEntryGivenUserAndPresetWhenUserHasNoScoreReturnsLeaderboardEntryWithRank0) +
-                    inputPreset);
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseInMemoryDatabase(
+                nameof(
+                    GetLeaderboardEntryGivenUserAndPresetWhenUserHasNoScoreReturnsLeaderboardEntryWithRank0
+                ) + inputPreset
+            );
 
-            var databaseSettings = new DatabaseSettings
-            {
-                SchemaName = "test"
-            };
+            var databaseSettings = new DatabaseSettings { SchemaName = "test" };
             var environmentSettings = new EnvironmentSettings()
             {
-                EnvironmentType = EnvironmentType.Test
+                EnvironmentType = EnvironmentType.Test,
             };
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            await using var context = new CoffeeCardContext(
+                builder.Options,
+                databaseSettings,
+                environmentSettings
+            );
             var user1 = new User
             {
                 Id = 1,
@@ -145,7 +156,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 IsVerified = true,
                 PrivacyActivated = false,
                 UserGroup = UserGroup.Customer,
-                UserState = UserState.Active
+                UserState = UserState.Active,
             };
             context.Add(user1);
             await context.SaveChangesAsync();
@@ -157,37 +168,44 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var result = await leaderboardService.GetLeaderboardEntry(user1, inputPreset);
 
             // Assert
-            Assert.Equal(new LeaderboardEntry
-            {
-                Id = user1.Id,
-                Name = user1.Name,
-                Rank = 0,
-                Score = 0
-            }, result);
+            Assert.Equal(
+                new LeaderboardEntry
+                {
+                    Id = user1.Id,
+                    Name = user1.Name,
+                    Rank = 0,
+                    Score = 0,
+                },
+                result
+            );
         }
 
-        [Theory(DisplayName = "GetTopLeaderboardEntries given preset returns list of leaderboard entries")]
+        [Theory(
+            DisplayName = "GetTopLeaderboardEntries given preset returns list of leaderboard entries"
+        )]
         [InlineData(LeaderboardPreset.Month)]
         [InlineData(LeaderboardPreset.Semester)]
         [InlineData(LeaderboardPreset.Total)]
         public async Task GetTopLeaderboardEntriesPresetReturnsListLeaderboardEntry(
-            LeaderboardPreset inputPreset)
+            LeaderboardPreset inputPreset
+        )
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(nameof(GetTopLeaderboardEntriesPresetReturnsListLeaderboardEntry) +
-                                     inputPreset);
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseInMemoryDatabase(
+                nameof(GetTopLeaderboardEntriesPresetReturnsListLeaderboardEntry) + inputPreset
+            );
 
-            var databaseSettings = new DatabaseSettings
-            {
-                SchemaName = "test"
-            };
+            var databaseSettings = new DatabaseSettings { SchemaName = "test" };
             var environmentSettings = new EnvironmentSettings()
             {
-                EnvironmentType = EnvironmentType.Test
+                EnvironmentType = EnvironmentType.Test,
             };
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            await using var context = new CoffeeCardContext(
+                builder.Options,
+                databaseSettings,
+                environmentSettings
+            );
             var user1 = new User
             {
                 Id = 1,
@@ -199,7 +217,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 IsVerified = true,
                 PrivacyActivated = false,
                 UserGroup = UserGroup.Customer,
-                UserState = UserState.Active
+                UserState = UserState.Active,
             };
             context.Add(user1);
 
@@ -214,7 +232,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 IsVerified = true,
                 PrivacyActivated = false,
                 UserGroup = UserGroup.Customer,
-                UserState = UserState.Active
+                UserState = UserState.Active,
             };
             context.Add(user2);
 
@@ -225,7 +243,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 SwipeCount = 10,
                 LastSwipe = new DateTime(year: 2020, month: 11, day: 11),
                 ExpiryDate = new DateTime(year: 2020, month: 11, day: 11),
-                User = user1
+                User = user1,
             };
             context.Add(user1Statistics);
 
@@ -236,7 +254,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 SwipeCount = 20,
                 LastSwipe = new DateTime(year: 2020, month: 11, day: 11),
                 ExpiryDate = new DateTime(year: 2020, month: 11, day: 11),
-                User = user2
+                User = user2,
             };
             context.Add(user2Statistics);
 
@@ -251,46 +269,54 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var result = await leaderboardService.GetTopLeaderboardEntries(inputPreset, 10);
 
             // Assert
-            Assert.Equal(new List<LeaderboardEntry>
-            {
-                new LeaderboardEntry
+            Assert.Equal(
+                new List<LeaderboardEntry>
                 {
-                    Id = user2.Id,
-                    Name = user2.Name,
-                    Rank = 1,
-                    Score = 20
+                    new LeaderboardEntry
+                    {
+                        Id = user2.Id,
+                        Name = user2.Name,
+                        Rank = 1,
+                        Score = 20,
+                    },
+                    new LeaderboardEntry
+                    {
+                        Id = user1.Id,
+                        Name = user1.Name,
+                        Rank = 2,
+                        Score = 10,
+                    },
                 },
-                new LeaderboardEntry
-                {
-                    Id = user1.Id,
-                    Name = user1.Name,
-                    Rank = 2,
-                    Score = 10
-                }
-            }, result.ToList());
+                result.ToList()
+            );
         }
 
-        [Theory(DisplayName = "GetTopLeaderboardEntries given preset when statistics are expired returns empty list")]
+        [Theory(
+            DisplayName = "GetTopLeaderboardEntries given preset when statistics are expired returns empty list"
+        )]
         [InlineData(LeaderboardPreset.Month)]
         [InlineData(LeaderboardPreset.Semester)]
         public async Task GetTopLeaderboardEntriesGivensPresetWhenStatisticsAreExpiredReturnsEmptyList(
-            LeaderboardPreset inputPreset)
+            LeaderboardPreset inputPreset
+        )
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(nameof(GetTopLeaderboardEntriesGivensPresetWhenStatisticsAreExpiredReturnsEmptyList) +
-                                     inputPreset);
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseInMemoryDatabase(
+                nameof(GetTopLeaderboardEntriesGivensPresetWhenStatisticsAreExpiredReturnsEmptyList)
+                    + inputPreset
+            );
 
-            var databaseSettings = new DatabaseSettings
-            {
-                SchemaName = "test"
-            };
+            var databaseSettings = new DatabaseSettings { SchemaName = "test" };
             var environmentSettings = new EnvironmentSettings()
             {
-                EnvironmentType = EnvironmentType.Test
+                EnvironmentType = EnvironmentType.Test,
             };
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            await using var context = new CoffeeCardContext(
+                builder.Options,
+                databaseSettings,
+                environmentSettings
+            );
             var user1 = new User
             {
                 Id = 1,
@@ -302,7 +328,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 IsVerified = true,
                 PrivacyActivated = false,
                 UserGroup = UserGroup.Customer,
-                UserState = UserState.Active
+                UserState = UserState.Active,
             };
             context.Add(user1);
 
@@ -317,7 +343,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 IsVerified = true,
                 PrivacyActivated = false,
                 UserGroup = UserGroup.Customer,
-                UserState = UserState.Active
+                UserState = UserState.Active,
             };
             context.Add(user2);
 
@@ -328,7 +354,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 SwipeCount = 10,
                 LastSwipe = new DateTime(year: 2020, month: 11, day: 11),
                 ExpiryDate = new DateTime(year: 2020, month: 11, day: 11),
-                User = user1
+                User = user1,
             };
             context.Add(user1Statistics);
 
@@ -339,7 +365,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 SwipeCount = 20,
                 LastSwipe = new DateTime(year: 2020, month: 11, day: 11),
                 ExpiryDate = new DateTime(year: 2020, month: 11, day: 11),
-                User = user2
+                User = user2,
             };
             context.Add(user2Statistics);
 
@@ -357,28 +383,33 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             Assert.Empty(result.ToList());
         }
 
-        [Theory(DisplayName = "GetTopLeaderboardEntries given preset when no statistics exists returns empty list")]
+        [Theory(
+            DisplayName = "GetTopLeaderboardEntries given preset when no statistics exists returns empty list"
+        )]
         [InlineData(LeaderboardPreset.Month)]
         [InlineData(LeaderboardPreset.Semester)]
         [InlineData(LeaderboardPreset.Total)]
         public async Task GetTopLeaderboardEntriesGivenPresetWhenNoStatisticsExistsReturnsEmptyList(
-            LeaderboardPreset inputPreset)
+            LeaderboardPreset inputPreset
+        )
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(nameof(GetTopLeaderboardEntriesGivenPresetWhenNoStatisticsExistsReturnsEmptyList) +
-                                     inputPreset);
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseInMemoryDatabase(
+                nameof(GetTopLeaderboardEntriesGivenPresetWhenNoStatisticsExistsReturnsEmptyList)
+                    + inputPreset
+            );
 
-            var databaseSettings = new DatabaseSettings
-            {
-                SchemaName = "test"
-            };
+            var databaseSettings = new DatabaseSettings { SchemaName = "test" };
             var environmentSettings = new EnvironmentSettings()
             {
-                EnvironmentType = EnvironmentType.Test
+                EnvironmentType = EnvironmentType.Test,
             };
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            await using var context = new CoffeeCardContext(
+                builder.Options,
+                databaseSettings,
+                environmentSettings
+            );
             var dateTimeProvider = new Mock<IDateTimeProvider>();
             var leaderboardService = new LeaderboardService(context, dateTimeProvider.Object);
 
@@ -389,27 +420,32 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             Assert.Empty(result.ToList());
         }
 
-        [Theory(DisplayName = "GetTopLeaderboardEntries given preset does not include expired entries")]
+        [Theory(
+            DisplayName = "GetTopLeaderboardEntries given preset does not include expired entries"
+        )]
         [InlineData(LeaderboardPreset.Month)]
         [InlineData(LeaderboardPreset.Semester)]
         public async Task GetTopLeaderboardEntriesGivenPresetDoesNotIncludeExpiredEntries(
-            LeaderboardPreset inputPreset)
+            LeaderboardPreset inputPreset
+        )
         {
             // Arrange
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
-                .UseInMemoryDatabase(nameof(GetTopLeaderboardEntriesGivenPresetDoesNotIncludeExpiredEntries) +
-                                     inputPreset);
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseInMemoryDatabase(
+                nameof(GetTopLeaderboardEntriesGivenPresetDoesNotIncludeExpiredEntries)
+                    + inputPreset
+            );
 
-            var databaseSettings = new DatabaseSettings
-            {
-                SchemaName = "test"
-            };
+            var databaseSettings = new DatabaseSettings { SchemaName = "test" };
             var environmentSettings = new EnvironmentSettings()
             {
-                EnvironmentType = EnvironmentType.Test
+                EnvironmentType = EnvironmentType.Test,
             };
 
-            await using var context = new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            await using var context = new CoffeeCardContext(
+                builder.Options,
+                databaseSettings,
+                environmentSettings
+            );
             var user1 = new User
             {
                 Id = 1,
@@ -421,7 +457,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 IsVerified = true,
                 PrivacyActivated = false,
                 UserGroup = UserGroup.Customer,
-                UserState = UserState.Active
+                UserState = UserState.Active,
             };
             context.Add(user1);
 
@@ -436,7 +472,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 IsVerified = true,
                 PrivacyActivated = false,
                 UserGroup = UserGroup.Customer,
-                UserState = UserState.Active
+                UserState = UserState.Active,
             };
             context.Add(user2);
 
@@ -447,7 +483,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 SwipeCount = 10,
                 LastSwipe = new DateTime(year: 2000, month: 11, day: 11),
                 ExpiryDate = new DateTime(year: 2000, month: 11, day: 11),
-                User = user1
+                User = user1,
             };
             context.Add(user1Statistics);
 
@@ -458,7 +494,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 SwipeCount = 20,
                 LastSwipe = new DateTime(year: 2000, month: 11, day: 11),
                 ExpiryDate = new DateTime(year: 2000, month: 11, day: 11),
-                User = user2
+                User = user2,
             };
             context.Add(user2Statistics);
             await context.SaveChangesAsync();

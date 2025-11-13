@@ -14,12 +14,12 @@ namespace CoffeeCard.Models.Entities
         /// Log on Shifty website
         /// </summary>
         Shifty,
+
         /// <summary>
         /// Log on app
         /// </summary>
-        App
+        App,
     }
-
 
     /// <summary>
     /// Extension methods for LoginType
@@ -39,7 +39,9 @@ namespace CoffeeCard.Models.Entities
             return loginType switch
             {
                 LoginType.Shifty => $"{baseUrl}auth?token={tokenHash}",
-                _ => throw new ApiException("Deep link for the given application has not been implemented"),
+                _ => throw new ApiException(
+                    "Deep link for the given application has not been implemented"
+                ),
             };
         }
     }

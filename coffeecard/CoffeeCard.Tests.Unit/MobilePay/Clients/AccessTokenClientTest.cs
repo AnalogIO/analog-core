@@ -26,7 +26,7 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
             {
                 Access_token = "test-access-token",
                 Expires_in = "3600",
-                Token_type = "Bearer"
+                Token_type = "Bearer",
             };
 
             var httpClient = CreateMockHttpClient(HttpStatusCode.OK, expectedResponse);
@@ -48,7 +48,11 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
         public async Task GetToken_ThrowsException_OnErrorResponse()
         {
             // Arrange
-            var errorResponse = new { error = "invalid_client", error_description = "Invalid client credentials" };
+            var errorResponse = new
+            {
+                error = "invalid_client",
+                error_description = "Invalid client credentials",
+            };
 
             var httpClient = CreateMockHttpClient(HttpStatusCode.Unauthorized, errorResponse);
             var client = new AccessTokenClient(httpClient, _loggerMock.Object);
@@ -57,7 +61,9 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
             var clientSecret = "invalid-client-secret";
 
             // Act & Assert
-            await Assert.ThrowsAsync<MobilePayApiException>(() => client.GetToken(clientId, clientSecret));
+            await Assert.ThrowsAsync<MobilePayApiException>(() =>
+                client.GetToken(clientId, clientSecret)
+            );
 
             // Verify logging occurred
             VerifyLoggingOccurred();
@@ -66,13 +72,16 @@ namespace CoffeeCard.Tests.Unit.MobilePay.Clients
         private void VerifyLoggingOccurred()
         {
             _loggerMock.Verify(
-                x => x.Log(
-                    It.Is<LogLevel>(l => l == LogLevel.Error),
-                    It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((v, t) => true),
-                    It.IsAny<Exception>(),
-                    It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)!),
-                Times.Once);
+                x =>
+                    x.Log(
+                        It.Is<LogLevel>(l => l == LogLevel.Error),
+                        It.IsAny<EventId>(),
+                        It.Is<It.IsAnyType>((v, t) => true),
+                        It.IsAny<Exception>(),
+                        It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)!
+                    ),
+                Times.Once
+            );
         }
     }
 }
