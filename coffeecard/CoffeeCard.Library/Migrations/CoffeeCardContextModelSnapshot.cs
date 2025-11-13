@@ -263,10 +263,6 @@ namespace CoffeeCard.Library.Migrations
                         .HasColumnType("int")
                         .HasColumnName("Purchase_Id");
 
-                    b.Property<int>("PurchasedById")
-                        .HasColumnType("int")
-                        .HasColumnName("PurchasedBy_Id");
-
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -278,8 +274,6 @@ namespace CoffeeCard.Library.Migrations
                     b.HasIndex("OwnerId");
 
                     b.HasIndex("PurchaseId");
-
-                    b.HasIndex("PurchasedById");
 
                     b.HasIndex("UsedOnMenuItemId");
 
@@ -534,7 +528,7 @@ namespace CoffeeCard.Library.Migrations
             modelBuilder.Entity("CoffeeCard.Models.Entities.Ticket", b =>
                 {
                     b.HasOne("CoffeeCard.Models.Entities.User", "Owner")
-                        .WithMany("OwnedTickets")
+                        .WithMany("Tickets")
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -545,12 +539,6 @@ namespace CoffeeCard.Library.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CoffeeCard.Models.Entities.User", "PurchasedBy")
-                        .WithMany("PurchasedTickets")
-                        .HasForeignKey("PurchasedById")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("CoffeeCard.Models.Entities.MenuItem", "UsedOnMenuItem")
                         .WithMany()
                         .HasForeignKey("UsedOnMenuItemId");
@@ -558,8 +546,6 @@ namespace CoffeeCard.Library.Migrations
                     b.Navigation("Owner");
 
                     b.Navigation("Purchase");
-
-                    b.Navigation("PurchasedBy");
 
                     b.Navigation("UsedOnMenuItem");
                 });
@@ -632,13 +618,11 @@ namespace CoffeeCard.Library.Migrations
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.User", b =>
                 {
-                    b.Navigation("OwnedTickets");
-
-                    b.Navigation("PurchasedTickets");
-
                     b.Navigation("Purchases");
 
                     b.Navigation("Statistics");
+
+                    b.Navigation("Tickets");
 
                     b.Navigation("Tokens");
                 });
