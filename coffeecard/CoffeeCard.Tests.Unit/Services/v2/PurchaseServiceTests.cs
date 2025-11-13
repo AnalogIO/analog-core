@@ -261,8 +261,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var userUpdated = await context.Users.FindAsync(user.Id);
 
             Assert.Single(userUpdated!.Purchases);
-            Assert.Equal(product.NumberOfTickets, userUpdated.OwnedTickets.Count);
-            Assert.Equal(product.NumberOfTickets, userUpdated.PurchasedTickets.Count);
+            Assert.Equal(product.NumberOfTickets, userUpdated.Tickets.Count);
         }
 
         [Theory(DisplayName = "RefundPurchase refunds a purchase")]
@@ -308,20 +307,20 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 ExternalTransactionId = Guid.NewGuid().ToString(),
                 PurchasedBy = user,
                 OrderId = "test",
-            };
-            var ticket = new Ticket()
-            {
-                Id = 1,
-                ProductId = product.Id,
-                Status = TicketStatus.Unused,
-                Purchase = purchase,
-                Owner = user,
-                PurchasedBy = user,
+                Tickets = new List<Ticket>
+                {
+                    new Ticket
+                    {
+                        Id = 1,
+                        ProductId = product.Id,
+                        Status = TicketStatus.Unused,
+                        Owner = user
+                    }
+                }
             };
             context.Add(user);
             context.Add(product);
             context.Add(purchase);
-            context.Add(ticket);
             await context.SaveChangesAsync();
 
             var mobilePayService = new Mock<IMobilePayPaymentsService>();
