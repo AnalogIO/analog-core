@@ -191,7 +191,7 @@ namespace CoffeeCard.WebApi
             // Setup filter to catch outgoing exceptions
             services.AddControllers(options =>
                 {
-                    options.Filters.Add(new ApiExceptionFilter());
+                    options.Filters.Add<ApiExceptionFilter>();
                     options.Filters.Add(new ReadableBodyFilter());
                 })
                 .AddJsonOptions(options =>
