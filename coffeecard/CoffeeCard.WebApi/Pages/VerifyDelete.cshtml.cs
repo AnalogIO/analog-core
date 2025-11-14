@@ -35,16 +35,16 @@ namespace CoffeeCard.WebApi.Pages
         /// <returns>The result of the action.</returns>
         public async Task<IActionResult> OnGet()
         {
-            Func<Task<IActionResult>> func = async delegate()
+            return await PageUtils.SafeExecuteFunc(Func, this);
+
+            async Task<IActionResult> Func()
             {
                 await _accountService.AnonymizeAccountAsync(Token);
-
-                TempData["resultHeader"] = "Success";
-                TempData["result"] = @"Your account has been successfully deleted";
-
-                return RedirectToPage("result");
-            };
-            return await PageUtils.SafeExecuteFunc(func, this);
+                return RedirectToPage(
+                    "Result",
+                    new { action = "verifyDelete", outcome = "success" }
+                );
+            }
         }
     }
 }
