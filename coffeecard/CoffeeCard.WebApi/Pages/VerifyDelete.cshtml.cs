@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using CoffeeCard.Library.Services.v2;
 using CoffeeCard.WebApi.Helpers;
+using CoffeeCard.WebApi.Pages.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -40,10 +41,7 @@ namespace CoffeeCard.WebApi.Pages
             async Task<IActionResult> Func()
             {
                 await _accountService.AnonymizeAccountAsync(Token);
-                return RedirectToPage(
-                    "Result",
-                    new { action = "verifyDelete", outcome = "success" }
-                );
+                return RedirectToPage("Result", new { outcome = Outcome.AccountDeletedSuccess });
             }
         }
     }

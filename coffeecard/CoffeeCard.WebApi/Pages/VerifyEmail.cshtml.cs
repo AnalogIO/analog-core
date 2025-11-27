@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using CoffeeCard.Library.Services;
 using CoffeeCard.WebApi.Helpers;
+using CoffeeCard.WebApi.Pages.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -41,9 +42,12 @@ namespace CoffeeCard.WebApi.Pages
                 var emailVerified = await _accountService.VerifyRegistration(Token);
                 return RedirectToPage(
                     "Result",
-                    emailVerified
-                        ? new { action = "verifyEmail", outcome = "success" }
-                        : new { action = "verifyEmail", outcome = "error" }
+                    new
+                    {
+                        outcome = emailVerified
+                            ? Outcome.EmailVerifiedSuccess
+                            : Outcome.LinkExpiredOrUsed,
+                    }
                 );
             }
         }

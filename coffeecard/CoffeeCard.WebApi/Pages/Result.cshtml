@@ -1,25 +1,33 @@
-﻿@page "{action?}/{outcome?}"
+﻿@page "{outcome?}"
 @model CoffeeCard.WebApi.Pages.Result
 @{
     Layout = "Shared/_Layout";
     ViewData["Title"] = "Result of request";
 }
 
+@using CoffeeCard.WebApi.Pages.Shared
+
 @functions {
-    private (string Header, string Message) GetContent(string? action, string? outcome) =>
-        (action, outcome) switch
+    private (string Header, string Message) GetContent(Outcome? outcome)
+        => outcome switch
         {
-            ("verifyEmail", "success") => ("Success", "Your email has been successfully verified"),
-            ("verifyEmail", "error")   => ("Error", "Looks like the link you used has expired or already been used. Request a new password in the app to verify your email."),
-            ("verifyDelete", "success") => ("Success", "Your account has been successfully deleted"),
-            _ => ("Something went wrong", "This is not the web page you are looking for")
+            Outcome.LinkExpiredOrUsed => ("Error", Outcome.LinkExpiredOrUsed.ToMessage()),
+            Outcome.UnhandledError => ("Error", Outcome.UnhandledError.ToMessage()),
+            Outcome.PinUpdateError => ("Error", Outcome.PinUpdateError.ToMessage()),
+            Outcome.PasswordResetSuccess => ("Success", Outcome.PasswordResetSuccess.ToMessage()),
+            Outcome.EmailVerifiedSuccess => ("Success", Outcome.EmailVerifiedSuccess.ToMessage()),
+            Outcome.AccountDeletedSuccess => ("Success", Outcome.AccountDeletedSuccess.ToMessage()),
+            _ => ("Something went wrong", Outcomes.UnknownError)
         };
 }
 
 @{
-    var action = (string?)RouteData.Values["action"];
-    var outcome = (string?)RouteData.Values["outcome"];
-    var content = GetContent(action, outcome);
+    Outcome? outcome = null;
+    if (Enum.TryParse(RouteData.Values["outcome"]?.ToString(), out Outcome parsedOutcome))
+    {
+        outcome = parsedOutcome;
+    }
+    var content = GetContent(outcome);
 }
 
 <div id="results">
