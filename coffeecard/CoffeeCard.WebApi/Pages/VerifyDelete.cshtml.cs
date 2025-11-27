@@ -36,13 +36,13 @@ namespace CoffeeCard.WebApi.Pages
         /// <returns>The result of the action.</returns>
         public async Task<IActionResult> OnGet()
         {
-            return await PageUtils.SafeExecuteFunc(Func, this);
-
-            async Task<IActionResult> Func()
+            var outcome = await PageUtils.SafeExecute(async () =>
             {
                 await _accountService.AnonymizeAccountAsync(Token);
-                return RedirectToPage("Result", new { outcome = Outcome.AccountDeletedSuccess });
-            }
+                return Outcome.AccountDeletedSuccess;
+            });
+
+            return RedirectToPage("Result", new { outcome });
         }
     }
 }

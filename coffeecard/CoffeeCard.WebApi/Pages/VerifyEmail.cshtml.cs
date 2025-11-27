@@ -35,21 +35,13 @@ namespace CoffeeCard.WebApi.Pages
         /// </summary>
         public async Task<IActionResult> OnGet()
         {
-            return await PageUtils.SafeExecuteFunc(Func, this);
-
-            async Task<IActionResult> Func()
+            var outcome = await PageUtils.SafeExecute(async () =>
             {
                 var emailVerified = await _accountService.VerifyRegistration(Token);
-                return RedirectToPage(
-                    "Result",
-                    new
-                    {
-                        outcome = emailVerified
-                            ? Outcome.EmailVerifiedSuccess
-                            : Outcome.LinkExpiredOrUsed,
-                    }
-                );
-            }
+                return emailVerified ? Outcome.EmailVerifiedSuccess : Outcome.LinkExpiredOrUsed;
+            });
+
+            return RedirectToPage("Result", new { outcome });
         }
     }
 }

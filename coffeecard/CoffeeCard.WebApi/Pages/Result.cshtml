@@ -11,6 +11,7 @@
     private (string Header, string Message) GetContent(Outcome? outcome)
         => outcome switch
         {
+            Outcome.Success => ("Success", string.Empty),
             Outcome.LinkExpiredOrUsed => ("Error", Outcome.LinkExpiredOrUsed.ToMessage()),
             Outcome.UnhandledError => ("Error", Outcome.UnhandledError.ToMessage()),
             Outcome.PinUpdateError => ("Error", Outcome.PinUpdateError.ToMessage()),

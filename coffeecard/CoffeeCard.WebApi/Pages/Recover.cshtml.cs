@@ -50,19 +50,15 @@ namespace CoffeeCard.WebApi.Pages
         /// <returns>The action result of the password recovery page or the result page.</returns>
         public async Task<IActionResult> OnGet()
         {
-            return await PageUtils.SafeExecuteFunc(Func, this);
-
-            async Task<IActionResult> Func()
+            var outcome = await PageUtils.SafeExecute(async () =>
             {
                 IsTokenValid = await _tokenService.ValidateTokenIsUnusedAsync(Token);
+                return IsTokenValid ? Outcome.Success : Outcome.LinkExpiredOrUsed;
+            });
 
-                if (IsTokenValid)
-                    return Page();
-                else
-                {
-                    return RedirectToPage("result", new { outcome = Outcome.LinkExpiredOrUsed });
-                }
-            }
+            return outcome == Outcome.Success
+                ? Page()
+                : RedirectToPage("result", new { outcome });
         }
 
         /// <summary>
@@ -74,19 +70,13 @@ namespace CoffeeCard.WebApi.Pages
             if (!ModelState.IsValid)
                 return Page();
 
-            return await PageUtils.SafeExecuteFunc(Func, this);
-
-            async Task<IActionResult> Func()
+            var outcome = await PageUtils.SafeExecute(async () =>
             {
-                if (await _accountService.RecoverUserAsync(Token, PinCode.NewPinCode))
-                {
-                    return RedirectToPage("result", new { outcome = Outcome.PasswordResetSuccess });
-                }
-                else
-                {
-                    return RedirectToPage("result", new { outcome = Outcome.PinUpdateError });
-                }
-            }
+                var success = await _accountService.RecoverUserAsync(Token, PinCode.NewPinCode);
+                return success ? Outcome.PasswordResetSuccess : Outcome.PinUpdateError;
+            });
+
+            return RedirectToPage("result", new { outcome });
         }
     }
 }

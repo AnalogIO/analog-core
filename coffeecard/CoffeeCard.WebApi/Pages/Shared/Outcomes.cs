@@ -1,13 +1,19 @@
 namespace CoffeeCard.WebApi.Pages.Shared;
 
-internal enum Outcome
+/// <summary>
+/// All possible outcomes for user-facing webpages
+/// </summary>
+public enum Outcome
 {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+    Success,
     LinkExpiredOrUsed,
     UnhandledError,
     PinUpdateError,
     PasswordResetSuccess,
     EmailVerifiedSuccess,
     AccountDeletedSuccess,
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }
 
 internal static class Outcomes
@@ -29,6 +35,7 @@ internal static class OutcomeExtensions
     {
         return outcome switch
         {
+            Outcome.Success => string.Empty,
             Outcome.LinkExpiredOrUsed => Outcomes.LinkExpiredOrUsed,
             Outcome.UnhandledError => Outcomes.UnhandledError,
             Outcome.PinUpdateError => Outcomes.PinUpdateError,
