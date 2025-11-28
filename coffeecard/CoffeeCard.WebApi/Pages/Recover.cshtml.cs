@@ -56,9 +56,7 @@ namespace CoffeeCard.WebApi.Pages
                 return IsTokenValid ? Outcome.Success : Outcome.LinkExpiredOrUsed;
             });
 
-            return outcome == Outcome.Success
-                ? Page()
-                : RedirectToPage("result", new { outcome });
+            return outcome == Outcome.Success ? Page() : RedirectToPage("result", new { outcome });
         }
 
         /// <summary>
