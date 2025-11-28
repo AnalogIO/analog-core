@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using CoffeeCard.Library.Services;
 using CoffeeCard.WebApi.Helpers;
+using CoffeeCard.WebApi.Pages.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -34,18 +35,13 @@ namespace CoffeeCard.WebApi.Pages
         /// </summary>
         public async Task<IActionResult> OnGet()
         {
-            return await PageUtils.SafeExecuteFunc(Func, this);
-
-            async Task<IActionResult> Func()
+            var outcome = await PageUtils.SafeExecute(async () =>
             {
                 var emailVerified = await _accountService.VerifyRegistration(Token);
-                return RedirectToPage(
-                    "Result",
-                    emailVerified
-                        ? new { action = "verifyEmail", outcome = "success" }
-                        : new { action = "verifyEmail", outcome = "error" }
-                );
-            }
+                return emailVerified ? Outcome.EmailVerifiedSuccess : Outcome.LinkExpiredOrUsed;
+            });
+
+            return RedirectToPage("Result", new { outcome });
         }
     }
 }

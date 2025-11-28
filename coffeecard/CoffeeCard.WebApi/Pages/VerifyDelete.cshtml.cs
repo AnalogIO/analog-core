@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using CoffeeCard.Library.Services.v2;
 using CoffeeCard.WebApi.Helpers;
+using CoffeeCard.WebApi.Pages.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -35,16 +36,13 @@ namespace CoffeeCard.WebApi.Pages
         /// <returns>The result of the action.</returns>
         public async Task<IActionResult> OnGet()
         {
-            return await PageUtils.SafeExecuteFunc(Func, this);
-
-            async Task<IActionResult> Func()
+            var outcome = await PageUtils.SafeExecute(async () =>
             {
                 await _accountService.AnonymizeAccountAsync(Token);
-                return RedirectToPage(
-                    "Result",
-                    new { action = "verifyDelete", outcome = "success" }
-                );
-            }
+                return Outcome.AccountDeletedSuccess;
+            });
+
+            return RedirectToPage("Result", new { outcome });
         }
     }
 }
