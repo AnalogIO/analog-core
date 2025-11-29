@@ -56,7 +56,7 @@ namespace CoffeeCard.WebApi.Pages
                 return IsTokenValid ? Outcome.Success : Outcome.LinkExpiredOrUsed;
             });
 
-            return outcome == Outcome.Success ? Page() : RedirectToPage("result", new { outcome });
+            return outcome == Outcome.Success ? Page() : RedirectToPage("Result", new { outcome });
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace CoffeeCard.WebApi.Pages
                 return success ? Outcome.PasswordResetSuccess : Outcome.PinUpdateError;
             });
 
-            return RedirectToPage("result", new { outcome });
+            return RedirectToPage("Result", new { outcome });
         }
     }
 }

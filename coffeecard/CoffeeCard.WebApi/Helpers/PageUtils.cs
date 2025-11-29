@@ -31,7 +31,7 @@ namespace CoffeeCard.WebApi.Helpers
 
                 if (ex is not ApiException)
                 {
-                    Log.Error(ex, "An unhandled exception occured on a webpage");
+                    Log.Error(ex, "An unhandled exception occurred on a webpage");
                 }
 
                 return error;
