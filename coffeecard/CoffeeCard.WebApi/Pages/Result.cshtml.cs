@@ -14,6 +14,7 @@ namespace CoffeeCard.WebApi.Pages
         /// <returns>The result page.</returns>
         public IActionResult OnGet()
         {
+            // No logic needed, handled in .cshtml
             return Page();
         }
     }

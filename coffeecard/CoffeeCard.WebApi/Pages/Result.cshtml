@@ -1,19 +1,37 @@
-﻿@page
+﻿@page "{outcome?}"
 @model CoffeeCard.WebApi.Pages.Result
 @{
     Layout = "Shared/_Layout";
     ViewData["Title"] = "Result of request";
 }
 
+@using CoffeeCard.WebApi.Pages.Shared
+
+@functions {
+    private (string Header, string Message) GetContent(Outcome? outcome)
+        => outcome switch
+        {
+            Outcome.Success => ("Success", string.Empty),
+            Outcome.LinkExpiredOrUsed => ("Error", Outcome.LinkExpiredOrUsed.ToMessage()),
+            Outcome.UnhandledError => ("Error", Outcome.UnhandledError.ToMessage()),
+            Outcome.PinUpdateError => ("Error", Outcome.PinUpdateError.ToMessage()),
+            Outcome.PasswordResetSuccess => ("Success", Outcome.PasswordResetSuccess.ToMessage()),
+            Outcome.EmailVerifiedSuccess => ("Success", Outcome.EmailVerifiedSuccess.ToMessage()),
+            Outcome.AccountDeletedSuccess => ("Success", Outcome.AccountDeletedSuccess.ToMessage()),
+            _ => ("Something went wrong", Outcomes.UnknownError)
+        };
+}
+
+@{
+    Outcome? outcome = null;
+    if (Enum.TryParse(RouteData.Values["outcome"]?.ToString(), out Outcome parsedOutcome))
+    {
+        outcome = parsedOutcome;
+    }
+    var content = GetContent(outcome);
+}
+
 <div id="results">
-    @if (TempData["result"] != null)
-    {
-        <h1>@TempData["resultHeader"]</h1>
-        <p>@TempData["result"]</p>
-    }
-    else
-    {
-        <h1>Something went wrong</h1>
-        <p>This is not the web page you are looking for</p>
-    }
+    <h1>@content.Header</h1>
+    <p>@content.Message</p>
 </div>
