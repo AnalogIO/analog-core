@@ -38,14 +38,14 @@ namespace CoffeeCard.Library.Services.v2
             );
             var message = new MimeMessage();
             var builder = RetrieveTemplate("email_magic_link_login.html");
-            var baseUrl = loginType switch
+            var baseUri = loginType switch
             {
                 LoginType.Shifty => _environmentSettings.ShiftyUrl,
-                LoginType.App => throw new NotImplementedException(),
+                LoginType.App => _environmentSettings.AnalogAppUrl,
                 _ => throw new NotImplementedException(),
             };
 
-            var deeplink = loginType.GetDeepLink(baseUrl, magicLink);
+            var deeplink = loginType.GetDeepLink(baseUri, magicLink);
 
             builder = BuildMagicLinkEmail(builder, user.Email, user.Name, deeplink);
 
