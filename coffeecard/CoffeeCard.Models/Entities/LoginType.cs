@@ -30,15 +30,20 @@ namespace CoffeeCard.Models.Entities
         /// Get the deep link for the correct application
         /// </summary>
         /// <param name="loginType">The application to log in to</param>
-        /// <param name="baseUrl">The base URL for the application</param>
+        /// <param name="redirectUri">The redirect URI for the application</param>
         /// <param name="tokenHash">The generated token associated with a user</param>
         /// <returns>string</returns>
         /// <exception cref="ApiException">Unable to resolve application to log in to</exception>
-        public static string GetDeepLink(this LoginType loginType, string baseUrl, string tokenHash)
+        public static string GetDeepLink(
+            this LoginType loginType,
+            string redirectUri,
+            string tokenHash
+        )
         {
             return loginType switch
             {
-                LoginType.Shifty => $"{baseUrl}auth?token={tokenHash}",
+                LoginType.Shifty => $"{redirectUri}auth?token={tokenHash}",
+                LoginType.App => $"{redirectUri}://login/auth/{tokenHash}",
                 _ => throw new ApiException(
                     "Deep link for the given application has not been implemented"
                 ),

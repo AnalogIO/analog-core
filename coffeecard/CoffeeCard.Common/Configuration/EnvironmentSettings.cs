@@ -17,6 +17,9 @@ namespace CoffeeCard.Common.Configuration
         [Required]
         public string ShiftyUrl { get; set; }
 
+        [Required]
+        public string AnalogAppUrl { get; set; }
+
         public void Validate()
         {
             Validator.ValidateObject(this, new ValidationContext(this), true);

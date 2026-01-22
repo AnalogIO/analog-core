@@ -26,6 +26,10 @@
         "value": "https://shifty.prd.analogio.dk/"
       },
       {
+        "name": "EnvironmentSettings__AnalogAppUrl",
+        "value": "cafeanalog://cafeanalog.dk/"
+      },
+      {
         "name": "MailgunSettings__Domain",
         "value": "mg.cafeanalog.dk"
       },
