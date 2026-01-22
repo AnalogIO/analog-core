@@ -43,7 +43,7 @@ namespace CoffeeCard.Models.Entities
             return loginType switch
             {
                 LoginType.Shifty => $"{redirectUri}auth?token={tokenHash}",
-                LoginType.App => $"{redirectUri}://login/auth/{tokenHash}",
+                LoginType.App => $"{redirectUri}login/auth/{tokenHash}",
                 _ => throw new ApiException(
                     "Deep link for the given application has not been implemented"
                 ),
