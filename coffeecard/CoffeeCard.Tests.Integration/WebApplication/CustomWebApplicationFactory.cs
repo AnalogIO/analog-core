@@ -4,8 +4,10 @@ using CoffeeCard.Library.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace CoffeeCard.Tests.Integration.WebApplication
 {
@@ -43,22 +45,17 @@ namespace CoffeeCard.Tests.Integration.WebApplication
                     Configuration.GetSection("MailgunSettings")
                 );
 
-                // Remove the app's ApplicationDbContext registration.
-                var descriptor = services.SingleOrDefault(d =>
-                    d.ServiceType == typeof(DbContextOptions<CoffeeCardContext>)
-                );
+                // Remove the app's CoffeeCardContext registrations to avoid mixed providers.
+                services.RemoveAll<DbContextOptions<CoffeeCardContext>>();
+                services.RemoveAll<DbContextOptions>();
+                services.RemoveAll<IDbContextOptionsConfiguration<CoffeeCardContext>>();
+                services.RemoveAll<CoffeeCardContext>();
 
-                if (descriptor != null)
-                    services.Remove(descriptor);
-
-                // Add ApplicationDbContext using an in-memory database for testing.
+                // Add CoffeeCardContext using an in-memory database for testing.
                 services.AddDbContext<CoffeeCardContext>(options =>
                 {
                     options.UseInMemoryDatabase("InMemoryDbForTesting");
                 });
-
-                // Build the service provider
-                var sp = services.BuildServiceProvider();
             });
         }
     }
