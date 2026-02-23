@@ -2,6 +2,7 @@ using System;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.DataTransferObjects.v2.Products;
 using CoffeeCard.Models.Entities;
+using CoffeeCard.Tests.Common.Builders;
 using Xunit;
 
 namespace CoffeeCard.Tests.Unit.Utils
@@ -13,14 +14,15 @@ namespace CoffeeCard.Tests.Unit.Utils
         )]
         public void TestIsPerkReturnsTrue()
         {
-            var product = new Product
-            {
-                ProductUserGroup = new[]
-                {
-                    new ProductUserGroup { UserGroup = UserGroup.Manager },
-                    new ProductUserGroup { UserGroup = UserGroup.Board },
-                },
-            };
+            var product = ProductBuilder
+                .Simple()
+                .WithProductUserGroup(
+                    [
+                        new ProductUserGroup { UserGroup = UserGroup.Manager },
+                        new ProductUserGroup { UserGroup = UserGroup.Board },
+                    ]
+                )
+                .Build();
 
             Assert.True(product.IsPerk());
         }
@@ -28,13 +30,10 @@ namespace CoffeeCard.Tests.Unit.Utils
         [Fact(DisplayName = "IsPerk returns false if the product is valid for regular customers")]
         public void TestIsPerkReturnsFalse()
         {
-            var product = new Product
-            {
-                ProductUserGroup = new[]
-                {
-                    new ProductUserGroup { UserGroup = UserGroup.Customer },
-                },
-            };
+            var product = ProductBuilder
+                .Simple()
+                .WithProductUserGroup([new ProductUserGroup { UserGroup = UserGroup.Customer }])
+                .Build();
 
             Assert.False(product.IsPerk());
         }
@@ -42,7 +41,7 @@ namespace CoffeeCard.Tests.Unit.Utils
         [Fact(DisplayName = "IsPerk throws ArgumentNullException if ProductUserGroup is null")]
         public void TestIsPerkThrowsArgumentNullException()
         {
-            var product = new Product { ProductUserGroup = null };
+            var product = ProductBuilder.Simple().WithProductUserGroup(_ => null).Build();
 
             Assert.Throws<ArgumentNullException>(() => product.IsPerk());
         }
@@ -50,21 +49,7 @@ namespace CoffeeCard.Tests.Unit.Utils
         [Fact(DisplayName = "ToProductResponse returns a ProductResponse with the correct values")]
         public void TestToProductResponse()
         {
-            var product = new Product
-            {
-                Id = 1,
-                Name = "Coffee",
-                Description = "Coffee Clip card",
-                NumberOfTickets = 10,
-                Price = 10,
-                ExperienceWorth = 10,
-                Visible = true,
-                ProductUserGroup = new[] { new ProductUserGroup { UserGroup = UserGroup.Manager } },
-                EligibleMenuItems = new[]
-                {
-                    new MenuItem { Id = 1, Name = "Coffee" },
-                },
-            };
+            var product = ProductBuilder.Typical().Build();
 
             var productResponse = product.ToProductResponse();
 
@@ -110,22 +95,15 @@ namespace CoffeeCard.Tests.Unit.Utils
         )]
         public void TestToProductResponseConvertsEligibleMenuItems()
         {
-            var product = new Product
-            {
-                Id = 1,
-                Name = "Coffee",
-                Description = "Coffee Clip card",
-                NumberOfTickets = 10,
-                Price = 10,
-                ExperienceWorth = 10,
-                Visible = true,
-                ProductUserGroup = new[] { new ProductUserGroup { UserGroup = UserGroup.Manager } },
-                EligibleMenuItems = new[]
-                {
-                    new MenuItem { Id = 1, Name = "Coffee" },
-                    new MenuItem { Id = 2, Name = "Tea" },
-                },
-            };
+            var product = ProductBuilder
+                .Typical()
+                .WithEligibleMenuItems(
+                    [
+                        new MenuItem { Id = 1, Name = "Coffee" },
+                        new MenuItem { Id = 2, Name = "Tea" },
+                    ]
+                )
+                .Build();
 
             var productResponse = product.ToProductResponse();
 
