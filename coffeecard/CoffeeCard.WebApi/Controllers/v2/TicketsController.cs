@@ -82,7 +82,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <returns>Grouped tickets</returns>
         /// <response code="200">Successful request</response>
         /// <response code="401">Invalid credentials</response>
-        [HttpGet("grouped-owned")]
+        [HttpGet("grouped")]
         [ProducesResponseType(typeof(IEnumerable<GroupedTicketsResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         public async Task<
