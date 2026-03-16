@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/Src/">
+    <Project Path="CoffeeCard.Common/CoffeeCard.Common.csproj" />
+    <Project Path="CoffeeCard.Library/CoffeeCard.Library.csproj" />
+    <Project Path="CoffeeCard.MobilePay.GenerateApi/CoffeeCard.MobilePay.GenerateApi.csproj" />
+    <Project Path="CoffeeCard.MobilePay/CoffeeCard.MobilePay.csproj" />
+    <Project Path="CoffeeCard.Models/CoffeeCard.Models.csproj" />
+    <Project Path="CoffeeCard.WebApi/CoffeeCard.WebApi.csproj" />
+  </Folder>
+  <Folder Name="/Test/">
+    <Project Path="CoffeeCard.Generators/CoffeeCard.Generators.csproj" />
+    <Project Path="CoffeeCard.Tests.Common/CoffeeCard.Tests.Common.csproj" />
+    <Project Path="CoffeeCard.Tests.Integration/CoffeeCard.Tests.Integration.csproj" />
+    <Project Path="CoffeeCard.Tests.Unit/CoffeeCard.Tests.Unit.csproj" />
+  </Folder>
+</Solution>
