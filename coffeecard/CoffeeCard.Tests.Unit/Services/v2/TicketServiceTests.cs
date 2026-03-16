@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using CoffeeCard.Models.Entities;
+using CoffeeCard.Tests.Common.Builders;
 using Moq;
 using Xunit;
 using TicketService = CoffeeCard.Library.Services.v2.TicketService;
@@ -14,80 +15,41 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         public async Task GetCoffeeCardsAsync_ReturnsCoffeeCardsWithMenuItems()
         {
             // Arrange
-            var user = new User
-            {
-                Name = "Test User",
-                Email = "test@example.com",
-                Password = "password",
-                Salt = "salt",
-                IsVerified = true,
-                Experience = 0,
-                DateCreated = DateTime.UtcNow,
-                DateUpdated = DateTime.UtcNow,
-                PrivacyActivated = true,
-                Programme = new Programme { ShortName = "CS", FullName = "Computer Science" },
-                Purchases = [],
-                Statistics = [],
-                Tokens = [],
-                UserState = UserState.Active,
-                UserGroup = UserGroup.Customer,
-                Tickets = [],
-            };
+            var user = UserBuilder.DefaultCustomer().WithName("Test User").Build();
 
-            var cappuccino = new MenuItem
-            {
-                Name = "Cappuccino",
-                Active = true,
-                AssociatedProducts = [],
-                MenuItemProducts = [],
-            };
+            var cappuccino = MenuItemBuilder
+                .Simple()
+                .WithName("Cappuccino")
+                .WithActive(true)
+                .Build();
 
-            var latte = new MenuItem
-            {
-                Name = "Latte",
-                Active = false,
-                AssociatedProducts = [],
-                MenuItemProducts = [],
-            };
+            var latte = MenuItemBuilder.Simple().WithName("Latte").WithActive(false).Build();
 
-            var hiddenOwnedProduct = new Product
-            {
-                Name = "Owned Hidden Clip Card",
-                Description = "Hidden product with tickets",
-                NumberOfTickets = 10,
-                Price = 100,
-                ExperienceWorth = 0,
-                Visible = false,
-                ProductUserGroup = [new ProductUserGroup { UserGroup = UserGroup.Manager }],
-                EligibleMenuItems = [cappuccino, latte],
-                MenuItemProducts = [],
-            };
+            var hiddenOwnedProduct = ProductBuilder
+                .Simple()
+                .WithName("Owned Hidden Clip Card")
+                .WithVisible(false)
+                .WithProductUserGroup([new ProductUserGroup { UserGroup = UserGroup.Manager }])
+                .WithEligibleMenuItems([cappuccino, latte])
+                .Build();
 
-            var availableProduct = new Product
-            {
-                Name = "Available Product",
-                Description = "Visible and eligible for customer",
-                NumberOfTickets = 8,
-                Price = 75,
-                ExperienceWorth = 0,
-                Visible = true,
-                ProductUserGroup = [new ProductUserGroup { UserGroup = UserGroup.Customer }],
-                EligibleMenuItems = [cappuccino],
-                MenuItemProducts = [],
-            };
+            var availableProduct = ProductBuilder
+                .Simple()
+                .WithName("Available Product")
+                .WithDescription("Visible and eligible for customer")
+                .WithVisible(true)
+                .WithProductUserGroup([new ProductUserGroup { UserGroup = UserGroup.Customer }])
+                .WithEligibleMenuItems([cappuccino])
+                .Build();
 
-            var excludedProduct = new Product
-            {
-                Name = "Excluded Product",
-                Description = "Visible but not eligible for customer",
-                NumberOfTickets = 5,
-                Price = 40,
-                ExperienceWorth = 0,
-                Visible = true,
-                ProductUserGroup = [new ProductUserGroup { UserGroup = UserGroup.Board }],
-                EligibleMenuItems = [latte],
-                MenuItemProducts = [],
-            };
+            var excludedProduct = ProductBuilder
+                .Simple()
+                .WithName("Excluded Product")
+                .WithDescription("Visible but not eligible for customer")
+                .WithVisible(true)
+                .WithProductUserGroup([new ProductUserGroup { UserGroup = UserGroup.Board }])
+                .WithEligibleMenuItems([latte])
+                .Build();
 
             InitialContext.Users.Add(user);
             InitialContext.Products.AddRange(hiddenOwnedProduct, availableProduct, excludedProduct);
