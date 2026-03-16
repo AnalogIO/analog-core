@@ -48,7 +48,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.GroupedTicketsResponse
         /// The menu items that this ticket can be used on.
         /// </summary>
         /// <value>Menu items</value>
-        /// <example>["Cappuccino", "Caffe Latte"]</example>
+        /// <example>[{ "id": 1, "name": "Cappuccino", "active": true }, { "id": 2, "name": "Caffe Latte", "active": false }]</example>
         [Required]
         public required IEnumerable<MenuItemResponse> EligibleMenuItems { get; set; }
     }
