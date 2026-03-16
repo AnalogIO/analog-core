@@ -10,6 +10,7 @@ using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 using CoffeeCard.Models.Entities;
+using CoffeeCard.Tests.Common.Builders;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
@@ -67,25 +68,13 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             };
             context.Add(user);
 
-            var product1 = new Product
-            {
-                Id = 1,
-                Name = "Product1",
-                Description = "desc",
-                Price = 100,
-            };
+            var product1 = ProductBuilder.Simple().Build();
             context.Add(product1);
 
             var pug1 = new ProductUserGroup { UserGroup = UserGroup.Customer, Product = product1 };
             context.Add(pug1);
 
-            var product2 = new Product
-            {
-                Id = 2,
-                Name = "Product2",
-                Description = "desc",
-                Price = 100,
-            };
+            var product2 = ProductBuilder.Simple().Build();
             context.Add(product2);
 
             var pug2 = new ProductUserGroup { UserGroup = UserGroup.Barista, Product = product2 };
@@ -154,13 +143,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             };
             context.Add(user);
 
-            var product1 = new Product
-            {
-                Id = 1,
-                Name = "Product1",
-                Description = "desc",
-                Price = 100,
-            };
+            var product1 = ProductBuilder.Simple().Build();
             context.Add(product1);
 
             var pug1 = new ProductUserGroup { UserGroup = UserGroup.Customer, Product = product1 };
@@ -1204,40 +1187,11 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
         public static IEnumerable<object[]> ProductGenerator()
         {
-            var pug = new List<ProductUserGroup> { new ProductUserGroup { ProductId = 1 } };
-            yield return new object[]
-            {
-                new Product
-                {
-                    Name = "Test1",
-                    Description = "Test1",
-                    Id = 1,
-                    NumberOfTickets = 1,
-                    ProductUserGroup = pug,
-                },
-            };
-            yield return new object[]
-            {
-                new Product
-                {
-                    Name = "Test2",
-                    Description = "Test2",
-                    Id = 1,
-                    NumberOfTickets = 5,
-                    ProductUserGroup = pug,
-                },
-            };
-            yield return new object[]
-            {
-                new Product
-                {
-                    Name = "Test3",
-                    Description = "Test3",
-                    Id = 1,
-                    NumberOfTickets = 10,
-                    ProductUserGroup = pug,
-                },
-            };
+            var pug = ProductUserGroupBuilder.Simple().Build(1);
+            var products = ProductBuilder.Simple().WithProductUserGroup(pug).WithPrice(0).Build(3);
+            yield return [products[0]];
+            yield return [products[1]];
+            yield return [products[2]];
         }
     }
 }

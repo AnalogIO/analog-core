@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
+using CoffeeCard.Models.DataTransferObjects.v2.GroupedTicketsResponse;
+using CoffeeCard.Models.DataTransferObjects.v2.MenuItems;
 using CoffeeCard.Models.DataTransferObjects.v2.Ticket;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -74,6 +76,39 @@ namespace CoffeeCard.Library.Services.v2
                     UsedOnMenuItemName = t.UsedOnMenuItem != null ? t.UsedOnMenuItem.Name : null,
                 })
                 .ToListAsync();
+        }
+
+        public async Task<IEnumerable<GroupedTicketsResponse>> GetGroupedTicketsAsync(User user)
+        {
+            var products = _context
+                .Tickets.Where(t => t.Owner == user && t.Status == TicketStatus.Unused)
+                .GroupBy(t => t.ProductId)
+                .Select(group => new
+                {
+                    ProductId = group.Key,
+                    ProductName = group.First().Purchase.ProductName,
+                    TicketsLeft = group.Count(),
+                })
+                .ToList();
+
+            var menuItems = _context
+                .Products.Where(m => products.Select(r => r.ProductId).ToList().Contains(m.Id))
+                .Select(p => new { p.Id, p.EligibleMenuItems })
+                .ToDictionary(p => p.Id, p => p.EligibleMenuItems);
+
+            return products.Select(r => new GroupedTicketsResponse
+            {
+                ProductId = r.ProductId,
+                ProductName = r.ProductName,
+                TicketsLeft = r.TicketsLeft,
+                EligibleMenuItems = menuItems[r.ProductId]
+                    .Select(mi => new MenuItemResponse
+                    {
+                        Id = mi.Id,
+                        Name = mi.Name,
+                        Active = mi.Active,
+                    }),
+            });
         }
 
         public async Task<UsedTicketResponse> UseTicketAsync(User user, int productId)

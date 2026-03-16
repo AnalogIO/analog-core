@@ -4,7 +4,7 @@ using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.Voucher;
-using CoffeeCard.Models.Entities;
+using CoffeeCard.Tests.Common.Builders;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
@@ -36,12 +36,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 environmentSettings
             );
 
-            var product = new Product
-            {
-                Id = 1,
-                Name = "product",
-                Description = "desc",
-            };
+            var product = ProductBuilder.Simple().WithId(productId).Build();
             await context.Products.AddAsync(product);
             await context.SaveChangesAsync();
             var voucherService = new VoucherService(context);
@@ -103,12 +98,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 environmentSettings
             );
 
-            var product = new Product
-            {
-                Id = 1,
-                Name = "product",
-                Description = "desc",
-            };
+            var product = ProductBuilder.Simple().Build();
             await context.Products.AddAsync(product);
             await context.SaveChangesAsync();
             var voucherService = new VoucherService(context);
@@ -149,12 +139,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 environmentSettings
             );
 
-            var product = new Product
-            {
-                Id = 1,
-                Name = "product",
-                Description = "desc",
-            };
+            var product = ProductBuilder.Simple().Build();
             await context.Products.AddAsync(product);
             await context.SaveChangesAsync();
             var voucherService = new VoucherService(context);
@@ -189,12 +174,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 environmentSettings
             );
 
-            var product = new Product
-            {
-                Id = 1,
-                Name = "product",
-                Description = "desc",
-            };
+            var product = ProductBuilder.Simple().Build();
             await context.Products.AddAsync(product);
             await context.SaveChangesAsync();
             var voucherService = new VoucherService(context);

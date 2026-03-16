@@ -444,7 +444,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 .Build();
             var expected = UserBuilder
                 .DefaultCustomer()
-                .WithPrivacyActivated(user.PrivacyActivated)
+                .WithPrivacyActivated(true)
                 .WithName("")
                 .WithPassword("")
                 .WithSalt("")
