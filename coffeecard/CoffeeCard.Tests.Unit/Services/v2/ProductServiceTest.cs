@@ -6,6 +6,7 @@ using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.Product;
 using CoffeeCard.Models.Entities;
+using CoffeeCard.Tests.Common.Builders;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
@@ -34,16 +35,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 databaseSettings,
                 environmentSettings
             );
-            var p = new Product
-            {
-                Id = 1,
-                Name = "Coffee",
-                Description = "Coffee Clip card",
-                NumberOfTickets = 10,
-                Price = 10,
-                ExperienceWorth = 10,
-                Visible = true,
-            };
+            var p = ProductBuilder.Simple().Build();
             await context.AddAsync(p);
             await context.SaveChangesAsync();
 

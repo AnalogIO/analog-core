@@ -27,12 +27,12 @@ namespace CoffeeCard.Models.Entities
         /// <summary>
         /// Gets or sets the Name of the product.
         /// </summary>
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the Description of the product.
         /// </summary>
-        public string Description { get; set; }
+        public required string Description { get; set; }
 
         /// <summary>
         /// Gets or sets the experience worth of the product.
@@ -48,17 +48,17 @@ namespace CoffeeCard.Models.Entities
         /// <summary>
         /// Gets or sets the collection of user groups associated with the product.
         /// </summary>
-        public ICollection<ProductUserGroup> ProductUserGroup { get; set; }
+        public required ICollection<ProductUserGroup> ProductUserGroup { get; set; }
 
         /// <summary>
         /// The menu item(s) that this product is eligible to redeem
         /// </summary>
-        public ICollection<MenuItem> EligibleMenuItems { get; set; }
+        public required ICollection<MenuItem> EligibleMenuItems { get; set; }
 
         /// <summary>
         /// Navigational property for the join table between Menu Items and Products
         /// </summary>
-        public ICollection<MenuItemProduct> MenuItemProducts { get; set; }
+        public ICollection<MenuItemProduct> MenuItemProducts { get; set; } = [];
 
         public bool Equals(Product? other)
         {
