@@ -31,7 +31,9 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 .Simple()
                 .WithName("Owned Hidden Clip Card")
                 .WithVisible(false)
-                .WithProductUserGroup([new ProductUserGroup { UserGroup = UserGroup.Manager }])
+                .WithProductUserGroup(
+                    [ProductUserGroupBuilder.Simple().WithUserGroup(UserGroup.Manager).Build()]
+                )
                 .WithEligibleMenuItems([cappuccino, latte])
                 .Build();
 
@@ -40,7 +42,9 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 .WithName("Available Product")
                 .WithDescription("Visible and eligible for customer")
                 .WithVisible(true)
-                .WithProductUserGroup([new ProductUserGroup { UserGroup = UserGroup.Customer }])
+                .WithProductUserGroup(
+                    [ProductUserGroupBuilder.Simple().WithUserGroup(UserGroup.Customer).Build()]
+                )
                 .WithEligibleMenuItems([cappuccino])
                 .Build();
 
@@ -49,7 +53,9 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 .WithName("Excluded Product")
                 .WithDescription("Visible but not eligible for customer")
                 .WithVisible(true)
-                .WithProductUserGroup([new ProductUserGroup { UserGroup = UserGroup.Board }])
+                .WithProductUserGroup(
+                    [ProductUserGroupBuilder.Simple().WithUserGroup(UserGroup.Board).Build()]
+                )
                 .WithEligibleMenuItems([latte])
                 .Build();
 
