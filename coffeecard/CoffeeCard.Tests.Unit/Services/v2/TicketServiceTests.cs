@@ -10,9 +10,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 {
     public class TicketServiceTests : BaseUnitTests
     {
-        [Fact(
-            DisplayName = "GetCoffeeCardsAsync returns available products and includes menu items"
-        )]
+        [Fact(DisplayName = "GetCoffeeCardsAsync returns owned products and includes menu items")]
         public async Task GetCoffeeCardsAsync_ReturnsCoffeeCardsWithMenuItems()
         {
             // Arrange
@@ -181,7 +179,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var result = (await service.GetCoffeeCardsAsync(assertionUser)).ToList();
 
             // Assert
-            Assert.Equal(2, result.Count);
+            Assert.Single(result);
 
             var ownedCard = Assert.Single(result.Where(r => r.ProductId == hiddenOwnedProduct.Id));
             Assert.Equal(hiddenOwnedProduct.Name, ownedCard.ProductName);
@@ -193,13 +191,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             );
             Assert.Contains(ownedCard.EligibleMenuItems, mi => mi.Name == "Latte" && !mi.Active);
 
-            var availableCard = Assert.Single(
-                result.Where(r => r.ProductId == availableProduct.Id)
-            );
-            Assert.Equal(0, availableCard.TicketsLeft);
-            Assert.Single(availableCard.EligibleMenuItems);
-            Assert.Equal("Cappuccino", availableCard.EligibleMenuItems.First().Name);
-
+            Assert.DoesNotContain(result, r => r.ProductId == availableProduct.Id);
             Assert.DoesNotContain(result, r => r.ProductId == excludedProduct.Id);
         }
     }

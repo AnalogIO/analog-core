@@ -5,7 +5,7 @@ using CoffeeCard.Models.DataTransferObjects.v2.MenuItems;
 namespace CoffeeCard.Models.DataTransferObjects.v2.CoffeeCards
 {
     /// <summary>
-    /// A coffee card is a purchasable product and its remaining unused tickets for a user.
+    /// A coffee card is a collection of unused tickets a user owns for a product.
     /// </summary>
     /// <example>
     /// {

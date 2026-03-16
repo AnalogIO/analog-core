@@ -80,48 +80,34 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task<IEnumerable<CoffeeCardResponse>> GetCoffeeCardsAsync(User user)
         {
-            var unusedTicketCountsByProductId = await _context
+            var products = _context
                 .Tickets.Where(t => t.Owner == user && t.Status == TicketStatus.Unused)
                 .GroupBy(t => t.ProductId)
-                .Select(group => new { ProductId = group.Key, TicketsLeft = group.Count() })
-                .ToListAsync();
-
-            var unusedProductIds = unusedTicketCountsByProductId.Select(t => t.ProductId).ToList();
-
-            var productsWithUnusedTickets = await _context
-                .Products.Where(p => unusedProductIds.Contains(p.Id))
-                .Include(p => p.EligibleMenuItems)
-                .ToListAsync();
-
-            var availableProducts = await _context
-                .Products.Where(p => p.ProductUserGroup.Any(pug => pug.UserGroup == user.UserGroup))
-                .Where(p => p.Visible)
-                .Include(p => p.EligibleMenuItems)
-                .ToListAsync();
-
-            var products = productsWithUnusedTickets
-                .DistinctBy(p => p.Id)
-                .OrderBy(p => p.Id)
+                .Select(group => new
+                {
+                    ProductId = group.Key,
+                    ProductName = group.First().Purchase.ProductName,
+                    TicketsLeft = group.Count(),
+                })
                 .ToList();
 
-            var ticketsLeftLookup = unusedTicketCountsByProductId.ToDictionary(
-                x => x.ProductId,
-                x => x.TicketsLeft
-            );
+            var menuItems = _context
+                .Products.Where(m => products.Select(r => r.ProductId).ToList().Contains(m.Id))
+                .Select(p => new { p.Id, p.EligibleMenuItems })
+                .ToDictionary(p => p.Id, p => p.EligibleMenuItems);
 
-            return products.Select(product => new CoffeeCardResponse
+            return products.Select(r => new CoffeeCardResponse
             {
-                ProductId = product.Id,
-                ProductName = product.Name,
-                TicketsLeft = ticketsLeftLookup.GetValueOrDefault(product.Id, 0),
-                EligibleMenuItems = product
-                    .EligibleMenuItems.Select(menuItem => new MenuItemResponse
+                ProductId = r.ProductId,
+                ProductName = r.ProductName,
+                TicketsLeft = r.TicketsLeft,
+                EligibleMenuItems = menuItems[r.ProductId]
+                    .Select(mi => new MenuItemResponse
                     {
-                        Id = menuItem.Id,
-                        Name = menuItem.Name,
-                        Active = menuItem.Active,
-                    })
-                    .ToList(),
+                        Id = mi.Id,
+                        Name = mi.Name,
+                        Active = mi.Active,
+                    }),
             });
         }
 
