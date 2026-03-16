@@ -81,7 +81,7 @@ namespace CoffeeCard.Library.Services.v2
         public async Task<IEnumerable<CoffeeCardResponse>> GetCoffeeCardsAsync(User user)
         {
             var unusedTicketCountsByProductId = await _context
-                .Tickets.Where(t => t.Owner.Id == user.Id && t.Status == TicketStatus.Unused)
+                .Tickets.Where(t => t.Owner == user && t.Status == TicketStatus.Unused)
                 .GroupBy(t => t.ProductId)
                 .Select(group => new { ProductId = group.Key, TicketsLeft = group.Count() })
                 .ToListAsync();
@@ -100,9 +100,7 @@ namespace CoffeeCard.Library.Services.v2
                 .ToListAsync();
 
             var products = productsWithUnusedTickets
-                .Concat(availableProducts)
-                .GroupBy(p => p.Id)
-                .Select(group => group.First())
+                .DistinctBy(p => p.Id)
                 .OrderBy(p => p.Id)
                 .ToList();
 
@@ -115,7 +113,6 @@ namespace CoffeeCard.Library.Services.v2
             {
                 ProductId = product.Id,
                 ProductName = product.Name,
-                Price = product.Price,
                 TicketsLeft = ticketsLeftLookup.GetValueOrDefault(product.Id, 0),
                 EligibleMenuItems = product
                     .EligibleMenuItems.Select(menuItem => new MenuItemResponse

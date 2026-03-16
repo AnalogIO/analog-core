@@ -12,7 +12,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.CoffeeCards
     ///     "productId": 1,
     ///     "productName": "Filter Coffee",
     ///     "ticketsLeft": 5,
-    ///     "price": 50,
     ///     "eligibleMenuItems": [
     ///         { "id": 1, "name": "Cappuccino" },
     ///         { "id": 2, "name": "Caffe Latte" }
@@ -44,14 +43,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.CoffeeCards
         /// <example>5</example>
         [Required]
         public required int TicketsLeft { get; set; }
-
-        /// <summary>
-        /// Price of product
-        /// </summary>
-        /// <value>Product Price</value>
-        /// <example>50</example>
-        [Required]
-        public required int Price { get; set; }
 
         /// <summary>
         /// The menu items that this coffee card can be used on.
