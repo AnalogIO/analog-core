@@ -95,16 +95,18 @@ namespace CoffeeCard.Library.Services.v2
                 NumberOfTickets = newProduct.NumberOfTickets,
                 ExperienceWorth = 0,
                 Visible = newProduct.Visible,
-                ProductUserGroup = newProduct
-                    .AllowedUserGroups.Select(userGroup => new ProductUserGroup
-                    {
-                        UserGroup = userGroup,
-                    })
-                    .ToList(),
+                ProductUserGroup = [],
                 EligibleMenuItems = _context
                     .MenuItems.Where(mi => newProduct.MenuItemIds.Contains(mi.Id))
                     .ToList(),
             };
+            product.ProductUserGroup = newProduct
+                .AllowedUserGroups.Select(userGroup => new ProductUserGroup
+                {
+                    Product = product,
+                    UserGroup = userGroup,
+                })
+                .ToList();
 
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
@@ -130,7 +132,7 @@ namespace CoffeeCard.Library.Services.v2
             product.ProductUserGroup = changedProduct
                 .AllowedUserGroups.Select(userGroup => new ProductUserGroup
                 {
-                    ProductId = product.Id,
+                    Product = product,
                     UserGroup = userGroup,
                 })
                 .ToList();

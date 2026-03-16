@@ -18,8 +18,8 @@ namespace CoffeeCard.Tests.Unit.Utils
                 .Simple()
                 .WithProductUserGroup(
                     [
-                        new ProductUserGroup { UserGroup = UserGroup.Manager },
-                        new ProductUserGroup { UserGroup = UserGroup.Board },
+                        ProductUserGroupBuilder.Simple().WithUserGroup(UserGroup.Manager).Build(),
+                        ProductUserGroupBuilder.Simple().WithUserGroup(UserGroup.Board).Build(),
                     ]
                 )
                 .Build();
@@ -32,7 +32,9 @@ namespace CoffeeCard.Tests.Unit.Utils
         {
             var product = ProductBuilder
                 .Simple()
-                .WithProductUserGroup([new ProductUserGroup { UserGroup = UserGroup.Customer }])
+                .WithProductUserGroup(
+                    [ProductUserGroupBuilder.Simple().WithUserGroup(UserGroup.Customer).Build()]
+                )
                 .Build();
 
             Assert.False(product.IsPerk());
@@ -61,25 +63,15 @@ namespace CoffeeCard.Tests.Unit.Utils
         )]
         public void TestToProductResponseConvertsProductUserGroup()
         {
-            var product = new Product
-            {
-                Id = 1,
-                Name = "Coffee",
-                Description = "Coffee Clip card",
-                NumberOfTickets = 10,
-                Price = 10,
-                ExperienceWorth = 10,
-                Visible = true,
-                ProductUserGroup = new[]
-                {
-                    new ProductUserGroup { UserGroup = UserGroup.Manager },
-                    new ProductUserGroup { UserGroup = UserGroup.Board },
-                },
-                EligibleMenuItems = new[]
-                {
-                    new MenuItem { Id = 1, Name = "Coffee" },
-                },
-            };
+            var product = ProductBuilder
+                .Simple()
+                .WithProductUserGroup(
+                    [
+                        ProductUserGroupBuilder.Simple().WithUserGroup(UserGroup.Manager).Build(),
+                        ProductUserGroupBuilder.Simple().WithUserGroup(UserGroup.Board).Build(),
+                    ]
+                )
+                .Build();
 
             var productResponse = product.ToProductResponse();
 

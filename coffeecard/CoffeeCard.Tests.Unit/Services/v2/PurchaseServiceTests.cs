@@ -1187,7 +1187,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
         public static IEnumerable<object[]> ProductGenerator()
         {
-            var pug = new List<ProductUserGroup> { new ProductUserGroup { ProductId = 1 } };
+            var pug = ProductUserGroupBuilder.Simple().Build(1);
             var products = ProductBuilder.Simple().WithProductUserGroup(pug).WithPrice(0).Build(3);
             yield return [products[0]];
             yield return [products[1]];
