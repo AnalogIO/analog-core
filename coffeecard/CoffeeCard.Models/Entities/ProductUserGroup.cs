@@ -13,11 +13,11 @@
         /// <summary>
         /// Gets or sets the product associated with this product user group.
         /// </summary>
-        public Product Product { get; set; }
+        public required Product Product { get; set; }
 
         /// <summary>
         /// Gets or sets the user group associated with this product user group.
         /// </summary>
-        public UserGroup UserGroup { get; set; }
+        public required UserGroup UserGroup { get; set; }
     }
 }
