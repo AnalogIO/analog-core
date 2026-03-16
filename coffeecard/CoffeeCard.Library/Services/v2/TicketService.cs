@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
+using CoffeeCard.Models.DataTransferObjects.v2.CoffeeCards;
+using CoffeeCard.Models.DataTransferObjects.v2.MenuItems;
 using CoffeeCard.Models.DataTransferObjects.v2.Ticket;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -74,6 +76,56 @@ namespace CoffeeCard.Library.Services.v2
                     UsedOnMenuItemName = t.UsedOnMenuItem != null ? t.UsedOnMenuItem.Name : null,
                 })
                 .ToListAsync();
+        }
+
+        public async Task<IEnumerable<CoffeeCardResponse>> GetCoffeeCardsAsync(User user)
+        {
+            var unusedTicketCountsByProductId = await _context
+                .Tickets.Where(t => t.Owner.Id == user.Id && t.Status == TicketStatus.Unused)
+                .GroupBy(t => t.ProductId)
+                .Select(group => new { ProductId = group.Key, TicketsLeft = group.Count() })
+                .ToListAsync();
+
+            var unusedProductIds = unusedTicketCountsByProductId.Select(t => t.ProductId).ToList();
+
+            var productsWithUnusedTickets = await _context
+                .Products.Where(p => unusedProductIds.Contains(p.Id))
+                .Include(p => p.EligibleMenuItems)
+                .ToListAsync();
+
+            var availableProducts = await _context
+                .Products.Where(p => p.ProductUserGroup.Any(pug => pug.UserGroup == user.UserGroup))
+                .Where(p => p.Visible)
+                .Include(p => p.EligibleMenuItems)
+                .ToListAsync();
+
+            var products = productsWithUnusedTickets
+                .Concat(availableProducts)
+                .GroupBy(p => p.Id)
+                .Select(group => group.First())
+                .OrderBy(p => p.Id)
+                .ToList();
+
+            var ticketsLeftLookup = unusedTicketCountsByProductId.ToDictionary(
+                x => x.ProductId,
+                x => x.TicketsLeft
+            );
+
+            return products.Select(product => new CoffeeCardResponse
+            {
+                ProductId = product.Id,
+                ProductName = product.Name,
+                Price = product.Price,
+                TicketsLeft = ticketsLeftLookup.GetValueOrDefault(product.Id, 0),
+                EligibleMenuItems = product
+                    .EligibleMenuItems.Select(menuItem => new MenuItemResponse
+                    {
+                        Id = menuItem.Id,
+                        Name = menuItem.Name,
+                        Active = menuItem.Active,
+                    })
+                    .ToList(),
+            });
         }
 
         public async Task<UsedTicketResponse> UseTicketAsync(User user, int productId)
