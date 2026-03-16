@@ -11,8 +11,10 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 {
     public class TicketServiceTests : BaseUnitTests
     {
-        [Fact(DisplayName = "GetCoffeeCardsAsync returns owned products and includes menu items")]
-        public async Task GetCoffeeCardsAsync_ReturnsCoffeeCardsWithMenuItems()
+        [Fact(
+            DisplayName = "GetGroupedTicketsAsync returns owned products and includes menu items"
+        )]
+        public async Task GetGroupedTicketsAsync_ReturnsGroupedTicketsWithMenuItems()
         {
             // Arrange
             var user = UserBuilder.DefaultCustomer().WithName("Test User").Build();
@@ -138,7 +140,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             );
 
             // Act
-            var result = (await service.GetCoffeeCardsAsync(assertionUser)).ToList();
+            var result = (await service.GetGroupedTicketsAsync(assertionUser)).ToList();
 
             // Assert
             Assert.Single(result);

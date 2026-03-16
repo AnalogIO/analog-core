@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Utils;
+using CoffeeCard.Models.DataTransferObjects.v2.GroupedTicketsResponse;
 using CoffeeCard.Models.DataTransferObjects.v2.Ticket;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -73,6 +74,23 @@ namespace CoffeeCard.WebApi.Controllers.v2
             return Ok(
                 await _ticketService.UseTicketAsync(user, request.ProductId, request.MenuItemId)
             );
+        }
+
+        /// <summary>
+        /// Retrieve the owned tickets of the account (grouped)
+        /// </summary>
+        /// <returns>Grouped tickets</returns>
+        /// <response code="200">Successful request</response>
+        /// <response code="401">Invalid credentials</response>
+        [HttpGet("grouped-owned")]
+        [ProducesResponseType(typeof(IEnumerable<GroupedTicketsResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+        public async Task<
+            ActionResult<IEnumerable<GroupedTicketsResponse>>
+        > GetGroupedOwnedTickets()
+        {
+            var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
+            return Ok(await _ticketService.GetGroupedTicketsAsync(user));
         }
     }
 }

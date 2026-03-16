@@ -2,10 +2,10 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using CoffeeCard.Models.DataTransferObjects.v2.MenuItems;
 
-namespace CoffeeCard.Models.DataTransferObjects.v2.CoffeeCards
+namespace CoffeeCard.Models.DataTransferObjects.v2.GroupedTicketsResponse
 {
     /// <summary>
-    /// A coffee card is a collection of unused tickets a user owns for a product.
+    /// A collection of unused tickets a user owns for a product.
     /// </summary>
     /// <example>
     /// {
@@ -18,7 +18,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.CoffeeCards
     ///     ]
     /// }
     /// </example>
-    public class CoffeeCardResponse
+    public class GroupedTicketsResponse
     {
         /// <summary>
         /// Id of product
@@ -45,7 +45,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.CoffeeCards
         public required int TicketsLeft { get; set; }
 
         /// <summary>
-        /// The menu items that this coffee card can be used on.
+        /// The menu items that this ticket can be used on.
         /// </summary>
         /// <value>Menu items</value>
         /// <example>["Cappuccino", "Caffe Latte"]</example>

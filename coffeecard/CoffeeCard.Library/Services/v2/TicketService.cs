@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
-using CoffeeCard.Models.DataTransferObjects.v2.CoffeeCards;
+using CoffeeCard.Models.DataTransferObjects.v2.GroupedTicketsResponse;
 using CoffeeCard.Models.DataTransferObjects.v2.MenuItems;
 using CoffeeCard.Models.DataTransferObjects.v2.Ticket;
 using CoffeeCard.Models.Entities;
@@ -78,7 +78,7 @@ namespace CoffeeCard.Library.Services.v2
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<CoffeeCardResponse>> GetCoffeeCardsAsync(User user)
+        public async Task<IEnumerable<GroupedTicketsResponse>> GetGroupedTicketsAsync(User user)
         {
             var products = _context
                 .Tickets.Where(t => t.Owner == user && t.Status == TicketStatus.Unused)
@@ -96,7 +96,7 @@ namespace CoffeeCard.Library.Services.v2
                 .Select(p => new { p.Id, p.EligibleMenuItems })
                 .ToDictionary(p => p.Id, p => p.EligibleMenuItems);
 
-            return products.Select(r => new CoffeeCardResponse
+            return products.Select(r => new GroupedTicketsResponse
             {
                 ProductId = r.ProductId,
                 ProductName = r.ProductName,
