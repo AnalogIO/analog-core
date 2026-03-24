@@ -160,6 +160,7 @@ namespace CoffeeCard.WebApi
                 Library.Services.v2.ILeaderboardService,
                 Library.Services.v2.LeaderboardService
             >();
+            services.AddScoped<IReceiptService, ReceiptService>();
             services.AddScoped<IStatisticService, StatisticService>();
             services.AddScoped<IDateTimeProvider, DateTimeProvider>();
             services.AddScoped<IAdminStatisticsService, AdminStatisticsService>();
