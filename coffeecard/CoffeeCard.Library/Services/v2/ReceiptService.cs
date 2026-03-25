@@ -38,11 +38,10 @@ public class ReceiptService : IReceiptService
         int userId
     )
     {
-        var ticketReceipts = !type.HasFlag(ReceiptType.UsedTicket)
-            ? []
-            : await _context
+        var ticketReceipts = type.HasFlag(ReceiptType.UsedTicket)
+            ? await _context
                 .Tickets.Where(t => t.OwnerId == userId)
-                .Where(ticket => ticket.DateUsed >= from)
+                .Where(ticket => ticket.DateUsed < from)
                 .Where(ticket => ticket.DateUsed != null)
                 .OrderByDescending(ticket => ticket.DateCreated)
                 .Take(batchSize)
@@ -51,13 +50,13 @@ public class ReceiptService : IReceiptService
                     ProductName = t.Purchase.ProductName,
                     SwipeDate = t.DateUsed.Value,
                 })
-                .ToListAsync();
+                .ToListAsync()
+            : [];
 
-        var voucherReceipts = !type.HasFlag(ReceiptType.Voucher)
-            ? []
-            : await _context
+        var voucherReceipts = type.HasFlag(ReceiptType.Voucher)
+            ? await _context
                 .Purchases.Where(p => p.PurchasedById == userId)
-                .Where(purchase => purchase.DateCreated >= from)
+                .Where(purchase => purchase.DateCreated < from)
                 .Where(p => p.Type == PurchaseType.Voucher)
                 .OrderByDescending(purchase => purchase.DateCreated)
                 .Take(batchSize)
@@ -68,13 +67,13 @@ public class ReceiptService : IReceiptService
                     ProductName = p.ProductName,
                     RedeemDate = p.DateCreated,
                 })
-                .ToListAsync();
+                .ToListAsync()
+            : [];
 
-        var purchaseReceipts = !type.HasFlag(ReceiptType.Purchase)
-            ? []
-            : await _context
+        var purchaseReceipts = type.HasFlag(ReceiptType.Purchase)
+            ? await _context
                 .Purchases.Where(p => p.PurchasedById == userId)
-                .Where(purchase => purchase.DateCreated >= from)
+                .Where(purchase => purchase.DateCreated < from)
                 .Where(p => p.Type != PurchaseType.Voucher)
                 .OrderByDescending(purchase => purchase.DateCreated)
                 .Take(batchSize)
@@ -87,7 +86,8 @@ public class ReceiptService : IReceiptService
                     OrderDate = p.DateCreated,
                     Price = p.Price,
                 })
-                .ToListAsync();
+                .ToListAsync()
+            : [];
 
         List<ReceiptBase> combinedReceipts =
         [
@@ -101,7 +101,8 @@ public class ReceiptService : IReceiptService
             .ToList();
 
         // As they are ordered by date, the last index will represent the continuation token
-        var continuationToken = receiptList[^1].IssuingDate;
+        var continuationToken =
+            receiptList.Count == 0 ? DateTime.UtcNow : receiptList[^1].IssuingDate;
         var encodedToken = Convert.ToBase64String(
             System.Text.Encoding.UTF8.GetBytes(continuationToken.ToString("O"))
         );

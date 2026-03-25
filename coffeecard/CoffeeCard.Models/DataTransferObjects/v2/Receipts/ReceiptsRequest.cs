@@ -23,8 +23,8 @@ public class ReceiptsRequest
 [Flags]
 public enum ReceiptType
 {
-    Purchase,
-    Voucher,
-    UsedTicket,
+    Purchase = 1,
+    Voucher = 2,
+    UsedTicket = 4,
     All = Purchase | Voucher | UsedTicket,
 }
