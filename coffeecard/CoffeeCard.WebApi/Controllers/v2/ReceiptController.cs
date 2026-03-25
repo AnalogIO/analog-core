@@ -36,7 +36,9 @@ public class ReceiptController : ControllerBase
     /// This includes all purchases, swiped tickets, and used vouchers
     /// </summary>
     /// <returns>All users receipts</returns>
-    public async Task<ActionResult<ReceiptResponse>> GetReceipts([FromQuery] ReceiptsRequest request)
+    public async Task<ActionResult<ReceiptResponse>> GetReceipts(
+        [FromQuery] ReceiptsRequest request
+    )
     {
         var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
 
@@ -51,13 +53,24 @@ public class ReceiptController : ControllerBase
             {
                 var bytes = Convert.FromBase64String(request.ContinueationToken);
                 var utf8String = System.Text.Encoding.UTF8.GetString(bytes);
-                from = DateTime.ParseExact(utf8String, "O", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);    
-            } catch (FormatException)
+                from = DateTime.ParseExact(
+                    utf8String,
+                    "O",
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.RoundtripKind
+                );
+            }
+            catch (FormatException)
             {
                 throw new BadRequestException("Invalid continuation token");
             }
         }
-        var receipts = await _receiptService.GetReceipts(from, request.BatchSize, request.Type, user.Id);
+        var receipts = await _receiptService.GetReceipts(
+            from,
+            request.BatchSize,
+            request.Type,
+            user.Id
+        );
 
         return Ok(receipts);
     }

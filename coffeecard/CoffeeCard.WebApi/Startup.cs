@@ -219,14 +219,12 @@ namespace CoffeeCard.WebApi
                 );
                 openTelemetryBuilder.ConfigureResource(resource =>
                 {
-                    resource.AddAttributes(
-                        [
-                            new KeyValuePair<string, object>(
-                                "Env",
-                                environment.EnvironmentType.ToString() ?? "Env not set"
-                            ),
-                        ]
-                    );
+                    resource.AddAttributes([
+                        new KeyValuePair<string, object>(
+                            "Env",
+                            environment.EnvironmentType.ToString() ?? "Env not set"
+                        ),
+                    ]);
                     resource.AddAzureAppServiceDetector();
                     resource.AddService(
                         $"analog-core-{environment.EnvironmentType}",
