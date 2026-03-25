@@ -9,7 +9,13 @@ namespace CoffeeCard.Tests.Common.Builders
         {
             var owner = UserBuilder.Simple().Build();
             var purchase = PurchaseBuilder.Simple().Build();
-            return new TicketBuilder().WithOwner(owner).WithPurchase(purchase);
+            return new TicketBuilder()
+                .WithOwner(owner)
+                .WithPurchase(purchase)
+                .WithIsUsed(false)
+                .WithDateCreated(f => f.Date.Past())
+                .WithDateUsed(_ => null)
+                .WithUsedOnMenuItem(_ => null);
         }
 
         public static TicketBuilder Typical()

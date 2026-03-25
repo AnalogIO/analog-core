@@ -102,5 +102,7 @@ namespace CoffeeCard.Models.Entities
         /// The <see cref="Ticket"/>s associated with the purchase.
         /// </summary>
         public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
+
+        public Voucher? Voucher { get; set; }
     }
 }

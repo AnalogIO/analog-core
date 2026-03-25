@@ -7,6 +7,15 @@
     />
     <ProjectReference Include="..\CoffeeCard.Models\CoffeeCard.Models.csproj" />
   </ItemGroup>
+  <PropertyGroup>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Exclude the outputted files of source generators from the compilation -->
+    <!-- Their acutal output in the roslyn pipeline is still there -->
+    <Compile Remove="$(CompilerGeneratedFilesOutputPath)/**/*.cs" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Bogus" Version="35.6.1" />
   </ItemGroup>
