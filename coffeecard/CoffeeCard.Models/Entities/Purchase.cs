@@ -103,6 +103,6 @@ namespace CoffeeCard.Models.Entities
         /// </summary>
         public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 
-        public Voucher Voucher { get; set; }
+        public Voucher? Voucher { get; set; }
     }
 }
