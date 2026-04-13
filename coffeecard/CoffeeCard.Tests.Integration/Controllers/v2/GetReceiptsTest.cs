@@ -220,6 +220,31 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2
         }
 
         [Fact]
+        public async Task GetReceipts_default_batch_size_is_20()
+        {
+            var user = await GetAuthenticatedUserAsync();
+
+            var purchases = PurchaseBuilder
+                .Simple()
+                .WithPurchasedBy(user)
+                .WithStatus(PurchaseStatus.Completed)
+                .WithType(PurchaseType.MobilePayV2)
+                .Build(25);
+
+            await Context.Purchases.AddRangeAsync(purchases);
+
+            await Context.SaveChangesAsync();
+
+            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync(
+                ReceiptType.Purchase,
+                null,
+                null
+            );
+
+            Assert.Equal(20, response.Receipts.Count);
+        }
+
+        [Fact]
         public async Task GetReceipts_with_continuation_token_returns_next_batch()
         {
             var user = await GetAuthenticatedUserAsync();
