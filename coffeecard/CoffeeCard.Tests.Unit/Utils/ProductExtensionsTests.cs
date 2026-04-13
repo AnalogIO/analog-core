@@ -16,12 +16,10 @@ namespace CoffeeCard.Tests.Unit.Utils
         {
             var product = ProductBuilder
                 .Simple()
-                .WithProductUserGroup(
-                    [
-                        ProductUserGroupBuilder.Simple().WithUserGroup(UserGroup.Manager).Build(),
-                        ProductUserGroupBuilder.Simple().WithUserGroup(UserGroup.Board).Build(),
-                    ]
-                )
+                .WithProductUserGroup([
+                    ProductUserGroupBuilder.Simple().WithUserGroup(UserGroup.Manager).Build(),
+                    ProductUserGroupBuilder.Simple().WithUserGroup(UserGroup.Board).Build(),
+                ])
                 .Build();
 
             Assert.True(product.IsPerk());
@@ -32,9 +30,9 @@ namespace CoffeeCard.Tests.Unit.Utils
         {
             var product = ProductBuilder
                 .Simple()
-                .WithProductUserGroup(
-                    [ProductUserGroupBuilder.Simple().WithUserGroup(UserGroup.Customer).Build()]
-                )
+                .WithProductUserGroup([
+                    ProductUserGroupBuilder.Simple().WithUserGroup(UserGroup.Customer).Build(),
+                ])
                 .Build();
 
             Assert.False(product.IsPerk());
@@ -65,12 +63,10 @@ namespace CoffeeCard.Tests.Unit.Utils
         {
             var product = ProductBuilder
                 .Simple()
-                .WithProductUserGroup(
-                    [
-                        ProductUserGroupBuilder.Simple().WithUserGroup(UserGroup.Manager).Build(),
-                        ProductUserGroupBuilder.Simple().WithUserGroup(UserGroup.Board).Build(),
-                    ]
-                )
+                .WithProductUserGroup([
+                    ProductUserGroupBuilder.Simple().WithUserGroup(UserGroup.Manager).Build(),
+                    ProductUserGroupBuilder.Simple().WithUserGroup(UserGroup.Board).Build(),
+                ])
                 .Build();
 
             var productResponse = product.ToProductResponse();
@@ -89,12 +85,10 @@ namespace CoffeeCard.Tests.Unit.Utils
         {
             var product = ProductBuilder
                 .Typical()
-                .WithEligibleMenuItems(
-                    [
-                        new MenuItem { Id = 1, Name = "Coffee" },
-                        new MenuItem { Id = 2, Name = "Tea" },
-                    ]
-                )
+                .WithEligibleMenuItems([
+                    new MenuItem { Id = 1, Name = "Coffee" },
+                    new MenuItem { Id = 2, Name = "Tea" },
+                ])
                 .Build();
 
             var productResponse = product.ToProductResponse();
