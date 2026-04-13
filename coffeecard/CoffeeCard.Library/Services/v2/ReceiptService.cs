@@ -110,7 +110,7 @@ public class ReceiptService : IReceiptService
         {
             Receipts = receiptList,
             // As they are ordered by date, the last index will represent the continuation token
-            ContinueationToken = encodedToken,
+            ContinuationToken = encodedToken,
         };
     }
 }

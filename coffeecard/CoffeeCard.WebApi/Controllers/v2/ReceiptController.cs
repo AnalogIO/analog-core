@@ -43,7 +43,7 @@ public class ReceiptController : ControllerBase
         var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
 
         DateTime from;
-        if (request.ContinueationToken == null)
+        if (request.ContinuationToken == null)
         {
             from = DateTime.UtcNow;
         }
@@ -51,7 +51,7 @@ public class ReceiptController : ControllerBase
         {
             try
             {
-                var bytes = Convert.FromBase64String(request.ContinueationToken);
+                var bytes = Convert.FromBase64String(request.ContinuationToken);
                 var utf8String = System.Text.Encoding.UTF8.GetString(bytes);
                 from = DateTime.ParseExact(
                     utf8String,

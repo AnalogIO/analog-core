@@ -19,7 +19,7 @@ public class ReceiptResponse
     /// Is set to the date and time of the oldest receipt in the current batch.
     /// </summary>
     [Required]
-    public required string ContinueationToken { get; set; }
+    public required string ContinuationToken { get; set; }
 }
 
 /// <summary>

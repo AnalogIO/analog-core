@@ -10,10 +10,7 @@ using CoffeeCard.Tests.Common.Builders;
 using CoffeeCard.Tests.Integration.WebApplication;
 using CoffeeCard.WebApi;
 using Xunit;
-using Xunit;
-using EntityPurchaseStatus = CoffeeCard.Models.DataTransferObjects.v2.Purchase.PurchaseStatus;
 using PurchaseStatus = CoffeeCard.Models.DataTransferObjects.v2.Purchase.PurchaseStatus;
-using UserGroup = CoffeeCard.Models.Entities.UserGroup;
 
 namespace CoffeeCard.Tests.Integration.Controllers.v2
 {
@@ -245,13 +242,13 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2
                 null
             );
             Assert.Equal(2, firstPage.Receipts.Count);
-            Assert.NotNull(firstPage.ContinueationToken);
+            Assert.NotNull(firstPage.ContinuationToken);
 
             // Use the continuation token to get the next batch
             var secondPage = await CoffeeCardClientV2.Receipt_GetReceiptsAsync(
                 ReceiptType.Purchase,
                 2,
-                firstPage.ContinueationToken
+                firstPage.ContinuationToken
             );
             Assert.Equal(2, secondPage.Receipts.Count);
 

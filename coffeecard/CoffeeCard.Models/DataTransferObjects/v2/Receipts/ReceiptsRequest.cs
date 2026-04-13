@@ -14,7 +14,7 @@ public class ReceiptsRequest
     [Required]
     public int BatchSize { get; set; } = 20;
 
-    public required string? ContinueationToken { get; set; }
+    public required string? ContinuationToken { get; set; }
 }
 
 /// <summary>
