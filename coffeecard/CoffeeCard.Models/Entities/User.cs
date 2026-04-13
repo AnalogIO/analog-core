@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
+using CoffeeCard.Models.DataTransferObjects.v2.User;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoffeeCard.Models.Entities
@@ -85,6 +86,16 @@ namespace CoffeeCard.Models.Entities
         /// Gets or sets the user's programme.
         /// </summary>
         public Programme Programme { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user's profile picture icon.
+        /// </summary>
+        public ProfileIcon? ProfileIcon { get; set; }
+
+        /// <summary> 
+        /// Gets or sets the user's profile picture background color.
+        /// </summary>
+        public PictureBackgroundColor? PictureBackgroundColor { get; set; }
 
         /// <summary>
         /// Gets or sets the user's tokens.

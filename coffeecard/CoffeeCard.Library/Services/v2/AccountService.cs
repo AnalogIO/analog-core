@@ -173,6 +173,18 @@ namespace CoffeeCard.Library.Services.v2
                 user.Password = hashedPassword;
                 _logger.LogInformation("User changed password");
             }
+            
+            if (updateUserRequest.ProfileIcon != null)
+            {
+                user.ProfileIcon = updateUserRequest.ProfileIcon;
+                _logger.LogInformation("User changed profile icon to {profileIcon}", user.ProfileIcon);
+            }
+            
+            if (updateUserRequest.BackgroundColor != null)
+            {
+                user.PictureBackgroundColor = updateUserRequest.BackgroundColor;
+                _logger.LogInformation("User changed background color to {backgroundColor}", user.PictureBackgroundColor);
+            }
 
             await _context.SaveChangesAsync();
             return user;

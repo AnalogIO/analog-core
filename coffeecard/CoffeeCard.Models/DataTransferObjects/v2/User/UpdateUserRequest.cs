@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.User
 {
@@ -51,5 +52,19 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
         /// <value>Pin code</value>
         /// <example>[no example provided]</example>
         public string? Password { get; set; }
+
+        /// <summary>
+        /// Profile Icon for the user
+        /// </summary>
+        /// <value>Profile Icon</value>
+        /// <example>4</example>
+        public ProfileIcon? ProfileIcon { get; set; }
+
+        /// <summary>
+        /// Which background color is used for the profile picture
+        /// </summary>
+        /// <value>Background Color</value>
+        /// <example>Moss Green</example>
+        public PictureBackgroundColor? BackgroundColor { get; set; }
     }
 }
