@@ -67,9 +67,9 @@ public class ReceiptController : ControllerBase
         }
         var receipts = await _receiptService.GetReceipts(
             from,
-            request.BatchSize,
             request.Type,
-            user.Id
+            user.Id,
+            request.BatchSize
         );
 
         return Ok(receipts);

@@ -10,16 +10,6 @@ using Microsoft.Extensions.Logging;
 
 namespace CoffeeCard.Library.Services.v2;
 
-public interface IReceiptService
-{
-    Task<ReceiptResponse> GetReceipts(
-        DateTime from,
-        int userId,
-        ReceiptType type,
-        int batchSize = 20
-    );
-}
-
 public class ReceiptService : IReceiptService
 {
     private readonly ILogger<ReceiptService> _logger;
@@ -33,9 +23,9 @@ public class ReceiptService : IReceiptService
 
     public async Task<ReceiptResponse> GetReceipts(
         DateTime from,
-        int batchSize,
         ReceiptType type,
-        int userId
+        int userId,
+        int batchSize
     )
     {
         var ticketReceipts = type.HasFlag(ReceiptType.UsedTicket)
