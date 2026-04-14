@@ -10,11 +10,6 @@ namespace CoffeeCard.Library.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
-                name: "IX_Vouchers_PurchaseId",
-                schema: "dbo",
-                table: "Vouchers");
-
             migrationBuilder.CreateIndex(
                 name: "IX_Vouchers_PurchaseId",
                 schema: "dbo",
@@ -31,12 +26,6 @@ namespace CoffeeCard.Library.Migrations
                 name: "IX_Vouchers_PurchaseId",
                 schema: "dbo",
                 table: "Vouchers");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Vouchers_PurchaseId",
-                schema: "dbo",
-                table: "Vouchers",
-                column: "PurchaseId");
         }
     }
 }
