@@ -16,7 +16,9 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
     ///     "rankAllTime": 15,
     ///     "rankSemester": 4,
     ///     "rankMonth": 5,
-    ///     "role": "Barista"
+    ///     "role": "Barista",
+    ///     "profilePictureId": 6,
+    ///     "profileBackgroundColor": 1
     /// }
     /// </example>
     public class UserResponse
@@ -92,5 +94,19 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
         /// <example>5</example>
         [Required]
         public required int RankMonth { get; set; }
+
+        /// <summary>
+        /// User's profile icon
+        /// </summary>
+        /// <value>Profile Icon</value>
+        /// <example>6</example>
+        public int? ProfilePictureId { get; set; }
+
+        /// <summary>
+        /// User's background color for profile picture
+        /// </summary>
+        /// <value>Background Color</value>
+        /// <example>1</example>
+        public int? ProfileBackgroundColor { get; set; }
     }
 }

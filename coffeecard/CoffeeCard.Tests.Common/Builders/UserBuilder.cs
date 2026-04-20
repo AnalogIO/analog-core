@@ -1,3 +1,4 @@
+using CoffeeCard.Models.DataTransferObjects.v2.User;
 using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Tests.Common.Builders
@@ -24,7 +25,9 @@ namespace CoffeeCard.Tests.Common.Builders
                 .WithStatistics(new List<Statistic>())
                 .WithTokens(new List<Token>())
                 .WithUserState(UserState.Active)
-                .WithTickets(new List<Ticket>());
+                .WithTickets(new List<Ticket>())
+                .WithProfileIcon(ProfileIcon.MilkCarton)
+                .WithPictureBackgroundColor(PictureBackgroundColor.MossGreen);
         }
 
         public static UserBuilder DefaultCustomer()

@@ -12,5 +12,6 @@ public enum ProfileIcon
     PortaFilter,
     IcedDrink,
     FilterMachine,
-    CoffeeGrinder
+    CoffeeGrinder,
+    Teabag
 }

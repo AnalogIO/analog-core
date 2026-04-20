@@ -11,6 +11,8 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Leaderboard
     ///     "name": "John Doe",
     ///     "rank": 2,
     ///     "score": 25
+    ///     "profileIconId": 4,
+    ///     "profileBackgroundColor": 1
     /// }
     /// </example>
     public sealed class LeaderboardEntry : IEquatable<LeaderboardEntry>
@@ -37,6 +39,20 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Leaderboard
         public required int Rank { get; set; }
 
         /// <summary>
+        /// User's profile icon
+        /// </summary>
+        /// <value>Profile Icon</value>
+        /// <example>TeaBag</example>
+        public int? ProfileIconId { get; set; }
+        
+        /// <summary>
+        /// User's profile picture background color
+        /// </summary>
+        /// <value>Background Color</value>
+        /// <example>Moss Green</example>
+        public int? ProfileBackgroundColor { get; set; }
+
+        /// <summary>
         /// Account score
         /// </summary>
         /// <value>Account score</value>
@@ -50,7 +66,9 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Leaderboard
                 && Id == other.Id
                 && Name == other.Name
                 && Rank == other.Rank
-                && Score == other.Score;
+                && Score == other.Score
+                && ProfileIconId == other.ProfileIconId
+                && ProfileBackgroundColor == other.ProfileBackgroundColor;
         }
 
         /// <inheritdoc/>
@@ -68,7 +86,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Leaderboard
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            return HashCode.Combine(Id, Name, Rank, Score);
+            return HashCode.Combine(Id, Name, Rank, Score, ProfileIconId, ProfileBackgroundColor);
         }
     }
 }
