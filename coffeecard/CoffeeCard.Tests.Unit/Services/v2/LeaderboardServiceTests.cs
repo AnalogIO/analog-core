@@ -112,6 +112,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                     Name = user1.Name,
                     Rank = 2,
                     Score = 10,
+                    ProfileIconId = 0,
+                    ProfileBackgroundColor = 0,
                 },
                 result
             );
@@ -175,6 +177,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                     Name = user1.Name,
                     Rank = 0,
                     Score = 0,
+                    ProfileIconId = 0,
+                    ProfileBackgroundColor = 0,
                 },
                 result
             );
@@ -278,6 +282,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                         Name = user2.Name,
                         Rank = 1,
                         Score = 20,
+                        ProfileIconId = 1,
+                        ProfileBackgroundColor = 0,
                     },
                     new LeaderboardEntry
                     {
@@ -285,6 +291,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                         Name = user1.Name,
                         Rank = 2,
                         Score = 10,
+                        ProfileIconId = 1,
+                        ProfileBackgroundColor = 0,
                     },
                 },
                 result.ToList()
