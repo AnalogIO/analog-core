@@ -27,7 +27,7 @@
       },
       {
         "name": "EnvironmentSettings__AnalogAppUrl",
-        "value": "cafeanalog-dev://cafeanalog.dk/"
+        "value": "analogcoffeecard-dev://cafeanalog.dk/"
       },
       {
         "name": "MailgunSettings__Domain",
@@ -39,7 +39,7 @@
       },
       {
         "name": "MobilePaySettings__AnalogAppRedirectUri",
-        "value": "analogcoffeecard-dev://mobilepay_purchase"
+        "value": "analogcoffeecard-dev://cafeanalog.dk/tickets/verify-mobilepay-purchase"
       },
       {
         "name": "MobilePaySettings__ApiUrl",
