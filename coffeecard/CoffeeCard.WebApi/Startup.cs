@@ -15,6 +15,7 @@ using CoffeeCard.Library.Utils;
 using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.MobilePay.Utils;
 using CoffeeCard.WebApi.Helpers;
+using CoffeeCard.WebApi.Helpers.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -414,6 +415,9 @@ namespace CoffeeCard.WebApi
                 // Enable System.Text.Json polymorphism support
                 options.UseOneOfForPolymorphism();
                 options.UseAllOfForInheritance();
+
+                // Normalise all response content types to application/json
+                options.OperationFilter<JsonOnlyResponseContentTypeFilter>();
 
                 // Define JWT security scheme
                 options.AddSecurityDefinition(
