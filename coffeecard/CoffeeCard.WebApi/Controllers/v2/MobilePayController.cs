@@ -20,12 +20,11 @@ namespace CoffeeCard.WebApi.Controllers.v2;
 [Route("api/v{version:apiVersion}/mobilepay")]
 public class MobilePayController : ControllerBase
 {
-    private static readonly JsonSerializerSettings JsonSerializerSettings =
-        new()
-        {
-            DateFormatString = "yyyy-MM-ddTHH:mm:ss.fffZ",
-            DateTimeZoneHandling = DateTimeZoneHandling.Utc,
-        };
+    private static readonly JsonSerializerSettings JsonSerializerSettings = new()
+    {
+        DateFormatString = "yyyy-MM-ddTHH:mm:ss.fffZ",
+        DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+    };
 
     private readonly ILogger<MobilePayController> _logger;
     private readonly IPurchaseService _purchaseService;

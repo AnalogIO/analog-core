@@ -73,16 +73,15 @@ namespace CoffeeCard.WebApi
             var databaseSettings = _configuration
                 .GetSection(nameof(DatabaseSettings))
                 .Get<DatabaseSettings>();
-            services.AddDbContext<CoffeeCardContext>(
-                opt =>
-                    opt.UseSqlServer(
-                        databaseSettings.ConnectionString,
-                        c =>
-                            c.MigrationsHistoryTable(
-                                "__EFMigrationsHistory",
-                                databaseSettings.SchemaName
-                            )
-                    )
+            services.AddDbContext<CoffeeCardContext>(opt =>
+                opt.UseSqlServer(
+                    databaseSettings.ConnectionString,
+                    c =>
+                        c.MigrationsHistoryTable(
+                            "__EFMigrationsHistory",
+                            databaseSettings.SchemaName
+                        )
+                )
             );
 
             // Setup cache
@@ -187,8 +186,8 @@ namespace CoffeeCard.WebApi
                         .AddMeter("Microsoft.AspNetCore.Server.Kestrel");
                     if (applicationInsightsConnectionString is null or "")
                         return;
-                    metrics.AddAzureMonitorMetricExporter(
-                        options => options.ConnectionString = applicationInsightsConnectionString
+                    metrics.AddAzureMonitorMetricExporter(options =>
+                        options.ConnectionString = applicationInsightsConnectionString
                     );
                 })
                 .WithTracing(traces =>
@@ -201,8 +200,8 @@ namespace CoffeeCard.WebApi
 
                     if (applicationInsightsConnectionString is null or "")
                         return;
-                    builder.AddAzureMonitorTraceExporter(
-                        options => options.ConnectionString = applicationInsightsConnectionString
+                    builder.AddAzureMonitorTraceExporter(options =>
+                        options.ConnectionString = applicationInsightsConnectionString
                     );
                 });
 
@@ -221,14 +220,12 @@ namespace CoffeeCard.WebApi
                 );
                 openTelemetryBuilder.ConfigureResource(resource =>
                 {
-                    resource.AddAttributes(
-                        [
-                            new KeyValuePair<string, object>(
-                                "Env",
-                                environment.EnvironmentType.ToString() ?? "Env not set"
-                            ),
-                        ]
-                    );
+                    resource.AddAttributes([
+                        new KeyValuePair<string, object>(
+                            "Env",
+                            environment.EnvironmentType.ToString() ?? "Env not set"
+                        ),
+                    ]);
                     resource.AddAzureAppServiceDetector();
                     resource.AddService(
                         $"analog-core-{environment.EnvironmentType}",
@@ -276,11 +273,10 @@ namespace CoffeeCard.WebApi
                     options.JsonSerializerOptions.Converters.Add(new DateTimeConverter());
                 });
 
-            services.AddCors(
-                options =>
-                    options.AddDefaultPolicy(
-                        builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
-                    )
+            services.AddCors(options =>
+                options.AddDefaultPolicy(builder =>
+                    builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
+                )
             );
 
             services.AddApiVersioning(config =>
@@ -446,7 +442,7 @@ namespace CoffeeCard.WebApi
                                 },
                             },
                             new string[] { }
-                        }
+                        },
                     }
                 );
 
@@ -475,7 +471,7 @@ namespace CoffeeCard.WebApi
                                 },
                             },
                             new string[] { }
-                        }
+                        },
                     }
                 );
             });
@@ -502,8 +498,8 @@ namespace CoffeeCard.WebApi
             app.UseSwaggerUI(options =>
             {
                 foreach (
-                    var apiVersion in provider.ApiVersionDescriptions.OrderByDescending(
-                        x => x.ApiVersion
+                    var apiVersion in provider.ApiVersionDescriptions.OrderByDescending(x =>
+                        x.ApiVersion
                     )
                 )
                 {
@@ -543,13 +539,12 @@ namespace CoffeeCard.WebApi
             });
 
             // Enable Request Buffering so that a raw request body can be read after aspnet model binding
-            app.Use(
-                next =>
-                    context =>
-                    {
-                        context.Request.EnableBuffering();
-                        return next(context);
-                    }
+            app.Use(next =>
+                context =>
+                {
+                    context.Request.EnableBuffering();
+                    return next(context);
+                }
             );
         }
     }
