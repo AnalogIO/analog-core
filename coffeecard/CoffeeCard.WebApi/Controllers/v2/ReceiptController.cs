@@ -36,6 +36,7 @@ public class ReceiptController : ControllerBase
     /// This includes all purchases, swiped tickets, and used vouchers
     /// </summary>
     /// <returns>All users receipts</returns>
+    [HttpGet]
     public async Task<ActionResult<ReceiptResponse>> GetReceipts(
         [FromQuery] ReceiptsRequest request
     )

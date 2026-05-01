@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using NSwag.Annotations;
 
 namespace CoffeeCard.WebApi.Controllers.v2;
 
@@ -21,11 +20,12 @@ namespace CoffeeCard.WebApi.Controllers.v2;
 [Route("api/v{version:apiVersion}/mobilepay")]
 public class MobilePayController : ControllerBase
 {
-    private static readonly JsonSerializerSettings JsonSerializerSettings = new()
-    {
-        DateFormatString = "yyyy-MM-ddTHH:mm:ss.fffZ",
-        DateTimeZoneHandling = DateTimeZoneHandling.Utc,
-    };
+    private static readonly JsonSerializerSettings JsonSerializerSettings =
+        new()
+        {
+            DateFormatString = "yyyy-MM-ddTHH:mm:ss.fffZ",
+            DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+        };
 
     private readonly ILogger<MobilePayController> _logger;
     private readonly IPurchaseService _purchaseService;
@@ -57,7 +57,7 @@ public class MobilePayController : ControllerBase
     [HttpPost("webhook")]
     [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
-    [OpenApiIgnore]
+    [ApiExplorerSettings(IgnoreApi = true)]
     [ProducesDefaultResponseType]
     public async Task<ActionResult> Webhook(
         [FromBody] WebhookEvent request,

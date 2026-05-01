@@ -6,8 +6,6 @@
     <ProjectGuid>5562C898-513F-493A-A335-417C39476714</ProjectGuid>
     <UserSecretsId>d3bbf778-c5fe-4240-b2ca-dfa64082cc0e</UserSecretsId>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <OpenApiGenerateDocumentsOnBuild>true</OpenApiGenerateDocumentsOnBuild>
-    <IncludeOpenAPIAnalyzers>true</IncludeOpenAPIAnalyzers>
     <NoWarn>$(NoWarn);1591</NoWarn>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
@@ -32,7 +30,7 @@
     <PackageReference Include="NetEscapades.Configuration.Validation" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.9" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
-    <PackageReference Include="NSwag.AspNetCore" Version="14.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.10.0" />
     <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.9.0" />
     <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.9.0" />
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.9.0" />

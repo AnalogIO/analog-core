@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -26,9 +27,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.FeatureManagement;
 using Microsoft.IdentityModel.Tokens;
-using NJsonSchema.Generation;
-using NSwag;
-using NSwag.Generation.Processors.Security;
+using Microsoft.OpenApi.Models;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Metrics;
@@ -37,6 +36,7 @@ using OpenTelemetry.Trace;
 using RestSharp;
 using RestSharp.Authenticators;
 using Serilog;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using AccountService = CoffeeCard.Library.Services.AccountService;
 using IAccountService = CoffeeCard.Library.Services.IAccountService;
 using IPurchaseService = CoffeeCard.Library.Services.IPurchaseService;
@@ -72,15 +72,16 @@ namespace CoffeeCard.WebApi
             var databaseSettings = _configuration
                 .GetSection(nameof(DatabaseSettings))
                 .Get<DatabaseSettings>();
-            services.AddDbContext<CoffeeCardContext>(opt =>
-                opt.UseSqlServer(
-                    databaseSettings.ConnectionString,
-                    c =>
-                        c.MigrationsHistoryTable(
-                            "__EFMigrationsHistory",
-                            databaseSettings.SchemaName
-                        )
-                )
+            services.AddDbContext<CoffeeCardContext>(
+                opt =>
+                    opt.UseSqlServer(
+                        databaseSettings.ConnectionString,
+                        c =>
+                            c.MigrationsHistoryTable(
+                                "__EFMigrationsHistory",
+                                databaseSettings.SchemaName
+                            )
+                    )
             );
 
             // Setup cache
@@ -185,8 +186,8 @@ namespace CoffeeCard.WebApi
                         .AddMeter("Microsoft.AspNetCore.Server.Kestrel");
                     if (applicationInsightsConnectionString is null or "")
                         return;
-                    metrics.AddAzureMonitorMetricExporter(options =>
-                        options.ConnectionString = applicationInsightsConnectionString
+                    metrics.AddAzureMonitorMetricExporter(
+                        options => options.ConnectionString = applicationInsightsConnectionString
                     );
                 })
                 .WithTracing(traces =>
@@ -199,8 +200,8 @@ namespace CoffeeCard.WebApi
 
                     if (applicationInsightsConnectionString is null or "")
                         return;
-                    builder.AddAzureMonitorTraceExporter(options =>
-                        options.ConnectionString = applicationInsightsConnectionString
+                    builder.AddAzureMonitorTraceExporter(
+                        options => options.ConnectionString = applicationInsightsConnectionString
                     );
                 });
 
@@ -219,12 +220,14 @@ namespace CoffeeCard.WebApi
                 );
                 openTelemetryBuilder.ConfigureResource(resource =>
                 {
-                    resource.AddAttributes([
-                        new KeyValuePair<string, object>(
-                            "Env",
-                            environment.EnvironmentType.ToString() ?? "Env not set"
-                        ),
-                    ]);
+                    resource.AddAttributes(
+                        [
+                            new KeyValuePair<string, object>(
+                                "Env",
+                                environment.EnvironmentType.ToString() ?? "Env not set"
+                            ),
+                        ]
+                    );
                     resource.AddAzureAppServiceDetector();
                     resource.AddService(
                         $"analog-core-{environment.EnvironmentType}",
@@ -272,10 +275,11 @@ namespace CoffeeCard.WebApi
                     options.JsonSerializerOptions.Converters.Add(new DateTimeConverter());
                 });
 
-            services.AddCors(options =>
-                options.AddDefaultPolicy(builder =>
-                    builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
-                )
+            services.AddCors(
+                options =>
+                    options.AddDefaultPolicy(
+                        builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
+                    )
             );
 
             services.AddApiVersioning(config =>
@@ -371,80 +375,106 @@ namespace CoffeeCard.WebApi
         }
 
         /// <summary>
-        /// Generate Open Api Document for each API Version
+        /// Configure Swagger/OpenAPI for each API Version
         /// </summary>
         private static void GenerateOpenApiDocument(IServiceCollection services)
         {
             var apiVersions = services
                 .BuildServiceProvider()
                 .GetRequiredService<IApiVersionDescriptionProvider>();
-            foreach (var apiVersion in apiVersions.ApiVersionDescriptions)
+
+            services.AddSwaggerGen(options =>
             {
-                // Add an OpenApi document per API version
-                services.AddOpenApiDocument(config =>
+                foreach (var apiVersion in apiVersions.ApiVersionDescriptions)
                 {
-                    config.DefaultResponseReferenceTypeNullHandling =
-                        ReferenceTypeNullHandling.NotNull;
-                    config.Title = apiVersion.GroupName;
-                    config.Version = apiVersion.ApiVersion.ToString();
-                    config.DocumentName = apiVersion.GroupName;
-                    config.ApiGroupNames = new[] { apiVersion.GroupName };
-                    config.Description = "ASP.NET Core WebAPI for Cafe Analog";
-                    config.PostProcess = document =>
+                    options.SwaggerDoc(
+                        apiVersion.GroupName,
+                        new OpenApiInfo
+                        {
+                            Title = "Cafe Analog CoffeeCard API",
+                            Version = $"v{apiVersion.ApiVersion}",
+                            Contact = new OpenApiContact
+                            {
+                                Name = "AnalogIO",
+                                Email = "support@analogio.dk",
+                                Url = new Uri("https://github.com/analogio"),
+                            },
+                            License = new OpenApiLicense
+                            {
+                                Name = "Use under MIT",
+                                Url = new Uri(
+                                    "https://github.com/AnalogIO/analog-core/blob/master/LICENSE"
+                                ),
+                            },
+                            Description = "ASP.NET Core WebAPI for Cafe Analog",
+                        }
+                    );
+                }
+
+                // Enable System.Text.Json polymorphism support
+                options.UseOneOfForPolymorphism();
+                options.UseAllOfForInheritance();
+
+                // Define JWT security scheme
+                options.AddSecurityDefinition(
+                    "jwt",
+                    new OpenApiSecurityScheme
                     {
-                        document.Info.Title = "Cafe Analog CoffeeCard API";
-                        document.Info.Version = $"v{apiVersion.ApiVersion}";
-                        document.Info.Contact = new OpenApiContact
-                        {
-                            Name = "AnalogIO",
-                            Email = "support@analogio.dk",
-                            Url = "https://github.com/analogio",
-                        };
-                        document.Info.License = new OpenApiLicense
-                        {
-                            Name = "Use under MIT",
-                            Url = "https://github.com/AnalogIO/analog-core/blob/master/LICENSE",
-                        };
-                    };
+                        Description = "JWT Bearer token",
+                        Name = "Authorization",
+                        In = ParameterLocation.Header,
+                        Type = SecuritySchemeType.Http,
+                        Scheme = "bearer",
+                        BearerFormat = "JWT",
+                    }
+                );
 
-                    config.DocumentProcessors.Add(
-                        new SecurityDefinitionAppender(
-                            "jwt",
+                options.AddSecurityRequirement(
+                    new OpenApiSecurityRequirement
+                    {
+                        {
                             new OpenApiSecurityScheme
                             {
-                                Description = "JWT Bearer token",
-                                Name = "Authorization",
-                                Scheme = "bearer",
-                                BearerFormat = "JWT",
-                                In = OpenApiSecurityApiKeyLocation.Header,
-                                Type = OpenApiSecuritySchemeType.Http,
-                            }
-                        )
-                    );
-                    config.OperationProcessors.Add(
-                        new AspNetCoreOperationSecurityScopeProcessor("jwt")
-                    );
+                                Reference = new OpenApiReference
+                                {
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = "jwt",
+                                },
+                            },
+                            new string[] { }
+                        }
+                    }
+                );
 
-                    config.DocumentProcessors.Add(
-                        new SecurityDefinitionAppender(
-                            "apikey",
+                // Define API Key security scheme
+                options.AddSecurityDefinition(
+                    "apikey",
+                    new OpenApiSecurityScheme
+                    {
+                        Description = "Api Key used for health endpoints",
+                        Name = "x-api-key",
+                        In = ParameterLocation.Header,
+                        Type = SecuritySchemeType.ApiKey,
+                    }
+                );
+
+                options.AddSecurityRequirement(
+                    new OpenApiSecurityRequirement
+                    {
+                        {
                             new OpenApiSecurityScheme
                             {
-                                Description = "Api Key used for health endpoints",
-                                Name = "x-api-key",
-                                In = OpenApiSecurityApiKeyLocation.Header,
-                                Type = OpenApiSecuritySchemeType.ApiKey,
-                            }
-                        )
-                    );
-                    config.OperationProcessors.Add(
-                        new AspNetCoreOperationSecurityScopeProcessor("apikey")
-                    );
-
-                    // Assume not null as default unless parameter is marked as nullable
-                    // config.DefaultReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull;
-                });
-            }
+                                Reference = new OpenApiReference
+                                {
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = "apikey",
+                                },
+                            },
+                            new string[] { }
+                        }
+                    }
+                );
+            });
         }
 
         /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -464,8 +494,21 @@ namespace CoffeeCard.WebApi
             else
                 app.UseHsts();
 
-            app.UseOpenApi();
-            app.UseSwaggerUi();
+            app.UseSwagger();
+            app.UseSwaggerUI(options =>
+            {
+                foreach (
+                    var apiVersion in provider.ApiVersionDescriptions.OrderByDescending(
+                        x => x.ApiVersion
+                    )
+                )
+                {
+                    options.SwaggerEndpoint(
+                        $"/swagger/{apiVersion.GroupName}/swagger.json",
+                        $"CoffeeCard API {apiVersion.GroupName}"
+                    );
+                }
+            });
 
             app.UseHttpsRedirection();
 
@@ -496,12 +539,13 @@ namespace CoffeeCard.WebApi
             });
 
             // Enable Request Buffering so that a raw request body can be read after aspnet model binding
-            app.Use(next =>
-                context =>
-                {
-                    context.Request.EnableBuffering();
-                    return next(context);
-                }
+            app.Use(
+                next =>
+                    context =>
+                    {
+                        context.Request.EnableBuffering();
+                        return next(context);
+                    }
             );
         }
     }
