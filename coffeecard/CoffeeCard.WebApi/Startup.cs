@@ -482,7 +482,10 @@ namespace CoffeeCard.WebApi
 
         private static string GetStableOperationId(ApiDescription apiDescription)
         {
-            apiDescription.ActionDescriptor.RouteValues.TryGetValue("controller", out var controller);
+            apiDescription.ActionDescriptor.RouteValues.TryGetValue(
+                "controller",
+                out var controller
+            );
             apiDescription.ActionDescriptor.RouteValues.TryGetValue("action", out var action);
 
             if (!string.IsNullOrWhiteSpace(controller) && !string.IsNullOrWhiteSpace(action))
