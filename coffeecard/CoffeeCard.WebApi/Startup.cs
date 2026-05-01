@@ -412,6 +412,9 @@ namespace CoffeeCard.WebApi
                 options.UseOneOfForPolymorphism();
                 options.UseAllOfForInheritance();
 
+                // Preserve controller/action-based operation IDs so generated test clients keep stable method names.
+                options.CustomOperationIds(GetStableOperationId);
+
                 // Normalise all response content types to application/json
                 options.OperationFilter<JsonOnlyResponseContentTypeFilter>();
 
@@ -475,6 +478,25 @@ namespace CoffeeCard.WebApi
                     }
                 );
             });
+        }
+
+        private static string GetStableOperationId(ApiDescription apiDescription)
+        {
+            apiDescription.ActionDescriptor.RouteValues.TryGetValue("controller", out var controller);
+            apiDescription.ActionDescriptor.RouteValues.TryGetValue("action", out var action);
+
+            if (!string.IsNullOrWhiteSpace(controller) && !string.IsNullOrWhiteSpace(action))
+            {
+                return $"{controller}_{action}";
+            }
+
+            var relativePath = (apiDescription.RelativePath ?? string.Empty).Split('?')[0];
+            var sanitizedPath = relativePath
+                .Replace("/", "_")
+                .Replace("{", string.Empty)
+                .Replace("}", string.Empty);
+
+            return $"{sanitizedPath}_{apiDescription.HttpMethod}";
         }
 
         /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

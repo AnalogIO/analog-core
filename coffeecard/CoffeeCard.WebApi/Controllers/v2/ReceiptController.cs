@@ -70,7 +70,7 @@ public class ReceiptController : ControllerBase
             from,
             request.Type,
             user.Id,
-            request.BatchSize
+            request.BatchSize ?? 20
         );
 
         return Ok(receipts);
