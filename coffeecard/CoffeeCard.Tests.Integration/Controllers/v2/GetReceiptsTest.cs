@@ -25,7 +25,7 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2
             RemoveRequestHeaders();
 
             var exception = await Assert.ThrowsAsync<ApiException>(async () =>
-                await CoffeeCardClientV2.Receipt_GetReceiptsAsync()
+                await CoffeeCardClientV2.Receipts_GetReceiptsAsync()
             );
 
             Assert.Equal(401, exception.StatusCode);
@@ -38,7 +38,7 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2
         {
             await GetAuthenticatedUserAsync();
 
-            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync();
+            var response = await CoffeeCardClientV2.Receipts_GetReceiptsAsync();
 
             Assert.NotNull(response);
             Assert.Empty(response.Receipts);
@@ -67,7 +67,7 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2
             await Context.Purchases.AddAsync(purchase);
             await Context.SaveChangesAsync();
 
-            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync();
+            var response = await CoffeeCardClientV2.Receipts_GetReceiptsAsync();
 
             Assert.Single(response.Receipts);
             var receipt = response.Receipts.First();
@@ -117,7 +117,7 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2
             await Context.Purchases.AddAsync(purchase);
             await Context.SaveChangesAsync();
 
-            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync();
+            var response = await CoffeeCardClientV2.Receipts_GetReceiptsAsync();
 
             Assert.Single(response.Receipts);
             var receipt = response.Receipts.First();
@@ -160,7 +160,7 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2
             await Context.Purchases.AddAsync(purchase);
             await Context.SaveChangesAsync();
 
-            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync();
+            var response = await CoffeeCardClientV2.Receipts_GetReceiptsAsync();
 
             Assert.Single(response.Receipts);
             var receipt = response.Receipts.First();
@@ -196,7 +196,7 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2
             await Context.Purchases.AddAsync(purchase);
             await Context.SaveChangesAsync();
 
-            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync();
+            var response = await CoffeeCardClientV2.Receipts_GetReceiptsAsync();
 
             Assert.Single(response.Receipts);
             Assert.Null(response.Receipts.First().DrinkName);
@@ -222,7 +222,7 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2
             await Context.Purchases.AddRangeAsync(otherPurchase, myPurchase);
             await Context.SaveChangesAsync();
 
-            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync();
+            var response = await CoffeeCardClientV2.Receipts_GetReceiptsAsync();
 
             Assert.Single(response.Receipts);
             Assert.Equal(myPurchase.ProductName, response.Receipts.First().TicketName);
@@ -279,7 +279,7 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2
             await Context.Purchases.AddRangeAsync(purchase, voucherPurchase, usedPurchase);
             await Context.SaveChangesAsync();
 
-            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync();
+            var response = await CoffeeCardClientV2.Receipts_GetReceiptsAsync();
 
             Assert.Equal(3, response.Receipts.Count);
 
@@ -320,7 +320,7 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2
 
             await Context.SaveChangesAsync();
 
-            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync();
+            var response = await CoffeeCardClientV2.Receipts_GetReceiptsAsync();
 
             Assert.Equal(3, response.Receipts.Count);
 
