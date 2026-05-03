@@ -39,7 +39,11 @@ public class ReceiptService : IReceiptService
         {
             var purchases = await _context
                 .Purchases.AsNoTracking()
-                .Where(p => p.PurchasedById == userId && p.Type != PurchaseType.Voucher)
+                .Where(p =>
+                    p.PurchasedById == userId
+                    && p.Type != PurchaseType.Voucher
+                    && p.Type != PurchaseType.Free
+                )
                 .Select(p => new ReceiptListItem
                 {
                     Id = "Purchase:" + p.Id,
