@@ -33,22 +33,18 @@ public class ReceiptController : ControllerBase
     }
 
     /// <summary>
-    /// Retrieve a flat list of receipts for the authenticated user.
-    /// Pass <c>type</c> to filter by receipt kind; omit it (or pass <c>All</c>) to get every type
-    /// merged into a single list sorted by event date descending.
+    /// Retrieve a list of receipts for the authenticated user,
+    /// sorted by most recent event first.
     /// </summary>
-    /// <param name="request">Query parameters specifying the optional type filter.</param>
     /// <response code="200">The matching receipts, sorted newest-first.</response>
     /// <response code="401">Invalid or missing authentication credentials.</response>
     [HttpGet]
     [ProducesResponseType(typeof(ReceiptsResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<ReceiptsResponse>> GetReceipts(
-        [FromQuery] ReceiptsRequest request
-    )
+    public async Task<ActionResult<ReceiptsResponse>> GetReceipts()
     {
         var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
-        var result = await _receiptService.GetReceipts(request.Type, user.Id);
+        var result = await _receiptService.GetReceipts(user.Id);
         return Ok(result);
     }
 }

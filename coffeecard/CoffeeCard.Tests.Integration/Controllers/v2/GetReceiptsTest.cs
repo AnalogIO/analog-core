@@ -25,7 +25,7 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2
             RemoveRequestHeaders();
 
             var exception = await Assert.ThrowsAsync<ApiException>(async () =>
-                await CoffeeCardClientV2.Receipt_GetReceiptsAsync(ReceiptTypeFilter.All)
+                await CoffeeCardClientV2.Receipt_GetReceiptsAsync()
             );
 
             Assert.Equal(401, exception.StatusCode);
@@ -38,7 +38,7 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2
         {
             await GetAuthenticatedUserAsync();
 
-            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync(ReceiptTypeFilter.All);
+            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync();
 
             Assert.NotNull(response);
             Assert.Empty(response.Receipts);
@@ -67,9 +67,7 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2
             await Context.Purchases.AddAsync(purchase);
             await Context.SaveChangesAsync();
 
-            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync(
-                ReceiptTypeFilter.Purchase
-            );
+            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync();
 
             Assert.Single(response.Receipts);
             var receipt = response.Receipts.First();
@@ -119,9 +117,7 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2
             await Context.Purchases.AddAsync(purchase);
             await Context.SaveChangesAsync();
 
-            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync(
-                ReceiptTypeFilter.Voucher
-            );
+            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync();
 
             Assert.Single(response.Receipts);
             var receipt = response.Receipts.First();
@@ -164,9 +160,7 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2
             await Context.Purchases.AddAsync(purchase);
             await Context.SaveChangesAsync();
 
-            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync(
-                ReceiptTypeFilter.UsedTicket
-            );
+            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync();
 
             Assert.Single(response.Receipts);
             var receipt = response.Receipts.First();
@@ -202,9 +196,7 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2
             await Context.Purchases.AddAsync(purchase);
             await Context.SaveChangesAsync();
 
-            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync(
-                ReceiptTypeFilter.UsedTicket
-            );
+            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync();
 
             Assert.Single(response.Receipts);
             Assert.Null(response.Receipts.First().DrinkName);
@@ -230,9 +222,7 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2
             await Context.Purchases.AddRangeAsync(otherPurchase, myPurchase);
             await Context.SaveChangesAsync();
 
-            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync(
-                ReceiptTypeFilter.Purchase
-            );
+            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync();
 
             Assert.Single(response.Receipts);
             Assert.Equal(myPurchase.ProductName, response.Receipts.First().TicketName);
@@ -289,7 +279,7 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2
             await Context.Purchases.AddRangeAsync(purchase, voucherPurchase, usedPurchase);
             await Context.SaveChangesAsync();
 
-            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync(ReceiptTypeFilter.All);
+            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync();
 
             Assert.Equal(3, response.Receipts.Count);
 
@@ -330,9 +320,7 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2
 
             await Context.SaveChangesAsync();
 
-            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync(
-                ReceiptTypeFilter.Purchase
-            );
+            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync();
 
             Assert.Equal(3, response.Receipts.Count);
 
@@ -344,170 +332,6 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2
                     $"Expected item {i} ({eventDates[i]}) to be >= item {i + 1} ({eventDates[i + 1]})"
                 );
             }
-        }
-
-        // ── Type-specific filters ─────────────────────────────────────────────
-
-        [Fact]
-        public async Task GetReceipts_purchase_filter_excludes_vouchers_and_tickets()
-        {
-            var user = await GetAuthenticatedUserAsync();
-            var baseDate = new DateTime(2026, 2, 1, 12, 0, 0, DateTimeKind.Utc);
-
-            var purchase = PurchaseBuilder
-                .Simple()
-                .WithPurchasedBy(user)
-                .WithType(PurchaseType.MobilePayV2)
-                .WithStatus(PurchaseStatus.Completed)
-                .WithDateCreated(baseDate)
-                .WithTickets(new List<Ticket>())
-                .WithVoucher(f => null)
-                .Build();
-
-            var voucherPurchase = PurchaseBuilder
-                .Simple()
-                .WithPurchasedBy(user)
-                .WithType(PurchaseType.Voucher)
-                .WithStatus(PurchaseStatus.Completed)
-                .WithDateCreated(baseDate.AddHours(-1))
-                .WithTickets(new List<Ticket>())
-                .Build();
-
-            var usedPurchase = PurchaseBuilder
-                .Simple()
-                .WithPurchasedBy(user)
-                .WithType(PurchaseType.Free)
-                .WithStatus(PurchaseStatus.Completed)
-                .WithDateCreated(baseDate.AddHours(-2))
-                .WithTickets(
-                    TicketBuilder
-                        .Simple()
-                        .WithOwner(user)
-                        .WithStatus(TicketStatus.Used)
-                        .WithDateUsed(baseDate.AddHours(-2))
-                        .WithUsedOnMenuItem(_ => null)
-                        .Build(1)
-                )
-                .WithVoucher(f => null)
-                .Build();
-
-            await Context.Purchases.AddRangeAsync(purchase, voucherPurchase, usedPurchase);
-            await Context.SaveChangesAsync();
-
-            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync(
-                ReceiptTypeFilter.Purchase
-            );
-
-            Assert.All(response.Receipts, r => Assert.Equal(ReceiptType.Purchase, r.Type));
-            Assert.Single(response.Receipts);
-        }
-
-        [Fact]
-        public async Task GetReceipts_voucher_filter_excludes_purchases_and_tickets()
-        {
-            var user = await GetAuthenticatedUserAsync();
-            var baseDate = new DateTime(2026, 2, 2, 12, 0, 0, DateTimeKind.Utc);
-
-            var purchase = PurchaseBuilder
-                .Simple()
-                .WithPurchasedBy(user)
-                .WithType(PurchaseType.MobilePayV2)
-                .WithStatus(PurchaseStatus.Completed)
-                .WithDateCreated(baseDate)
-                .WithTickets(new List<Ticket>())
-                .WithVoucher(f => null)
-                .Build();
-
-            var voucherPurchase = PurchaseBuilder
-                .Simple()
-                .WithPurchasedBy(user)
-                .WithType(PurchaseType.Voucher)
-                .WithStatus(PurchaseStatus.Completed)
-                .WithDateCreated(baseDate.AddHours(-1))
-                .WithTickets(new List<Ticket>())
-                .Build();
-
-            var usedPurchase = PurchaseBuilder
-                .Simple()
-                .WithPurchasedBy(user)
-                .WithType(PurchaseType.Free)
-                .WithStatus(PurchaseStatus.Completed)
-                .WithDateCreated(baseDate.AddHours(-2))
-                .WithTickets(
-                    TicketBuilder
-                        .Simple()
-                        .WithOwner(user)
-                        .WithStatus(TicketStatus.Used)
-                        .WithDateUsed(baseDate.AddHours(-2))
-                        .WithUsedOnMenuItem(_ => null)
-                        .Build(1)
-                )
-                .WithVoucher(f => null)
-                .Build();
-
-            await Context.Purchases.AddRangeAsync(purchase, voucherPurchase, usedPurchase);
-            await Context.SaveChangesAsync();
-
-            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync(
-                ReceiptTypeFilter.Voucher
-            );
-
-            Assert.All(response.Receipts, r => Assert.Equal(ReceiptType.Voucher, r.Type));
-            Assert.Single(response.Receipts);
-        }
-
-        [Fact]
-        public async Task GetReceipts_usedticket_filter_excludes_purchases_and_vouchers()
-        {
-            var user = await GetAuthenticatedUserAsync();
-            var baseDate = new DateTime(2026, 2, 3, 12, 0, 0, DateTimeKind.Utc);
-
-            var purchase = PurchaseBuilder
-                .Simple()
-                .WithPurchasedBy(user)
-                .WithType(PurchaseType.MobilePayV2)
-                .WithStatus(PurchaseStatus.Completed)
-                .WithDateCreated(baseDate)
-                .WithTickets(new List<Ticket>())
-                .WithVoucher(f => null)
-                .Build();
-
-            var voucherPurchase = PurchaseBuilder
-                .Simple()
-                .WithPurchasedBy(user)
-                .WithType(PurchaseType.Voucher)
-                .WithStatus(PurchaseStatus.Completed)
-                .WithDateCreated(baseDate.AddHours(-1))
-                .WithTickets(new List<Ticket>())
-                .Build();
-
-            var usedPurchase = PurchaseBuilder
-                .Simple()
-                .WithPurchasedBy(user)
-                .WithType(PurchaseType.Free)
-                .WithStatus(PurchaseStatus.Completed)
-                .WithDateCreated(baseDate.AddHours(-2))
-                .WithTickets(
-                    TicketBuilder
-                        .Simple()
-                        .WithOwner(user)
-                        .WithStatus(TicketStatus.Used)
-                        .WithDateUsed(baseDate.AddHours(-2))
-                        .WithUsedOnMenuItem(_ => null)
-                        .Build(1)
-                )
-                .WithVoucher(f => null)
-                .Build();
-
-            await Context.Purchases.AddRangeAsync(purchase, voucherPurchase, usedPurchase);
-            await Context.SaveChangesAsync();
-
-            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync(
-                ReceiptTypeFilter.UsedTicket
-            );
-
-            Assert.All(response.Receipts, r => Assert.Equal(ReceiptType.UsedTicket, r.Type));
-            Assert.Single(response.Receipts);
         }
     }
 }

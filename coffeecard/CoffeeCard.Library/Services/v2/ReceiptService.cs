@@ -31,79 +31,70 @@ public class ReceiptService : IReceiptService
     }
 
     /// <inheritdoc />
-    public async Task<ReceiptsResponse> GetReceipts(ReceiptTypeFilter type, int userId)
+    public async Task<ReceiptsResponse> GetReceipts(int userId)
     {
         var all = new List<ReceiptListItem>();
 
-        if (type == ReceiptTypeFilter.All || type == ReceiptTypeFilter.Purchase)
-        {
-            var purchases = await _context
-                .Purchases.AsNoTracking()
-                .Where(p =>
-                    p.PurchasedById == userId
-                    && p.Type != PurchaseType.Voucher
-                    && p.Type != PurchaseType.Free
-                )
-                .Select(p => new ReceiptListItem
-                {
-                    Id = "Purchase:" + p.Id,
-                    Type = ReceiptType.Purchase,
-                    EventDate = p.DateCreated,
-                    Title = "Purchased " + p.NumberOfTickets + "x " + p.ProductName,
-                    Amount = p.NumberOfTickets,
-                    PriceDKK = p.Price,
-                    TicketName = p.ProductName,
-                    DrinkName = null,
-                })
-                .ToListAsync();
+        var purchases = await _context
+            .Purchases.AsNoTracking()
+            .Where(p =>
+                p.PurchasedById == userId
+                && p.Type != PurchaseType.Voucher
+                && p.Type != PurchaseType.Free
+            )
+            .Select(p => new ReceiptListItem
+            {
+                Id = "Purchase:" + p.Id,
+                Type = ReceiptType.Purchase,
+                EventDate = p.DateCreated,
+                Title = "Purchased " + p.NumberOfTickets + "x " + p.ProductName,
+                Amount = p.NumberOfTickets,
+                PriceDKK = p.Price,
+                TicketName = p.ProductName,
+                DrinkName = null,
+            })
+            .ToListAsync();
 
-            all.AddRange(purchases);
-        }
+        all.AddRange(purchases);
 
-        if (type == ReceiptTypeFilter.All || type == ReceiptTypeFilter.Voucher)
-        {
-            var vouchers = await _context
-                .Purchases.AsNoTracking()
-                .Where(p => p.PurchasedById == userId && p.Type == PurchaseType.Voucher)
-                .Select(p => new ReceiptListItem
-                {
-                    Id = "Voucher:" + p.Id,
-                    Type = ReceiptType.Voucher,
-                    EventDate = p.DateCreated,
-                    Title = "Redeemed " + p.NumberOfTickets + "x " + p.ProductName + " tickets",
-                    Amount = p.NumberOfTickets,
-                    PriceDKK = null,
-                    TicketName = p.ProductName,
-                    DrinkName = null,
-                })
-                .ToListAsync();
+        var vouchers = await _context
+            .Purchases.AsNoTracking()
+            .Where(p => p.PurchasedById == userId && p.Type == PurchaseType.Voucher)
+            .Select(p => new ReceiptListItem
+            {
+                Id = "Voucher:" + p.Id,
+                Type = ReceiptType.Voucher,
+                EventDate = p.DateCreated,
+                Title = "Redeemed " + p.NumberOfTickets + "x " + p.ProductName + " tickets",
+                Amount = p.NumberOfTickets,
+                PriceDKK = null,
+                TicketName = p.ProductName,
+                DrinkName = null,
+            })
+            .ToListAsync();
 
-            all.AddRange(vouchers);
-        }
+        all.AddRange(vouchers);
 
-        if (type == ReceiptTypeFilter.All || type == ReceiptTypeFilter.UsedTicket)
-        {
-            var usedTickets = await _context
-                .Tickets.AsNoTracking()
-                .Where(t => t.OwnerId == userId && t.DateUsed != null)
-                .Select(t => new ReceiptListItem
-                {
-                    Id = "UsedTicket:" + t.Id,
-                    Type = ReceiptType.UsedTicket,
-                    EventDate = t.DateUsed!.Value,
-                    Title =
-                        t.UsedOnMenuItem != null
-                            ? "Swiped a " + t.UsedOnMenuItem.Name
-                            : "Swiped a " + t.Purchase.ProductName + " ticket",
-                    Amount = null,
-                    PriceDKK = null,
-                    TicketName = t.Purchase.ProductName,
-                    DrinkName = t.UsedOnMenuItem != null ? t.UsedOnMenuItem.Name : null,
-                })
-                .ToListAsync();
+        var usedTickets = await _context
+            .Tickets.AsNoTracking()
+            .Where(t => t.OwnerId == userId && t.DateUsed != null)
+            .Select(t => new ReceiptListItem
+            {
+                Id = "UsedTicket:" + t.Id,
+                Type = ReceiptType.UsedTicket,
+                EventDate = t.DateUsed!.Value,
+                Title =
+                    t.UsedOnMenuItem != null
+                        ? "Swiped a " + t.UsedOnMenuItem.Name
+                        : "Swiped a " + t.Purchase.ProductName + " ticket",
+                Amount = null,
+                PriceDKK = null,
+                TicketName = t.Purchase.ProductName,
+                DrinkName = t.UsedOnMenuItem != null ? t.UsedOnMenuItem.Name : null,
+            })
+            .ToListAsync();
 
-            all.AddRange(usedTickets);
-        }
+        all.AddRange(usedTickets);
 
         var sorted = all.OrderByDescending(r => r.EventDate)
             .ThenByDescending(r => ParseIdNumber(r.Id))

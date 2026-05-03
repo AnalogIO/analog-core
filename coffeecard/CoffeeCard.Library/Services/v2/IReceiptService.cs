@@ -9,13 +9,10 @@ namespace CoffeeCard.Library.Services.v2;
 public interface IReceiptService
 {
     /// <summary>
-    /// Returns a flat, unsegmented list of receipts for the given user, optionally filtered by
-    /// <paramref name="type"/>. The returned list is sorted by event date descending.
+    /// Returns a list of receipts for the given user,
+    /// sorted by most recent event first.
     /// </summary>
-    /// <param name="type">
-    /// The receipt type to include. Use <see cref="ReceiptTypeFilter.All"/> to return every type.
-    /// </param>
     /// <param name="userId">The database primary key of the user whose receipts are fetched.</param>
-    /// <returns>A <see cref="ReceiptsResponse"/> containing the matching receipt items.</returns>
-    Task<ReceiptsResponse> GetReceipts(ReceiptTypeFilter type, int userId);
+    /// <returns>A <see cref="ReceiptsResponse"/> containing the receipt items.</returns>
+    Task<ReceiptsResponse> GetReceipts(int userId);
 }
