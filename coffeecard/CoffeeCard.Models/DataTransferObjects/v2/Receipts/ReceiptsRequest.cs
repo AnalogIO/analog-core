@@ -1,30 +1,33 @@
-using System;
-using System.ComponentModel.DataAnnotations;
-
 namespace CoffeeCard.Models.DataTransferObjects.v2.Receipts;
 
 /// <summary>
-/// A paginated request for receipts based on using a continuation token
+/// Filter values for the <c>type</c> query parameter on <c>GET /api/v2/receipts</c>.
+/// <see cref="All"/> (the default) returns every receipt type in a single merged list.
 /// </summary>
-public class ReceiptsRequest
+public enum ReceiptTypeFilter
 {
-    [Required]
-    public required ReceiptType Type { get; set; }
+    /// <summary>Return all receipt types (purchases, vouchers, and used tickets).</summary>
+    All = 0,
 
-    [Required]
-    public int BatchSize { get; set; } = 20;
+    /// <summary>Return only purchase receipts.</summary>
+    Purchase,
 
-    public required string? ContinuationToken { get; set; }
+    /// <summary>Return only voucher receipts.</summary>
+    Voucher,
+
+    /// <summary>Return only used-ticket receipts.</summary>
+    UsedTicket,
 }
 
 /// <summary>
-/// The types of receipts that can be requested. Multiple types can be combined.
+/// Query-string parameters for <c>GET /api/v2/receipts</c>.
 /// </summary>
-[Flags]
-public enum ReceiptType
+public class ReceiptsRequest
 {
-    Purchase = 1,
-    Voucher = 2,
-    UsedTicket = 4,
-    All = Purchase | Voucher | UsedTicket,
+    /// <summary>
+    /// The receipt type to include in the response.
+    /// Defaults to <see cref="ReceiptTypeFilter.All"/>, which returns every type merged into a
+    /// single list sorted by event date descending.
+    /// </summary>
+    public ReceiptTypeFilter Type { get; set; } = ReceiptTypeFilter.All;
 }

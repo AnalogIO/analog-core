@@ -1,16 +1,17 @@
-using System;
-using System.Buffers.Text;
-using System.Globalization;
 using System.Threading.Tasks;
-using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.DataTransferObjects.v2.Receipts;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoffeeCard.WebApi.Controllers.v2;
 
+/// <summary>
+/// Endpoints for retrieving the authenticated user's receipts.
+/// Receipts include completed purchases, redeemed vouchers, and swiped tickets.
+/// </summary>
 [ApiVersion("2")]
 [Route("api/v{version:apiVersion}/receipts")]
 [ApiController]
@@ -21,10 +22,10 @@ public class ReceiptController : ControllerBase
     private readonly ClaimsUtilities _claimsUtilities;
 
     /// <summary>
-    /// Contains endpoints for retrieving receipts for the authenticated user. This includes all purchases, swiped tickets, and used vouchers
+    /// Initializes a new instance of the <see cref="ReceiptController"/> class.
     /// </summary>
-    /// <param name="receiptService"></param>
-    /// <param name="claimsUtilities"></param>
+    /// <param name="receiptService">Receipt service.</param>
+    /// <param name="claimsUtilities">Helper for resolving the authenticated user from claims.</param>
     public ReceiptController(IReceiptService receiptService, ClaimsUtilities claimsUtilities)
     {
         _receiptService = receiptService;
@@ -32,46 +33,22 @@ public class ReceiptController : ControllerBase
     }
 
     /// <summary>
-    /// Retrieve all receipts for the authenticated user
-    /// This includes all purchases, swiped tickets, and used vouchers
+    /// Retrieve a flat list of receipts for the authenticated user.
+    /// Pass <c>type</c> to filter by receipt kind; omit it (or pass <c>All</c>) to get every type
+    /// merged into a single list sorted by event date descending.
     /// </summary>
-    /// <returns>All users receipts</returns>
-    public async Task<ActionResult<ReceiptResponse>> GetReceipts(
+    /// <param name="request">Query parameters specifying the optional type filter.</param>
+    /// <response code="200">The matching receipts, sorted newest-first.</response>
+    /// <response code="401">Invalid or missing authentication credentials.</response>
+    [HttpGet]
+    [ProducesResponseType(typeof(ReceiptsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<ReceiptsResponse>> GetReceipts(
         [FromQuery] ReceiptsRequest request
     )
     {
         var user = await _claimsUtilities.ValidateAndReturnUserFromClaimAsync(User.Claims);
-
-        DateTime from;
-        if (request.ContinuationToken == null)
-        {
-            from = DateTime.UtcNow;
-        }
-        else
-        {
-            try
-            {
-                var bytes = Convert.FromBase64String(request.ContinuationToken);
-                var utf8String = System.Text.Encoding.UTF8.GetString(bytes);
-                from = DateTime.ParseExact(
-                    utf8String,
-                    "O",
-                    CultureInfo.InvariantCulture,
-                    DateTimeStyles.RoundtripKind
-                );
-            }
-            catch (FormatException)
-            {
-                throw new BadRequestException("Invalid continuation token");
-            }
-        }
-        var receipts = await _receiptService.GetReceipts(
-            from,
-            request.Type,
-            user.Id,
-            request.BatchSize
-        );
-
-        return Ok(receipts);
+        var result = await _receiptService.GetReceipts(request.Type, user.Id);
+        return Ok(result);
     }
 }

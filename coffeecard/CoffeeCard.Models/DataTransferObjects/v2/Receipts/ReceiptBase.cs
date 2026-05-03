@@ -1,118 +1,98 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
-using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.Receipts;
 
-public class ReceiptResponse
+/// <summary>
+/// Discriminator values that identify the concrete type of a <see cref="ReceiptListItem"/>.
+/// Each value is mutually exclusive.
+/// </summary>
+public enum ReceiptType
 {
-    /// <summary>
-    /// The list of receipts for the user.
-    /// </summary>
-    [Required]
-    public required List<ReceiptBase> Receipts { get; set; }
+    /// <summary>A ticket-bundle purchase made via a payment method (e.g. MobilePay).</summary>
+    Purchase,
 
-    /// <summary>
-    /// Used as the "from" parameter in the next request to get the next batch of receipts.
-    /// Is set to the date and time of the oldest receipt in the current batch.
-    /// </summary>
-    [Required]
-    public required string ContinuationToken { get; set; }
+    /// <summary>Tickets issued by redeeming a voucher.</summary>
+    Voucher,
+
+    /// <summary>A single ticket consumed (swiped) by the user.</summary>
+    UsedTicket,
 }
 
 /// <summary>
-/// Shared properties for all receipt types.
+/// Flat response wrapper returned by <c>GET /api/v2/receipts</c>.
+/// Contains all receipts matching the requested filter, sorted newest-first.
 /// </summary>
-[JsonPolymorphic(TypeDiscriminatorPropertyName = "Type")]
-[JsonDerivedType(typeof(PurchaseReceipt), "Purchase")]
-[JsonDerivedType(typeof(VoucherReceipt), "Voucher")]
-[JsonDerivedType(typeof(UsedTicketReceipt), "UsedTicket")]
-public abstract class ReceiptBase
-{
-    [Required]
-    public required string ProductName { get; set; }
-
-    /// <summary>
-    /// The date/time the receipt was issued (type-specific).
-    /// Use this for sorting across all receipt types.
-    /// </summary>
-    [JsonIgnore]
-    public abstract DateTime IssuingDate { get; }
-}
-
-public class PurchaseReceipt : ReceiptBase
+public class ReceiptsResponse
 {
     /// <summary>
-    /// The amount of tickets issued by the purchase.
+    /// The flat list of receipts for the authenticated user, sorted by
+    /// <see cref="ReceiptListItem.EventDate"/> descending.
     /// </summary>
     [Required]
-    public required int Quantity { get; set; }
-
-    /// <summary>
-    /// The status of the purchase.
-    /// </summary>
-    [Required]
-    public required PurchaseStatus Status { get; set; }
-
-    /// <summary>
-    /// The date and time when the order was placed.
-    /// </summary>
-    [Required]
-    public required DateTime OrderDate { get; set; }
-
-    /// <summary>
-    /// The total price of the purchase in kr.
-    /// </summary>
-    [Required]
-    public required int Price { get; set; }
-
-    /// <summary>
-    /// The unique identifier of the order associated with the purchase.
-    /// </summary>
-    [Required]
-    public required Guid OrderId { get; set; }
-
-    [JsonIgnore]
-    public override DateTime IssuingDate => OrderDate;
+    public required List<ReceiptListItem> Receipts { get; set; }
 }
 
 /// <summary>
-/// Represents of tickets issued by a voucher.
+/// A single receipt entry in the flat receipt list.
+/// All fields are present on every item; nullable fields are null when not applicable for the
+/// receipt <see cref="Type"/>.
 /// </summary>
-public class VoucherReceipt : ReceiptBase
+public class ReceiptListItem
 {
     /// <summary>
-    /// The code of the voucher.
+    /// Composite string identifier in the format <c>"TypeName:EntityId"</c>,
+    /// e.g. <c>"Purchase:123"</c>, <c>"Voucher:456"</c>, or <c>"UsedTicket:789"</c>.
+    /// The numeric part is the entity's database primary key.
     /// </summary>
     [Required]
-    public required string Code { get; set; }
-
-    [Required]
-    public required DateTime RedeemDate { get; set; }
+    public required string Id { get; set; }
 
     /// <summary>
-    /// The amount of tickets issued by the purchase.
+    /// The discriminator type of this receipt entry.
     /// </summary>
     [Required]
-    public required int Quantity { get; set; }
+    public required ReceiptType Type { get; set; }
 
-    [JsonIgnore]
-    public override DateTime IssuingDate => RedeemDate;
-}
-
-/// <summary>
-/// Represents a receipt for a ticket being used by a swipe
-/// </summary>
-public class UsedTicketReceipt : ReceiptBase
-{
     /// <summary>
-    /// The date and time when the swipe was made.
+    /// The canonical event date used for sorting across all receipt types.
+    /// For purchases and vouchers this is the order/redeem date; for used tickets it is the swipe date.
+    /// Expressed in UTC.
     /// </summary>
     [Required]
-    public required DateTime SwipeDate { get; set; }
+    public required DateTime EventDate { get; set; }
 
-    [JsonIgnore]
-    public override DateTime IssuingDate => SwipeDate;
+    /// <summary>
+    /// Server-assembled, human-readable summary of this receipt entry, e.g.
+    /// <c>"Purchased 10x Filter"</c>, <c>"Redeemed 5x Filter tickets"</c>, or <c>"Swiped a Filter Coffee"</c>.
+    /// </summary>
+    [Required]
+    public required string Title { get; set; }
+
+    /// <summary>
+    /// Number of tickets involved in this receipt.
+    /// Set for <see cref="ReceiptType.Purchase"/> and <see cref="ReceiptType.Voucher"/>;
+    /// <c>null</c> for <see cref="ReceiptType.UsedTicket"/>.
+    /// </summary>
+    public int? Amount { get; set; }
+
+    /// <summary>
+    /// Total price paid in Danish kroner (DKK).
+    /// Only set for <see cref="ReceiptType.Purchase"/>; <c>null</c> for all other types.
+    /// </summary>
+    public int? PriceDKK { get; set; }
+
+    /// <summary>
+    /// The name of the product or ticket type, e.g. <c>"Filter"</c>.
+    /// </summary>
+    [Required]
+    public required string TicketName { get; set; }
+
+    /// <summary>
+    /// The name of the drink or menu item the ticket was used on.
+    /// Only set for <see cref="ReceiptType.UsedTicket"/> items where a menu item was recorded;
+    /// <c>null</c> for all other types and for used tickets with no associated menu item.
+    /// </summary>
+    public string? DrinkName { get; set; }
 }
