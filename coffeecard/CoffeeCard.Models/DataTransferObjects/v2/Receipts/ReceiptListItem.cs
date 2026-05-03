@@ -1,38 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.Receipts;
-
-/// <summary>
-/// Discriminator values that identify the concrete type of a <see cref="ReceiptListItem"/>.
-/// Each value is mutually exclusive.
-/// </summary>
-public enum ReceiptType
-{
-    /// <summary>A ticket-bundle purchase made via a payment method (e.g. MobilePay).</summary>
-    Purchase,
-
-    /// <summary>Tickets issued by redeeming a voucher.</summary>
-    Voucher,
-
-    /// <summary>A single ticket consumed (swiped) by the user.</summary>
-    UsedTicket,
-}
-
-/// <summary>
-/// Flat response wrapper returned by <c>GET /api/v2/receipts</c>.
-/// Contains all receipts matching the requested filter, sorted newest-first.
-/// </summary>
-public class ReceiptsResponse
-{
-    /// <summary>
-    /// The flat list of receipts for the authenticated user, sorted by
-    /// <see cref="ReceiptListItem.EventDate"/> descending.
-    /// </summary>
-    [Required]
-    public required List<ReceiptListItem> Receipts { get; set; }
-}
 
 /// <summary>
 /// A single receipt entry in the flat receipt list.
