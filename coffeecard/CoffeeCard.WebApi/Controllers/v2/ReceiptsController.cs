@@ -16,17 +16,17 @@ namespace CoffeeCard.WebApi.Controllers.v2;
 [Route("api/v{version:apiVersion}/receipts")]
 [ApiController]
 [Authorize]
-public class ReceiptController : ControllerBase
+public class ReceiptsController : ControllerBase
 {
     private readonly IReceiptService _receiptService;
     private readonly ClaimsUtilities _claimsUtilities;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ReceiptController"/> class.
+    /// Initializes a new instance of the <see cref="ReceiptsController"/> class.
     /// </summary>
     /// <param name="receiptService">Receipt service.</param>
     /// <param name="claimsUtilities">Helper for resolving the authenticated user from claims.</param>
-    public ReceiptController(IReceiptService receiptService, ClaimsUtilities claimsUtilities)
+    public ReceiptsController(IReceiptService receiptService, ClaimsUtilities claimsUtilities)
     {
         _receiptService = receiptService;
         _claimsUtilities = claimsUtilities;
