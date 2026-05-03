@@ -96,22 +96,8 @@ public class ReceiptService : IReceiptService
 
         all.AddRange(usedTickets);
 
-        var sorted = all.OrderByDescending(r => r.EventDate)
-            .ThenByDescending(r => ParseIdNumber(r.Id))
-            .ToList();
+        var sorted = all.OrderByDescending(r => r.EventDate).ToList();
 
         return new ReceiptsResponse { Receipts = sorted };
-    }
-
-    /// <summary>
-    /// Parses the numeric entity-ID component from a composite receipt identifier such as
-    /// <c>"Purchase:123"</c> and returns it as an <see cref="int"/>.
-    /// </summary>
-    /// <param name="id">The composite ID string.</param>
-    /// <returns>The numeric database primary key embedded in <paramref name="id"/>.</returns>
-    private static int ParseIdNumber(string id)
-    {
-        var parts = id.Split(':');
-        return int.Parse(parts[1]);
     }
 }
