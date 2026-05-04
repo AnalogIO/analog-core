@@ -113,6 +113,12 @@ public class UsedTicketReceipt : ReceiptBase
     [Required]
     public required DateTime SwipeDate { get; set; }
 
+    /// <summary>
+    /// The name of the menu item that was redeemed with the ticket.
+    /// </summary>
+    [Required]
+    public required string MenuItemName { get; set; }
+
     [JsonIgnore]
     public override DateTime IssuingDate => SwipeDate;
 }

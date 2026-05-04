@@ -38,6 +38,8 @@ public class ReceiptService : IReceiptService
                 .Select(t => new UsedTicketReceipt
                 {
                     ProductName = t.Purchase.ProductName,
+                    MenuItemName =
+                        t.UsedOnMenuItem != null ? t.UsedOnMenuItem.Name : "(Some drink)",
                     SwipeDate = t.DateUsed.Value,
                 })
                 .ToListAsync()
