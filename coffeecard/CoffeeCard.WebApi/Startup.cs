@@ -162,6 +162,7 @@ namespace CoffeeCard.WebApi
             >();
             services.AddScoped<IReceiptService, ReceiptService>();
             services.AddScoped<IStatisticService, StatisticService>();
+            services.AddScoped<IStatisticsService, StatisticsService>();
             services.AddScoped<IDateTimeProvider, DateTimeProvider>();
             services.AddScoped<IAdminStatisticsService, AdminStatisticsService>();
             services.AddFeatureManagement();
