@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -28,7 +29,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.FeatureManagement;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Metrics;
@@ -412,6 +413,15 @@ namespace CoffeeCard.WebApi
                 options.UseOneOfForPolymorphism();
                 options.UseAllOfForInheritance();
 
+                // Read [JsonPolymorphic] to set discriminator property name
+                options.SelectDiscriminatorNameUsing(type =>
+                    type.GetCustomAttribute<JsonPolymorphicAttribute>()?.TypeDiscriminatorPropertyName
+                    ?? "$type"
+                );
+
+                // Add discriminator value→schema mappings from [JsonDerivedType] attributes
+                // so NSwag can generate correct polymorphic deserialization
+                options.DocumentFilter<JsonPolymorphicDiscriminatorFilter>();
                 // Preserve controller/action-based operation IDs so generated test clients keep stable method names.
                 options.CustomOperationIds(GetStableOperationId);
 
@@ -432,22 +442,10 @@ namespace CoffeeCard.WebApi
                     }
                 );
 
-                options.AddSecurityRequirement(
-                    new OpenApiSecurityRequirement
-                    {
-                        {
-                            new OpenApiSecurityScheme
-                            {
-                                Reference = new OpenApiReference
-                                {
-                                    Type = ReferenceType.SecurityScheme,
-                                    Id = "jwt",
-                                },
-                            },
-                            new string[] { }
-                        },
-                    }
-                );
+                options.AddSecurityRequirement(_ => new OpenApiSecurityRequirement
+                {
+                    { new OpenApiSecuritySchemeReference("jwt"), [] },
+                });
 
                 // Define API Key security scheme
                 options.AddSecurityDefinition(
@@ -461,22 +459,10 @@ namespace CoffeeCard.WebApi
                     }
                 );
 
-                options.AddSecurityRequirement(
-                    new OpenApiSecurityRequirement
-                    {
-                        {
-                            new OpenApiSecurityScheme
-                            {
-                                Reference = new OpenApiReference
-                                {
-                                    Type = ReferenceType.SecurityScheme,
-                                    Id = "apikey",
-                                },
-                            },
-                            new string[] { }
-                        },
-                    }
-                );
+                options.AddSecurityRequirement(_ => new OpenApiSecurityRequirement
+                {
+                    { new OpenApiSecuritySchemeReference("apikey"), [] },
+                });
             });
         }
 

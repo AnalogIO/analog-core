@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace CoffeeCard.WebApi.Helpers.Swagger;
