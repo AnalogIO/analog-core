@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -14,6 +16,7 @@ using CoffeeCard.Library.Utils;
 using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.MobilePay.Utils;
 using CoffeeCard.WebApi.Helpers;
+using CoffeeCard.WebApi.Helpers.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -26,9 +29,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.FeatureManagement;
 using Microsoft.IdentityModel.Tokens;
-using NJsonSchema.Generation;
-using NSwag;
-using NSwag.Generation.Processors.Security;
+using Microsoft.OpenApi;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Metrics;
@@ -37,6 +38,7 @@ using OpenTelemetry.Trace;
 using RestSharp;
 using RestSharp.Authenticators;
 using Serilog;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using AccountService = CoffeeCard.Library.Services.AccountService;
 using IAccountService = CoffeeCard.Library.Services.IAccountService;
 using IPurchaseService = CoffeeCard.Library.Services.IPurchaseService;
@@ -371,80 +373,119 @@ namespace CoffeeCard.WebApi
         }
 
         /// <summary>
-        /// Generate Open Api Document for each API Version
+        /// Configure Swagger/OpenAPI for each API Version
         /// </summary>
         private static void GenerateOpenApiDocument(IServiceCollection services)
         {
             var apiVersions = services
                 .BuildServiceProvider()
                 .GetRequiredService<IApiVersionDescriptionProvider>();
-            foreach (var apiVersion in apiVersions.ApiVersionDescriptions)
+
+            services.AddSwaggerGen(options =>
             {
-                // Add an OpenApi document per API version
-                services.AddOpenApiDocument(config =>
+                foreach (var apiVersion in apiVersions.ApiVersionDescriptions)
                 {
-                    config.DefaultResponseReferenceTypeNullHandling =
-                        ReferenceTypeNullHandling.NotNull;
-                    config.Title = apiVersion.GroupName;
-                    config.Version = apiVersion.ApiVersion.ToString();
-                    config.DocumentName = apiVersion.GroupName;
-                    config.ApiGroupNames = new[] { apiVersion.GroupName };
-                    config.Description = "ASP.NET Core WebAPI for Cafe Analog";
-                    config.PostProcess = document =>
+                    options.SwaggerDoc(
+                        apiVersion.GroupName,
+                        new OpenApiInfo
+                        {
+                            Title = "Cafe Analog CoffeeCard API",
+                            Version = $"v{apiVersion.ApiVersion}",
+                            Contact = new OpenApiContact
+                            {
+                                Name = "AnalogIO",
+                                Email = "support@analogio.dk",
+                                Url = new Uri("https://github.com/analogio"),
+                            },
+                            License = new OpenApiLicense
+                            {
+                                Name = "Use under MIT",
+                                Url = new Uri(
+                                    "https://github.com/AnalogIO/analog-core/blob/master/LICENSE"
+                                ),
+                            },
+                            Description = "ASP.NET Core WebAPI for Cafe Analog",
+                        }
+                    );
+                }
+
+                // Enable System.Text.Json polymorphism support
+                options.UseOneOfForPolymorphism();
+                options.UseAllOfForInheritance();
+
+                // Read [JsonPolymorphic] to set discriminator property name
+                options.SelectDiscriminatorNameUsing(type =>
+                    type.GetCustomAttribute<JsonPolymorphicAttribute>()?.TypeDiscriminatorPropertyName
+                    ?? "$type"
+                );
+
+                // Add discriminator value→schema mappings from [JsonDerivedType] attributes
+                // so NSwag can generate correct polymorphic deserialization
+                options.DocumentFilter<JsonPolymorphicDiscriminatorFilter>();
+                // Preserve controller/action-based operation IDs so generated test clients keep stable method names.
+                options.CustomOperationIds(GetStableOperationId);
+
+                // Normalise all response content types to application/json
+                options.OperationFilter<JsonOnlyResponseContentTypeFilter>();
+
+                // Define JWT security scheme
+                options.AddSecurityDefinition(
+                    "jwt",
+                    new OpenApiSecurityScheme
                     {
-                        document.Info.Title = "Cafe Analog CoffeeCard API";
-                        document.Info.Version = $"v{apiVersion.ApiVersion}";
-                        document.Info.Contact = new OpenApiContact
-                        {
-                            Name = "AnalogIO",
-                            Email = "support@analogio.dk",
-                            Url = "https://github.com/analogio",
-                        };
-                        document.Info.License = new OpenApiLicense
-                        {
-                            Name = "Use under MIT",
-                            Url = "https://github.com/AnalogIO/analog-core/blob/master/LICENSE",
-                        };
-                    };
+                        Description = "JWT Bearer token",
+                        Name = "Authorization",
+                        In = ParameterLocation.Header,
+                        Type = SecuritySchemeType.Http,
+                        Scheme = "bearer",
+                        BearerFormat = "JWT",
+                    }
+                );
 
-                    config.DocumentProcessors.Add(
-                        new SecurityDefinitionAppender(
-                            "jwt",
-                            new OpenApiSecurityScheme
-                            {
-                                Description = "JWT Bearer token",
-                                Name = "Authorization",
-                                Scheme = "bearer",
-                                BearerFormat = "JWT",
-                                In = OpenApiSecurityApiKeyLocation.Header,
-                                Type = OpenApiSecuritySchemeType.Http,
-                            }
-                        )
-                    );
-                    config.OperationProcessors.Add(
-                        new AspNetCoreOperationSecurityScopeProcessor("jwt")
-                    );
-
-                    config.DocumentProcessors.Add(
-                        new SecurityDefinitionAppender(
-                            "apikey",
-                            new OpenApiSecurityScheme
-                            {
-                                Description = "Api Key used for health endpoints",
-                                Name = "x-api-key",
-                                In = OpenApiSecurityApiKeyLocation.Header,
-                                Type = OpenApiSecuritySchemeType.ApiKey,
-                            }
-                        )
-                    );
-                    config.OperationProcessors.Add(
-                        new AspNetCoreOperationSecurityScopeProcessor("apikey")
-                    );
-
-                    // Assume not null as default unless parameter is marked as nullable
-                    // config.DefaultReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull;
+                options.AddSecurityRequirement(_ => new OpenApiSecurityRequirement
+                {
+                    { new OpenApiSecuritySchemeReference("jwt"), [] },
                 });
+
+                // Define API Key security scheme
+                options.AddSecurityDefinition(
+                    "apikey",
+                    new OpenApiSecurityScheme
+                    {
+                        Description = "Api Key used for health endpoints",
+                        Name = "x-api-key",
+                        In = ParameterLocation.Header,
+                        Type = SecuritySchemeType.ApiKey,
+                    }
+                );
+
+                options.AddSecurityRequirement(_ => new OpenApiSecurityRequirement
+                {
+                    { new OpenApiSecuritySchemeReference("apikey"), [] },
+                });
+            });
+        }
+
+        private static string GetStableOperationId(ApiDescription apiDescription)
+        {
+            apiDescription.ActionDescriptor.RouteValues.TryGetValue(
+                "controller",
+                out var controller
+            );
+            apiDescription.ActionDescriptor.RouteValues.TryGetValue("action", out var action);
+
+            if (!string.IsNullOrWhiteSpace(controller) && !string.IsNullOrWhiteSpace(action))
+            {
+                return $"{controller}_{action}";
             }
+
+            var relativePath = (apiDescription.RelativePath ?? string.Empty).Split('?')[0];
+            var sanitizedPath = relativePath
+                .Replace("/", "_")
+                .Replace("{", string.Empty)
+                .Replace("}", string.Empty);
+
+            return $"{sanitizedPath}_{apiDescription.HttpMethod}";
         }
 
         /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -464,8 +505,21 @@ namespace CoffeeCard.WebApi
             else
                 app.UseHsts();
 
-            app.UseOpenApi();
-            app.UseSwaggerUi();
+            app.UseSwagger();
+            app.UseSwaggerUI(options =>
+            {
+                foreach (
+                    var apiVersion in provider.ApiVersionDescriptions.OrderByDescending(x =>
+                        x.ApiVersion
+                    )
+                )
+                {
+                    options.SwaggerEndpoint(
+                        $"/swagger/{apiVersion.GroupName}/swagger.json",
+                        $"CoffeeCard API {apiVersion.GroupName}"
+                    );
+                }
+            });
 
             app.UseHttpsRedirection();
 
