@@ -43,6 +43,7 @@ public class MobilePayControllerTests
         httpContext.Request.QueryString = new QueryString(query);
         httpContext.Request.Host = new HostString(host);
         httpContext.Request.Body = new MemoryStream(requestBody);
+        httpContext.Request.Body.Position = httpContext.Request.Body.Length;
 
         var purchaseServiceMock = new Mock<IPurchaseService>();
         purchaseServiceMock
