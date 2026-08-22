@@ -7,7 +7,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Statistics
     /// </summary>
     /// <example>
     /// {
-    ///     "key": "favourite-drink",
+    ///     "key": "FavouriteDrink",
     ///     "title": "Your favourite drink",
     ///     "value": "128",
     ///     "supportingText": "Filter Coffee"
