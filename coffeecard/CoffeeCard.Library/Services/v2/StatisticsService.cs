@@ -24,10 +24,7 @@ namespace CoffeeCard.Library.Services.v2
         public async Task<IEnumerable<QuickStatResponse>> GetQuickStatsAsync(User user)
         {
             var utcNow = _dateTimeProvider.UtcNow();
-            var todayStart = utcNow.Date;
-            var todayEnd = todayStart.AddDays(1);
-            var weekStart = GetWeekStart(utcNow);
-            var weekEnd = weekStart.AddDays(7);
+            var today = utcNow.Date;
 
             var totalDrinks = await _context.Tickets.CountAsync(ticket =>
                 ticket.OwnerId == user.Id && ticket.Status == TicketStatus.Used
@@ -35,8 +32,7 @@ namespace CoffeeCard.Library.Services.v2
 
             var drinksToday = await _context.Tickets.CountAsync(ticket =>
                 ticket.Status == TicketStatus.Used
-                && ticket.DateUsed >= todayStart
-                && ticket.DateUsed < todayEnd
+                && ticket.DateUsed.Value.Date == today
             );
 
             var favouriteDrink = await _context
@@ -50,6 +46,9 @@ namespace CoffeeCard.Library.Services.v2
                 .OrderByDescending(group => group.Count)
                 .ThenBy(group => group.MenuItemName)
                 .FirstOrDefaultAsync();
+
+            var weekStart = GetWeekStart(utcNow);
+            var weekEnd = weekStart.AddDays(7);
 
             var drinksThisWeek = await _context.Tickets.CountAsync(ticket =>
                 ticket.OwnerId == user.Id
