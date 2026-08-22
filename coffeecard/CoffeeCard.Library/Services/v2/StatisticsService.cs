@@ -31,8 +31,7 @@ namespace CoffeeCard.Library.Services.v2
             );
 
             var drinksToday = await _context.Tickets.CountAsync(ticket =>
-                ticket.Status == TicketStatus.Used
-                && ticket.DateUsed.Value.Date == today
+                ticket.Status == TicketStatus.Used && ticket.DateUsed.Value.Date == today
             );
 
             var favouriteDrink = await _context
