@@ -1,12 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Library.Utils;
-using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
+using CoffeeCard.Models.DataTransferObjects.v2.Statistics;
 using CoffeeCard.Models.Entities;
 using CoffeeCard.Tests.Common.Builders;
 using Microsoft.EntityFrameworkCore;
@@ -57,142 +56,50 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             context.Products.AddRange(largeProduct, smallProduct, fancyProduct);
 
-            var purchase1 = PurchaseBuilder
+            var purchases = PurchaseBuilder
                 .Simple()
-                .WithId(1)
-                .WithProductName("Large")
-                .WithProductId(largeProduct.Id)
-                .WithProduct(largeProduct)
-                .WithPrice(20)
-                .WithNumberOfTickets(1)
-                .WithOrderId("order-1")
-                .WithStatus(PurchaseStatus.Completed)
-                .WithType(PurchaseType.Free)
-                .WithPurchasedById(user.Id)
-                .WithPurchasedBy(user)
-                .WithDateCreated(currentTime.AddDays(-1))
-                .Build();
-            var purchase2 = PurchaseBuilder
-                .Simple()
-                .WithId(2)
-                .WithProductName("Small")
-                .WithProductId(smallProduct.Id)
-                .WithProduct(smallProduct)
-                .WithPrice(20)
-                .WithNumberOfTickets(1)
-                .WithOrderId("order-2")
-                .WithStatus(PurchaseStatus.Completed)
-                .WithType(PurchaseType.Free)
-                .WithPurchasedById(user.Id)
-                .WithPurchasedBy(user)
-                .WithDateCreated(currentTime.AddDays(-2))
-                .Build();
-            var purchase3 = PurchaseBuilder
-                .Simple()
-                .WithId(3)
-                .WithProductName("Large")
-                .WithProductId(largeProduct.Id)
-                .WithProduct(largeProduct)
-                .WithPrice(20)
-                .WithNumberOfTickets(1)
-                .WithOrderId("order-3")
-                .WithStatus(PurchaseStatus.Completed)
-                .WithType(PurchaseType.Free)
-                .WithPurchasedById(user.Id)
-                .WithPurchasedBy(user)
-                .WithDateCreated(currentTime.AddDays(-3))
-                .Build();
-            var purchase4 = PurchaseBuilder
-                .Simple()
-                .WithId(4)
-                .WithProductName("Small")
-                .WithProductId(fancyProduct.Id)
-                .WithProduct(fancyProduct)
-                .WithPrice(20)
-                .WithNumberOfTickets(1)
-                .WithOrderId("order-4")
-                .WithStatus(PurchaseStatus.Completed)
-                .WithType(PurchaseType.Free)
-                .WithPurchasedById(otherUser.Id)
-                .WithPurchasedBy(otherUser)
-                .WithDateCreated(currentTime.AddDays(-1))
-                .Build();
+                .Build(4);
 
-            var tickets = new List<Ticket>
-            {
-                TicketBuilder
-                    .Simple()
-                    .WithId(1)
-                    .WithDateCreated(currentTime.AddDays(-3))
-                    .WithDateUsed(currentTime.AddDays(-3))
-                    .WithProductId(largeProduct.Id)
-                    .WithStatus(TicketStatus.Used)
-                    .WithOwnerId(user.Id)
-                    .WithOwner(user)
-                    .WithPurchaseId(purchase1.Id)
-                    .WithPurchase(purchase1)
-                    .WithUsedOnMenuItemId(latte.Id)
-                    .WithUsedOnMenuItem(latte)
-                    .Build(),
-                TicketBuilder
-                    .Simple()
-                    .WithId(2)
-                    .WithDateCreated(currentTime.AddDays(-2))
-                    .WithDateUsed(currentTime.AddDays(-2))
-                    .WithProductId(smallProduct.Id)
-                    .WithStatus(TicketStatus.Used)
-                    .WithOwnerId(user.Id)
-                    .WithOwner(user)
-                    .WithPurchaseId(purchase2.Id)
-                    .WithPurchase(purchase2)
-                    .WithUsedOnMenuItemId(americano.Id)
-                    .WithUsedOnMenuItem(americano)
-                    .Build(),
-                TicketBuilder
-                    .Simple()
-                    .WithId(3)
-                    .WithDateCreated(currentTime.AddDays(-1))
-                    .WithDateUsed(currentTime.AddDays(-1))
-                    .WithProductId(largeProduct.Id)
-                    .WithStatus(TicketStatus.Used)
-                    .WithOwnerId(user.Id)
-                    .WithOwner(user)
-                    .WithPurchaseId(purchase3.Id)
-                    .WithPurchase(purchase3)
-                    .WithUsedOnMenuItemId(latte.Id)
-                    .WithUsedOnMenuItem(latte)
-                    .Build(),
-                TicketBuilder
-                    .Simple()
-                    .WithId(4)
-                    .WithDateCreated(currentTime)
-                    .WithDateUsed(currentTime)
-                    .WithProductId(fancyProduct.Id)
-                    .WithStatus(TicketStatus.Used)
-                    .WithOwnerId(otherUser.Id)
-                    .WithOwner(otherUser)
-                    .WithPurchaseId(purchase4.Id)
-                    .WithPurchase(purchase4)
-                    .WithUsedOnMenuItemId(espresso.Id)
-                    .WithUsedOnMenuItem(espresso)
-                    .Build(),
-                TicketBuilder
-                    .Simple()
-                    .WithId(5)
-                    .WithDateCreated(currentTime)
-                    .WithDateUsed(currentTime)
-                    .WithProductId(fancyProduct.Id)
-                    .WithStatus(TicketStatus.Used)
-                    .WithOwnerId(otherUser.Id)
-                    .WithOwner(otherUser)
-                    .WithPurchaseId(purchase4.Id)
-                    .WithPurchase(purchase4)
-                    .WithUsedOnMenuItemId(espresso.Id)
-                    .WithUsedOnMenuItem(espresso)
-                    .Build(),
-            };
+            purchases[0].Product = largeProduct;
+            purchases[0].PurchasedBy = user;
 
-            context.Purchases.AddRange(purchase1, purchase2, purchase3, purchase4);
+            purchases[1].Product = smallProduct;
+            purchases[1].PurchasedBy = user;
+
+            purchases[2].Product = largeProduct;
+            purchases[2].PurchasedBy = user;
+
+            purchases[3].Product = fancyProduct;
+            purchases[3].PurchasedBy = otherUser;
+
+            var tickets = TicketBuilder.Simple().WithStatus(TicketStatus.Used).Build(5);
+
+            tickets[0].DateUsed = currentTime.AddDays(-3);
+            tickets[0].Owner = user;
+            tickets[0].Purchase = purchases[0];
+            tickets[0].UsedOnMenuItem = latte;
+
+            tickets[1].DateUsed = currentTime.AddDays(-2);
+            tickets[1].Owner = user;
+            tickets[1].Purchase = purchases[1];
+            tickets[1].UsedOnMenuItem = americano;
+
+            tickets[2].DateUsed = currentTime.AddDays(-1);
+            tickets[2].Owner = user;
+            tickets[2].Purchase = purchases[2];
+            tickets[2].UsedOnMenuItem = latte;
+
+            tickets[3].DateUsed = currentTime;
+            tickets[3].Owner = otherUser;
+            tickets[3].Purchase = purchases[3];
+            tickets[3].UsedOnMenuItem = espresso;
+
+            tickets[4].DateUsed = currentTime;
+            tickets[4].Owner = otherUser;
+            tickets[4].Purchase = purchases[3];
+            tickets[4].UsedOnMenuItem = espresso;
+
+            context.Purchases.AddRange(purchases);
             context.Tickets.AddRange(tickets);
             await context.SaveChangesAsync();
 
@@ -207,23 +114,19 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             // Assert
             Assert.Equal(4, result.Count);
 
-            var totalDrinks = Assert.Single(result.Where(stat => stat.Key == "total-drinks-user"));
+            var totalDrinks = Assert.Single(result.Where(stat => stat.Key == QuickStatType.TotalDrinks));
             Assert.Equal(3, totalDrinks.Value);
             Assert.Null(totalDrinks.SupportingText);
 
-            var drinksToday = Assert.Single(
-                result.Where(stat => stat.Key == "global-drinks-today")
-            );
+            var drinksToday = Assert.Single(result.Where(stat => stat.Key == QuickStatType.DrinksToday));
             Assert.Equal(2, drinksToday.Value);
             Assert.Null(drinksToday.SupportingText);
 
-            var favouriteDrink = Assert.Single(result.Where(stat => stat.Key == "favourite-drink"));
+            var favouriteDrink = Assert.Single(result.Where(stat => stat.Key == QuickStatType.FavouriteDrink));
             Assert.Equal(2, favouriteDrink.Value);
             Assert.Equal("Latte", favouriteDrink.SupportingText);
 
-            var drinksThisWeek = Assert.Single(
-                result.Where(stat => stat.Key == "drinks-this-week-user")
-            );
+            var drinksThisWeek = Assert.Single(result.Where(stat => stat.Key == QuickStatType.DrinksThisWeek));
             Assert.Equal(3, drinksThisWeek.Value);
             Assert.Null(drinksThisWeek.SupportingText);
         }

@@ -62,28 +62,28 @@ namespace CoffeeCard.Library.Services.v2
             {
                 new QuickStatResponse
                 {
-                    Key = "total-drinks-user",
+                    Key = QuickStatType.TotalDrinks,
                     Title = "Drinks consumed by you",
                     Value = totalDrinks,
                     SupportingText = null,
                 },
                 new QuickStatResponse
                 {
-                    Key = "global-drinks-today",
+                    Key = QuickStatType.DrinksToday,
                     Title = "Drinks consumed by ITU today",
                     Value = drinksToday,
                     SupportingText = null,
                 },
                 new QuickStatResponse
                 {
-                    Key = "favourite-drink",
+                    Key = QuickStatType.FavouriteDrink,
                     Title = "Your favourite drink",
                     Value = favouriteDrink?.Count ?? 0,
                     SupportingText = favouriteDrink?.MenuItemName ?? "No drinks yet",
                 },
                 new QuickStatResponse
                 {
-                    Key = "drinks-this-week-user",
+                    Key = QuickStatType.DrinksThisWeek,
                     Title = "Drinks this week",
                     Value = drinksThisWeek,
                     SupportingText = null,

@@ -19,7 +19,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Statistics
         /// Stable stat identifier.
         /// </summary>
         [Required]
-        public required string Key { get; set; }
+        public required QuickStatType Key { get; set; }
 
         /// <summary>
         /// Card title.
@@ -36,7 +36,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Statistics
         /// <summary>
         /// Smaller supporting text shown below the main value.
         /// </summary>
-        [Required]
         public required string? SupportingText { get; set; }
     }
 }
