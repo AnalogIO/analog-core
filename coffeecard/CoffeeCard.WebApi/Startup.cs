@@ -145,6 +145,18 @@ namespace CoffeeCard.WebApi
                 Library.Services.v2.IPurchaseService,
                 Library.Services.v2.PurchaseService
             >();
+            services.AddKeyedScoped<
+                Library.Services.v2.PaymentStrategies.IPaymentStrategy,
+                Library.Services.v2.PaymentStrategies.MobilePayPaymentStrategy
+            >(Models.DataTransferObjects.v2.Purchase.PaymentType.MobilePay);
+            services.AddKeyedScoped<
+                Library.Services.v2.PaymentStrategies.IPaymentStrategy,
+                Library.Services.v2.PaymentStrategies.FreePurchasePaymentStrategy
+            >(Models.DataTransferObjects.v2.Purchase.PaymentType.FreePurchase);
+            services.AddScoped<
+                Library.Services.v2.PaymentStrategies.IPaymentStrategyFactory,
+                Library.Services.v2.PaymentStrategies.PaymentStrategyFactory
+            >();
             services.AddScoped<
                 Library.Services.v2.ITicketService,
                 Library.Services.v2.TicketService
