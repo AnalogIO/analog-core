@@ -29,6 +29,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Statistics
         /// The number of drinks the user has consumed this week.
         /// </summary>
         [Display(Name = "drinks-this-week-user")]
-        DrinksThisWeek
+        DrinksThisWeek,
     }
 }

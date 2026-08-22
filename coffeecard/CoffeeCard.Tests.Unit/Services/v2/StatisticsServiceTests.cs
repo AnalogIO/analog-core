@@ -56,9 +56,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             context.Products.AddRange(largeProduct, smallProduct, fancyProduct);
 
-            var purchases = PurchaseBuilder
-                .Simple()
-                .Build(4);
+            var purchases = PurchaseBuilder.Simple().Build(4);
 
             purchases[0].Product = largeProduct;
             purchases[0].PurchasedBy = user;
@@ -114,19 +112,27 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             // Assert
             Assert.Equal(4, result.Count);
 
-            var totalDrinks = Assert.Single(result.Where(stat => stat.Key == QuickStatType.TotalDrinks));
+            var totalDrinks = Assert.Single(
+                result.Where(stat => stat.Key == QuickStatType.TotalDrinks)
+            );
             Assert.Equal(3, totalDrinks.Value);
             Assert.Null(totalDrinks.SupportingText);
 
-            var drinksToday = Assert.Single(result.Where(stat => stat.Key == QuickStatType.DrinksToday));
+            var drinksToday = Assert.Single(
+                result.Where(stat => stat.Key == QuickStatType.DrinksToday)
+            );
             Assert.Equal(2, drinksToday.Value);
             Assert.Null(drinksToday.SupportingText);
 
-            var favouriteDrink = Assert.Single(result.Where(stat => stat.Key == QuickStatType.FavouriteDrink));
+            var favouriteDrink = Assert.Single(
+                result.Where(stat => stat.Key == QuickStatType.FavouriteDrink)
+            );
             Assert.Equal(2, favouriteDrink.Value);
             Assert.Equal("Latte", favouriteDrink.SupportingText);
 
-            var drinksThisWeek = Assert.Single(result.Where(stat => stat.Key == QuickStatType.DrinksThisWeek));
+            var drinksThisWeek = Assert.Single(
+                result.Where(stat => stat.Key == QuickStatType.DrinksThisWeek)
+            );
             Assert.Equal(3, drinksThisWeek.Value);
             Assert.Null(drinksThisWeek.SupportingText);
         }
