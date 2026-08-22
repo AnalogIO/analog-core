@@ -10,5 +10,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+    <PackageReference Include="NSwag.ApiDescription.Client" Version="14.7.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+
+    <OpenApiReference Include="OpenApiSpecs/NexiCheckoutPaymentApi.json">
+      <ClassName>NexiClient</ClassName>
+      <Namespace>CoffeeCardApi.Integrations.Nexi.Generated.Client</Namespace>
+      <Options>/UseBaseUrl:false /OperationGenerationMode:SingleClientFromOperationId /UseRequiredKeyword:true /GenerateNullableReferenceTypes:true /GenerateOptionalPropertiesAsNullable:true /IncludedOperationIds:"Create payment","Retrieve payment","Charge payment","Cancel payment","Refund charge"</Options>
+    </OpenApiReference>
   </ItemGroup>
 </Project>
