@@ -8,7 +8,7 @@ namespace CoffeeCardApi.Integrations.Nexi;
 
 public static class NexiServiceCollectionExtension
 {
-    public static IServiceCollection RegisterNexiModule(this IServiceCollection services)
+    public static IServiceCollection AddNexiModule(this IServiceCollection services)
     {
         services.AddTransient<NexiAuthDelegatingHandler>();
         services

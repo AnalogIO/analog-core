@@ -14,6 +14,7 @@ using CoffeeCard.Library.Utils;
 using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.MobilePay.Utils;
 using CoffeeCard.WebApi.Helpers;
+using CoffeeCardApi.Integrations.Nexi;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -178,6 +179,7 @@ namespace CoffeeCard.WebApi
             services.AddScoped<IDateTimeProvider, DateTimeProvider>();
             services.AddScoped<IAdminStatisticsService, AdminStatisticsService>();
             services.AddFeatureManagement();
+            services.AddNexiModule();
 
             // Azure Application Insights/ OpenTelemetry
             var otlpSettings = _configuration.GetSection("OtlpSettings").Get<OtlpSettings>();
