@@ -179,7 +179,10 @@ namespace CoffeeCard.WebApi
             services.AddScoped<IDateTimeProvider, DateTimeProvider>();
             services.AddScoped<IAdminStatisticsService, AdminStatisticsService>();
             services.AddFeatureManagement();
-            services.AddNexiModule();
+            var nexiSettings = _configuration
+                .GetRequiredSection("NexiSettings")
+                .Get<NexiSettings>();
+            services.AddNexiModule(nexiSettings);
 
             // Azure Application Insights/ OpenTelemetry
             var otlpSettings = _configuration.GetSection("OtlpSettings").Get<OtlpSettings>();

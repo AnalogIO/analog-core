@@ -8,17 +8,18 @@ namespace CoffeeCardApi.Integrations.Nexi;
 
 public static class NexiServiceCollectionExtension
 {
-    public static IServiceCollection AddNexiModule(this IServiceCollection services)
+    public static IServiceCollection AddNexiModule(
+        this IServiceCollection services,
+        NexiSettings settings
+    )
     {
+        services.AddSingleton(settings);
         services.AddTransient<NexiAuthDelegatingHandler>();
         services
-            .AddHttpClient<NexiClient>(
-                (sp, client) =>
-                {
-                    var nexiSettings = sp.GetRequiredService<NexiSettings>();
-                    client.BaseAddress = nexiSettings.ApiUrl;
-                }
-            )
+            .AddHttpClient<NexiClient>(client =>
+            {
+                client.BaseAddress = settings.ApiUrl;
+            })
             .AddHttpMessageHandler<NexiAuthDelegatingHandler>();
         services.AddKeyedScoped<IPaymentStrategy, NexiStrategy>(PaymentType.Nexi);
 

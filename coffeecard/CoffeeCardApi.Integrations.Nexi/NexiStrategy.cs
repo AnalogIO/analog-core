@@ -13,9 +13,9 @@ namespace CoffeeCardApi.Integrations.Nexi;
 internal class NexiStrategy : IPaymentStrategy
 {
     private readonly NexiClient _checkoutPaymentApi;
-    private readonly ILogger _logger;
+    private readonly ILogger<NexiStrategy> _logger;
 
-    public NexiStrategy(NexiClient checkoutPaymentApi, ILogger logger)
+    public NexiStrategy(NexiClient checkoutPaymentApi, ILogger<NexiStrategy> logger)
     {
         _checkoutPaymentApi = checkoutPaymentApi;
         _logger = logger;
@@ -38,7 +38,7 @@ internal class NexiStrategy : IPaymentStrategy
                         Reference = product.Id.ToString(),
                         Name = product.Name,
                         Quantity = product.NumberOfTickets,
-                        Unit = "Pcs",
+                        Unit = "Pc(s)",
                         UnitPrice = product.Price / product.NumberOfTickets,
                         GrossTotalAmount = product.Price,
                         TaxRate = 2500,
@@ -64,11 +64,11 @@ internal class NexiStrategy : IPaymentStrategy
         return new PaymentInitiationResult(
             PurchaseStatus.PendingPayment,
             response.PaymentId,
-            // Replace with correct exception
             new NexiPaymentDetails
             {
                 PaymentId =
                     response.PaymentId
+                    // Replace with correct exception
                     ?? throw new MobilePayApiException(500, "Nexi transaction failed"),
             }
         );
