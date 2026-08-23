@@ -1,9 +1,11 @@
 ﻿using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Services.v2.PaymentStrategies;
+using CoffeeCard.MobilePay.Exception.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.Products;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 using CoffeeCard.Models.Entities;
 using CoffeeCardApi.Integrations.Nexi.Generated.Client;
+using Microsoft.Extensions.Logging;
 using PaymentDetails = CoffeeCard.Models.DataTransferObjects.v2.Purchase.PaymentDetails;
 
 namespace CoffeeCardApi.Integrations.Nexi;
@@ -11,10 +13,12 @@ namespace CoffeeCardApi.Integrations.Nexi;
 internal class NexiStrategy : IPaymentStrategy
 {
     private readonly NexiClient _checkoutPaymentApi;
+    private readonly ILogger _logger;
 
-    public NexiStrategy(NexiClient checkoutPaymentApi)
+    public NexiStrategy(NexiClient checkoutPaymentApi, ILogger logger)
     {
         _checkoutPaymentApi = checkoutPaymentApi;
+        _logger = logger;
     }
 
     public async Task<PaymentInitiationResult> InitiatePaymentAsync(
@@ -60,7 +64,13 @@ internal class NexiStrategy : IPaymentStrategy
         return new PaymentInitiationResult(
             PurchaseStatus.PendingPayment,
             response.PaymentId,
-            new NexiPaymentDetails { PaymentId = response.PaymentId }
+            // Replace with correct exception
+            new NexiPaymentDetails
+            {
+                PaymentId =
+                    response.PaymentId
+                    ?? throw new MobilePayApiException(500, "Nexi transaction failed"),
+            }
         );
     }
 
@@ -73,7 +83,7 @@ internal class NexiStrategy : IPaymentStrategy
 
         if (response.Payment is null)
         {
-            throw new BadRequestException("No payment found for purchase");
+            throw new BadRequestException($"No payment found for purchase {purchase.Id}");
         }
 
         return new NexiPaymentDetails()
@@ -97,7 +107,13 @@ internal class NexiStrategy : IPaymentStrategy
     {
         if (purchase.ExternalTransactionId is null)
         {
-            throw new BadRequestException("No transaction id specified for purchase");
+            _logger.LogWarning(
+                "Attempted to cancel purchase without external transaction {PurchaseId}",
+                purchase.Id
+            );
+            throw new BadRequestException(
+                $"No transaction id specified for purchase {purchase.Id}"
+            );
         }
 
         var request = new CancelPaymentBody { Amount = purchase.Price };
@@ -109,8 +125,36 @@ internal class NexiStrategy : IPaymentStrategy
         );
     }
 
-    public Task<bool> RefundPaymentAsync(Purchase purchase)
+    public async Task<bool> RefundPaymentAsync(Purchase purchase)
     {
-        throw new NotImplementedException();
+        if (purchase.ExternalTransactionId is null)
+        {
+            throw new BadRequestException("No transaction id specified for purchase");
+        }
+
+        var result = await _checkoutPaymentApi.Refund_chargeAsync(
+            purchase.ExternalTransactionId,
+            idempotency_Key: null,
+            body: new RefundPaymentBody { Amount = purchase.Price }
+        );
+
+        var isSuccess = result.RefundId is not null;
+        if (isSuccess)
+        {
+            _logger.LogInformation(
+                "Refunded payment for {PurchaseExternalTransactionId} with refundId {RefundId}",
+                purchase.ExternalTransactionId,
+                result.RefundId
+            );
+        }
+        else
+        {
+            _logger.LogError(
+                "Failed to refund purchase {PurchaseExternalTransactionId}",
+                purchase.ExternalTransactionId
+            );
+        }
+
+        return isSuccess;
     }
 }
