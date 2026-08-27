@@ -12,4 +12,3 @@ namespace CoffeeCard.Library.Services.v2.PaymentStrategies
         PaymentDetails PaymentDetails
     );
 }
-

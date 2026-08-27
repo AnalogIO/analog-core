@@ -50,10 +50,7 @@ namespace CoffeeCard.Library.Services.v2.PaymentStrategies
 
         public Task CapturePaymentAsync(Purchase purchase)
         {
-            return _mobilePayPaymentsService.CapturePayment(
-                GetPaymentId(purchase),
-                purchase.Price
-            );
+            return _mobilePayPaymentsService.CapturePayment(GetPaymentId(purchase), purchase.Price);
         }
 
         public Task CancelPaymentAsync(Purchase purchase)
