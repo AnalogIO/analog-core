@@ -16,7 +16,7 @@ namespace CoffeeCard.Library.Services
 
         public IEnumerable<Programme> GetProgrammes()
         {
-            return _context.Programmes.AsEnumerable();
+            return _context.Programmes.Where(x => x.IsActive).AsEnumerable();
         }
 
         public Programme GetProgramme(int id)
