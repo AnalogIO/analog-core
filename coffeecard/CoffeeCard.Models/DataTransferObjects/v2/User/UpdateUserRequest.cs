@@ -57,7 +57,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
         /// Profile Icon for the user
         /// </summary>
         /// <value>Profile Icon</value>
-        /// <example>4</example>
+        /// <example>MilkCarton</example>
         public ProfileIcon? ProfileIcon { get; set; }
 
         /// <summary>
