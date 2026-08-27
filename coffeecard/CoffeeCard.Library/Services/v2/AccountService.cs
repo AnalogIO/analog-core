@@ -173,7 +173,7 @@ namespace CoffeeCard.Library.Services.v2
                 user.Password = hashedPassword;
                 _logger.LogInformation("User changed password");
             }
-            
+
             if (updateUserRequest.ProfileIcon != null)
             {
                 if (!Enum.IsDefined(updateUserRequest.ProfileIcon.Value))
@@ -182,9 +182,12 @@ namespace CoffeeCard.Library.Services.v2
                         400
                     );
                 user.ProfileIcon = updateUserRequest.ProfileIcon;
-                _logger.LogInformation("User changed profile icon to {profileIcon}", user.ProfileIcon);
+                _logger.LogInformation(
+                    "User changed profile icon to {profileIcon}",
+                    user.ProfileIcon
+                );
             }
-            
+
             if (updateUserRequest.ProfileBackgroundColor != null)
             {
                 if (!Enum.IsDefined(updateUserRequest.ProfileBackgroundColor.Value))
@@ -193,7 +196,10 @@ namespace CoffeeCard.Library.Services.v2
                         400
                     );
                 user.ProfileBackgroundColor = updateUserRequest.ProfileBackgroundColor;
-                _logger.LogInformation("User changed background color to {backgroundColor}", user.ProfileBackgroundColor);
+                _logger.LogInformation(
+                    "User changed background color to {backgroundColor}",
+                    user.ProfileBackgroundColor
+                );
             }
 
             await _context.SaveChangesAsync();

@@ -219,7 +219,7 @@ namespace CoffeeCard.WebApi.Controllers.v2
                 },
                 PrivacyActivated = user.PrivacyActivated,
                 ProfileIcon = user.ProfileIcon,
-                ProfileBackgroundColor = user.ProfileBackgroundColor
+                ProfileBackgroundColor = user.ProfileBackgroundColor,
             };
         }
 
