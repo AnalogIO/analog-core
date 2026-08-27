@@ -27,7 +27,8 @@ namespace CoffeeCard.Tests.Common.Builders
                 .WithUserState(UserState.Active)
                 .WithTickets(new List<Ticket>())
                 .WithProfileIcon(ProfileIcon.MilkCarton)
-                .WithPictureBackgroundColor(PictureBackgroundColor.MossGreen);
+                .WithPictureBackgroundColor(PictureBackgroundColor.MossGreen)
+                .WithUserGroup(f => f.Random.Enum<UserGroup>());
         }
 
         public static UserBuilder DefaultCustomer()

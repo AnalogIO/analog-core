@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,7 +9,6 @@ using CoffeeCard.Models.DataTransferObjects.MobilePay;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using NSwag.Annotations;
 
 namespace CoffeeCard.WebApi.Controllers.v2;
@@ -21,12 +21,6 @@ namespace CoffeeCard.WebApi.Controllers.v2;
 [Route("api/v{version:apiVersion}/mobilepay")]
 public class MobilePayController : ControllerBase
 {
-    private static readonly JsonSerializerSettings JsonSerializerSettings = new()
-    {
-        DateFormatString = "yyyy-MM-ddTHH:mm:ss.fffZ",
-        DateTimeZoneHandling = DateTimeZoneHandling.Utc,
-    };
-
     private readonly ILogger<MobilePayController> _logger;
     private readonly IPurchaseService _purchaseService;
     private readonly IWebhookService _webhookService;
@@ -66,10 +60,10 @@ public class MobilePayController : ControllerBase
         [FromHeader(Name = "Authorization")] string authorizationHeader
     )
     {
-        var json = JsonConvert.SerializeObject(request, JsonSerializerSettings);
+        var requestBody = await ReadRequestBody();
 
         var signatureIsValid = await VerifySignature(
-            json,
+            requestBody,
             contentShaHeader,
             dateHeader,
             authorizationHeader
@@ -89,14 +83,29 @@ public class MobilePayController : ControllerBase
         return NoContent();
     }
 
+    private async Task<byte[]> ReadRequestBody()
+    {
+        if (!Request.Body.CanSeek)
+        {
+            Request.EnableBuffering();
+        }
+
+        Request.Body.Position = 0;
+        using var requestBody = new MemoryStream();
+        await Request.Body.CopyToAsync(requestBody);
+        Request.Body.Position = 0;
+
+        return requestBody.ToArray();
+    }
+
     private async Task<bool> VerifySignature(
-        string requestJson,
+        byte[] requestBody,
         string contentShaHeader,
         string dateHeader,
         string authorizationHeader
     )
     {
-        var contentHashInBytes = SHA256.HashData(Encoding.UTF8.GetBytes(requestJson));
+        var contentHashInBytes = SHA256.HashData(requestBody);
         var computedContentHash = Convert.ToBase64String(contentHashInBytes);
 
         if (!computedContentHash.Equals(contentShaHeader, StringComparison.OrdinalIgnoreCase))

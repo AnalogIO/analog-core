@@ -160,7 +160,9 @@ namespace CoffeeCard.WebApi
                 Library.Services.v2.ILeaderboardService,
                 Library.Services.v2.LeaderboardService
             >();
+            services.AddScoped<IReceiptService, ReceiptService>();
             services.AddScoped<IStatisticService, StatisticService>();
+            services.AddScoped<IStatisticsService, StatisticsService>();
             services.AddScoped<IDateTimeProvider, DateTimeProvider>();
             services.AddScoped<IAdminStatisticsService, AdminStatisticsService>();
             services.AddFeatureManagement();
@@ -218,14 +220,12 @@ namespace CoffeeCard.WebApi
                 );
                 openTelemetryBuilder.ConfigureResource(resource =>
                 {
-                    resource.AddAttributes(
-                        [
-                            new KeyValuePair<string, object>(
-                                "Env",
-                                environment.EnvironmentType.ToString() ?? "Env not set"
-                            ),
-                        ]
-                    );
+                    resource.AddAttributes([
+                        new KeyValuePair<string, object>(
+                            "Env",
+                            environment.EnvironmentType.ToString() ?? "Env not set"
+                        ),
+                    ]);
                     resource.AddAzureAppServiceDetector();
                     resource.AddService(
                         $"analog-core-{environment.EnvironmentType}",
