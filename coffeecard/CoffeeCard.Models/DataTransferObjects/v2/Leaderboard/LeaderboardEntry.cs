@@ -1,4 +1,5 @@
 ﻿using System;
+using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.Leaderboard
 {
@@ -11,8 +12,8 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Leaderboard
     ///     "name": "John Doe",
     ///     "rank": 2,
     ///     "score": 25,
-    ///     "profileIconId": 4,
-    ///     "profileBackgroundColor": 1
+    ///     "profileIcon": "MilkCarton",
+    ///     "profileBackgroundColor": "MossGreen"
     /// }
     /// </example>
     public sealed class LeaderboardEntry : IEquatable<LeaderboardEntry>
@@ -43,14 +44,14 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Leaderboard
         /// </summary>
         /// <value>Profile Icon</value>
         /// <example>Teabag</example>
-        public required int? ProfileIconId { get; set; }
-        
+        public required ProfileIcon? ProfileIcon { get; set; }
+
         /// <summary>
         /// User's profile picture background color
         /// </summary>
         /// <value>Background Color</value>
         /// <example>MossGreen</example>
-        public required int? ProfileBackgroundColor { get; set; }
+        public required ProfileBackgroundColor? ProfileBackgroundColor { get; set; }
 
         /// <summary>
         /// Account score
@@ -67,7 +68,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Leaderboard
                 && Name == other.Name
                 && Rank == other.Rank
                 && Score == other.Score
-                && ProfileIconId == other.ProfileIconId
+                && ProfileIcon == other.ProfileIcon
                 && ProfileBackgroundColor == other.ProfileBackgroundColor;
         }
 
@@ -86,7 +87,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Leaderboard
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            return HashCode.Combine(Id, Name, Rank, Score, ProfileIconId, ProfileBackgroundColor);
+            return HashCode.Combine(Id, Name, Rank, Score, ProfileIcon, ProfileBackgroundColor);
         }
     }
 }

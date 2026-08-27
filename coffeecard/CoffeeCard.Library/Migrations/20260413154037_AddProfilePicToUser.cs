@@ -11,7 +11,7 @@ namespace CoffeeCard.Library.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<int>(
-                name: "PictureBackgroundColor",
+                name: "ProfileBackgroundColor",
                 schema: "dbo",
                 table: "Users",
                 type: "int",
@@ -29,7 +29,7 @@ namespace CoffeeCard.Library.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "PictureBackgroundColor",
+                name: "ProfileBackgroundColor",
                 schema: "dbo",
                 table: "Users");
 

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.User
 {
@@ -64,6 +65,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
         /// </summary>
         /// <value>Background Color</value>
         /// <example>MossGreen</example>
-        public PictureBackgroundColor? BackgroundColor { get; set; }
+        public ProfileBackgroundColor? ProfileBackgroundColor { get; set; }
     }
 }

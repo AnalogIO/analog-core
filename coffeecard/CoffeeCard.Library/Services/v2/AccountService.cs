@@ -185,15 +185,15 @@ namespace CoffeeCard.Library.Services.v2
                 _logger.LogInformation("User changed profile icon to {profileIcon}", user.ProfileIcon);
             }
             
-            if (updateUserRequest.BackgroundColor != null)
+            if (updateUserRequest.ProfileBackgroundColor != null)
             {
-                if (!Enum.IsDefined(updateUserRequest.BackgroundColor.Value))
+                if (!Enum.IsDefined(updateUserRequest.ProfileBackgroundColor.Value))
                     throw new ApiException(
-                        $"Invalid background color {updateUserRequest.BackgroundColor}",
+                        $"Invalid background color {updateUserRequest.ProfileBackgroundColor}",
                         400
                     );
-                user.PictureBackgroundColor = updateUserRequest.BackgroundColor;
-                _logger.LogInformation("User changed background color to {backgroundColor}", user.PictureBackgroundColor);
+                user.ProfileBackgroundColor = updateUserRequest.ProfileBackgroundColor;
+                _logger.LogInformation("User changed background color to {backgroundColor}", user.ProfileBackgroundColor);
             }
 
             await _context.SaveChangesAsync();

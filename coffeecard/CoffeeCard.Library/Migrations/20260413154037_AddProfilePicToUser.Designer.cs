@@ -351,7 +351,7 @@ namespace CoffeeCard.Library.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PictureBackgroundColor")
+                    b.Property<int?>("ProfileBackgroundColor")
                         .HasColumnType("int");
 
                     b.Property<bool>("PrivacyActivated")

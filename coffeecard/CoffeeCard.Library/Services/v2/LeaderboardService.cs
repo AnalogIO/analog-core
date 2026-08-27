@@ -38,8 +38,8 @@ namespace CoffeeCard.Library.Services.v2
                         Name = s.User.PrivacyActivated ? "Anonymous" : s.User.Name,
                         Rank = index + 1,
                         Score = s.SwipeCount,
-                        ProfileIconId = s.User.ProfileIcon.HasValue && !s.User.PrivacyActivated ? (int)s.User.ProfileIcon.Value : null,
-                        ProfileBackgroundColor = s.User.PictureBackgroundColor.HasValue && !s.User.PrivacyActivated ? (int)s.User.PictureBackgroundColor.Value : null,
+                        ProfileIcon = s.User.PrivacyActivated ? null : s.User.ProfileIcon,
+                        ProfileBackgroundColor = s.User.PrivacyActivated ? null : s.User.ProfileBackgroundColor,
                     }
             );
         }
@@ -59,8 +59,8 @@ namespace CoffeeCard.Library.Services.v2
                 Name = user.Name,
                 Rank = rank,
                 Score = swipeCount,
-                ProfileIconId = user.ProfileIcon.HasValue ? (int)user.ProfileIcon.Value : null,
-                ProfileBackgroundColor = user.PictureBackgroundColor.HasValue ? (int)user.PictureBackgroundColor.Value : null,
+                ProfileIcon = user.ProfileIcon,
+                ProfileBackgroundColor = user.ProfileBackgroundColor,
             };
         }
 
