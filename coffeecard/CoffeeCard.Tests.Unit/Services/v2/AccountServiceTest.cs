@@ -163,6 +163,42 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         }
 
         [Fact(
+            DisplayName = "RegisterAccount assigns profile icon and background color from user id"
+        )]
+        public async Task RegisterAccountAssignsProfileIconAndBackgroundColorFromUserId()
+        {
+            // Arrange
+            var programme = ProgrammeBuilder.Simple().Build();
+
+            using var context = CreateTestCoffeeCardContextWithName(
+                nameof(RegisterAccountAssignsProfileIconAndBackgroundColorFromUserId)
+            );
+            context.Programmes.Add(programme);
+            await context.SaveChangesAsync();
+
+            var hashServiceMock = new Mock<IHashService>();
+            hashServiceMock.Setup(h => h.GenerateSalt()).Returns("");
+            hashServiceMock.Setup(h => h.Hash(It.IsAny<String>())).Returns("");
+
+            // Act
+            var accountService = new AccountService(
+                context,
+                new Mock<Library.Services.ITokenService>().Object,
+                new Mock<Library.Services.IEmailService>().Object,
+                new Mock<Library.Services.v2.IEmailService>().Object,
+                new Mock<Library.Services.v2.ITokenService>().Object,
+                hashServiceMock.Object,
+                NullLogger<AccountService>.Instance
+            );
+            var result = await accountService.RegisterAccountAsync("name", "email", "pass", 1);
+
+            // Assert
+            // Id is 1: icon = 1 % 9, background color = 1 % 10
+            Assert.Equal(ProfileIcon.MokkaPot, result.ProfileIcon);
+            Assert.Equal(ProfileBackgroundColor.MintGreen, result.ProfileBackgroundColor);
+        }
+
+        [Fact(
             DisplayName = "RegisterAccount throws ApiException with status 409 on existing email"
         )]
         public async Task RegisterAccountThrowsApiExceptionWithStatus409OnExistingEmail()
@@ -370,6 +406,94 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             using var context = CreateTestCoffeeCardContextWithName(
                 nameof(UpdateAccountThrowsApiExceptionOnInvalidProgrammeId)
+            );
+            context.Users.Add(user);
+
+            context.Programmes.Add(programme);
+            await context.SaveChangesAsync();
+
+            // Act
+            var accountService = new AccountService(
+                context,
+                new Mock<Library.Services.ITokenService>().Object,
+                new Mock<Library.Services.IEmailService>().Object,
+                new Mock<Library.Services.v2.IEmailService>().Object,
+                new Mock<Library.Services.v2.ITokenService>().Object,
+                new Mock<IHashService>().Object,
+                NullLogger<AccountService>.Instance
+            );
+
+            // Assert
+            var exception = await Assert.ThrowsAsync<ApiException>(async () =>
+                await accountService.UpdateAccountAsync(user, updateUserRequest)
+            );
+            Assert.Equal(StatusCodes.Status400BadRequest, exception.StatusCode);
+        }
+
+        [Theory(DisplayName = "UpdateAccount updates profile icon and background color")]
+        [InlineData(ProfileIcon.Teabag, ProfileBackgroundColor.SteelBlue)]
+        [InlineData(ProfileIcon.CoffeeCup, ProfileBackgroundColor.Aqua)]
+        [InlineData(ProfileIcon.PortaFilter, ProfileBackgroundColor.DustyRose)]
+        public async Task UpdateAccountUpdatesProfileIconAndBackgroundColor(
+            ProfileIcon profileIcon,
+            ProfileBackgroundColor profileBackgroundColor
+        )
+        {
+            // Arrange
+            var programme = ProgrammeBuilder.Simple().Build();
+            var updateUserRequest = new UpdateUserRequest()
+            {
+                ProfileIcon = profileIcon,
+                ProfileBackgroundColor = profileBackgroundColor,
+            };
+            var user = UserBuilder.DefaultCustomer().WithProgramme(programme).Build();
+
+            using var context = CreateTestCoffeeCardContextWithName(
+                nameof(UpdateAccountUpdatesProfileIconAndBackgroundColor) + profileIcon
+            );
+            context.Users.Add(user);
+
+            context.Programmes.Add(programme);
+            await context.SaveChangesAsync();
+
+            // Act
+            var accountService = new AccountService(
+                context,
+                new Mock<Library.Services.ITokenService>().Object,
+                new Mock<Library.Services.IEmailService>().Object,
+                new Mock<Library.Services.v2.IEmailService>().Object,
+                new Mock<Library.Services.v2.ITokenService>().Object,
+                new Mock<IHashService>().Object,
+                NullLogger<AccountService>.Instance
+            );
+            var result = await accountService.UpdateAccountAsync(user, updateUserRequest);
+
+            // Assert
+            Assert.Equal(profileIcon, result.ProfileIcon);
+            Assert.Equal(profileBackgroundColor, result.ProfileBackgroundColor);
+        }
+
+        [Theory(DisplayName = "UpdateAccount throws ApiException on invalid profile values")]
+        [InlineData(ProfileIcon.MilkCarton, (ProfileBackgroundColor)999)]
+        [InlineData((ProfileIcon)999, ProfileBackgroundColor.MossGreen)]
+        public async Task UpdateAccountThrowsApiExceptionOnInvalidProfileValues(
+            ProfileIcon? profileIcon,
+            ProfileBackgroundColor? profileBackgroundColor
+        )
+        {
+            // Arrange
+            var programme = ProgrammeBuilder.Simple().Build();
+            var updateUserRequest = new UpdateUserRequest()
+            {
+                ProfileIcon = profileIcon,
+                ProfileBackgroundColor = profileBackgroundColor,
+            };
+            var user = UserBuilder.DefaultCustomer().WithProgramme(programme).Build();
+
+            using var context = CreateTestCoffeeCardContextWithName(
+                nameof(UpdateAccountThrowsApiExceptionOnInvalidProfileValues)
+                    + profileIcon
+                    + profileBackgroundColor
             );
             context.Users.Add(user);
 

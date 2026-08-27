@@ -87,6 +87,16 @@ namespace CoffeeCard.Models.Entities
         public Programme Programme { get; set; }
 
         /// <summary>
+        /// Gets or sets the user's profile picture icon.
+        /// </summary>
+        public ProfileIcon ProfileIcon { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user's profile picture background color.
+        /// </summary>
+        public ProfileBackgroundColor ProfileBackgroundColor { get; set; }
+
+        /// <summary>
         /// Gets or sets the user's tokens.
         /// </summary>
         public virtual ICollection<Token> Tokens { get; set; } = new List<Token>();

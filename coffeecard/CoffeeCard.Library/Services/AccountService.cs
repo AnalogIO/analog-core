@@ -177,6 +177,11 @@ namespace CoffeeCard.Library.Services
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
+            // Assign profile icon and background color using the same rules as the UserIcon widget in coffeecard_app
+            user.ProfileIcon = (ProfileIcon)(user.Id % 9);
+            user.ProfileBackgroundColor = (ProfileBackgroundColor)(user.Id % 10);
+            await _context.SaveChangesAsync();
+
             var claims = new[]
             {
                 new Claim(ClaimTypes.Email, user.Email),

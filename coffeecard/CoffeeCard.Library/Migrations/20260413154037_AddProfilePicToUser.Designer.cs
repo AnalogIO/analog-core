@@ -4,6 +4,7 @@ using CoffeeCard.Library.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoffeeCard.Library.Migrations
 {
     [DbContext(typeof(CoffeeCardContext))]
-    partial class CoffeeCardContextModelSnapshot : ModelSnapshot
+    [Migration("20260413154037_AddProfilePicToUser")]
+    partial class AddProfilePicToUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -427,9 +430,7 @@ namespace CoffeeCard.Library.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.HasIndex("PurchaseId")
-                        .IsUnique()
-                        .HasFilter("[PurchaseId] IS NOT NULL");
+                    b.HasIndex("PurchaseId");
 
                     b.HasIndex("UserId");
 
@@ -588,8 +589,8 @@ namespace CoffeeCard.Library.Migrations
                         .IsRequired();
 
                     b.HasOne("CoffeeCard.Models.Entities.Purchase", "Purchase")
-                        .WithOne("Voucher")
-                        .HasForeignKey("CoffeeCard.Models.Entities.Voucher", "PurchaseId");
+                        .WithMany()
+                        .HasForeignKey("PurchaseId");
 
                     b.HasOne("CoffeeCard.Models.Entities.User", "User")
                         .WithMany()
@@ -622,8 +623,6 @@ namespace CoffeeCard.Library.Migrations
             modelBuilder.Entity("CoffeeCard.Models.Entities.Purchase", b =>
                 {
                     b.Navigation("Tickets");
-
-                    b.Navigation("Voucher");
                 });
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.User", b =>

@@ -1,4 +1,5 @@
 ﻿using System;
+using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.Leaderboard
 {
@@ -10,7 +11,9 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Leaderboard
     ///     "id": "1",
     ///     "name": "John Doe",
     ///     "rank": 2,
-    ///     "score": 25
+    ///     "score": 25,
+    ///     "profileIcon": "MilkCarton",
+    ///     "profileBackgroundColor": "MossGreen"
     /// }
     /// </example>
     public sealed class LeaderboardEntry : IEquatable<LeaderboardEntry>
@@ -37,6 +40,20 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Leaderboard
         public required int Rank { get; set; }
 
         /// <summary>
+        /// User's profile icon
+        /// </summary>
+        /// <value>Profile Icon</value>
+        /// <example>Teabag</example>
+        public required ProfileIcon? ProfileIcon { get; set; }
+
+        /// <summary>
+        /// User's profile picture background color
+        /// </summary>
+        /// <value>Background Color</value>
+        /// <example>MossGreen</example>
+        public required ProfileBackgroundColor? ProfileBackgroundColor { get; set; }
+
+        /// <summary>
         /// Account score
         /// </summary>
         /// <value>Account score</value>
@@ -50,7 +67,9 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Leaderboard
                 && Id == other.Id
                 && Name == other.Name
                 && Rank == other.Rank
-                && Score == other.Score;
+                && Score == other.Score
+                && ProfileIcon == other.ProfileIcon
+                && ProfileBackgroundColor == other.ProfileBackgroundColor;
         }
 
         /// <inheritdoc/>
@@ -68,7 +87,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Leaderboard
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            return HashCode.Combine(Id, Name, Rank, Score);
+            return HashCode.Combine(Id, Name, Rank, Score, ProfileIcon, ProfileBackgroundColor);
         }
     }
 }
