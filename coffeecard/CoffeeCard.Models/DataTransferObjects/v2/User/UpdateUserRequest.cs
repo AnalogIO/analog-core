@@ -64,7 +64,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
         /// Which background color is used for the profile picture
         /// </summary>
         /// <value>Background Color</value>
-        /// <example>Moss Green</example>
+        /// <example>MossGreen</example>
         public PictureBackgroundColor? BackgroundColor { get; set; }
     }
 }

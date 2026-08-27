@@ -10,7 +10,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Leaderboard
     ///     "id": "1",
     ///     "name": "John Doe",
     ///     "rank": 2,
-    ///     "score": 25
+    ///     "score": 25,
     ///     "profileIconId": 4,
     ///     "profileBackgroundColor": 1
     /// }
@@ -42,14 +42,14 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Leaderboard
         /// User's profile icon
         /// </summary>
         /// <value>Profile Icon</value>
-        /// <example>TeaBag</example>
+        /// <example>Teabag</example>
         public required int? ProfileIconId { get; set; }
         
         /// <summary>
         /// User's profile picture background color
         /// </summary>
         /// <value>Background Color</value>
-        /// <example>Moss Green</example>
+        /// <example>MossGreen</example>
         public required int? ProfileBackgroundColor { get; set; }
 
         /// <summary>
