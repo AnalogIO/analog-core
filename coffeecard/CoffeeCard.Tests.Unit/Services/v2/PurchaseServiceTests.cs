@@ -185,6 +185,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                     new MobilePayPaymentDetails
                     {
                         PaymentId = mobilepayPaymentId,
+                        OrderId = mobilepayPaymentId,
                         MobilePayAppRedirectUri = mpDeepLink,
                     }
                 );

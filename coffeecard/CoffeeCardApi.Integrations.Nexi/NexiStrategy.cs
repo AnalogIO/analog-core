@@ -61,15 +61,19 @@ internal class NexiStrategy : IPaymentStrategy
             request
         );
 
+        if (response.PaymentId is null || response.HostedPaymentPageUrl is null)
+        {
+            // TODO, replace with correct exception
+            throw new MobilePayApiException(500, "Nexi transaction failed");
+        }
+
         return new PaymentInitiationResult(
             PurchaseStatus.PendingPayment,
             response.PaymentId,
             new NexiPaymentDetails
             {
-                PaymentId =
-                    response.PaymentId
-                    // Replace with correct exception
-                    ?? throw new MobilePayApiException(500, "Nexi transaction failed"),
+                PaymentUrl = response.HostedPaymentPageUrl,
+                OrderId = response.PaymentId,
             }
         );
     }
@@ -86,10 +90,10 @@ internal class NexiStrategy : IPaymentStrategy
             throw new BadRequestException($"No payment found for purchase {purchase.Id}");
         }
 
-        return new NexiPaymentDetails()
+        return new NexiPaymentDetails
         {
-            OrderId = purchase.OrderId,
-            PaymentId = response.Payment.PaymentId.ToString(),
+            OrderId = response.Payment.PaymentId.ToString(),
+            PaymentUrl = response.Payment.Checkout.Url!,
         };
     }
 

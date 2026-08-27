@@ -16,7 +16,7 @@ namespace CoffeeCard.Library.Services.v2.PaymentStrategies
             Guid orderId
         )
         {
-            var paymentDetails = new FreePurchasePaymentDetails(orderId.ToString());
+            var paymentDetails = new FreePurchasePaymentDetails { OrderId = orderId.ToString() };
 
             return Task.FromResult(
                 new PaymentInitiationResult(
@@ -30,7 +30,7 @@ namespace CoffeeCard.Library.Services.v2.PaymentStrategies
         public Task<PaymentDetails> GetPaymentAsync(Purchase purchase)
         {
             return Task.FromResult<PaymentDetails>(
-                new FreePurchasePaymentDetails(purchase.OrderId)
+                new FreePurchasePaymentDetails { OrderId = purchase.OrderId }
             );
         }
 

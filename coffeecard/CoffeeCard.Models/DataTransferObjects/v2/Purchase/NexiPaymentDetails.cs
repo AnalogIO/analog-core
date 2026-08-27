@@ -15,12 +15,9 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
     /// </example>
     public class NexiPaymentDetails : PaymentDetails
     {
-        /// <summary>
-        /// MobilePay Id for a payment
-        /// </summary>
-        /// <example>186d2b31-ff25-4414-9fd1-bfe9807fa8b7</example>
-        // TODO liekly remove, doesn't seem usefull
         [Required]
-        public required string PaymentId { get; init; }
+        public required string PaymentUrl { get; init; }
+
+        public override PaymentType PaymentType => PaymentType.Nexi;
     }
 }
