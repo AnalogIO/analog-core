@@ -12,6 +12,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         typeof(FreePurchasePaymentDetails),
         typeDiscriminator: "FreePurchasePaymentDetails"
     )]
+    [JsonDerivedType(typeof(NexiPaymentDetails), typeDiscriminator: "NexiPaymentDetails")]
     public abstract class PaymentDetails
     {
         /// <summary>

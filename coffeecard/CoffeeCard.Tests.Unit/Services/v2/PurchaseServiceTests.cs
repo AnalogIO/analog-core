@@ -5,6 +5,7 @@ using CoffeeCard.Common.Configuration;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services.v2;
+using CoffeeCard.Library.Services.v2.PaymentStrategies;
 using CoffeeCard.MobilePay.Generated.Api.ePaymentApi;
 using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
@@ -93,7 +94,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             );
             var purchaseService = new PurchaseService(
                 context,
-                mobilePayService.Object,
+                CreatePaymentStrategyFactory(mobilePayService.Object),
                 ticketService,
                 mailService.Object,
                 productService,
@@ -162,7 +163,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             );
             var purchaseService = new PurchaseService(
                 context,
-                mobilePayService.Object,
+                CreatePaymentStrategyFactory(mobilePayService.Object),
                 ticketService,
                 mailService.Object,
                 productService,
@@ -268,7 +269,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             );
             var purchaseService = new PurchaseService(
                 context,
-                mobilePayService.Object,
+                CreatePaymentStrategyFactory(mobilePayService.Object),
                 ticketService,
                 mailService.Object,
                 productService,
@@ -364,7 +365,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             );
             var purchaseService = new PurchaseService(
                 context,
-                mobilePayService.Object,
+                CreatePaymentStrategyFactory(mobilePayService.Object),
                 ticketService,
                 mailService.Object,
                 productService,
@@ -441,7 +442,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             );
             var purchaseService = new PurchaseService(
                 context,
-                mobilePayService.Object,
+                CreatePaymentStrategyFactory(mobilePayService.Object),
                 ticketService,
                 mailService.Object,
                 productService,
@@ -518,7 +519,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             );
             var purchaseService = new PurchaseService(
                 context,
-                mobilePayService.Object,
+                CreatePaymentStrategyFactory(mobilePayService.Object),
                 ticketService,
                 mailService.Object,
                 productService,
@@ -592,7 +593,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             );
             var purchaseService = new PurchaseService(
                 context,
-                mobilePayService.Object,
+                CreatePaymentStrategyFactory(mobilePayService.Object),
                 ticketService,
                 mailService.Object,
                 productService,
@@ -667,7 +668,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             );
             var purchaseService = new PurchaseService(
                 context,
-                mobilePayService.Object,
+                CreatePaymentStrategyFactory(mobilePayService.Object),
                 ticketService,
                 mailService.Object,
                 productService,
@@ -751,7 +752,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             );
             var purchaseService = new PurchaseService(
                 context,
-                mobilePayService.Object,
+                CreatePaymentStrategyFactory(mobilePayService.Object),
                 ticketService,
                 mailService.Object,
                 productService,
@@ -846,7 +847,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             );
             var purchaseService = new PurchaseService(
                 context,
-                mobilePayService.Object,
+                CreatePaymentStrategyFactory(mobilePayService.Object),
                 ticketService,
                 mailService.Object,
                 productService,
@@ -930,7 +931,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             );
             var purchaseService = new PurchaseService(
                 context,
-                mobilePayService.Object,
+                CreatePaymentStrategyFactory(mobilePayService.Object),
                 ticketService,
                 mailService.Object,
                 productService,
@@ -1016,7 +1017,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             );
             var purchaseService = new PurchaseService(
                 context,
-                mobilePayService.Object,
+                CreatePaymentStrategyFactory(mobilePayService.Object),
                 ticketService,
                 mailService.Object,
                 productService,
@@ -1069,7 +1070,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             );
             var purchaseService = new PurchaseService(
                 context,
-                mobilePayService.Object,
+                CreatePaymentStrategyFactory(mobilePayService.Object),
                 ticketService,
                 mailService.Object,
                 productService,
@@ -1154,7 +1155,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             );
             var purchaseService = new PurchaseService(
                 context,
-                mobilePayService.Object,
+                CreatePaymentStrategyFactory(mobilePayService.Object),
                 ticketService,
                 mailService.Object,
                 productService,
@@ -1183,6 +1184,21 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 m => m.SendInvoiceAsyncV2(It.IsAny<Purchase>(), It.IsAny<User>()),
                 Times.Never
             );
+        }
+
+        private static IPaymentStrategyFactory CreatePaymentStrategyFactory(
+            IMobilePayPaymentsService mobilePayService
+        )
+        {
+            var factory = new Mock<IPaymentStrategyFactory>();
+            factory
+                .Setup(paymentFactory => paymentFactory.GetStrategy(PaymentType.MobilePay))
+                .Returns(new MobilePayPaymentStrategy(mobilePayService));
+            factory
+                .Setup(paymentFactory => paymentFactory.GetStrategy(PaymentType.FreePurchase))
+                .Returns(new FreePurchasePaymentStrategy());
+
+            return factory.Object;
         }
 
         public static IEnumerable<object[]> ProductGenerator()
