@@ -176,12 +176,22 @@ namespace CoffeeCard.Library.Services.v2
             
             if (updateUserRequest.ProfileIcon != null)
             {
+                if (!Enum.IsDefined(updateUserRequest.ProfileIcon.Value))
+                    throw new ApiException(
+                        $"Invalid profile icon {updateUserRequest.ProfileIcon}",
+                        400
+                    );
                 user.ProfileIcon = updateUserRequest.ProfileIcon;
                 _logger.LogInformation("User changed profile icon to {profileIcon}", user.ProfileIcon);
             }
             
             if (updateUserRequest.BackgroundColor != null)
             {
+                if (!Enum.IsDefined(updateUserRequest.BackgroundColor.Value))
+                    throw new ApiException(
+                        $"Invalid background color {updateUserRequest.BackgroundColor}",
+                        400
+                    );
                 user.PictureBackgroundColor = updateUserRequest.BackgroundColor;
                 _logger.LogInformation("User changed background color to {backgroundColor}", user.PictureBackgroundColor);
             }
