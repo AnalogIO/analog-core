@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.User
 {
