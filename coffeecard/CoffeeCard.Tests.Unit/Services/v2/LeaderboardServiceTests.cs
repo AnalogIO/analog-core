@@ -7,6 +7,7 @@ using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.DataTransferObjects.v2.Leaderboard;
+using CoffeeCard.Models.DataTransferObjects.v2.User;
 using CoffeeCard.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -54,6 +55,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 PrivacyActivated = false,
                 UserGroup = UserGroup.Customer,
                 UserState = UserState.Active,
+                ProfileIcon = ProfileIcon.CoffeeCup,
+                PictureBackgroundColor = PictureBackgroundColor.LavenderPink,
             };
             context.Add(user1);
 
@@ -159,6 +162,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 PrivacyActivated = false,
                 UserGroup = UserGroup.Customer,
                 UserState = UserState.Active,
+                ProfileIcon = ProfileIcon.CoffeeCup,
+                PictureBackgroundColor = PictureBackgroundColor.LavenderPink,
             };
             context.Add(user1);
             await context.SaveChangesAsync();
@@ -222,6 +227,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 PrivacyActivated = false,
                 UserGroup = UserGroup.Customer,
                 UserState = UserState.Active,
+                ProfileIcon = ProfileIcon.MokkaPot,
+                PictureBackgroundColor = PictureBackgroundColor.LavenderPink,
             };
             context.Add(user1);
 
@@ -237,6 +244,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 PrivacyActivated = false,
                 UserGroup = UserGroup.Customer,
                 UserState = UserState.Active,
+                ProfileIcon = ProfileIcon.MokkaPot,
+                PictureBackgroundColor = PictureBackgroundColor.LavenderPink,
             };
             context.Add(user2);
 
