@@ -89,12 +89,12 @@ namespace CoffeeCard.Models.Entities
         /// <summary>
         /// Gets or sets the user's profile picture icon.
         /// </summary>
-        public ProfileIcon? ProfileIcon { get; set; }
+        public ProfileIcon ProfileIcon { get; set; }
 
         /// <summary>
         /// Gets or sets the user's profile picture background color.
         /// </summary>
-        public ProfileBackgroundColor? ProfileBackgroundColor { get; set; }
+        public ProfileBackgroundColor ProfileBackgroundColor { get; set; }
 
         /// <summary>
         /// Gets or sets the user's tokens.

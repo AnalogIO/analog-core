@@ -348,13 +348,13 @@ namespace CoffeeCard.Library.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ProfileBackgroundColor")
+                    b.Property<int>("ProfileBackgroundColor")
                         .HasColumnType("int");
 
                     b.Property<bool>("PrivacyActivated")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("ProfileIcon")
+                    b.Property<int>("ProfileIcon")
                         .HasColumnType("int");
 
                     b.Property<int>("ProgrammeId")

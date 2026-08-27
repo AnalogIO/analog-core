@@ -92,6 +92,11 @@ namespace CoffeeCard.Library.Services.v2
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
+            // Assign profile icon and background color using the same rules as the UserIcon widget in coffeecard_app
+            user.ProfileIcon = (ProfileIcon)(user.Id % 9);
+            user.ProfileBackgroundColor = (ProfileBackgroundColor)(user.Id % 10);
+            await _context.SaveChangesAsync();
+
             await SendAccountVerificationEmail(user);
 
             return user;
@@ -181,7 +186,7 @@ namespace CoffeeCard.Library.Services.v2
                         $"Invalid profile icon {updateUserRequest.ProfileIcon}",
                         400
                     );
-                user.ProfileIcon = updateUserRequest.ProfileIcon;
+                user.ProfileIcon = updateUserRequest.ProfileIcon.Value;
                 _logger.LogInformation(
                     "User changed profile icon to {profileIcon}",
                     user.ProfileIcon
@@ -195,7 +200,7 @@ namespace CoffeeCard.Library.Services.v2
                         $"Invalid background color {updateUserRequest.ProfileBackgroundColor}",
                         400
                     );
-                user.ProfileBackgroundColor = updateUserRequest.ProfileBackgroundColor;
+                user.ProfileBackgroundColor = updateUserRequest.ProfileBackgroundColor.Value;
                 _logger.LogInformation(
                     "User changed background color to {backgroundColor}",
                     user.ProfileBackgroundColor

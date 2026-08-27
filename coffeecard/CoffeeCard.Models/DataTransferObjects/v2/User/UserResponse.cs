@@ -101,13 +101,15 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
         /// </summary>
         /// <value>Profile Icon</value>
         /// <example>MilkCarton</example>
-        public ProfileIcon? ProfileIcon { get; set; }
+        [Required]
+        public required ProfileIcon ProfileIcon { get; set; }
 
         /// <summary>
         /// User's background color for profile picture
         /// </summary>
         /// <value>Background Color</value>
         /// <example>MossGreen</example>
-        public ProfileBackgroundColor? ProfileBackgroundColor { get; set; }
+        [Required]
+        public required ProfileBackgroundColor ProfileBackgroundColor { get; set; }
     }
 }

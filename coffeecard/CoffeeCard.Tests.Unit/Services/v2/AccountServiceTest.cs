@@ -163,6 +163,42 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         }
 
         [Fact(
+            DisplayName = "RegisterAccount assigns profile icon and background color from user id"
+        )]
+        public async Task RegisterAccountAssignsProfileIconAndBackgroundColorFromUserId()
+        {
+            // Arrange
+            var programme = ProgrammeBuilder.Simple().Build();
+
+            using var context = CreateTestCoffeeCardContextWithName(
+                nameof(RegisterAccountAssignsProfileIconAndBackgroundColorFromUserId)
+            );
+            context.Programmes.Add(programme);
+            await context.SaveChangesAsync();
+
+            var hashServiceMock = new Mock<IHashService>();
+            hashServiceMock.Setup(h => h.GenerateSalt()).Returns("");
+            hashServiceMock.Setup(h => h.Hash(It.IsAny<String>())).Returns("");
+
+            // Act
+            var accountService = new AccountService(
+                context,
+                new Mock<Library.Services.ITokenService>().Object,
+                new Mock<Library.Services.IEmailService>().Object,
+                new Mock<Library.Services.v2.IEmailService>().Object,
+                new Mock<Library.Services.v2.ITokenService>().Object,
+                hashServiceMock.Object,
+                NullLogger<AccountService>.Instance
+            );
+            var result = await accountService.RegisterAccountAsync("name", "email", "pass", 1);
+
+            // Assert
+            // Id is 1: icon = 1 % 9, background color = 1 % 10
+            Assert.Equal(ProfileIcon.MokkaPot, result.ProfileIcon);
+            Assert.Equal(ProfileBackgroundColor.MintGreen, result.ProfileBackgroundColor);
+        }
+
+        [Fact(
             DisplayName = "RegisterAccount throws ApiException with status 409 on existing email"
         )]
         public async Task RegisterAccountThrowsApiExceptionWithStatus409OnExistingEmail()
