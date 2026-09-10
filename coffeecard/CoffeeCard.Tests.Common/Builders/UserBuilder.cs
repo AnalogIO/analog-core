@@ -1,4 +1,3 @@
-using CoffeeCard.Models.DataTransferObjects.v2.User;
 using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Tests.Common.Builders

@@ -10,6 +10,13 @@ namespace CoffeeCard.Library.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql(
+                "UPDATE [dbo].[Users] SET [ProfileIcon] = [Id] % 10 WHERE [ProfileIcon] IS NULL"
+            );
+            migrationBuilder.Sql(
+                "UPDATE [dbo].[Users] SET [ProfileBackgroundColor] = [Id] % 10 WHERE [ProfileBackgroundColor] IS NULL"
+            );
+
             migrationBuilder.AlterColumn<int>(
                 name: "ProfileIcon",
                 schema: "dbo",

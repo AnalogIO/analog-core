@@ -8,7 +8,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Leaderboard
     /// </summary>
     /// <example>
     /// {
-    ///     "id": "1",
+    ///     "id": 1,
     ///     "name": "John Doe",
     ///     "rank": 2,
     ///     "score": 25,
