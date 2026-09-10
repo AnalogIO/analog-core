@@ -419,8 +419,23 @@ namespace CoffeeCard.WebApi
                     ?? "$type"
                 );
 
-                // Add discriminator value→schema mappings from [JsonDerivedType] attributes
-                // so NSwag can generate correct polymorphic deserialization
+                // JsonDerivedTypeAttribute is declared on the base type, while
+                // Swashbuckle asks for the discriminator value for each subtype.
+                // Supply the serializer's values so the generated discriminator
+                // contains the Purchase/Voucher/UsedTicket mapping.
+                options.SelectDiscriminatorValueUsing(type =>
+                {
+                    var derivedType = type.BaseType?
+                        .GetCustomAttributes<JsonDerivedTypeAttribute>()
+                        .FirstOrDefault(attribute => attribute.DerivedType == type);
+
+                    return derivedType?.TypeDiscriminator as string ?? type.Name;
+                });
+
+                // Swashbuckle emits the oneOf discriminator schema for ReceiptBase.
+                // Do not replace it with a plain $ref: doing so loses the subtype union
+                // for properties such as ReceiptResponse.Receipts. The document
+                // filter only adds mappings and fixes allOf additionalProperties.
                 options.DocumentFilter<JsonPolymorphicDiscriminatorFilter>();
                 // Preserve controller/action-based operation IDs so generated test clients keep stable method names.
                 options.CustomOperationIds(GetStableOperationId);
