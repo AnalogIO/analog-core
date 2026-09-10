@@ -9,7 +9,7 @@
     <ProjectReference Include="..\CoffeeCard.Common\CoffeeCard.Common.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NJsonSchema" Version="11.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference
       Include="Microsoft.NETCore.Targets"
       Version="5.0.0"
