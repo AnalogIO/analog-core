@@ -14,6 +14,7 @@ using CoffeeCard.Library.Utils;
 using CoffeeCard.MobilePay.Service.v2;
 using CoffeeCard.MobilePay.Utils;
 using CoffeeCard.WebApi.Helpers;
+using CoffeeCardApi.Integrations.Nexi;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -145,6 +146,18 @@ namespace CoffeeCard.WebApi
                 Library.Services.v2.IPurchaseService,
                 Library.Services.v2.PurchaseService
             >();
+            services.AddKeyedScoped<
+                Library.Services.v2.PaymentStrategies.IPaymentStrategy,
+                Library.Services.v2.PaymentStrategies.MobilePayPaymentStrategy
+            >(Models.DataTransferObjects.v2.Purchase.PaymentType.MobilePay);
+            services.AddKeyedScoped<
+                Library.Services.v2.PaymentStrategies.IPaymentStrategy,
+                Library.Services.v2.PaymentStrategies.FreePurchasePaymentStrategy
+            >(Models.DataTransferObjects.v2.Purchase.PaymentType.FreePurchase);
+            services.AddScoped<
+                Library.Services.v2.PaymentStrategies.IPaymentStrategyFactory,
+                Library.Services.v2.PaymentStrategies.PaymentStrategyFactory
+            >();
             services.AddScoped<
                 Library.Services.v2.ITicketService,
                 Library.Services.v2.TicketService
@@ -166,6 +179,10 @@ namespace CoffeeCard.WebApi
             services.AddScoped<IDateTimeProvider, DateTimeProvider>();
             services.AddScoped<IAdminStatisticsService, AdminStatisticsService>();
             services.AddFeatureManagement();
+            var nexiSettings = _configuration
+                .GetRequiredSection("NexiSettings")
+                .Get<NexiSettings>();
+            services.AddNexiModule(nexiSettings);
 
             // Azure Application Insights/ OpenTelemetry
             var otlpSettings = _configuration.GetSection("OtlpSettings").Get<OtlpSettings>();
