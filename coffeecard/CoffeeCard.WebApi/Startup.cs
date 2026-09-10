@@ -426,8 +426,8 @@ namespace CoffeeCard.WebApi
                 // contains the Purchase/Voucher/UsedTicket mapping.
                 options.SelectDiscriminatorValueUsing(type =>
                 {
-                    var derivedType = type.BaseType?
-                        .GetCustomAttributes<JsonDerivedTypeAttribute>()
+                    var derivedType = type
+                        .BaseType?.GetCustomAttributes<JsonDerivedTypeAttribute>()
                         .FirstOrDefault(attribute => attribute.DerivedType == type);
 
                     return derivedType?.TypeDiscriminator as string ?? type.Name;

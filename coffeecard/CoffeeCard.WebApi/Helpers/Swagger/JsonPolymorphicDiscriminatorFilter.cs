@@ -1,17 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json.Serialization;
 using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace CoffeeCard.WebApi.Helpers.Swagger;
 
 /// <summary>
-/// Adds discriminator mappings from <see cref="JsonDerivedTypeAttribute"/> and
-/// keeps the generated polymorphic inheritance schemas composable.
+/// Applies the small amount of post-processing needed for Swashbuckle's
+/// polymorphic allOf/oneOf output. Discriminator mappings themselves are
+/// configured through <c>SelectDiscriminatorValueUsing</c>.
 /// </summary>
-public class JsonPolymorphicDiscriminatorFilter : IDocumentFilter
+public sealed class JsonPolymorphicDiscriminatorFilter : IDocumentFilter
 {
     /// <inheritdoc />
     public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
@@ -20,93 +20,49 @@ public class JsonPolymorphicDiscriminatorFilter : IDocumentFilter
         if (schemas is null)
             return;
 
-        var schemaNameLookup = schemas.Keys.ToDictionary(
-            key => key,
-            key => key,
-            StringComparer.OrdinalIgnoreCase
-        );
-
-        var discriminatedBases = new Dictionary<string, HashSet<string>>();
-        var discriminators = new Dictionary<string, OpenApiDiscriminator>(
-            StringComparer.OrdinalIgnoreCase
-        );
-
-        foreach (var (schemaName, schema) in schemas)
-        {
-            if (schema is not OpenApiSchema concreteSchema)
-                continue;
-
-            if (concreteSchema.Discriminator is null)
-                continue;
-
-            var clrType = FindPolymorphicType(schemaName);
-            if (clrType is null)
-                continue;
-
-            var derivedSchemaNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-            foreach (
-                var derived in clrType
-                    .GetCustomAttributes(typeof(JsonDerivedTypeAttribute), inherit: false)
-                    .Cast<JsonDerivedTypeAttribute>()
-            )
-            {
-                if (derived.TypeDiscriminator is not string discriminatorValue)
-                    continue;
-
-                if (
-                    schemaNameLookup.TryGetValue(
-                        derived.DerivedType.Name,
-                        out var derivedSchemaName
-                    )
-                )
-                {
-                    concreteSchema.Discriminator.Mapping ??=
-                        new Dictionary<string, OpenApiSchemaReference>();
-                    concreteSchema.Discriminator.Mapping[discriminatorValue] =
-                        new OpenApiSchemaReference(derivedSchemaName);
-                    derivedSchemaNames.Add(derivedSchemaName);
-                }
-            }
-
-            if (derivedSchemaNames.Count > 0)
-            {
-                discriminatedBases[schemaName] = derivedSchemaNames;
-                discriminators[schemaName] = concreteSchema.Discriminator;
-            }
-        }
-
-        // Swashbuckle emits additionalProperties:false for object schemas. That
-        // is not composable with allOf: the base rejects derived properties and
-        // the derived inline schema rejects base properties. The JSON serializer
-        // accepts the combined object, so make every component in this
-        // polymorphic hierarchy open.
-        foreach (var (schemaName, schema) in schemas)
-        {
-            if (schema is not OpenApiSchema concreteSchema)
-                continue;
-
-            var isDiscriminatedBase = discriminatedBases.ContainsKey(schemaName);
-            var isDerivedSchema = discriminatedBases.Values.Any(
-                derivedNames => derivedNames.Contains(schemaName)
+        var polymorphicBases = schemas
+            .Where(pair => pair.Value is OpenApiSchema { Discriminator.Mapping.Count: > 0 })
+            .ToDictionary(
+                pair => pair.Key,
+                pair => (OpenApiSchema)pair.Value,
+                StringComparer.OrdinalIgnoreCase
             );
 
-            if (!isDiscriminatedBase && !isDerivedSchema)
-                continue;
+        if (polymorphicBases.Count == 0)
+            return;
 
-            AllowAdditionalProperties(concreteSchema);
+        // additionalProperties:false cannot be used independently on the base
+        // and derived parts of an allOf hierarchy: each part would reject the
+        // properties contributed by the other part.
+        foreach (var baseSchema in polymorphicBases.Values)
+        {
+            AllowAdditionalProperties(baseSchema);
 
-            foreach (var allOfSchema in concreteSchema.AllOf ?? [])
+            foreach (var derivedReference in baseSchema.Discriminator.Mapping.Values)
             {
-                if (allOfSchema is OpenApiSchema composedSchema)
-                    AllowAdditionalProperties(composedSchema);
+                var derivedName = GetReferenceId(derivedReference);
+                if (
+                    derivedName is null
+                    || !schemas.TryGetValue(derivedName, out var derivedSchema)
+                    || derivedSchema is not OpenApiSchema concreteDerivedSchema
+                )
+                {
+                    continue;
+                }
+
+                AllowAdditionalProperties(concreteDerivedSchema);
+
+                foreach (var allOfSchema in concreteDerivedSchema.AllOf ?? [])
+                {
+                    if (allOfSchema is OpenApiSchema composedSchema)
+                        AllowAdditionalProperties(composedSchema);
+                }
             }
         }
 
-        // The oneOf produced for a property is an inline schema. Put the
-        // discriminator on that schema as well as on the base component. This
-        // is understood by generators such as NSwag and still leaves the
-        // standard oneOf intact for other generators.
+        // Swashbuckle puts oneOf on inline property schemas, but puts the
+        // discriminator on the base component. Copy the matching discriminator
+        // to the inline schema so generators can resolve the union directly.
         foreach (var schema in schemas.Values.OfType<OpenApiSchema>())
         {
             if (schema.Properties is null)
@@ -120,78 +76,59 @@ public class JsonPolymorphicDiscriminatorFilter : IDocumentFilter
                     && arrayItems.OneOf is { Count: > 0 }
                 )
                 {
-                    AddInlineDiscriminator(arrayItems, discriminatedBases, discriminators);
+                    AddMatchingDiscriminator(arrayItems, polymorphicBases);
                 }
                 else if (
                     propertySchema is OpenApiSchema directSchema
                     && directSchema.OneOf is { Count: > 0 }
                 )
                 {
-                    AddInlineDiscriminator(directSchema, discriminatedBases, discriminators);
+                    AddMatchingDiscriminator(directSchema, polymorphicBases);
                 }
             }
         }
     }
 
-    private static void AddInlineDiscriminator(
+    private static void AddMatchingDiscriminator(
         OpenApiSchema schema,
-        Dictionary<string, HashSet<string>> discriminatedBases,
-        Dictionary<string, OpenApiDiscriminator> discriminators
+        IDictionary<string, OpenApiSchema> polymorphicBases
     )
     {
-        var baseName = FindMatchingBase(schema.OneOf, discriminatedBases);
-        if (baseName is null)
-            return;
-
-        if (discriminators.TryGetValue(baseName, out var discriminator))
-            schema.Discriminator = discriminator;
+        var baseName = FindMatchingBase(schema, polymorphicBases);
+        if (baseName is not null)
+            schema.Discriminator = polymorphicBases[baseName].Discriminator;
     }
 
     private static string FindMatchingBase(
-        IList<IOpenApiSchema> oneOfEntries,
-        Dictionary<string, HashSet<string>> discriminatedBases
+        OpenApiSchema schema,
+        IDictionary<string, OpenApiSchema> polymorphicBases
     )
     {
-        var oneOfRefs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var oneOfNames = schema
+            .OneOf.Select(GetReferenceId)
+            .Where(referenceId => referenceId is not null)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var entry in oneOfEntries)
+        foreach (var (baseName, baseSchema) in polymorphicBases)
         {
-            if (entry is not OpenApiSchemaReference schemaRef)
-                continue;
+            var derivedNames = baseSchema
+                .Discriminator.Mapping.Values.Select(GetReferenceId)
+                .Where(referenceId => referenceId is not null)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-            var refId = schemaRef.Reference?.Id ?? schemaRef.Id;
-            if (refId is not null)
-                oneOfRefs.Add(refId);
-        }
-
-        foreach (var (baseName, derivedNames) in discriminatedBases)
-        {
-            if (derivedNames.SetEquals(oneOfRefs))
+            if (derivedNames.SetEquals(oneOfNames))
                 return baseName;
         }
 
         return null;
     }
 
-    private static Type FindPolymorphicType(string schemaName)
+    private static string GetReferenceId(IOpenApiSchema schema)
     {
-        return AppDomain
-            .CurrentDomain.GetAssemblies()
-            .SelectMany(assembly =>
-            {
-                try
-                {
-                    return assembly.GetTypes();
-                }
-                catch
-                {
-                    return Array.Empty<Type>();
-                }
-            })
-            .FirstOrDefault(type =>
-                string.Equals(type.Name, schemaName, StringComparison.OrdinalIgnoreCase)
-                && type.GetCustomAttributes(typeof(JsonPolymorphicAttribute), inherit: false).Length > 0
-            );
+        if (schema is OpenApiSchemaReference schemaReference)
+            return schemaReference.Reference?.Id ?? schemaReference.Id;
+
+        return null;
     }
 
     private static void AllowAdditionalProperties(OpenApiSchema schema)
