@@ -75,6 +75,9 @@ namespace CoffeeCard.Library.Persistence
 
             modelBuilder.Entity<User>().Property(u => u.UserState).HasConversion<string>();
 
+            modelBuilder.Entity<User>().Property(u => u.ProfileIcon).IsRequired();
+            modelBuilder.Entity<User>().Property(u => u.ProfileBackgroundColor).IsRequired();
+
             modelBuilder
                 .Entity<ProductUserGroup>()
                 .Property(pug => pug.UserGroup)

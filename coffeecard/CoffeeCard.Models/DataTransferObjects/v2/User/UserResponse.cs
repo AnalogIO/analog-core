@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using CoffeeCard.Models.DataTransferObjects.v2.Programme;
+using CoffeeCard.Models.Entities;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.User
 {
@@ -16,7 +17,9 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
     ///     "rankAllTime": 15,
     ///     "rankSemester": 4,
     ///     "rankMonth": 5,
-    ///     "role": "Barista"
+    ///     "role": "Barista",
+    ///     "profileIcon": "MilkCarton",
+    ///     "profileBackgroundColor": "MossGreen"
     /// }
     /// </example>
     public class UserResponse
@@ -92,5 +95,21 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
         /// <example>5</example>
         [Required]
         public required int RankMonth { get; set; }
+
+        /// <summary>
+        /// User's profile icon
+        /// </summary>
+        /// <value>Profile Icon</value>
+        /// <example>MilkCarton</example>
+        [Required]
+        public required ProfileIcon ProfileIcon { get; set; }
+
+        /// <summary>
+        /// User's background color for profile picture
+        /// </summary>
+        /// <value>Background Color</value>
+        /// <example>MossGreen</example>
+        [Required]
+        public required ProfileBackgroundColor ProfileBackgroundColor { get; set; }
     }
 }
