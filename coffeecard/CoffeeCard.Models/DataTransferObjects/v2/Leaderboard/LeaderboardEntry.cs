@@ -44,14 +44,14 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Leaderboard
         /// </summary>
         /// <value>Profile Icon</value>
         /// <example>Teabag</example>
-        public required ProfileIcon? ProfileIcon { get; set; }
+        public required ProfileIcon ProfileIcon { get; set; }
 
         /// <summary>
         /// User's profile picture background color
         /// </summary>
         /// <value>Background Color</value>
         /// <example>MossGreen</example>
-        public required ProfileBackgroundColor? ProfileBackgroundColor { get; set; }
+        public required ProfileBackgroundColor ProfileBackgroundColor { get; set; }
 
         /// <summary>
         /// Account score

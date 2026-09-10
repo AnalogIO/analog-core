@@ -38,10 +38,8 @@ namespace CoffeeCard.Library.Services.v2
                         Name = s.User.PrivacyActivated ? "Anonymous" : s.User.Name,
                         Rank = index + 1,
                         Score = s.SwipeCount,
-                        ProfileIcon = s.User.PrivacyActivated ? null : s.User.ProfileIcon,
-                        ProfileBackgroundColor = s.User.PrivacyActivated
-                            ? null
-                            : s.User.ProfileBackgroundColor,
+                        ProfileIcon = s.User.ProfileIcon,
+                        ProfileBackgroundColor = s.User.ProfileBackgroundColor,
                     }
             );
         }

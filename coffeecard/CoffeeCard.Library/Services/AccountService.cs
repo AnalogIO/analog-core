@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -172,14 +173,19 @@ namespace CoffeeCard.Library.Services
                 Salt = salt,
                 Programme = chosenProgramme,
                 UserGroup = UserGroup.Customer,
+                ProfileIcon = 0,
+                ProfileBackgroundColor = 0,
             };
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            // Assign profile icon and background color using the same rules as the UserIcon widget in coffeecard_app
-            user.ProfileIcon = (ProfileIcon)(user.Id % 9);
-            user.ProfileBackgroundColor = (ProfileBackgroundColor)(user.Id % 10);
+            // Assign profile icon and background color based on the user id, cycling
+            // through every value defined on the enums so new icons are picked up automatically
+            user.ProfileIcon = (ProfileIcon)(user.Id % Enum.GetValues<ProfileIcon>().Length);
+            user.ProfileBackgroundColor = (ProfileBackgroundColor)(
+                user.Id % Enum.GetValues<ProfileBackgroundColor>().Length
+            );
             await _context.SaveChangesAsync();
 
             var claims = new[]

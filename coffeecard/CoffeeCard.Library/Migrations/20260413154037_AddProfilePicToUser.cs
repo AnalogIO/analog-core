@@ -30,20 +30,6 @@ namespace CoffeeCard.Library.Migrations
                 "UPDATE [dbo].[Users] SET [ProfileIcon] = [Id] % 9");
             migrationBuilder.Sql(
                 "UPDATE [dbo].[Users] SET [ProfileBackgroundColor] = [Id] % 10");
-
-            migrationBuilder.AlterColumn<int>(
-                name: "ProfileBackgroundColor",
-                schema: "dbo",
-                table: "Users",
-                type: "int",
-                nullable: false);
-
-            migrationBuilder.AlterColumn<int>(
-                name: "ProfileIcon",
-                schema: "dbo",
-                table: "Users",
-                type: "int",
-                nullable: false);
         }
 
         /// <inheritdoc />

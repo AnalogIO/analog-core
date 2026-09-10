@@ -193,7 +193,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var result = await accountService.RegisterAccountAsync("name", "email", "pass", 1);
 
             // Assert
-            // Id is 1: icon = 1 % 9, background color = 1 % 10
+            // Id is 1: icon index = 1 % enum length, background color index = 1 % enum length
             Assert.Equal(ProfileIcon.MokkaPot, result.ProfileIcon);
             Assert.Equal(ProfileBackgroundColor.MintGreen, result.ProfileBackgroundColor);
         }
