@@ -17,6 +17,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Xunit;
 using PurchaseService = CoffeeCard.Library.Services.v2.PurchaseService;
+using WebhookEvent = CoffeeCard.MobilePay.Generated.Api.ePaymentApi.WebhookEvent;
 
 namespace CoffeeCard.Tests.Unit.Services.v2
 {
