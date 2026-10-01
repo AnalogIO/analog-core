@@ -22,6 +22,7 @@ public static class NexiServiceCollectionExtension
             })
             .AddHttpMessageHandler<NexiAuthDelegatingHandler>();
         services.AddKeyedScoped<IPaymentStrategy, NexiStrategy>(PaymentType.Nexi);
+        services.AddControllers().AddApplicationPart(typeof(NexiWebhookController).Assembly);
 
         return services;
     }

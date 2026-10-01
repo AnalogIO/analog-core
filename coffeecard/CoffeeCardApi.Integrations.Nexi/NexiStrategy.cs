@@ -10,6 +10,11 @@ using PaymentDetails = CoffeeCard.Models.DataTransferObjects.v2.Purchase.Payment
 
 namespace CoffeeCardApi.Integrations.Nexi;
 
+public static class NexiEventNames
+{
+    public const string PaymentCreated = "payment.created";
+}
+
 internal class NexiStrategy : IPaymentStrategy
 {
     private readonly NexiClient _checkoutPaymentApi;
@@ -53,7 +58,18 @@ internal class NexiStrategy : IPaymentStrategy
             {
                 TermsUrl = null,
                 IntegrationType = "HostedPaymentPage",
-            },
+                
+            },Notifications = new Notification()
+            {
+                WebHooks = [
+                    new WebHook()
+                    {
+                        Authorization = "testing",
+                        EventName = "payment.created",
+                        Url = "webhookUrl" // TODO fix
+                    }
+                ]
+            }
         };
 
         var response = await _checkoutPaymentApi.Create_paymentAsync(
