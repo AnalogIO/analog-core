@@ -214,20 +214,38 @@ namespace CoffeeCard.Library.Services.v2
                 .ToListAsync();
         }
 
-        public async Task HandleMobilePayPaymentUpdate(WebhookEvent webhook)
+        public Task HandleMobilePayPaymentUpdate(WebhookEvent webhook)
+        {
+            var notification = webhook.Name switch
+            {
+                PaymentEventName.CREATED => WebhookNotification.Created,
+                PaymentEventName.ABORTED => WebhookNotification.Aborted,
+                PaymentEventName.EXPIRED => WebhookNotification.Expired,
+                PaymentEventName.CANCELLED => WebhookNotification.Cancelled,
+                PaymentEventName.CAPTURED => WebhookNotification.Captured,
+                PaymentEventName.REFUNDED => WebhookNotification.Refunded,
+                PaymentEventName.AUTHORIZED => WebhookNotification.Authorized,
+                PaymentEventName.TERMINATED => WebhookNotification.Terminated,
+                _ => throw new BadRequestException($"Event Type {webhook.Name} is not valid"),
+            };
+
+            return HandleWebhookPaymentUpdate(webhook.Reference, notification, PaymentType.MobilePay);
+        }
+        
+        public async Task HandleWebhookPaymentUpdate(string referenceId, WebhookNotification notification, PaymentType paymentType)
         {
             var purchase = await _context
                 .Purchases.Include(p => p.PurchasedBy)
-                .Where(p => p.ExternalTransactionId.Equals(webhook.Reference))
+                .Where(p => p.ExternalTransactionId.Equals(referenceId))
                 .FirstOrDefaultAsync();
             if (purchase == null)
             {
                 _logger.LogError(
                     "No purchase was found by TransactionId: {Id} from Webhook request",
-                    webhook.Reference
+                    referenceId
                 );
                 throw new EntityNotFoundException(
-                    $"No purchase was found by Transaction Id: {webhook.Reference} from webhook request"
+                    $"No purchase was found by Transaction Id: {referenceId} from webhook request"
                 );
             }
 
@@ -236,31 +254,31 @@ namespace CoffeeCard.Library.Services.v2
                 _logger.LogWarning(
                     "Purchase from Webhook request is already completed. Purchase Id: {PurchaseId}, Transaction Id: {TransactionId}",
                     purchase.Id,
-                    webhook.Reference
+                    referenceId
                 );
                 return;
             }
 
-            var paymentStrategy = _paymentStrategyFactory.GetStrategy(PaymentType.MobilePay);
-            var eventTypeLowerCase = webhook.Name;
-            switch (eventTypeLowerCase)
+            var paymentStrategy = _paymentStrategyFactory.GetStrategy(paymentType);
+            switch (notification)
             {
-                case PaymentEventName.AUTHORIZED:
+                case WebhookNotification.Authorized:
+                case WebhookNotification.Captured:
                 {
                     await CompletePurchase(purchase, paymentStrategy);
                     break;
                 }
-                case PaymentEventName.CANCELLED:
+                case WebhookNotification.Cancelled:
                 {
                     await CancelPurchase(purchase, paymentStrategy);
                     break;
                 }
-                case PaymentEventName.ABORTED:
+                case WebhookNotification.Aborted:
                 {
                     await AbortPurchase(purchase);
                     break;
                 }
-                case PaymentEventName.EXPIRED:
+                case WebhookNotification.Expired:
                 {
                     await ExpirePurchase(purchase);
                     break;
@@ -268,11 +286,11 @@ namespace CoffeeCard.Library.Services.v2
                 default:
                     _logger.LogError(
                         "Unknown EventType from Webhook request. Event Type: {EventType}, Purchase Id: {PurchaseId}, Transaction Id: {TransactionId}",
-                        eventTypeLowerCase,
+                        notification,
                         purchase.Id,
-                        webhook.Reference
+                        referenceId
                     );
-                    throw new BadRequestException($"Event Type {eventTypeLowerCase} is not valid");
+                    throw new BadRequestException($"Event Type {notification} is not valid");
             }
         }
 

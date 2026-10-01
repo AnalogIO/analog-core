@@ -10,9 +10,23 @@ using PaymentDetails = CoffeeCard.Models.DataTransferObjects.v2.Purchase.Payment
 
 namespace CoffeeCardApi.Integrations.Nexi;
 
-public static class NexiEventNames
+internal static class NexiEventNames
 {
+    public const string PaymentCheckoutCompleted = "payment.checkout.completed";
+    public const string PaymentCancelFailed = "payment.cancel.failed";
+    public const string PaymentCancelCreated = "payment.cancel.created";
+    public const string PaymentChargeCreated = "payment.charge.created";
+    public const string PaymentChargeCreatedV2 = "payment.charge.created.v2";
+    public const string PaymentChargeFailed = "payment.charge.failed";
+    public const string PaymentChargeFailedV2 = "payment.charge.failed.v2";
     public const string PaymentCreated = "payment.created";
+    public const string PaymentRefundCompleted = "payment.refund.completed";
+    public const string PaymentRefundFailed = "payment.refund.failed";
+    public const string PaymentRefundInitiated = "payment.refund.initiated";
+    public const string PaymentRefundInitiatedV2 = "payment.refund.initiated.v2";
+    public const string PaymentReservationCreated = "payment.reservation.created";
+    public const string PaymentReservationCreatedV2 = "payment.reservation.created.v2";
+    public const string PaymentReservationFailed = "payment.reservation.failed";
 }
 
 internal class NexiStrategy : IPaymentStrategy
@@ -65,7 +79,7 @@ internal class NexiStrategy : IPaymentStrategy
                     new WebHook()
                     {
                         Authorization = "testing",
-                        EventName = "payment.created",
+                        EventName = NexiEventNames.PaymentCreated,
                         Url = "webhookUrl" // TODO fix
                     }
                 ]
