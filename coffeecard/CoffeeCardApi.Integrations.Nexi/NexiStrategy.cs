@@ -1,4 +1,5 @@
-﻿using CoffeeCard.Common.Errors;
+﻿using CoffeeCard.Common.Configuration;
+using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Services.v2.PaymentStrategies;
 using CoffeeCard.MobilePay.Exception.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.Products;
@@ -33,6 +34,7 @@ internal class NexiStrategy : IPaymentStrategy
 {
     private readonly NexiClient _checkoutPaymentApi;
     private readonly ILogger<NexiStrategy> _logger;
+    private readonly NexiSettings _settings;
 
     public NexiStrategy(NexiClient checkoutPaymentApi, ILogger<NexiStrategy> logger)
     {
@@ -80,7 +82,7 @@ internal class NexiStrategy : IPaymentStrategy
                     {
                         Authorization = "testing",
                         EventName = NexiEventNames.PaymentCreated,
-                        Url = "webhookUrl" // TODO fix
+                        Url = _settings.WebhookUrl
                     }
                 ]
             }

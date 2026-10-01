@@ -1,7 +1,9 @@
+using CoffeeCard.Common.Configuration;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace CoffeeCardApi.Integrations.Nexi;
 
@@ -21,13 +23,17 @@ public class Details
 }
 
 [Controller]
+[ApiVersion("2")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public class NexiWebhookController : ControllerBase
 {
     private readonly IPurchaseService _purchaseService;
+    private readonly ILogger<NexiWebhookController> _logger;
 
-    public NexiWebhookController(IPurchaseService purchaseService)
+    public NexiWebhookController(IPurchaseService purchaseService, ILogger<NexiWebhookController> logger)
     {
         _purchaseService = purchaseService;
+        _logger = logger;
     }
 
     [HttpPost]
@@ -37,6 +43,8 @@ public class NexiWebhookController : ControllerBase
         [FromHeader(Name = "Authorization")] string authToken
     )
     {
+        _logger.LogDebug("Received NexiWebhook notification {@event} {authToken}", notification, authToken);
+        
         //TODO ADD auth validation
         var notificationType = notification.Event switch
         {
