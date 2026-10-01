@@ -16,5 +16,9 @@ namespace CoffeeCard.Models.Entities
 
         /// Purchases performed in the cafe, for users without in-app payment options
         PointOfSale,
+        /// <summary>
+        /// Purchases completed using Nexi as a payment provider
+        /// </summary>
+        Nexi
     }
 }

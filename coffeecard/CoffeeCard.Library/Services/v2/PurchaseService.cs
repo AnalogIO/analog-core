@@ -502,6 +502,7 @@ namespace CoffeeCard.Library.Services.v2
                 PurchaseType.MobilePayV1 or PurchaseType.MobilePayV2 =>
                     _paymentStrategyFactory.GetStrategy(PaymentType.MobilePay),
                 PurchaseType.Free => _paymentStrategyFactory.GetStrategy(PaymentType.FreePurchase),
+                PurchaseType.Nexi => _paymentStrategyFactory.GetStrategy(PaymentType.Nexi),
                 _ => throw new InvalidOperationException(
                     $"Purchase type '{purchaseType}' does not have a payment strategy"
                 ),
