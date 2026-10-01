@@ -47,6 +47,7 @@ internal class NexiStrategy : IPaymentStrategy
         Guid orderId
     )
     {
+        var priceInOere = product.Price * 100;
         var request = new CreatePaymentBody()
         {
             Order = new Order
@@ -60,14 +61,14 @@ internal class NexiStrategy : IPaymentStrategy
                         Name = product.Name,
                         Quantity = product.NumberOfTickets,
                         Unit = "Pc(s)",
-                        UnitPrice = product.Price / product.NumberOfTickets,
-                        GrossTotalAmount = product.Price,
+                        UnitPrice = priceInOere / product.NumberOfTickets,
+                        GrossTotalAmount = priceInOere,
                         TaxRate = 2500,
-                        TaxAmount = (int)(product.Price * 0.8),
-                        NetTotalAmount = product.Price - (int)(product.Price * 0.8),
+                        TaxAmount = (int)(priceInOere * 0.8),
+                        NetTotalAmount = priceInOere - (int)(priceInOere * 0.8),
                     },
                 ],
-                Amount = product.Price,
+                Amount = priceInOere,
                 Currency = "DKK",
             },
             Checkout = new CheckoutDetails
