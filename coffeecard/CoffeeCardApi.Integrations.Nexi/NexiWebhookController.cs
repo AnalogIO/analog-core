@@ -49,7 +49,7 @@ public class NexiWebhookController : ControllerBase
 
         if (authToken != _settings.WebhookKey)
         {
-            _logger.LogWarning("Received webhook event with");
+            _logger.LogWarning("Received webhook event with invalid key");
             return Unauthorized();
         }
         
