@@ -42,12 +42,20 @@ internal class NexiStrategy : IPaymentStrategy
         _logger = logger;
     }
 
+    private const int TaxRate = 2500;
     public async Task<PaymentInitiationResult> InitiatePaymentAsync(
         ProductResponse product,
         Guid orderId
     )
     {
         var priceInOere = product.Price * 100;
+
+        // Calculations done according to formulas from Nexi OpenApi spec
+        var unitPrice = priceInOere / product.NumberOfTickets * 10_000 / (10_000 * TaxRate);
+        var taxAmount = unitPrice * product.NumberOfTickets * TaxRate / 10_000;
+        var netTotal = unitPrice * product.NumberOfTickets;
+        var grossTotal = netTotal + taxAmount;
+        
         var request = new CreatePaymentBody()
         {
             Order = new Order
@@ -61,11 +69,11 @@ internal class NexiStrategy : IPaymentStrategy
                         Name = product.Name,
                         Quantity = product.NumberOfTickets,
                         Unit = "Pc(s)",
-                        UnitPrice = (int)(priceInOere / product.NumberOfTickets * 0.2),
-                        GrossTotalAmount = priceInOere,
-                        TaxRate = 2500,
-                        TaxAmount = (int)(priceInOere * 0.2),
-                        NetTotalAmount = priceInOere - (int)(priceInOere * 0.2),
+                        UnitPrice = unitPrice,
+                        TaxRate = TaxRate,
+                        TaxAmount = taxAmount,
+                        NetTotalAmount = netTotal,
+                        GrossTotalAmount = grossTotal,
                     },
                 ],
                 Amount = priceInOere,
