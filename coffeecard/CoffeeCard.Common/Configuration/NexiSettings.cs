@@ -11,4 +11,6 @@ public class NexiSettings
     public required string ApiKey { get; set; }
     [Required]
     public required string WebhookUrl { get; set; }
+    [Required]
+    public required string WebhookKey { get; set; }
 }

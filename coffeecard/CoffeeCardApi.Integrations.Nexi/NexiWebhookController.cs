@@ -29,11 +29,13 @@ public class NexiWebhookController : ControllerBase
 {
     private readonly IPurchaseService _purchaseService;
     private readonly ILogger<NexiWebhookController> _logger;
+    private readonly NexiSettings _settings;
 
-    public NexiWebhookController(IPurchaseService purchaseService, ILogger<NexiWebhookController> logger)
+    public NexiWebhookController(IPurchaseService purchaseService, ILogger<NexiWebhookController> logger, NexiSettings settings)
     {
         _purchaseService = purchaseService;
         _logger = logger;
+        _settings = settings;
     }
 
     [HttpPost]
@@ -44,8 +46,13 @@ public class NexiWebhookController : ControllerBase
     )
     {
         _logger.LogDebug("Received NexiWebhook notification {@event} {authToken}", notification, authToken);
+
+        if (authToken != _settings.WebhookKey)
+        {
+            _logger.LogWarning("Received webhook event with");
+            return Unauthorized();
+        }
         
-        //TODO ADD auth validation
         var notificationType = notification.Event switch
         {
             NexiEventNames.PaymentCheckoutCompleted => WebhookNotification.Authorized,

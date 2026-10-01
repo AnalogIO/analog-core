@@ -80,7 +80,7 @@ internal class NexiStrategy : IPaymentStrategy
                 WebHooks = [
                     new WebHook()
                     {
-                        Authorization = "testing",
+                        Authorization = _settings.WebhookKey,
                         EventName = NexiEventNames.PaymentCreated,
                         Url = _settings.WebhookUrl
                     }
