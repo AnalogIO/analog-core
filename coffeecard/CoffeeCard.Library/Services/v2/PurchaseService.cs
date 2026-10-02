@@ -4,9 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
+using CoffeeCard.Library.Services.v2.PaymentStrategies;
 using CoffeeCard.MobilePay.Generated.Api.ePaymentApi;
-using CoffeeCard.MobilePay.Service.v2;
-using CoffeeCard.Models.DataTransferObjects.v2.MobilePay;
 using CoffeeCard.Models.DataTransferObjects.v2.Products;
 using CoffeeCard.Models.DataTransferObjects.v2.Purchase;
 using CoffeeCard.Models.Entities;
@@ -20,14 +19,14 @@ namespace CoffeeCard.Library.Services.v2
     {
         private readonly CoffeeCardContext _context;
         private readonly CoffeeCard.Library.Services.IEmailService _emailService;
-        private readonly IMobilePayPaymentsService _mobilePayPaymentsService;
+        private readonly IPaymentStrategyFactory _paymentStrategyFactory;
         private readonly ITicketService _ticketService;
         private readonly IProductService _productService;
         private readonly ILogger<PurchaseService> _logger;
 
         public PurchaseService(
             CoffeeCardContext context,
-            IMobilePayPaymentsService mobilePayPaymentsService,
+            IPaymentStrategyFactory paymentStrategyFactory,
             ITicketService ticketService,
             CoffeeCard.Library.Services.IEmailService emailService,
             IProductService productService,
@@ -35,7 +34,7 @@ namespace CoffeeCard.Library.Services.v2
         )
         {
             _context = context;
-            _mobilePayPaymentsService = mobilePayPaymentsService;
+            _paymentStrategyFactory = paymentStrategyFactory;
             _ticketService = ticketService;
             _emailService = emailService;
             _productService = productService;
@@ -133,41 +132,9 @@ namespace CoffeeCard.Library.Services.v2
         )
         {
             var orderId = await GenerateUniqueOrderId();
-            PaymentDetails paymentDetails;
-            PurchaseStatus purchaseStatus;
-            string? transactionId;
 
-            switch (purchaseRequest.PaymentType)
-            {
-                case PaymentType.MobilePay:
-                    paymentDetails = await _mobilePayPaymentsService.InitiatePayment(
-                        new MobilePayPaymentRequest
-                        {
-                            Amount = product.Price,
-                            OrderId = orderId,
-                            Description = product.Name,
-                        }
-                    );
-
-                    purchaseStatus = PurchaseStatus.PendingPayment;
-                    transactionId = ((MobilePayPaymentDetails)paymentDetails).PaymentId;
-
-                    break;
-                case PaymentType.FreePurchase:
-                    paymentDetails = new FreePurchasePaymentDetails(orderId.ToString());
-                    purchaseStatus = PurchaseStatus.Completed;
-                    transactionId = null;
-
-                    break;
-                default:
-                    _logger.LogError(
-                        "Payment Type {PaymentType} is not handled in PurchaseService",
-                        purchaseRequest.PaymentType
-                    );
-                    throw new BadRequestException(
-                        $"Payment Type '{purchaseRequest.PaymentType}' is not handled"
-                    );
-            }
+            var strategy = _paymentStrategyFactory.GetStrategy(purchaseRequest.PaymentType);
+            var result = await strategy.InitiatePaymentAsync(product, orderId);
 
             var purchase = new Purchase
             {
@@ -177,13 +144,13 @@ namespace CoffeeCard.Library.Services.v2
                 NumberOfTickets = product.NumberOfTickets,
                 DateCreated = DateTime.UtcNow,
                 OrderId = orderId.ToString(),
-                ExternalTransactionId = transactionId,
+                ExternalTransactionId = result.TransactionId,
                 PurchasedBy = user,
-                Status = purchaseStatus,
+                Status = result.PurchaseStatus,
                 Type = purchaseRequest.PaymentType.ToPurchaseType(),
             };
 
-            return (purchase, paymentDetails);
+            return (purchase, result.PaymentDetails);
         }
 
         public async Task<SinglePurchaseResponse> GetPurchase(int purchaseId, User user)
@@ -204,9 +171,8 @@ namespace CoffeeCard.Library.Services.v2
                 );
             }
 
-            var paymentDetails = await _mobilePayPaymentsService.GetPayment(
-                Guid.Parse(purchase.ExternalTransactionId)
-            );
+            var paymentStrategy = GetPaymentStrategy(purchase.Type);
+            var paymentDetails = await paymentStrategy.GetPaymentAsync(purchase);
 
             return new SinglePurchaseResponse
             {
@@ -248,20 +214,38 @@ namespace CoffeeCard.Library.Services.v2
                 .ToListAsync();
         }
 
-        public async Task HandleMobilePayPaymentUpdate(WebhookEvent webhook)
+        public Task HandleMobilePayPaymentUpdate(WebhookEvent webhook)
+        {
+            var notification = webhook.Name switch
+            {
+                PaymentEventName.CREATED => WebhookNotification.Created,
+                PaymentEventName.ABORTED => WebhookNotification.Aborted,
+                PaymentEventName.EXPIRED => WebhookNotification.Expired,
+                PaymentEventName.CANCELLED => WebhookNotification.Cancelled,
+                PaymentEventName.CAPTURED => WebhookNotification.Captured,
+                PaymentEventName.REFUNDED => WebhookNotification.Refunded,
+                PaymentEventName.AUTHORIZED => WebhookNotification.Authorized,
+                PaymentEventName.TERMINATED => WebhookNotification.Terminated,
+                _ => throw new BadRequestException($"Event Type {webhook.Name} is not valid"),
+            };
+
+            return HandleWebhookPaymentUpdate(webhook.Reference, notification, PaymentType.MobilePay);
+        }
+        
+        public async Task HandleWebhookPaymentUpdate(string referenceId, WebhookNotification notification, PaymentType paymentType)
         {
             var purchase = await _context
                 .Purchases.Include(p => p.PurchasedBy)
-                .Where(p => p.ExternalTransactionId.Equals(webhook.Reference))
+                .Where(p => p.ExternalTransactionId.Equals(referenceId))
                 .FirstOrDefaultAsync();
             if (purchase == null)
             {
                 _logger.LogError(
                     "No purchase was found by TransactionId: {Id} from Webhook request",
-                    webhook.Reference
+                    referenceId
                 );
                 throw new EntityNotFoundException(
-                    $"No purchase was found by Transaction Id: {webhook.Reference} from webhook request"
+                    $"No purchase was found by Transaction Id: {referenceId} from webhook request"
                 );
             }
 
@@ -270,30 +254,31 @@ namespace CoffeeCard.Library.Services.v2
                 _logger.LogWarning(
                     "Purchase from Webhook request is already completed. Purchase Id: {PurchaseId}, Transaction Id: {TransactionId}",
                     purchase.Id,
-                    webhook.Reference
+                    referenceId
                 );
                 return;
             }
 
-            var eventTypeLowerCase = webhook.Name;
-            switch (eventTypeLowerCase)
+            var paymentStrategy = _paymentStrategyFactory.GetStrategy(paymentType);
+            switch (notification)
             {
-                case PaymentEventName.AUTHORIZED:
+                case WebhookNotification.Authorized:
+                case WebhookNotification.Captured:
                 {
-                    await CompletePurchase(purchase);
+                    await CompletePurchase(purchase, paymentStrategy);
                     break;
                 }
-                case PaymentEventName.CANCELLED:
+                case WebhookNotification.Cancelled:
                 {
-                    await CancelPurchase(purchase);
+                    await CancelPurchase(purchase, paymentStrategy);
                     break;
                 }
-                case PaymentEventName.ABORTED:
+                case WebhookNotification.Aborted:
                 {
                     await AbortPurchase(purchase);
                     break;
                 }
-                case PaymentEventName.EXPIRED:
+                case WebhookNotification.Expired:
                 {
                     await ExpirePurchase(purchase);
                     break;
@@ -301,20 +286,17 @@ namespace CoffeeCard.Library.Services.v2
                 default:
                     _logger.LogError(
                         "Unknown EventType from Webhook request. Event Type: {EventType}, Purchase Id: {PurchaseId}, Transaction Id: {TransactionId}",
-                        eventTypeLowerCase,
+                        notification,
                         purchase.Id,
-                        webhook.Reference
+                        referenceId
                     );
-                    throw new BadRequestException($"Event Type {eventTypeLowerCase} is not valid");
+                    throw new BadRequestException($"Event Type {notification} is not valid");
             }
         }
 
-        private async Task CompletePurchase(Purchase purchase)
+        private async Task CompletePurchase(Purchase purchase, IPaymentStrategy paymentStrategy)
         {
-            await _mobilePayPaymentsService.CapturePayment(
-                Guid.Parse(purchase.ExternalTransactionId),
-                purchase.Price
-            );
+            await paymentStrategy.CapturePaymentAsync(purchase);
             await _ticketService.IssueTickets(purchase);
 
             purchase.Status = PurchaseStatus.Completed;
@@ -329,11 +311,9 @@ namespace CoffeeCard.Library.Services.v2
             await _emailService.SendInvoiceAsyncV2(purchase, purchase.PurchasedBy);
         }
 
-        private async Task CancelPurchase(Purchase purchase)
+        private async Task CancelPurchase(Purchase purchase, IPaymentStrategy paymentStrategy)
         {
-            await _mobilePayPaymentsService.CancelPayment(
-                Guid.Parse(purchase.ExternalTransactionId)
-            );
+            await paymentStrategy.CancelPaymentAsync(purchase);
             purchase.Status = PurchaseStatus.Cancelled;
             await _context.SaveChangesAsync();
 
@@ -476,13 +456,8 @@ namespace CoffeeCard.Library.Services.v2
                 );
             }
 
-            // Refund the MobilePay payment
-            // (MobilePay expects refund amount in øre; we store the price in kroner)
-            var amountToRefund = purchase.Price * 100;
-            var refundSuccess = await _mobilePayPaymentsService.RefundPayment(
-                purchase,
-                amountToRefund
-            );
+            var paymentStrategy = GetPaymentStrategy(purchase.Type);
+            var refundSuccess = await paymentStrategy.RefundPaymentAsync(purchase);
             if (!refundSuccess)
             {
                 _logger.LogError("Refund of Purchase {PurchaseId} failed", purchase.Id);
@@ -518,6 +493,20 @@ namespace CoffeeCard.Library.Services.v2
             _context?.Dispose();
             _ticketService?.Dispose();
             _productService?.Dispose();
+        }
+
+        private IPaymentStrategy GetPaymentStrategy(PurchaseType purchaseType)
+        {
+            return purchaseType switch
+            {
+                PurchaseType.MobilePayV1 or PurchaseType.MobilePayV2 =>
+                    _paymentStrategyFactory.GetStrategy(PaymentType.MobilePay),
+                PurchaseType.Free => _paymentStrategyFactory.GetStrategy(PaymentType.FreePurchase),
+                PurchaseType.Nexi => _paymentStrategyFactory.GetStrategy(PaymentType.Nexi),
+                _ => throw new InvalidOperationException(
+                    $"Purchase type '{purchaseType}' does not have a payment strategy"
+                ),
+            };
         }
     }
 }

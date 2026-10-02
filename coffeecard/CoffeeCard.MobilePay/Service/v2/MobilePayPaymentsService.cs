@@ -42,6 +42,7 @@ public class MobilePayPaymentsService(
         return new MobilePayPaymentDetails
         {
             MobilePayAppRedirectUri = response.RedirectUrl.ToString(),
+            OrderId = orderId,
             PaymentId = orderId,
         };
     }
@@ -53,6 +54,7 @@ public class MobilePayPaymentsService(
         return new MobilePayPaymentDetails
         {
             PaymentId = response.Reference,
+            OrderId = response.Reference,
             MobilePayAppRedirectUri = response.RedirectUrl.ToString(),
         };
     }

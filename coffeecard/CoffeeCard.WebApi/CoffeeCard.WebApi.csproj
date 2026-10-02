@@ -55,6 +55,7 @@
     <ProjectReference Include="..\CoffeeCard.Common\CoffeeCard.Common.csproj" />
     <ProjectReference Include="..\CoffeeCard.Library\CoffeeCard.Library.csproj" />
     <ProjectReference Include="..\CoffeeCard.MobilePay\CoffeeCard.MobilePay.csproj" />
+    <ProjectReference Include="..\CoffeeCardApi.Integrations.Nexi\CoffeeCardApi.Integrations.Nexi.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="logs" />

@@ -50,6 +50,10 @@
         "value": "https://core.dev.analogio.dk/api/v2/mobilepay/webhook"
       },
       {
+        "name": "NexiSettings__ReturnUrl",
+        "value": "analogcoffeecard-dev://cafeanalog.dk/tickets/verify-mobilepay-purchase"
+      },
+      {
         "name": "EnvironmentSettings__MinAppVersion",
         "value": "2.0.0"
       },

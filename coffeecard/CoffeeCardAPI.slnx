@@ -7,6 +7,9 @@
     <Project Path="CoffeeCard.Models/CoffeeCard.Models.csproj" />
     <Project Path="CoffeeCard.WebApi/CoffeeCard.WebApi.csproj" />
   </Folder>
+  <Folder Name="/Src/Integrations/">
+    <Project Path="CoffeeCardApi.Integrations.Nexi/CoffeeCardApi.Integrations.Nexi.csproj" />
+  </Folder>
   <Folder Name="/Test/">
     <Project Path="CoffeeCard.Generators/CoffeeCard.Generators.csproj" />
     <Project Path="CoffeeCard.Tests.Common/CoffeeCard.Tests.Common.csproj" />

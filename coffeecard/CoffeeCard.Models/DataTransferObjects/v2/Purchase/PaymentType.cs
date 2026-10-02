@@ -17,6 +17,11 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// Free purchase
         /// </summary>
         FreePurchase,
+
+        /// <summary>
+        /// An apple or Google Pay purchase, completed by the Nets Easy Payment API
+        /// </summary>
+        Nexi,
     }
 
     /// <summary>
