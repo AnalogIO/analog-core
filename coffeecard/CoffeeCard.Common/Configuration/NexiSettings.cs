@@ -13,4 +13,6 @@ public class NexiSettings
     public required string WebhookUrl { get; set; }
     [Required]
     public required string WebhookKey { get; set; }
+    [Required]
+    public required string ReturnUrl { get; set; }
 }

@@ -36,10 +36,15 @@ internal class NexiStrategy : IPaymentStrategy
     private readonly ILogger<NexiStrategy> _logger;
     private readonly NexiSettings _settings;
 
-    public NexiStrategy(NexiClient checkoutPaymentApi, ILogger<NexiStrategy> logger)
+    public NexiStrategy(
+        NexiClient checkoutPaymentApi,
+        ILogger<NexiStrategy> logger,
+        NexiSettings settings
+    )
     {
         _checkoutPaymentApi = checkoutPaymentApi;
         _logger = logger;
+        _settings = settings;
     }
 
     private const int TaxRate = 2500;
@@ -83,7 +88,7 @@ internal class NexiStrategy : IPaymentStrategy
             {
                 TermsUrl = null,
                 IntegrationType = "HostedPaymentPage",
-                
+                ReturnUrl = _settings.ReturnUrl,
             },Notifications = new Notification()
             {
                 WebHooks = [
