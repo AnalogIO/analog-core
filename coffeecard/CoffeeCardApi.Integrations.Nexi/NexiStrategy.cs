@@ -87,7 +87,7 @@ internal class NexiStrategy : IPaymentStrategy
             },
             Checkout = new CheckoutDetails
             {
-                TermsUrl = null,
+                TermsUrl = "https://www.cafeanalog.dk",
                 IntegrationType = "HostedPaymentPage",
                 ReturnUrl = _settings.ReturnUrl,
             },
