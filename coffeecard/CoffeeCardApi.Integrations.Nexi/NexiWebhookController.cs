@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace CoffeeCardApi.Integrations.Nexi;
 
-public class NexiNotifcation
+public class NexiNotification
 {
     public string Id { get; set; }
     public string Event { get; set; }
@@ -31,7 +31,11 @@ public class NexiWebhookController : ControllerBase
     private readonly ILogger<NexiWebhookController> _logger;
     private readonly NexiSettings _settings;
 
-    public NexiWebhookController(IPurchaseService purchaseService, ILogger<NexiWebhookController> logger, NexiSettings settings)
+    public NexiWebhookController(
+        IPurchaseService purchaseService,
+        ILogger<NexiWebhookController> logger,
+        NexiSettings settings
+    )
     {
         _purchaseService = purchaseService;
         _logger = logger;
@@ -41,18 +45,22 @@ public class NexiWebhookController : ControllerBase
     [HttpPost]
     [Route("/nexi/webhook")]
     public async Task<IActionResult> ReceiveNotification(
-        NexiNotifcation notification,
+        NexiNotification notification,
         [FromHeader(Name = "Authorization")] string authToken
     )
     {
-        _logger.LogDebug("Received NexiWebhook notification {@event} {authToken}", notification, authToken);
+        _logger.LogDebug(
+            "Received NexiWebhook notification {@event} {authToken}",
+            notification,
+            authToken
+        );
 
         if (authToken != _settings.WebhookKey)
         {
             _logger.LogWarning("Received webhook event with invalid key");
             return Unauthorized();
         }
-        
+
         var notificationType = notification.Event switch
         {
             NexiEventNames.PaymentCheckoutCompleted => WebhookNotification.Authorized,
