@@ -48,6 +48,7 @@ internal class NexiStrategy : IPaymentStrategy
     }
 
     private const int TaxRate = 2500;
+
     public async Task<PaymentInitiationResult> InitiatePaymentAsync(
         ProductResponse product,
         Guid orderId
@@ -56,11 +57,11 @@ internal class NexiStrategy : IPaymentStrategy
         var priceInOere = product.Price * 100;
 
         // Calculations done according to formulas from Nexi OpenApi spec
-        var unitPrice = priceInOere / product.NumberOfTickets * 10_000 / (10_000 * TaxRate);
+        var unitPrice = priceInOere / product.NumberOfTickets * 10_000 / (10_000 + TaxRate);
         var taxAmount = unitPrice * product.NumberOfTickets * TaxRate / 10_000;
         var netTotal = unitPrice * product.NumberOfTickets;
         var grossTotal = netTotal + taxAmount;
-        
+
         var request = new CreatePaymentBody()
         {
             Order = new Order
@@ -89,32 +90,37 @@ internal class NexiStrategy : IPaymentStrategy
                 TermsUrl = null,
                 IntegrationType = "HostedPaymentPage",
                 ReturnUrl = _settings.ReturnUrl,
-            },Notifications = new Notification()
+            },
+            Notifications = new Notification()
             {
-                WebHooks = [
+                WebHooks =
+                [
                     new WebHook()
                     {
                         Authorization = _settings.WebhookKey,
                         EventName = NexiEventNames.PaymentCreated,
-                        Url = _settings.WebhookUrl
-                    },new WebHook()
+                        Url = _settings.WebhookUrl,
+                    },
+                    new WebHook()
                     {
                         Authorization = _settings.WebhookKey,
                         EventName = NexiEventNames.PaymentChargeCreatedV2,
-                        Url = _settings.WebhookUrl
-                    },new WebHook()
+                        Url = _settings.WebhookUrl,
+                    },
+                    new WebHook()
                     {
                         Authorization = _settings.WebhookKey,
                         EventName = NexiEventNames.PaymentCheckoutCompleted,
-                        Url = _settings.WebhookUrl
-                    },new WebHook()
+                        Url = _settings.WebhookUrl,
+                    },
+                    new WebHook()
                     {
                         Authorization = _settings.WebhookKey,
                         EventName = NexiEventNames.PaymentChargeFailedV2,
-                        Url = _settings.WebhookUrl
+                        Url = _settings.WebhookUrl,
                     },
-                ]
-            }
+                ],
+            },
         };
 
         var response = await _checkoutPaymentApi.Create_paymentAsync(
