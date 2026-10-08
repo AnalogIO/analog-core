@@ -36,6 +36,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
             {
                 PaymentType.MobilePay => PurchaseType.MobilePayV2,
                 PaymentType.FreePurchase => PurchaseType.Free,
+                PaymentType.Nexi => PurchaseType.Nexi,
                 _ => throw new ArgumentException("Unknown enum given to PaymentTypeExtension"),
             };
         }
