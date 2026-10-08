@@ -66,6 +66,7 @@ internal class NexiStrategy : IPaymentStrategy
         {
             Order = new Order
             {
+                Reference = orderId.ToString(),
                 Items =
                 [
                     new OrderItem
@@ -147,8 +148,13 @@ internal class NexiStrategy : IPaymentStrategy
 
     public async Task<PaymentDetails> GetPaymentAsync(Purchase purchase)
     {
+        if (purchase.ExternalTransactionId is null)
+        {
+            throw new BadRequestException("No transaction id specified for purchase");
+        }
+
         var response = await _checkoutPaymentApi.Retrieve_paymentAsync(
-            purchase.OrderId,
+            purchase.ExternalTransactionId,
             commercePlatformTag: null
         );
 
