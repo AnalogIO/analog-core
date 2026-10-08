@@ -49,7 +49,7 @@ public class NexiWebhookController : ControllerBase
         [FromHeader(Name = "Authorization")] string authToken
     )
     {
-        _logger.LogDebug("Received NexiWebhook notification {@event}", notification);
+        _logger.LogInformation("Received NexiWebhook notification {@event}", notification);
 
         if (authToken != _settings.WebhookKey)
         {
@@ -63,9 +63,9 @@ public class NexiWebhookController : ControllerBase
             // NexiEventNames.PaymentCancelFailed => WebhookNotification.Aborted,
             // NexiEventNames.PaymentCancelCreated => WebhookNotification.Cancelled,
             // NexiEventNames.PaymentChargeCreated => WebhookNotification.Captured,
-            // NexiEventNames.PaymentChargeCreatedV2 => WebhookNotification.Captured,
+            NexiEventNames.PaymentChargeCreatedV2 => WebhookNotification.Captured,
             // NexiEventNames.PaymentChargeFailed => WebhookNotification.Aborted,
-            // NexiEventNames.PaymentChargeFailedV2 => WebhookNotification.Aborted,
+            NexiEventNames.PaymentChargeFailedV2 => WebhookNotification.Aborted,
             // NexiEventNames.PaymentCreated => WebhookNotification.Authorized,
             // NexiEventNames.PaymentRefundCompleted => WebhookNotification.Refunded,
             // NexiEventNames.PaymentRefundFailed => WebhookNotification.Aborted,

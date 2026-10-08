@@ -101,7 +101,17 @@ internal class NexiStrategy : IPaymentStrategy
                         Authorization = _settings.WebhookKey,
                         EventName = NexiEventNames.PaymentCheckoutCompleted,
                         Url = _settings.WebhookUrl,
-                    },
+                    },new WebHook()
+                    {
+                        Authorization = _settings.WebhookKey,
+                        EventName = NexiEventNames.PaymentChargeFailedV2,
+                        Url = _settings.WebhookUrl,
+                    },new WebHook()
+                    {
+                        Authorization = _settings.WebhookKey,
+                        EventName = NexiEventNames.PaymentChargeCreatedV2,
+                        Url = _settings.WebhookUrl,
+                    }
                 ],
             },
         };

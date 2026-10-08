@@ -271,6 +271,7 @@ namespace CoffeeCard.Library.Services.v2
             switch (notification)
             {
                 case WebhookNotification.Authorized:
+                    // TODO, captured likely needs it's own case, as it does not make sense to trigger a capture after receiving a captured event
                 case WebhookNotification.Captured:
                 {
                     await CompletePurchase(purchase, paymentStrategy);
