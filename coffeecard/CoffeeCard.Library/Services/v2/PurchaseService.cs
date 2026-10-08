@@ -229,10 +229,18 @@ namespace CoffeeCard.Library.Services.v2
                 _ => throw new BadRequestException($"Event Type {webhook.Name} is not valid"),
             };
 
-            return HandleWebhookPaymentUpdate(webhook.Reference, notification, PaymentType.MobilePay);
+            return HandleWebhookPaymentUpdate(
+                webhook.Reference,
+                notification,
+                PaymentType.MobilePay
+            );
         }
-        
-        public async Task HandleWebhookPaymentUpdate(string referenceId, WebhookNotification notification, PaymentType paymentType)
+
+        public async Task HandleWebhookPaymentUpdate(
+            string referenceId,
+            WebhookNotification notification,
+            PaymentType paymentType
+        )
         {
             var purchase = await _context
                 .Purchases.Include(p => p.PurchasedBy)
@@ -296,6 +304,7 @@ namespace CoffeeCard.Library.Services.v2
 
         private async Task CompletePurchase(Purchase purchase, IPaymentStrategy paymentStrategy)
         {
+            // TODO: Might be an atomicity bug here (two webhooks completing at the same time)
             await paymentStrategy.CapturePaymentAsync(purchase);
             await _ticketService.IssueTickets(purchase);
 

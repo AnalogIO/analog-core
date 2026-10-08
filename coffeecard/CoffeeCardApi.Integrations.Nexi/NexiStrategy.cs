@@ -174,9 +174,11 @@ internal class NexiStrategy : IPaymentStrategy
     {
         return purchase.ExternalTransactionId is null
             ? throw new BadRequestException("No transaction id specified for purchase")
-            : _checkoutPaymentApi.Retrieve_paymentAsync(
+            : _checkoutPaymentApi.Charge_paymentAsync(
                 purchase.ExternalTransactionId,
-                commercePlatformTag: null
+                idempotency_Key: $"charge-{purchase.OrderId}",
+                commercePlatformTag: null,
+                new ChargePaymentBody { Amount = purchase.Price * 100 }
             );
     }
 

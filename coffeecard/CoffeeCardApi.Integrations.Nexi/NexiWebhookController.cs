@@ -22,7 +22,7 @@ public class Details
     public string PaymentId { get; set; }
 }
 
-[Controller]
+[ApiController]
 [ApiVersion("2")]
 [Route("api/v{version:apiVersion}/[controller]")]
 public class NexiWebhookController : ControllerBase
@@ -43,17 +43,13 @@ public class NexiWebhookController : ControllerBase
     }
 
     [HttpPost]
-    [Route("/nexi/webhook")]
+    [Route("webhook")]
     public async Task<IActionResult> ReceiveNotification(
         NexiNotification notification,
         [FromHeader(Name = "Authorization")] string authToken
     )
     {
-        _logger.LogDebug(
-            "Received NexiWebhook notification {@event} {authToken}",
-            notification,
-            authToken
-        );
+        _logger.LogDebug("Received NexiWebhook notification {@event}", notification);
 
         if (authToken != _settings.WebhookKey)
         {
@@ -61,29 +57,39 @@ public class NexiWebhookController : ControllerBase
             return Unauthorized();
         }
 
-        var notificationType = notification.Event switch
+        WebhookNotification? notificationType = notification.Event switch
         {
             NexiEventNames.PaymentCheckoutCompleted => WebhookNotification.Authorized,
-            NexiEventNames.PaymentCancelFailed => WebhookNotification.Aborted,
-            NexiEventNames.PaymentCancelCreated => WebhookNotification.Cancelled,
-            NexiEventNames.PaymentChargeCreated => WebhookNotification.Captured,
-            NexiEventNames.PaymentChargeCreatedV2 => WebhookNotification.Captured,
-            NexiEventNames.PaymentChargeFailed => WebhookNotification.Aborted,
-            NexiEventNames.PaymentChargeFailedV2 => WebhookNotification.Aborted,
-            NexiEventNames.PaymentCreated => WebhookNotification.Authorized,
-            NexiEventNames.PaymentRefundCompleted => WebhookNotification.Refunded,
-            NexiEventNames.PaymentRefundFailed => WebhookNotification.Aborted,
-            NexiEventNames.PaymentRefundInitiated => WebhookNotification.Refunded,
-            NexiEventNames.PaymentRefundInitiatedV2 => WebhookNotification.Refunded,
-            NexiEventNames.PaymentReservationCreated => WebhookNotification.Authorized,
-            NexiEventNames.PaymentReservationCreatedV2 => WebhookNotification.Authorized,
-            NexiEventNames.PaymentReservationFailed => WebhookNotification.Aborted,
-            _ => throw new BadRequestException($"Event Type {notification.Event} is not valid"),
+            // NexiEventNames.PaymentCancelFailed => WebhookNotification.Aborted,
+            // NexiEventNames.PaymentCancelCreated => WebhookNotification.Cancelled,
+            // NexiEventNames.PaymentChargeCreated => WebhookNotification.Captured,
+            // NexiEventNames.PaymentChargeCreatedV2 => WebhookNotification.Captured,
+            // NexiEventNames.PaymentChargeFailed => WebhookNotification.Aborted,
+            // NexiEventNames.PaymentChargeFailedV2 => WebhookNotification.Aborted,
+            // NexiEventNames.PaymentCreated => WebhookNotification.Authorized,
+            // NexiEventNames.PaymentRefundCompleted => WebhookNotification.Refunded,
+            // NexiEventNames.PaymentRefundFailed => WebhookNotification.Aborted,
+            // NexiEventNames.PaymentRefundInitiated => WebhookNotification.Refunded,
+            // NexiEventNames.PaymentRefundInitiatedV2 => WebhookNotification.Refunded,
+            // NexiEventNames.PaymentReservationCreated => WebhookNotification.Authorized,
+            // NexiEventNames.PaymentReservationCreatedV2 => WebhookNotification.Authorized,
+            // NexiEventNames.PaymentReservationFailed => WebhookNotification.Aborted,
+            _ => null,
         };
+
+        if (notificationType is null)
+        {
+            _logger.LogInformation(
+                "Ignoring Nexi webhook event {Event} for payment {PaymentId}",
+                notification.Event,
+                notification.Data.PaymentId
+            );
+            return Ok();
+        }
 
         await _purchaseService.HandleWebhookPaymentUpdate(
             notification.Data.PaymentId,
-            notificationType,
+            notificationType.Value,
             PaymentType.Nexi
         );
 
