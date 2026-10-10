@@ -7,6 +7,10 @@ on:
 
 jobs:
   dev-deploy:
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
     with:
