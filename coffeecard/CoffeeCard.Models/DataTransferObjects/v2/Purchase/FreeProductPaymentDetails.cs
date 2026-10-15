@@ -11,13 +11,6 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
     /// </example>
     public class FreePurchasePaymentDetails : PaymentDetails
     {
-        /// <summary>
-        /// Creates a new instance of <see cref="FreePurchasePaymentDetails"/>
-        /// </summary>
-        public FreePurchasePaymentDetails(string orderId)
-        {
-            PaymentType = PaymentType.FreePurchase;
-            OrderId = orderId;
-        }
+        public override PaymentType PaymentType => PaymentType.FreePurchase;
     }
 }

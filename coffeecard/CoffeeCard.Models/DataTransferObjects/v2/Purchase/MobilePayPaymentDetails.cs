@@ -1,4 +1,6 @@
+using System;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
 {
@@ -15,6 +17,8 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
     /// </example>
     public class MobilePayPaymentDetails : PaymentDetails
     {
+        public override PaymentType PaymentType => PaymentType.MobilePay;
+
         /// <summary>
         /// App deeplink for a MobilePay payment
         /// </summary>
