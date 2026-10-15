@@ -11,10 +11,9 @@ public class ReceiptsRequest
     [Required]
     public required ReceiptType Type { get; set; }
 
-    [Required]
-    public int BatchSize { get; set; } = 20;
+    public int? BatchSize { get; set; } = 20;
 
-    public required string? ContinuationToken { get; set; }
+    public string? ContinuationToken { get; set; }
 }
 
 /// <summary>

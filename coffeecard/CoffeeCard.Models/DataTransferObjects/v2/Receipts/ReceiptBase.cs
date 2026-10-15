@@ -29,7 +29,7 @@ public class ReceiptResponse
 [JsonDerivedType(typeof(PurchaseReceipt), "Purchase")]
 [JsonDerivedType(typeof(VoucherReceipt), "Voucher")]
 [JsonDerivedType(typeof(UsedTicketReceipt), "UsedTicket")]
-public abstract class ReceiptBase
+public class ReceiptBase
 {
     [Required]
     public required string ProductName { get; set; }
@@ -39,7 +39,10 @@ public abstract class ReceiptBase
     /// Use this for sorting across all receipt types.
     /// </summary>
     [JsonIgnore]
-    public abstract DateTime IssuingDate { get; }
+    public virtual DateTime IssuingDate =>
+        throw new InvalidOperationException(
+            "A ReceiptBase instance does not have an issuing date."
+        );
 }
 
 public class PurchaseReceipt : ReceiptBase
