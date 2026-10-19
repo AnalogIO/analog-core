@@ -14,7 +14,8 @@ namespace CoffeeCard.Tests.Common.Builders
                     TokenType.Refresh
                 ))
                 .Ignore(t => t.TokenHash)
-                .Ignore(t => t.Type);
+                .Ignore(t => t.Type)
+                .Ignore(t => t.Email);
             return builder
                 .WithExpires(DateTime.Now.AddDays(1))
                 .WithRevoked(false)
