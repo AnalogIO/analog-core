@@ -37,6 +37,68 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2.Account
         }
 
         [Fact]
+        public async Task Unknown_app_login_creates_registration_token_and_sends_welcome_email()
+        {
+            Mock<IEmailSender> emailSenderMock = new Mock<IEmailSender>();
+            MimeMessage sentMessage = null;
+            emailSenderMock
+                .Setup(x => x.SendEmailAsync(It.IsAny<MimeMessage>()))
+                .Callback<MimeMessage>(message => sentMessage = message)
+                .Returns(Task.CompletedTask);
+            ConfigureMockService<IEmailSender>(emailSenderMock.Object);
+
+            const string email = "new-user@email.dk";
+            var loginRequest = new UserLoginRequest { Email = email, LoginType = LoginType.App };
+
+            await CoffeeCardClientV2.Account_LoginAsync(loginRequest);
+
+            var token = await Context.Tokens.SingleAsync();
+            Assert.Equal(TokenType.Registration, token.Type);
+            Assert.Equal(email, token.Email);
+            Assert.Null(token.UserId);
+            Assert.False(token.Revoked);
+
+            Assert.NotNull(sentMessage);
+            Assert.Contains("Welcome", sentMessage.Subject);
+        }
+
+        [Fact]
+        public async Task Complete_registration_creates_verified_user_and_returns_tokens()
+        {
+            var programme = ProgrammeBuilder.Simple().WithId(1).Build();
+            await Context.Programmes.AddAsync(programme);
+
+            const string email = "new-user@email.dk";
+            const string registrationToken = "registration-token";
+            var hashedToken = Context.GetService<IHashService>().Hash(registrationToken);
+            var token = new Token(hashedToken, TokenType.Registration) { Email = email };
+            await Context.Tokens.AddAsync(token);
+            await Context.SaveChangesAsync();
+
+            var response = await CoffeeCardClientV2.Account_CompleteRegistrationAsync(
+                new CompleteRegistrationRequest
+                {
+                    Token = registrationToken,
+                    Name = "New User",
+                    ProgrammeId = 1,
+                }
+            );
+
+            Assert.NotNull(response.Jwt);
+            Assert.NotNull(response.RefreshToken);
+            Assert.True(new JwtSecurityTokenHandler().CanReadToken(response.Jwt));
+
+            var user = await Context.Users.AsNoTracking().SingleAsync(u => u.Email == email);
+            Assert.Equal("New User", user.Name);
+            Assert.True(user.IsVerified);
+
+            var usedToken = await Context
+                .Tokens.AsNoTracking()
+                .SingleAsync(t => t.Type == TokenType.Registration);
+            Assert.True(usedToken.Revoked);
+        }
+
+        [Fact]
         public async Task Known_user_login_saves_token_in_database_and_sends_one_mail()
         {
             Mock<IEmailSender> emailSenderMock = new Mock<IEmailSender>();

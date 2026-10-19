@@ -288,6 +288,10 @@ namespace CoffeeCard.Library.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Email")
+                        .HasMaxLength(254)
+                        .HasColumnType("nvarchar(254)");
+
                     b.Property<DateTime>("Expires")
                         .HasColumnType("datetime2");
 

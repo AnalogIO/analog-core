@@ -110,6 +110,8 @@ namespace CoffeeCard.Library.Persistence
 
             modelBuilder.Entity<Token>().Property(t => t.TokenHash).IsRequired();
 
+            modelBuilder.Entity<Token>().Property(t => t.Email).HasMaxLength(254);
+
             modelBuilder
                 .HasDbFunction(typeof(Token).GetMethod(nameof(Token.Expired)))
                 .HasSchema("dbo")

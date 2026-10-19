@@ -41,6 +41,31 @@ public class TokenService : ITokenService
         return refreshToken;
     }
 
+    public async Task<string> GenerateRegistrationTokenAsync(string email)
+    {
+        // Only the newest link should work. This also prevents an old link from
+        // being usable after the user requests a new one.
+        var previousTokens = await _context
+            .Tokens.Where(t => t.Type == TokenType.Registration && t.Email == email && !t.Revoked)
+            .ToListAsync();
+
+        foreach (var previousToken in previousTokens)
+        {
+            previousToken.Revoked = true;
+        }
+
+        var registrationToken = Guid.NewGuid().ToString();
+        _context.Tokens.Add(
+            new Token(_hashService.Hash(registrationToken), TokenType.Registration)
+            {
+                Email = email,
+            }
+        );
+
+        await _context.SaveChangesAsync();
+        return registrationToken;
+    }
+
     public async Task<Token> GetValidTokenByHashAsync(string tokenString)
     {
         var tokenHash = _hashService.Hash(tokenString);
@@ -54,6 +79,25 @@ public class TokenService : ITokenService
         {
             throw new UnauthorizedException("Invalid token");
         }
+        return foundToken;
+    }
+
+    public async Task<Token> GetValidRegistrationTokenAsync(string tokenString)
+    {
+        var tokenHash = _hashService.Hash(tokenString);
+        var foundToken = await _context.Tokens.FirstOrDefaultAsync(t =>
+            t.TokenHash == tokenHash
+            && !t.Revoked
+            && !Token.Expired(t.Expires)
+            && t.Type == TokenType.Registration
+            && t.Email != null
+        );
+
+        if (foundToken == null)
+        {
+            throw new UnauthorizedException("Invalid token");
+        }
+
         return foundToken;
     }
 }

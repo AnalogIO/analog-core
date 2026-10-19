@@ -49,5 +49,28 @@ namespace CoffeeCard.Models.Entities
                 ),
             };
         }
+
+        /// <summary>
+        /// Get the deep link that lets a new user complete their registration.
+        /// </summary>
+        /// <param name="loginType">The application to register in</param>
+        /// <param name="redirectUri">The redirect URI for the application</param>
+        /// <param name="tokenHash">The generated registration token</param>
+        /// <returns>string</returns>
+        /// <exception cref="ApiException">Registration is not supported for the application</exception>
+        public static string GetRegistrationDeepLink(
+            this LoginType loginType,
+            string redirectUri,
+            string tokenHash
+        )
+        {
+            return loginType switch
+            {
+                LoginType.App => $"{redirectUri}register/{tokenHash}",
+                _ => throw new ApiException(
+                    "Registration deep link for the given application has not been implemented"
+                ),
+            };
+        }
     }
 }

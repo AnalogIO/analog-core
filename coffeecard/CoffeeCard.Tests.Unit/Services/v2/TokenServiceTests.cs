@@ -138,5 +138,49 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             Assert.False(result.Revoked);
             Assert.False(Token.Expired(result.Expires));
         }
+
+        [Fact(
+            DisplayName = "GenerateRegistrationTokenAsync stores the email and revokes older links"
+        )]
+        public async Task GenerateRegistrationTokenAsync_StoresEmailAndRevokesOlderLinks()
+        {
+            // Arrange
+            const string email = "new@test.test";
+            var hashService = new Mock<IHashService>();
+            hashService.Setup(h => h.Hash(It.IsAny<string>())).Returns("hashedToken");
+
+            var tokenService = new TokenService(InitialContext, hashService.Object);
+
+            // Act
+            await tokenService.GenerateRegistrationTokenAsync(email);
+            await tokenService.GenerateRegistrationTokenAsync(email);
+
+            // Assert
+            var tokens = await AssertionContext
+                .Tokens.Where(t => t.Type == TokenType.Registration && t.Email == email)
+                .ToListAsync();
+
+            Assert.Equal(2, tokens.Count);
+            Assert.Single(tokens.Where(t => !t.Revoked));
+        }
+
+        [Fact(DisplayName = "GetValidRegistrationTokenAsync rejects a token of another type")]
+        public async Task GetValidRegistrationTokenAsync_RejectsTokenOfAnotherType()
+        {
+            // Arrange
+            var token = TokenBuilder.Simple().WithType(TokenType.MagicLink).Build();
+            InitialContext.Tokens.Add(token);
+            await InitialContext.SaveChangesAsync();
+
+            var hashService = new Mock<IHashService>();
+            hashService.Setup(h => h.Hash(It.IsAny<string>())).Returns(token.TokenHash);
+
+            var tokenService = new TokenService(AssertionContext, hashService.Object);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<UnauthorizedException>(() =>
+                tokenService.GetValidRegistrationTokenAsync(token.TokenHash)
+            );
+        }
     }
 }
