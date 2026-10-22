@@ -92,6 +92,7 @@ namespace CoffeeCard.Library.Services.v2
             };
 
             _context.Users.Add(user);
+            // We save here to generate the user id, which is used below
             await _context.SaveChangesAsync();
 
             // Assign profile icon and background color based on the user id, cycling
