@@ -1,9 +1,9 @@
 # Formatting targets for the CoffeeCard solution.
 #
 # The CSharpier version is pinned in .config/dotnet-tools.json and the style is
-# defined in .editorconfig. Both are resolved from the repository root, so these
-# targets produce the same result locally and in CI regardless of where the
-# repository is checked out or which folder make is invoked from.
+# defined in .csharpierrc.json (with matching editor settings in .editorconfig).
+# These targets are intended to be run from the repository root; coffeecard/
+# forwards to them so the commands also work from the solution directory.
 
 ROOT := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
 

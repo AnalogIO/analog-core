@@ -1,14 +1,10 @@
-# Formatting configuration shared by CSharpier, Visual Studio Code and other
-# editors.
+# Formatting configuration for editors such as Visual Studio Code.
 #
-# CSharpier resolves its options from the location of the file it formats,
-# walking up the directory tree until it finds a `.csharpierrc*` file or, failing
-# that, an `.editorconfig`. Without this file, an `.editorconfig` in a parent
-# directory (for example when this repository is checked out inside another
-# project) leaks into the formatting, so files are formatted differently
-# depending on where the repository lives and which folder the command is run
-# from. `root = true` stops that lookup here and pins a single style for the
-# whole repository.
+# CSharpier has its own configuration in `.csharpierrc.json`. This file defines
+# the matching style for editor integrations that read EditorConfig, and
+# `root = true` stops an `.editorconfig` in a parent directory (for example when
+# this repository is checked out inside another project) from leaking into the
+# formatting.
 
 root = true
 

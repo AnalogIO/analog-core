@@ -12,7 +12,7 @@ We follow a [Git Flow](https://nvie.com/posts/a-successful-git-branching-model/)
 
 ### Code formatting
 
-C# and project files are formatted with [CSharpier](https://csharpier.com/). The version is pinned in `.config/dotnet-tools.json` and the style is defined in `.editorconfig`. Since `.editorconfig` sets `root = true`, formatting settings from directories above the repository are ignored, so the result is the same no matter where the repository is checked out or from which folder a command is run.
+C# and project files are formatted with [CSharpier](https://csharpier.com/). The version is pinned in `.config/dotnet-tools.json` and the style is defined in `.csharpierrc.json`; `.editorconfig` mirrors those settings for editors and sets `root = true`, so configuration from directories above the repository cannot change the result no matter where the repository is checked out.
 
 Format the whole repository with:
 
@@ -26,11 +26,16 @@ Verify formatting without writing any changes (the same check that runs in CI):
 make format-check
 ```
 
-Without `make`, the equivalent commands are run from the repository root:
+Without `make`, run the equivalent commands from the repository root:
 
 ```bash
 dotnet tool restore
+
+# format files in place
 dotnet csharpier format .
+
+# verify formatting (same as make format-check)
+dotnet csharpier check .
 ```
 
 VS Code users should install the [CSharpier - Code Formatter](https://marketplace.visualstudio.com/items?itemName=csharpier.csharpier-vscode) extension. The workspace settings use it as the formatter for C# files, so format-on-save matches the command line.
