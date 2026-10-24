@@ -36,7 +36,9 @@ namespace CoffeeCard.Library.Migrations
                 name: "IX_Vouchers_PurchaseId",
                 schema: "dbo",
                 table: "Vouchers",
-                column: "PurchaseId");
+                column: "PurchaseId",
+                unique: true,
+                filter: "[PurchaseId] IS NOT NULL");
         }
     }
 }
