@@ -177,7 +177,12 @@ namespace CoffeeCard.Library.Services
                 ProfileBackgroundColor = 0,
             };
 
+            // Start a transaction to avoid half-adding a user, e.g. a user
+            // with a user id but without a profile picture saved.
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+
             _context.Users.Add(user);
+            // We save here to generate the user id, which is used below
             await _context.SaveChangesAsync();
 
             // Assign profile icon and background color based on the user id, cycling
@@ -187,6 +192,7 @@ namespace CoffeeCard.Library.Services
                 user.Id % Enum.GetValues<ProfileBackgroundColor>().Length
             );
             await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
 
             var claims = new[]
             {
