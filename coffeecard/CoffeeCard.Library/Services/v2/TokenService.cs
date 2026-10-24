@@ -45,13 +45,23 @@ public class TokenService : ITokenService
     {
         // Only the newest link should work. This also prevents an old link from
         // being usable after the user requests a new one.
-        var previousTokens = await _context
-            .Tokens.Where(t => t.Type == TokenType.Registration && t.Email == email && !t.Revoked)
-            .ToListAsync();
+        var previousTokensQuery = _context.Tokens.Where(t =>
+            t.Type == TokenType.Registration && t.Email == email && !t.Revoked
+        );
 
-        foreach (var previousToken in previousTokens)
+        if (_context.Database.IsRelational())
         {
-            previousToken.Revoked = true;
+            await previousTokensQuery.ExecuteUpdateAsync(t =>
+                t.SetProperty(token => token.Revoked, true)
+            );
+        }
+        else
+        {
+            // The in-memory provider does not support ExecuteUpdate.
+            foreach (var previousToken in await previousTokensQuery.ToListAsync())
+            {
+                previousToken.Revoked = true;
+            }
         }
 
         var registrationToken = Guid.NewGuid().ToString();
@@ -66,32 +76,44 @@ public class TokenService : ITokenService
         return registrationToken;
     }
 
-    public async Task<Token> GetValidTokenByHashAsync(string tokenString)
+    public Task<Token> GetValidTokenByHashAsync(string tokenString)
     {
-        var tokenHash = _hashService.Hash(tokenString);
-        var foundToken = await _context
-            .Tokens.Include(t => t.User)
-            .FirstOrDefaultAsync(t =>
-                t.TokenHash == tokenHash && !t.Revoked && !Token.Expired(t.Expires)
-            );
-
-        if (foundToken == null)
-        {
-            throw new UnauthorizedException("Invalid token");
-        }
-        return foundToken;
+        return GetValidTokenAsync(tokenString, TokenType.MagicLink, includeUser: true);
     }
 
     public async Task<Token> GetValidRegistrationTokenAsync(string tokenString)
     {
-        var tokenHash = _hashService.Hash(tokenString);
-        var foundToken = await _context.Tokens.FirstOrDefaultAsync(t =>
-            t.TokenHash == tokenHash
-            && !t.Revoked
-            && !Token.Expired(t.Expires)
-            && t.Type == TokenType.Registration
-            && t.Email != null
+        var foundToken = await GetValidTokenAsync(
+            tokenString,
+            TokenType.Registration,
+            includeUser: false
         );
+
+        if (foundToken.Email is null)
+        {
+            throw new UnauthorizedException("Invalid token");
+        }
+
+        return foundToken;
+    }
+
+    private async Task<Token> GetValidTokenAsync(
+        string tokenString,
+        TokenType type,
+        bool includeUser
+    )
+    {
+        var tokenHash = _hashService.Hash(tokenString);
+        var query = _context.Tokens.Where(t =>
+            t.TokenHash == tokenHash && !t.Revoked && !Token.Expired(t.Expires) && t.Type == type
+        );
+
+        if (includeUser)
+        {
+            query = query.Include(t => t.User);
+        }
+
+        var foundToken = await query.FirstOrDefaultAsync();
 
         if (foundToken == null)
         {

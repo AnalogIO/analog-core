@@ -375,7 +375,8 @@ namespace CoffeeCard.Library.Services.v2
             CompleteRegistrationRequest request
         )
         {
-            if (string.IsNullOrWhiteSpace(request.Name))
+            var name = EscapeName(request.Name ?? string.Empty);
+            if (string.IsNullOrWhiteSpace(name))
             {
                 throw new BadRequestException("A name is required to complete registration");
             }
@@ -412,7 +413,7 @@ namespace CoffeeCard.Library.Services.v2
 
             var user = new User
             {
-                Name = EscapeName(request.Name),
+                Name = name,
                 Email = email,
                 Password = password,
                 Salt = salt,
@@ -421,9 +422,30 @@ namespace CoffeeCard.Library.Services.v2
                 IsVerified = true,
             };
 
-            _context.Users.Add(user);
-            registrationToken.Revoked = true;
-            await _context.SaveChangesAsync();
+            if (_context.Database.IsRelational())
+            {
+                await using var transaction = await _context.Database.BeginTransactionAsync();
+
+                var consumed = await _context
+                    .Tokens.Where(t => t.Id == registrationToken.Id && !t.Revoked)
+                    .ExecuteUpdateAsync(t => t.SetProperty(token => token.Revoked, true));
+
+                if (consumed == 0)
+                {
+                    throw new UnauthorizedException("Invalid token");
+                }
+
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            else
+            {
+                // The in-memory provider supports neither transactions nor ExecuteUpdate.
+                _context.Users.Add(user);
+                registrationToken.Revoked = true;
+                await _context.SaveChangesAsync();
+            }
 
             _logger.LogInformation("Completed registration for {email} {userid}", email, user.Id);
 

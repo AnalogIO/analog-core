@@ -7,6 +7,7 @@ using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services;
 using CoffeeCard.Models.Entities;
 using CoffeeCard.Tests.Common.Builders;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit;
@@ -119,7 +120,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         public async Task GetValidTokenByHashAsync_ReturnsTokenByValidHash()
         {
             // Arrange
-            var token = TokenBuilder.Simple().Build();
+            var token = TokenBuilder.Simple().WithType(TokenType.MagicLink).Build();
             InitialContext.Tokens.Add(token);
 
             await InitialContext.SaveChangesAsync();
@@ -139,6 +140,25 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             Assert.False(Token.Expired(result.Expires));
         }
 
+        [Fact(DisplayName = "GetValidTokenByHashAsync rejects a registration token")]
+        public async Task GetValidTokenByHashAsync_RejectsRegistrationToken()
+        {
+            // Arrange
+            var token = TokenBuilder.Simple().WithType(TokenType.Registration).Build();
+            InitialContext.Tokens.Add(token);
+            await InitialContext.SaveChangesAsync();
+
+            var hashService = new Mock<IHashService>();
+            hashService.Setup(h => h.Hash(It.IsAny<string>())).Returns(token.TokenHash);
+
+            var tokenService = new TokenService(AssertionContext, hashService.Object);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<UnauthorizedException>(() =>
+                tokenService.GetValidTokenByHashAsync(token.TokenHash)
+            );
+        }
+
         [Fact(
             DisplayName = "GenerateRegistrationTokenAsync stores the email and revokes older links"
         )]
@@ -149,14 +169,36 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var hashService = new Mock<IHashService>();
             hashService.Setup(h => h.Hash(It.IsAny<string>())).Returns("hashedToken");
 
-            var tokenService = new TokenService(InitialContext, hashService.Object);
+            // GenerateRegistrationTokenAsync uses ExecuteUpdate, which the
+            // in-memory provider used by this base class does not support.
+            await using var connection = new SqliteConnection("DataSource=:memory:");
+            await connection.OpenAsync();
+
+            var options = new DbContextOptionsBuilder<CoffeeCardContext>()
+                .UseSqlite(connection)
+                .Options;
+
+            await using var context = new CoffeeCardContext(
+                options,
+                new DatabaseSettings { SchemaName = "main" },
+                new EnvironmentSettings
+                {
+                    EnvironmentType = EnvironmentType.Test,
+                    MinAppVersion = "2.1.0",
+                    DeploymentUrl = "test",
+                }
+            );
+            await context.Database.EnsureCreatedAsync();
+
+            var tokenService = new TokenService(context, hashService.Object);
 
             // Act
             await tokenService.GenerateRegistrationTokenAsync(email);
             await tokenService.GenerateRegistrationTokenAsync(email);
 
             // Assert
-            var tokens = await AssertionContext
+            context.ChangeTracker.Clear();
+            var tokens = await context
                 .Tokens.Where(t => t.Type == TokenType.Registration && t.Email == email)
                 .ToListAsync();
 
