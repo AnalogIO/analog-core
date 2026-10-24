@@ -22,19 +22,31 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 {
     public class AccountServiceTest : BaseUnitTests
     {
-        private CoffeeCardContext CreateTestCoffeeCardContextWithName(string name)
+        private CoffeeCardContext CreateTestCoffeeCardContext()
         {
-            var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseInMemoryDatabase(
-                name
+            // Registration uses a transaction to store the user and its generated
+            // profile atomically. Use SQLite rather than the in-memory provider,
+            // which does not support transactions.
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseSqlite(
+                "DataSource=:memory:"
             );
 
-            var databaseSettings = new DatabaseSettings { SchemaName = "test" };
+            // SQLite uses "main" as the default schema
+            var databaseSettings = new DatabaseSettings { SchemaName = "main" };
             var environmentSettings = new EnvironmentSettings()
             {
                 EnvironmentType = EnvironmentType.Test,
             };
 
-            return new CoffeeCardContext(builder.Options, databaseSettings, environmentSettings);
+            var context = new CoffeeCardContext(
+                builder.Options,
+                databaseSettings,
+                environmentSettings
+            );
+            // Keep the in-memory database alive for the lifetime of the context
+            context.Database.OpenConnection();
+            context.Database.EnsureCreated();
+            return context;
         }
 
         [Fact(DisplayName = "GetAccountByClaims returns user, given claim with email")]
@@ -46,9 +58,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var expected = UserBuilder.DefaultCustomer().WithEmail(email).Build();
             User result;
 
-            using var context = CreateTestCoffeeCardContextWithName(
-                nameof(GetAccountByClaimsReturnsUserClaimWithEmail)
-            );
+            using var context = CreateTestCoffeeCardContext();
             context.Users.Add(expected);
             await context.SaveChangesAsync();
             // Act
@@ -76,9 +86,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             // Arrange
             var validUser = UserBuilder.DefaultCustomer().Build();
 
-            using var context = CreateTestCoffeeCardContextWithName(
-                nameof(GetAccountByClaimsThrowsApiExceptionGivenInvalidClaim) + claims
-            );
+            using var context = CreateTestCoffeeCardContext();
             context.Users.Add(validUser);
             await context.SaveChangesAsync();
             // Act
@@ -123,10 +131,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 .Build();
             User result;
 
-            // Using same context across all valid users to test creation of multiple users
-            using var context = CreateTestCoffeeCardContextWithName(
-                nameof(RegisterAccountReturnsUserOnValidInput)
-            );
+            using var context = CreateTestCoffeeCardContext();
             var emailServiceMock = new Mock<Library.Services.IEmailService>();
             emailServiceMock
                 .Setup(e =>
@@ -170,9 +175,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             // Arrange
             var programme = ProgrammeBuilder.Simple().Build();
 
-            using var context = CreateTestCoffeeCardContextWithName(
-                nameof(RegisterAccountAssignsProfileIconAndBackgroundColorFromUserId)
-            );
+            using var context = CreateTestCoffeeCardContext();
             context.Programmes.Add(programme);
             await context.SaveChangesAsync();
 
@@ -207,9 +210,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             var programme = ProgrammeBuilder.Simple().Build();
             var email = "test@test.dk";
 
-            using var context = CreateTestCoffeeCardContextWithName(
-                nameof(RegisterAccountThrowsApiExceptionWithStatus409OnExistingEmail)
-            );
+            using var context = CreateTestCoffeeCardContext();
             context.Programmes.Add(programme);
             await context.SaveChangesAsync();
 
@@ -243,9 +244,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         public async Task RegisterAccountThrowsApiExceptionWithStatus400WhenGivenInvalidProgrammeId()
         {
             // Arrange
-            using var context = CreateTestCoffeeCardContextWithName(
-                nameof(RegisterAccountThrowsApiExceptionWithStatus400WhenGivenInvalidProgrammeId)
-            );
+            using var context = CreateTestCoffeeCardContext();
             // Act
             var accountService = new AccountService(
                 context,
@@ -276,9 +275,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 .WithProgramme(programme)
                 .Build();
 
-            using var context = CreateTestCoffeeCardContextWithName(
-                nameof(RegisterAccountSendsVerificationEmailOnlyValidInput)
-            );
+            using var context = CreateTestCoffeeCardContext();
             var emailServiceMock = new Mock<Library.Services.IEmailService>();
             emailServiceMock
                 .Setup(e =>
@@ -357,15 +354,14 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 .WithProgramme(programme ?? user.Programme)
                 .Build();
 
-            using var context = CreateTestCoffeeCardContextWithName(
-                nameof(UpdateAccountUpdatesAllNonNullProperties) + name
-            );
+            using var context = CreateTestCoffeeCardContext();
             context.Users.Add(user);
 
             context.Programmes.Add(programme);
             await context.SaveChangesAsync();
 
             var hashServiceMock = new Mock<IHashService>();
+            hashServiceMock.Setup(h => h.GenerateSalt()).Returns("salt");
             hashServiceMock.Setup(h => h.Hash(It.IsAny<String>())).Returns(password);
             var hashService = hashServiceMock.Object;
 
@@ -404,9 +400,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             };
             var user = UserBuilder.DefaultCustomer().WithProgramme(programme).Build();
 
-            using var context = CreateTestCoffeeCardContextWithName(
-                nameof(UpdateAccountThrowsApiExceptionOnInvalidProgrammeId)
-            );
+            using var context = CreateTestCoffeeCardContext();
             context.Users.Add(user);
 
             context.Programmes.Add(programme);
@@ -448,9 +442,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             };
             var user = UserBuilder.DefaultCustomer().WithProgramme(programme).Build();
 
-            using var context = CreateTestCoffeeCardContextWithName(
-                nameof(UpdateAccountUpdatesProfileIconAndBackgroundColor) + profileIcon
-            );
+            using var context = CreateTestCoffeeCardContext();
             context.Users.Add(user);
 
             context.Programmes.Add(programme);
@@ -490,11 +482,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             };
             var user = UserBuilder.DefaultCustomer().WithProgramme(programme).Build();
 
-            using var context = CreateTestCoffeeCardContextWithName(
-                nameof(UpdateAccountThrowsApiExceptionOnInvalidProfileValues)
-                    + profileIcon
-                    + profileBackgroundColor
-            );
+            using var context = CreateTestCoffeeCardContext();
             context.Users.Add(user);
 
             context.Programmes.Add(programme);
@@ -524,9 +512,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             // Arrange
             var user = UserBuilder.DefaultCustomer().Build();
 
-            using var context = CreateTestCoffeeCardContextWithName(
-                nameof(RequestAnonymizationSendsEmail)
-            );
+            using var context = CreateTestCoffeeCardContext();
             context.Users.Add(user);
             await context.SaveChangesAsync();
 
@@ -576,9 +562,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 .WithUserState(UserState.Deleted)
                 .Build();
 
-            await using var context = CreateTestCoffeeCardContextWithName(
-                nameof(AnonymizeAccountRemovesIdentifyableInformationFromUser)
-            );
+            await using var context = CreateTestCoffeeCardContext();
             context.Users.Add(user);
             await context.SaveChangesAsync();
 
@@ -622,9 +606,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 .WithIsVerified(false)
                 .Build();
 
-            await using var context = CreateTestCoffeeCardContextWithName(
-                nameof(ResendVerificationEmailWhenAccountIsNotVerified)
-            );
+            await using var context = CreateTestCoffeeCardContext();
             context.Users.Add(user);
             await context.SaveChangesAsync();
 
@@ -664,9 +646,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 .WithIsVerified(true)
                 .Build();
 
-            await using var context = CreateTestCoffeeCardContextWithName(
-                nameof(ResendVerificationEmailThrowsConflictExceptionWhenAccountIsAlreadyVerified)
-            );
+            await using var context = CreateTestCoffeeCardContext();
             context.Users.Add(user);
             await context.SaveChangesAsync();
 
@@ -694,9 +674,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         public async Task ResendVerificationEmailThrowsEntityNotFoundExceptionWhenEmailDoesnotExist()
         {
             // Arrange
-            await using var context = CreateTestCoffeeCardContextWithName(
-                nameof(ResendVerificationEmailThrowsEntityNotFoundExceptionWhenEmailDoesnotExist)
-            );
+            await using var context = CreateTestCoffeeCardContext();
 
             // Act
             var accountService = new AccountService(
@@ -723,9 +701,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             const string userEmail = "john@cena.com";
             var user = UserBuilder.DefaultCustomer().WithEmail(userEmail).Build();
 
-            await using var context = CreateTestCoffeeCardContextWithName(
-                nameof(SendMagicLinkSendsEmailWhenUserIsFound)
-            );
+            await using var context = CreateTestCoffeeCardContext();
 
             await context.Users.AddAsync(user);
             await context.SaveChangesAsync();
@@ -755,9 +731,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         public async Task SendMagicLinkDoesNotSendMailWhenUserIsNotFound()
         {
             // Arrange
-            await using var context = CreateTestCoffeeCardContextWithName(
-                nameof(SendMagicLinkDoesNotSendMailWhenUserIsNotFound)
-            );
+            await using var context = CreateTestCoffeeCardContext();
 
             var emailService = new Mock<Library.Services.v2.IEmailService>();
             var accountService = new Library.Services.v2.AccountService(
@@ -795,9 +769,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 .WithUser(user)
                 .Build();
 
-            await using var context = CreateTestCoffeeCardContextWithName(
-                nameof(GenerateTokenPairRevokesTokenOnUse)
-            );
+            await using var context = CreateTestCoffeeCardContext();
             await context.Users.AddAsync(user);
             await context.Tokens.AddAsync(refreshToken);
             await context.SaveChangesAsync();
@@ -841,9 +813,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 .WithUser(user)
                 .Build();
 
-            await using var context = CreateTestCoffeeCardContextWithName(
-                nameof(GenerateTokenPairReturnsTokenPair)
-            );
+            await using var context = CreateTestCoffeeCardContext();
             await context.Users.AddAsync(user);
             await context.Tokens.AddAsync(refreshToken);
             await context.SaveChangesAsync();
