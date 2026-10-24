@@ -686,7 +686,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             // Assert
             emailService.Verify(
-                e => e.SendRegistrationLink(email, "registrationToken", LoginType.App),
+                e => e.SendRegistrationLink(email, "registrationToken"),
                 Times.Once
             );
             emailService.Verify(

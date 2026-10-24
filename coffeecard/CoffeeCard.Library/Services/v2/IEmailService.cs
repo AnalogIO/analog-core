@@ -10,7 +10,10 @@ namespace CoffeeCard.Library.Services.v2
         /// <summary>
         /// Sends a welcome email containing a single-use link that lets the
         /// owner of <paramref name="email"/> complete their registration.
+        ///
+        /// Only the app supports registration,
+        /// so the link is always built for the app.
         /// </summary>
-        Task SendRegistrationLink(string email, string registrationToken, LoginType loginType);
+        Task SendRegistrationLink(string email, string registrationToken);
     }
 }

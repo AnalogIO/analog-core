@@ -52,18 +52,18 @@ namespace CoffeeCard.Library.Services.v2
             await _emailSender.SendEmailAsync(message);
         }
 
-        public async Task SendRegistrationLink(
-            string email,
-            string registrationToken,
-            LoginType loginType
-        )
+        public async Task SendRegistrationLink(string email, string registrationToken)
         {
             _logger.LogInformation("Sending registration email to {email}", email);
 
             var message = new MimeMessage();
             var builder = RetrieveTemplate("email_magic_link_registration.html");
-            var baseUri = BaseUriFor(loginType);
-            var deeplink = loginType.GetRegistrationDeepLink(baseUri, registrationToken);
+
+            // Registration is app-only, so the deep link is always built for the app.
+            var deeplink = LoginType.App.GetRegistrationDeepLink(
+                _environmentSettings.AnalogAppUrl,
+                registrationToken
+            );
 
             builder.HtmlBody = builder.HtmlBody.Replace("{email}", email);
             builder.HtmlBody = builder.HtmlBody.Replace("{expires}", "30 minutes");

@@ -363,7 +363,7 @@ namespace CoffeeCard.Library.Services.v2
                     var registrationToken = await _tokenServiceV2.GenerateRegistrationTokenAsync(
                         email
                     );
-                    await _emailServiceV2.SendRegistrationLink(email, registrationToken, loginType);
+                    await _emailServiceV2.SendRegistrationLink(email, registrationToken);
                 }
                 return;
             }
