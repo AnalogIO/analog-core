@@ -56,4 +56,10 @@ public class TokenService : ITokenService
         }
         return foundToken;
     }
+
+    public async Task RemoveTokensByUserAsync(User user)
+    {
+        var tokens = await _context.Tokens.Where(t => t.UserId == user.Id).ToListAsync();
+        _context.Tokens.RemoveRange(tokens);
+    }
 }
