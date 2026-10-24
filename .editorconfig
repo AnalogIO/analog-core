@@ -1,0 +1,35 @@
+# Formatting configuration shared by CSharpier, Visual Studio Code and other
+# editors.
+#
+# CSharpier resolves its options from the location of the file it formats,
+# walking up the directory tree until it finds a `.csharpierrc*` file or, failing
+# that, an `.editorconfig`. Without this file, an `.editorconfig` in a parent
+# directory (for example when this repository is checked out inside another
+# project) leaks into the formatting, so files are formatted differently
+# depending on where the repository lives and which folder the command is run
+# from. `root = true` stops that lookup here and pins a single style for the
+# whole repository.
+
+root = true
+
+[*]
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{cs,csx}]
+indent_style = space
+indent_size = 4
+max_line_length = 100
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false
+
+[*.{config,csproj,props,slnx,targets,xaml,xml}]
+indent_style = space
+indent_size = 2
+max_line_length = 100
+
+[*.md]
+trim_trailing_whitespace = false
+
+[Makefile]
+indent_style = tab
