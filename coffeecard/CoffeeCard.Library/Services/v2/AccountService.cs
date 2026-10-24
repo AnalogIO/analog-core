@@ -87,10 +87,25 @@ namespace CoffeeCard.Library.Services.v2
                 Salt = salt,
                 Programme = chosenProgramme,
                 UserGroup = UserGroup.Customer,
+                ProfileIcon = 0,
+                ProfileBackgroundColor = 0,
             };
 
+            // Start a transaction to avoid half-adding a user, e.g. a user
+            // with a user id but without a profile picture saved.
+            await using var transaction = await _context.Database.BeginTransactionAsync();
             _context.Users.Add(user);
+            // We save here to generate the user id, which is used below
             await _context.SaveChangesAsync();
+
+            // Assign profile icon and background color based on the user id, cycling
+            // through every value defined on the enums so new icons are picked up automatically
+            user.ProfileIcon = (ProfileIcon)(user.Id % Enum.GetValues<ProfileIcon>().Length);
+            user.ProfileBackgroundColor = (ProfileBackgroundColor)(
+                user.Id % Enum.GetValues<ProfileBackgroundColor>().Length
+            );
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
 
             await SendAccountVerificationEmail(user);
 
@@ -172,6 +187,34 @@ namespace CoffeeCard.Library.Services.v2
                 user.Salt = salt;
                 user.Password = hashedPassword;
                 _logger.LogInformation("User changed password");
+            }
+
+            if (updateUserRequest.ProfileIcon != null)
+            {
+                if (!Enum.IsDefined(updateUserRequest.ProfileIcon.Value))
+                    throw new ApiException(
+                        $"Invalid profile icon {updateUserRequest.ProfileIcon}",
+                        400
+                    );
+                user.ProfileIcon = updateUserRequest.ProfileIcon.Value;
+                _logger.LogInformation(
+                    "User changed profile icon to {profileIcon}",
+                    user.ProfileIcon
+                );
+            }
+
+            if (updateUserRequest.ProfileBackgroundColor != null)
+            {
+                if (!Enum.IsDefined(updateUserRequest.ProfileBackgroundColor.Value))
+                    throw new ApiException(
+                        $"Invalid background color {updateUserRequest.ProfileBackgroundColor}",
+                        400
+                    );
+                user.ProfileBackgroundColor = updateUserRequest.ProfileBackgroundColor.Value;
+                _logger.LogInformation(
+                    "User changed background color to {backgroundColor}",
+                    user.ProfileBackgroundColor
+                );
             }
 
             await _context.SaveChangesAsync();
