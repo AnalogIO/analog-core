@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace CoffeeCard.Models.DataTransferObjects.v2.User
 {
     /// <summary>
@@ -21,23 +19,20 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
         /// </summary>
         /// <value>Registration token</value>
         /// <example>[no example provided]</example>
-        [Required]
-        public string Token { get; set; } = string.Empty;
+        public required string Token { get; set; }
 
         /// <summary>
         /// Full name of the user
         /// </summary>
         /// <value>Full Name</value>
         /// <example>John Doe</example>
-        [Required]
-        public string Name { get; set; } = string.Empty;
+        public required string Name { get; set; }
 
         /// <summary>
         /// Programme of the user
         /// </summary>
         /// <value>Programme Id</value>
         /// <example>1</example>
-        [Required]
-        public int ProgrammeId { get; set; }
+        public required int ProgrammeId { get; set; }
     }
 }

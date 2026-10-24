@@ -801,7 +801,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             );
 
             // Act & Assert
-            await Assert.ThrowsAsync<ApiException>(() =>
+            await Assert.ThrowsAsync<BadRequestException>(() =>
                 accountService.CompleteRegistrationAsync(
                     new CompleteRegistrationRequest
                     {

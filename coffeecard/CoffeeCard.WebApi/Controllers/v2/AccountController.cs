@@ -86,8 +86,8 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// </summary>
         /// <param name="request">Registration token, name and programme</param>
         /// <response code="200">Account created and the user is signed in</response>
-        /// <response code="400">Invalid token, name or programme</response>
-        /// <response code="401">Invalid or expired registration token</response>
+        /// <response code="400">Invalid request, name or programme</response>
+        /// <response code="401">Invalid, expired or revoked registration token</response>
         [HttpPost]
         [AllowAnonymous]
         [Route("register")]

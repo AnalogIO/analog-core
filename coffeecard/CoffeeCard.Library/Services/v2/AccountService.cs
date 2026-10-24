@@ -377,7 +377,7 @@ namespace CoffeeCard.Library.Services.v2
         {
             if (string.IsNullOrWhiteSpace(request.Name))
             {
-                throw new ApiException("A name is required to complete registration", 400);
+                throw new BadRequestException("A name is required to complete registration");
             }
 
             var registrationToken = await _tokenServiceV2.GetValidRegistrationTokenAsync(
@@ -392,7 +392,7 @@ namespace CoffeeCard.Library.Services.v2
             {
                 registrationToken.Revoked = true;
                 await _context.SaveChangesAsync();
-                throw new ApiException("Unable to complete registration", 400);
+                throw new BadRequestException("Unable to complete registration");
             }
 
             var programme = await _context.Programmes.FirstOrDefaultAsync(p =>
@@ -400,9 +400,8 @@ namespace CoffeeCard.Library.Services.v2
             );
             if (programme is null)
             {
-                throw new ApiException(
-                    $"No programme found with the id: {request.ProgrammeId}",
-                    400
+                throw new BadRequestException(
+                    $"No programme found with the id: {request.ProgrammeId}"
                 );
             }
 
