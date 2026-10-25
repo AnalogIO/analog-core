@@ -487,6 +487,51 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             Assert.Equal(expected.UserState, result.UserState);
         }
 
+        [Fact(DisplayName = "AnonymizeAccount removes the user's tokens")]
+        public async Task AnonymizeAccountRemovesUsersTokens()
+        {
+            // Arrange
+            var userEmail = "token-cleanup@test.test";
+            var user = UserBuilder
+                .DefaultCustomer()
+                .WithEmail(userEmail)
+                .WithUserState(UserState.Active)
+                .Build();
+
+            await using var context = CreateTestCoffeeCardContextWithName(
+                nameof(AnonymizeAccountRemovesUsersTokens)
+            );
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
+
+            context.Tokens.AddRange(
+                new Token("refresh-token", TokenType.Refresh) { UserId = user.Id },
+                new Token("magic-link-token", TokenType.MagicLink) { UserId = user.Id }
+            );
+            await context.SaveChangesAsync();
+
+            var tokenServiceMock = new Mock<Library.Services.ITokenService>();
+            tokenServiceMock
+                .Setup(e => e.ValidateVerificationTokenAndGetEmail("test"))
+                .Returns(userEmail);
+
+            var accountService = new AccountService(
+                context,
+                tokenServiceMock.Object,
+                new Mock<Library.Services.IEmailService>().Object,
+                new Mock<Library.Services.v2.IEmailService>().Object,
+                new Library.Services.v2.TokenService(context, new Mock<IHashService>().Object),
+                new Mock<IHashService>().Object,
+                NullLogger<AccountService>.Instance
+            );
+
+            // Act
+            await accountService.AnonymizeAccountAsync("test");
+
+            // Assert
+            Assert.Empty(context.Tokens);
+        }
+
         [Fact(DisplayName = "Resend verification email when account is not already verified")]
         public async Task ResendVerificationEmailWhenAccountIsNotVerified()
         {
