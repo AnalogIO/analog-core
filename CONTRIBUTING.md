@@ -10,6 +10,36 @@ We follow a [Git Flow](https://nvie.com/posts/a-successful-git-branching-model/)
 - `production` The production branch reflects the current deployment in production. The production branch is merged with the develop branch every time a new version is deployed to production.
 - `feature/{author}/{feature-name}` New features are developed on feature branches following the *feature / author name / feature name branch* structure.
 
+### Code formatting
+
+C# and project files are formatted with [CSharpier](https://csharpier.com/). The version is pinned in `.config/dotnet-tools.json` and the style is defined in `.csharpierrc.json`; `.editorconfig` mirrors those settings for editors and sets `root = true`, so configuration from directories above the repository cannot change the result no matter where the repository is checked out.
+
+Format the whole repository with:
+
+```bash
+make format
+```
+
+Verify formatting without writing any changes (the same check that runs in CI):
+
+```bash
+make format-check
+```
+
+Without `make`, run the equivalent commands from the repository root:
+
+```bash
+dotnet tool restore
+
+# format files in place
+dotnet csharpier format .
+
+# verify formatting (same as make format-check)
+dotnet csharpier check .
+```
+
+VS Code users should install the [CSharpier - Code Formatter](https://marketplace.visualstudio.com/items?itemName=csharpier.csharpier-vscode) extension. The workspace settings use it as the formatter for C# files, so format-on-save matches the command line.
+
 ### Merging with the develop branch
 
 **A pull request must be created and approved before merging with develop!**
