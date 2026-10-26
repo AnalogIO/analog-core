@@ -351,6 +351,12 @@ namespace CoffeeCard.Library.Migrations
                     b.Property<bool>("PrivacyActivated")
                         .HasColumnType("bit");
 
+                    b.Property<int>("ProfileBackgroundColor")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProfileIcon")
+                        .HasColumnType("int");
+
                     b.Property<int>("ProgrammeId")
                         .HasColumnType("int")
                         .HasColumnName("Programme_Id");
