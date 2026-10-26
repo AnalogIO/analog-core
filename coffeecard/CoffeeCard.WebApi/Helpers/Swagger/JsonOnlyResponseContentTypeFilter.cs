@@ -34,9 +34,9 @@ public sealed class JsonOnlyResponseContentTypeFilter : IOperationFilter
         }
     }
 
-    private static void NormalizeContentTypes(IDictionary<string, OpenApiMediaType> content)
+    private static void NormalizeContentTypes(IDictionary<string, OpenApiMediaType>? content)
     {
-        if (content.Count == 0 || !content.ContainsKey(JsonMediaType))
+        if (content is null || content.Count == 0 || !content.ContainsKey(JsonMediaType))
         {
             return;
         }

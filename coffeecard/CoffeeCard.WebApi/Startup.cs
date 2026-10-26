@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -384,6 +385,15 @@ namespace CoffeeCard.WebApi
 
             services.AddSwaggerGen(options =>
             {
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                options.IncludeXmlComments(xmlPath);
+
+                // Preserve the legacy decimal format used by the admin statistics endpoint.
+                options.MapType<decimal>(() =>
+                    new OpenApiSchema { Type = JsonSchemaType.Number, Format = "decimal" }
+                );
+
                 foreach (var apiVersion in apiVersions.ApiVersionDescriptions)
                 {
                     options.SwaggerDoc(
@@ -409,6 +419,9 @@ namespace CoffeeCard.WebApi
                         }
                     );
                 }
+
+                // Preserve C# nullable reference type annotations in the schema.
+                options.SupportNonNullableReferenceTypes();
 
                 // Enable System.Text.Json polymorphism support
                 options.UseOneOfForPolymorphism();
@@ -443,6 +456,8 @@ namespace CoffeeCard.WebApi
 
                 // Normalise all response content types to application/json
                 options.OperationFilter<JsonOnlyResponseContentTypeFilter>();
+                options.OperationFilter<AuthorizeOperationFilter>();
+                options.OperationFilter<RequiredRequestBodyFilter>();
 
                 // Define JWT security scheme
                 options.AddSecurityDefinition(
@@ -458,11 +473,6 @@ namespace CoffeeCard.WebApi
                     }
                 );
 
-                options.AddSecurityRequirement(_ => new OpenApiSecurityRequirement
-                {
-                    { new OpenApiSecuritySchemeReference("jwt"), [] },
-                });
-
                 // Define API Key security scheme
                 options.AddSecurityDefinition(
                     "apikey",
@@ -474,11 +484,6 @@ namespace CoffeeCard.WebApi
                         Type = SecuritySchemeType.ApiKey,
                     }
                 );
-
-                options.AddSecurityRequirement(_ => new OpenApiSecurityRequirement
-                {
-                    { new OpenApiSecuritySchemeReference("apikey"), [] },
-                });
             });
         }
 

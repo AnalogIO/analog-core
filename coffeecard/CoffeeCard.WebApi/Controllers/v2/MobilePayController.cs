@@ -9,7 +9,6 @@ using CoffeeCard.Models.DataTransferObjects.MobilePay;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace CoffeeCard.WebApi.Controllers.v2;
 
