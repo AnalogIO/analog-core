@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
+using WebhookEvent = CoffeeCard.MobilePay.Generated.Api.ePaymentApi.WebhookEvent;
 
 namespace CoffeeCard.Tests.Unit.Controllers.v2;
 

@@ -17,6 +17,11 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
         /// Free purchase
         /// </summary>
         FreePurchase,
+
+        /// <summary>
+        /// An apple or Google Pay purchase, completed by the Nets Easy Payment API
+        /// </summary>
+        Nexi,
     }
 
     /// <summary>
@@ -31,6 +36,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.Purchase
             {
                 PaymentType.MobilePay => PurchaseType.MobilePayV2,
                 PaymentType.FreePurchase => PurchaseType.Free,
+                PaymentType.Nexi => PurchaseType.Nexi,
                 _ => throw new ArgumentException("Unknown enum given to PaymentTypeExtension"),
             };
         }
