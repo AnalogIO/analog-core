@@ -102,6 +102,20 @@ public sealed class SwaggerDocumentTest(CustomWebApplicationFactory<Startup> fac
         Assert.False(root.GetProperty("paths").TryGetProperty("/api/v2/mobilepay/webhook", out _));
     }
 
+    [Fact]
+    public async Task V2_spec_includes_schema_documentation_from_models()
+    {
+        using var document = await GetSpecAsync("v2");
+        var name = document
+            .RootElement.GetProperty("components")
+            .GetProperty("schemas")
+            .GetProperty("AddMenuItemRequest")
+            .GetProperty("properties")
+            .GetProperty("name");
+
+        Assert.False(string.IsNullOrWhiteSpace(name.GetProperty("description").GetString()));
+    }
+
     private static bool HasScheme(JsonElement operation, string scheme)
     {
         if (!operation.TryGetProperty("security", out var security))

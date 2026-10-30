@@ -388,6 +388,9 @@ namespace CoffeeCard.WebApi
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 options.IncludeXmlComments(xmlPath);
+                options.IncludeXmlComments(
+                    Path.Combine(AppContext.BaseDirectory, "CoffeeCard.Models.xml")
+                );
 
                 // Preserve the legacy decimal format used by the admin statistics endpoint.
                 options.MapType<decimal>(() =>
