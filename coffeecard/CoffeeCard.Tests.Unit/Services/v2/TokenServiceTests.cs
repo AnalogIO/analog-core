@@ -159,6 +159,29 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             );
         }
 
+        [Fact(DisplayName = "GetValidTokenByHashAsync accepts a refresh token")]
+        public async Task GetValidTokenByHashAsync_AcceptsRefreshToken()
+        {
+            // Arrange
+            var user = UserBuilder.DefaultCustomer().Build();
+            var token = TokenBuilder.Simple().WithType(TokenType.Refresh).WithUser(user).Build();
+            InitialContext.Users.Add(user);
+            InitialContext.Tokens.Add(token);
+            await InitialContext.SaveChangesAsync();
+
+            var hashService = new Mock<IHashService>();
+            hashService.Setup(h => h.Hash(It.IsAny<string>())).Returns(token.TokenHash);
+
+            var tokenService = new TokenService(AssertionContext, hashService.Object);
+
+            // Act
+            var result = await tokenService.GetValidTokenByHashAsync(token.TokenHash);
+
+            // Assert
+            Assert.Equal(TokenType.Refresh, result.Type);
+            Assert.NotNull(result.User);
+        }
+
         [Fact(
             DisplayName = "GenerateRegistrationTokenAsync stores the email and revokes older links"
         )]

@@ -78,14 +78,20 @@ public class TokenService : ITokenService
 
     public Task<Token> GetValidTokenByHashAsync(string tokenString)
     {
-        return GetValidTokenAsync(tokenString, TokenType.MagicLink, includeUser: true);
+        // /account/auth accepts both magic-link and refresh tokens.
+        // Registration tokens have no user yet and must stay out of this lookup.
+        return GetValidTokenAsync(
+            tokenString,
+            [TokenType.MagicLink, TokenType.Refresh],
+            includeUser: true
+        );
     }
 
     public async Task<Token> GetValidRegistrationTokenAsync(string tokenString)
     {
         var foundToken = await GetValidTokenAsync(
             tokenString,
-            TokenType.Registration,
+            [TokenType.Registration],
             includeUser: false
         );
 
@@ -99,13 +105,16 @@ public class TokenService : ITokenService
 
     private async Task<Token> GetValidTokenAsync(
         string tokenString,
-        TokenType type,
+        TokenType[] types,
         bool includeUser
     )
     {
         var tokenHash = _hashService.Hash(tokenString);
         var query = _context.Tokens.Where(t =>
-            t.TokenHash == tokenHash && !t.Revoked && !Token.Expired(t.Expires) && t.Type == type
+            t.TokenHash == tokenHash
+            && !t.Revoked
+            && !Token.Expired(t.Expires)
+            && types.Contains(t.Type)
         );
 
         if (includeUser)
