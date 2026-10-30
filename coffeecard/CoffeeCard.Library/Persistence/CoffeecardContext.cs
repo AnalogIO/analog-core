@@ -112,6 +112,15 @@ namespace CoffeeCard.Library.Persistence
 
             modelBuilder.Entity<Token>().Property(t => t.Email).HasMaxLength(254);
 
+            // At most one usable registration link per email. Revoked and
+            // non-registration tokens are excluded from the constraint.
+            modelBuilder
+                .Entity<Token>()
+                .HasIndex(t => t.Email)
+                .HasDatabaseName("IX_Tokens_Email_ActiveRegistration")
+                .IsUnique()
+                .HasFilter("[Type] = 'Registration' AND [Revoked] = 0");
+
             modelBuilder
                 .HasDbFunction(typeof(Token).GetMethod(nameof(Token.Expired)))
                 .HasSchema("dbo")

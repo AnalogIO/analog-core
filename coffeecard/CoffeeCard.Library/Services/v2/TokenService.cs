@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Models.Entities;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoffeeCard.Library.Services.v2;
@@ -43,6 +44,34 @@ public class TokenService : ITokenService
 
     public async Task<string> GenerateRegistrationTokenAsync(string email)
     {
+        const int maxAttempts = 3;
+
+        for (var attempt = 1; ; attempt++)
+        {
+            var registrationToken = Guid.NewGuid().ToString();
+            var token = new Token(_hashService.Hash(registrationToken), TokenType.Registration)
+            {
+                Email = email,
+            };
+
+            try
+            {
+                await GenerateRegistrationTokenOnceAsync(token, email);
+                return registrationToken;
+            }
+            catch (DbUpdateException exception)
+                when (attempt < maxAttempts && IsUniqueConstraintViolation(exception))
+            {
+                // A concurrent request inserted a newer link first. Drop the
+                // failed insert and try again; the next attempt revokes the
+                // winner so only the newest link remains usable.
+                _context.Entry(token).State = EntityState.Detached;
+            }
+        }
+    }
+
+    private async Task GenerateRegistrationTokenOnceAsync(Token token, string email)
+    {
         // Only the newest link should work. This also prevents an old link from
         // being usable after the user requests a new one.
         var previousTokensQuery = _context.Tokens.Where(t =>
@@ -51,29 +80,35 @@ public class TokenService : ITokenService
 
         if (_context.Database.IsRelational())
         {
+            // Revocation and insertion must commit together. The filtered unique
+            // index on active registration tokens prevents a concurrent request
+            // from leaving two usable links.
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+
             await previousTokensQuery.ExecuteUpdateAsync(t =>
-                t.SetProperty(token => token.Revoked, true)
+                t.SetProperty(previous => previous.Revoked, true)
             );
+
+            _context.Tokens.Add(token);
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+            return;
         }
-        else
+
+        // The in-memory provider supports neither transactions nor ExecuteUpdate.
+        foreach (var previousToken in await previousTokensQuery.ToListAsync())
         {
-            // The in-memory provider does not support ExecuteUpdate.
-            foreach (var previousToken in await previousTokensQuery.ToListAsync())
-            {
-                previousToken.Revoked = true;
-            }
+            previousToken.Revoked = true;
         }
 
-        var registrationToken = Guid.NewGuid().ToString();
-        _context.Tokens.Add(
-            new Token(_hashService.Hash(registrationToken), TokenType.Registration)
-            {
-                Email = email,
-            }
-        );
-
+        _context.Tokens.Add(token);
         await _context.SaveChangesAsync();
-        return registrationToken;
+    }
+
+    private static bool IsUniqueConstraintViolation(DbUpdateException exception)
+    {
+        // SQL Server reports duplicate keys for unique indexes as 2601/2627.
+        return exception.InnerException is SqlException { Number: 2601 or 2627 };
     }
 
     public Task<Token> GetValidTokenByHashAsync(string tokenString)

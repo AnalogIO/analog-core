@@ -313,6 +313,11 @@ namespace CoffeeCard.Library.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Tokens_Email_ActiveRegistration")
+                        .HasFilter("[Type] = 'Registration' AND [Revoked] = 0");
+
                     b.HasIndex("TokenHash");
 
                     b.HasIndex("UserId");

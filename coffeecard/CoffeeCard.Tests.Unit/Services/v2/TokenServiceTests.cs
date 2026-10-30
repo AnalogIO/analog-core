@@ -229,6 +229,39 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             Assert.Single(tokens.Where(t => !t.Revoked));
         }
 
+        [Fact(DisplayName = "The database rejects a second active registration link for an email")]
+        public async Task RegistrationTokenIndex_RejectsSecondActiveLinkForSameEmail()
+        {
+            // Arrange
+            const string email = "new@test.test";
+
+            await using var connection = new SqliteConnection("DataSource=:memory:");
+            await connection.OpenAsync();
+
+            var options = new DbContextOptionsBuilder<CoffeeCardContext>()
+                .UseSqlite(connection)
+                .Options;
+
+            await using var context = new CoffeeCardContext(
+                options,
+                new DatabaseSettings { SchemaName = "main" },
+                new EnvironmentSettings
+                {
+                    EnvironmentType = EnvironmentType.Test,
+                    MinAppVersion = "2.1.0",
+                    DeploymentUrl = "test",
+                }
+            );
+            await context.Database.EnsureCreatedAsync();
+
+            context.Tokens.Add(new Token("first", TokenType.Registration) { Email = email });
+            await context.SaveChangesAsync();
+
+            // Act & Assert
+            context.Tokens.Add(new Token("second", TokenType.Registration) { Email = email });
+            await Assert.ThrowsAsync<DbUpdateException>(() => context.SaveChangesAsync());
+        }
+
         [Fact(DisplayName = "GetValidRegistrationTokenAsync rejects a token of another type")]
         public async Task GetValidRegistrationTokenAsync_RejectsTokenOfAnotherType()
         {
