@@ -50,6 +50,8 @@ namespace CoffeeCard.Library.Persistence
                 .Entity<MenuItemProduct>()
                 .HasKey(mip => new { mip.MenuItemId, mip.ProductId });
 
+            modelBuilder.Entity<Programme>().Property(p => p.IsActive).HasDefaultValue(true);
+
             modelBuilder
                 .Entity<MenuItem>()
                 .HasMany(mi => mi.AssociatedProducts)
