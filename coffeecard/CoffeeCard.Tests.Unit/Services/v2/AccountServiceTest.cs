@@ -454,6 +454,41 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             Assert.Equal(StatusCodes.Status400BadRequest, exception.StatusCode);
         }
 
+        [Fact(DisplayName = "UpdateAccount allows the current inactive programme")]
+        public async Task UpdateAccountAllowsCurrentInactiveProgramme()
+        {
+            // Arrange
+            var inactiveProgramme = ProgrammeBuilder.Simple().WithId(2).WithIsActive(false).Build();
+            var user = UserBuilder.DefaultCustomer().WithProgramme(inactiveProgramme).Build();
+            var updateUserRequest = new UpdateUserRequest
+            {
+                ProgrammeId = inactiveProgramme.Id,
+                Name = "Updated Name",
+            };
+
+            using var context = CreateTestCoffeeCardContext();
+            context.Users.Add(user);
+            context.Programmes.Add(inactiveProgramme);
+            await context.SaveChangesAsync();
+
+            var accountService = new AccountService(
+                context,
+                new Mock<Library.Services.ITokenService>().Object,
+                new Mock<Library.Services.IEmailService>().Object,
+                new Mock<Library.Services.v2.IEmailService>().Object,
+                new Mock<Library.Services.v2.ITokenService>().Object,
+                new Mock<IHashService>().Object,
+                NullLogger<AccountService>.Instance
+            );
+
+            // Act
+            var updatedUser = await accountService.UpdateAccountAsync(user, updateUserRequest);
+
+            // Assert
+            Assert.Equal("Updated Name", updatedUser.Name);
+            Assert.Equal(inactiveProgramme.Id, updatedUser.ProgrammeId);
+        }
+
         [Fact(DisplayName = "RequestAnonymization sends email")]
         public async Task RequestAnonymizationSendsEmail()
         {

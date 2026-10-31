@@ -152,7 +152,7 @@ namespace CoffeeCard.Library.Services.v2
                 var programme = _context.Programmes.FirstOrDefault(x =>
                     x.Id == updateUserRequest.ProgrammeId
                 );
-                if (programme == null || !programme.IsActive)
+                if (programme == null || (!programme.IsActive && programme.Id != user.ProgrammeId))
                     throw new ApiException(
                         $"No active programme with id {updateUserRequest.ProgrammeId} exists!",
                         400

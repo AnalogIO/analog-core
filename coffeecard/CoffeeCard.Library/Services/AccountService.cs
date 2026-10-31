@@ -158,9 +158,9 @@ namespace CoffeeCard.Library.Services
             var hashedPassword = _hashService.Hash(password + salt);
 
             var chosenProgramme = _context.Programmes.FirstOrDefault(x => x.Id == programme);
-            if (chosenProgramme == null)
+            if (chosenProgramme == null || !chosenProgramme.IsActive)
                 throw new ApiException(
-                    $"No programme found with the id: {programme}",
+                    $"No active programme found with the id: {programme}",
                     StatusCodes.Status400BadRequest
                 );
 

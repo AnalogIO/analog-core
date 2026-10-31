@@ -551,6 +551,35 @@ namespace CoffeeCard.Tests.Unit.Services
             };
         }
 
+        [Fact(DisplayName = "RegisterAccount rejects an inactive programme")]
+        public async Task RegisterAccountRejectsInactiveProgramme()
+        {
+            // Arrange
+            var inactiveProgramme = ProgrammeBuilder.Simple().WithId(1).WithIsActive(false).Build();
+            AssertionContext.Programmes.Add(inactiveProgramme);
+            await AssertionContext.SaveChangesAsync();
+
+            var accountService = new AccountService(
+                AssertionContext,
+                _environmentSettings,
+                new Mock<ITokenService>().Object,
+                new Mock<IEmailService>().Object,
+                new Mock<IHashService>().Object,
+                new Mock<IHttpContextAccessor>().Object,
+                new Mock<ILoginLimiter>().Object,
+                _loginLimiterSettings,
+                NullLogger<AccountService>.Instance
+            );
+
+            // Act
+            var exception = await Assert.ThrowsAsync<ApiException>(() =>
+                accountService.RegisterAccountAsync("name", "email", "password")
+            );
+
+            // Assert
+            Assert.Equal(StatusCodes.Status400BadRequest, exception.StatusCode);
+        }
+
         private static string WriteTokenString(IEnumerable<Claim> claims)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
