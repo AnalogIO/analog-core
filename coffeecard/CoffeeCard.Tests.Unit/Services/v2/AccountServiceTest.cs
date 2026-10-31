@@ -612,6 +612,43 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             );
         }
 
+        [Fact(
+            DisplayName = "SendMagicLink sends a magic link to an existing user with a long email"
+        )]
+        public async Task SendMagicLinkSendsMagicLinkToExistingUserWithLongEmail()
+        {
+            // Arrange
+            var email = new string('a', 300) + "@x.dk";
+            var user = UserBuilder.DefaultCustomer().WithEmail(email).Build();
+
+            await using var context = CreateTestCoffeeCardContext();
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
+
+            var tokenService = new Mock<Library.Services.v2.ITokenService>();
+            tokenService.Setup(t => t.GenerateMagicLinkToken(user)).ReturnsAsync("magicToken");
+
+            var emailService = new Mock<Library.Services.v2.IEmailService>();
+            var accountService = new Library.Services.v2.AccountService(
+                context,
+                new Mock<Library.Services.ITokenService>().Object,
+                new Mock<Library.Services.IEmailService>().Object,
+                emailService.Object,
+                tokenService.Object,
+                new Mock<IHashService>().Object,
+                NullLogger<AccountService>.Instance
+            );
+
+            // Act
+            await accountService.SendMagicLinkEmail(email, LoginType.App);
+
+            // Assert
+            emailService.Verify(
+                e => e.SendMagicLink(user, "magicToken", LoginType.App),
+                Times.Once
+            );
+        }
+
         [Fact(DisplayName = "SendMagicLink does not send mail when user is not found")]
         public async Task SendMagicLinkDoesNotSendMailWhenUserIsNotFound()
         {

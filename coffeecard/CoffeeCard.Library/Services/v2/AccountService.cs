@@ -352,21 +352,15 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task SendMagicLinkEmail(string email, LoginType loginType)
         {
-            // Token.Email is limited to 254 characters. A longer address cannot
-            // have an account or a registration token, and allowing it through
-            // would fail when the token is persisted.
-            if (email.Length > 254)
-            {
-                return;
-            }
-
             var user = await _context.Users.Where(u => u.Email == email).FirstOrDefaultAsync();
             if (user is null)
             {
                 // Never reveal whether the email is registered: the caller gets the
                 // same response either way. Registration links are only supported
                 // by the app; other clients keep the old silent no-op behaviour.
-                if (loginType == LoginType.App)
+                // Token.Email is limited to 254 characters, so an overlong address
+                // cannot be persisted as a registration token.
+                if (loginType == LoginType.App && email.Length <= 254)
                 {
                     var registrationToken = await _tokenServiceV2.GenerateRegistrationTokenAsync(
                         email
