@@ -539,7 +539,7 @@ namespace CoffeeCard.WebApi
                 )
                 {
                     options.SwaggerEndpoint(
-                        $"/swagger/{apiVersion.GroupName}/swagger.json",
+                        $"../swagger/{apiVersion.GroupName}/swagger.json",
                         $"CoffeeCard API {apiVersion.GroupName}"
                     );
                 }
