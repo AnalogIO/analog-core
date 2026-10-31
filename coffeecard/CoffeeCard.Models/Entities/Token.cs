@@ -34,6 +34,15 @@ namespace CoffeeCard.Models.Entities
         public User? User { get; set; }
 
         /// <summary>
+        /// Email address associated with a registration token.
+        /// Registration tokens exist before the user account does, so they cannot
+        /// reference a user yet. Null for every other token type.
+        /// </summary>
+        [MaxLength(254)]
+        [EmailAddress]
+        public string? Email { get; set; }
+
+        /// <summary>
         /// The type of token
         /// </summary>
         /// <example>
