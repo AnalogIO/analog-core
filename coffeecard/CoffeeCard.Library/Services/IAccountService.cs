@@ -13,7 +13,7 @@ namespace CoffeeCard.Library.Services
         /// <summary>
         /// Register an account. Sends out an verification email to provided email
         /// </summary>
-        /// <param name="programme">Programme Id of ITU Study programme. Default value is 1 (for SWU) for backwards compability</param>
+        /// <param name="programme">Programme Id of ITU Study programme. When omitted, the legacy default (1) is used, falling back to the first active programme if 1 is inactive. An explicitly provided programme must be active.</param>
         /// <param name="name">Username, to be created</param>
         /// <param name="password">Un-hashed password</param>
         /// <param name="email">Email of the user</param>
@@ -21,7 +21,7 @@ namespace CoffeeCard.Library.Services
             string name,
             string email,
             string password,
-            int programme = 1
+            int? programme = null
         );
         string Login(string email, string password, string version);
         Task<bool> VerifyRegistration(string token);

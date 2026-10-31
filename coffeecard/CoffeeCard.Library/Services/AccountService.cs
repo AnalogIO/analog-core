@@ -132,7 +132,7 @@ namespace CoffeeCard.Library.Services
             string name,
             string email,
             string password,
-            int programme = 1
+            int? programme = null
         )
         {
             _logger.LogInformation(
@@ -158,17 +158,24 @@ namespace CoffeeCard.Library.Services
             var hashedPassword = _hashService.Hash(password + salt);
 
             // The v1 endpoint does not let clients choose a programme; it
-            // historically assigned programme 1. If that default has been
-            // deactivated, keep legacy registration working by falling back to
-            // the first active programme instead of rejecting every request.
-            var chosenProgramme = _context.Programmes.FirstOrDefault(x =>
-                x.Id == programme && x.IsActive
-            );
-            if (chosenProgramme == null && programme == 1)
+            // historically assigned programme 1. If the call omits the
+            // programme, fall back to the first active programme when the
+            // legacy default has been deactivated. An explicitly requested
+            // programme must be active.
+            Programme chosenProgramme;
+            if (programme is int requestedProgramme)
             {
-                chosenProgramme = _context
-                    .Programmes.OrderBy(x => x.SortPriority)
-                    .FirstOrDefault(x => x.IsActive);
+                chosenProgramme = _context.Programmes.FirstOrDefault(x =>
+                    x.Id == requestedProgramme && x.IsActive
+                );
+            }
+            else
+            {
+                chosenProgramme =
+                    _context.Programmes.FirstOrDefault(x => x.Id == 1 && x.IsActive)
+                    ?? _context
+                        .Programmes.OrderBy(x => x.SortPriority)
+                        .FirstOrDefault(x => x.IsActive);
             }
 
             if (chosenProgramme == null)

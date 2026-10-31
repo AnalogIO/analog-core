@@ -677,6 +677,48 @@ namespace CoffeeCard.Tests.Unit.Services
             Assert.Equal(StatusCodes.Status400BadRequest, exception.StatusCode);
         }
 
+        [Fact(
+            DisplayName = "RegisterAccount rejects an explicitly requested inactive legacy programme"
+        )]
+        public async Task RegisterAccountRejectsExplicitlyRequestedInactiveLegacyProgramme()
+        {
+            // Arrange
+            var inactiveLegacyDefault = ProgrammeBuilder
+                .Simple()
+                .WithId(1)
+                .WithSortPriority(1)
+                .WithIsActive(false)
+                .Build();
+            var activeProgramme = ProgrammeBuilder
+                .Simple()
+                .WithId(2)
+                .WithSortPriority(2)
+                .WithIsActive(true)
+                .Build();
+            AssertionContext.Programmes.AddRange(inactiveLegacyDefault, activeProgramme);
+            await AssertionContext.SaveChangesAsync();
+
+            var accountService = new AccountService(
+                AssertionContext,
+                _environmentSettings,
+                new Mock<ITokenService>().Object,
+                new Mock<IEmailService>().Object,
+                new Mock<IHashService>().Object,
+                new Mock<IHttpContextAccessor>().Object,
+                new Mock<ILoginLimiter>().Object,
+                _loginLimiterSettings,
+                NullLogger<AccountService>.Instance
+            );
+
+            // Act
+            var exception = await Assert.ThrowsAsync<ApiException>(() =>
+                accountService.RegisterAccountAsync("name", "explicit@test.test", "password", 1)
+            );
+
+            // Assert
+            Assert.Equal(StatusCodes.Status400BadRequest, exception.StatusCode);
+        }
+
         private static string WriteTokenString(IEnumerable<Claim> claims)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
