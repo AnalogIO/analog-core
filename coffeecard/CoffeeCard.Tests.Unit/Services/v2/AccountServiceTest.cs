@@ -676,6 +676,40 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             );
         }
 
+        [Fact(DisplayName = "SendMagicLink ignores an email longer than 254 characters")]
+        public async Task SendMagicLinkIgnoresEmailLongerThan254Characters()
+        {
+            // Arrange
+            var email = new string('a', 250) + "@x.dk";
+            await using var context = CreateTestCoffeeCardContext();
+
+            var emailService = new Mock<Library.Services.v2.IEmailService>();
+            var tokenService = new Mock<Library.Services.v2.ITokenService>();
+
+            var accountService = new Library.Services.v2.AccountService(
+                context,
+                new Mock<Library.Services.ITokenService>().Object,
+                new Mock<Library.Services.IEmailService>().Object,
+                emailService.Object,
+                tokenService.Object,
+                new Mock<IHashService>().Object,
+                NullLogger<AccountService>.Instance
+            );
+
+            // Act
+            await accountService.SendMagicLinkEmail(email, LoginType.App);
+
+            // Assert
+            tokenService.Verify(
+                t => t.GenerateRegistrationTokenAsync(It.IsAny<string>()),
+                Times.Never
+            );
+            emailService.Verify(
+                e => e.SendRegistrationLink(It.IsAny<string>(), It.IsAny<string>()),
+                Times.Never
+            );
+        }
+
         [Fact(
             DisplayName = "CompleteRegistration rejects a name that becomes empty after escaping"
         )]

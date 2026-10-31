@@ -352,6 +352,14 @@ namespace CoffeeCard.Library.Services.v2
 
         public async Task SendMagicLinkEmail(string email, LoginType loginType)
         {
+            // Token.Email is limited to 254 characters. A longer address cannot
+            // have an account or a registration token, and allowing it through
+            // would fail when the token is persisted.
+            if (email.Length > 254)
+            {
+                return;
+            }
+
             var user = await _context.Users.Where(u => u.Email == email).FirstOrDefaultAsync();
             if (user is null)
             {
