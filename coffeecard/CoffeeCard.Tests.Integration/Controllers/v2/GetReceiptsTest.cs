@@ -1,32 +1,66 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Bogus;
 using CoffeeCard.Models.Entities;
-using CoffeeCard.Tests.ApiClient.Generated;
 using CoffeeCard.Tests.ApiClient.v2.Generated;
 using CoffeeCard.Tests.Common.Builders;
 using CoffeeCard.Tests.Integration.WebApplication;
 using CoffeeCard.WebApi;
 using Xunit;
+using PurchaseReceipt = CoffeeCard.Models.DataTransferObjects.v2.Receipts.PurchaseReceipt;
 using PurchaseStatus = CoffeeCard.Models.DataTransferObjects.v2.Purchase.PurchaseStatus;
+using ReceiptResponse = CoffeeCard.Models.DataTransferObjects.v2.Receipts.ReceiptResponse;
+using UsedTicketReceipt = CoffeeCard.Models.DataTransferObjects.v2.Receipts.UsedTicketReceipt;
+using VoucherReceipt = CoffeeCard.Models.DataTransferObjects.v2.Receipts.VoucherReceipt;
 
 namespace CoffeeCard.Tests.Integration.Controllers.v2
 {
     public class GetReceiptsTest(CustomWebApplicationFactory<Startup> factory)
         : BaseIntegrationTest(factory)
     {
+        private static readonly JsonSerializerOptions ReceiptJsonOptions = new(
+            JsonSerializerDefaults.Web
+        )
+        {
+            Converters = { new JsonStringEnumConverter() },
+        };
+
+        /// <summary>
+        /// Reads the receipt response directly instead of through the NSwag-generated
+        /// client. NSwag 14 generates a collection of the first oneOf type for
+        /// polymorphic lists, so it cannot represent the receipt union.
+        /// </summary>
+        private async Task<ReceiptResponse> GetReceiptsAsync(
+            ReceiptType type,
+            int? batchSize,
+            string continuationToken
+        )
+        {
+            var query = $"/api/v2/receipts?Type={type}";
+            if (batchSize.HasValue)
+                query += $"&BatchSize={batchSize.Value}";
+            if (!string.IsNullOrEmpty(continuationToken))
+                query += $"&ContinuationToken={Uri.EscapeDataString(continuationToken)}";
+
+            using var response = await HttpClient.GetAsync(query);
+            response.EnsureSuccessStatusCode();
+            var json = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<ReceiptResponse>(json, ReceiptJsonOptions)!;
+        }
+
         [Fact]
         public async Task GetReceipts_returns_401_when_not_authenticated()
         {
             RemoveRequestHeaders();
 
-            var exception = await Assert.ThrowsAsync<ApiException>(async () =>
-                await CoffeeCardClientV2.Receipt_GetReceiptsAsync(ReceiptType.All, 20, null)
-            );
+            using var response = await HttpClient.GetAsync("/api/v2/receipts?Type=All");
 
-            Assert.Equal(401, exception.StatusCode);
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
         [Fact]
@@ -34,11 +68,7 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2
         {
             await GetAuthenticatedUserAsync();
 
-            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync(
-                ReceiptType.All,
-                20,
-                null
-            );
+            var response = await GetReceiptsAsync(ReceiptType.All, 20, null);
 
             Assert.NotNull(response);
             Assert.Empty(response.Receipts);
@@ -65,11 +95,7 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2
             await Context.Purchases.AddAsync(purchase);
             await Context.SaveChangesAsync();
 
-            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync(
-                ReceiptType.Purchase,
-                20,
-                null
-            );
+            var response = await GetReceiptsAsync(ReceiptType.Purchase, 20, null);
 
             Assert.Single(response.Receipts);
             var receipt = Assert.IsType<PurchaseReceipt>(response.Receipts.First());
@@ -103,18 +129,17 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2
             await Context.Purchases.AddAsync(purchase);
             await Context.SaveChangesAsync();
 
-            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync(
-                ReceiptType.UsedTicket,
-                20,
-                null
-            );
+            var response = await GetReceiptsAsync(ReceiptType.UsedTicket, 20, null);
 
             Assert.Single(response.Receipts);
             var receipt = Assert.IsType<UsedTicketReceipt>(response.Receipts.First());
             Assert.Equal(purchase.ProductName, receipt.ProductName);
 
             // We compare the string representations of the dates to avoid issues with precision loss (nanoseconds) when converting between DateTime and DateTimeOffset
-            Assert.Equal(swipeDate.ToString("F"), receipt.SwipeDate.UtcDateTime.ToString("F"));
+            Assert.Equal(
+                swipeDate.ToString("F"),
+                receipt.SwipeDate.ToUniversalTime().ToString("F")
+            );
         }
 
         [Fact]
@@ -153,18 +178,14 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2
             await Context.Purchases.AddAsync(purchase);
             await Context.SaveChangesAsync();
 
-            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync(
-                ReceiptType.Voucher,
-                20,
-                null
-            );
+            var response = await GetReceiptsAsync(ReceiptType.Voucher, 20, null);
 
             Assert.Single(response.Receipts);
             var receipt = Assert.IsType<VoucherReceipt>(response.Receipts.First());
             Assert.Equal(purchase.ProductName, receipt.ProductName);
             Assert.Equal("TESTVOUCHER", receipt.Code);
             Assert.Equal(purchase.NumberOfTickets, receipt.Quantity);
-            Assert.Equal(redeemDate, receipt.RedeemDate.UtcDateTime);
+            Assert.Equal(redeemDate, receipt.RedeemDate.ToUniversalTime());
         }
 
         [Fact]
@@ -183,11 +204,7 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2
             await Context.Purchases.AddRangeAsync(otherPurchase, myPurchase);
             await Context.SaveChangesAsync();
 
-            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync(
-                ReceiptType.Purchase,
-                20,
-                null
-            );
+            var response = await GetReceiptsAsync(ReceiptType.Purchase, 20, null);
 
             Assert.Single(response.Receipts);
             var receipt = Assert.IsType<PurchaseReceipt>(response.Receipts.First());
@@ -210,11 +227,7 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2
 
             await Context.SaveChangesAsync();
 
-            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync(
-                ReceiptType.Purchase,
-                3,
-                null
-            );
+            var response = await GetReceiptsAsync(ReceiptType.Purchase, 3, null);
 
             Assert.Equal(3, response.Receipts.Count);
         }
@@ -235,11 +248,7 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2
 
             await Context.SaveChangesAsync();
 
-            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync(
-                ReceiptType.Purchase,
-                null,
-                null
-            );
+            var response = await GetReceiptsAsync(ReceiptType.Purchase, null, null);
 
             Assert.Equal(20, response.Receipts.Count);
         }
@@ -261,16 +270,12 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2
             await Context.SaveChangesAsync();
 
             // Get the first batch of 2
-            var firstPage = await CoffeeCardClientV2.Receipt_GetReceiptsAsync(
-                ReceiptType.Purchase,
-                2,
-                null
-            );
+            var firstPage = await GetReceiptsAsync(ReceiptType.Purchase, 2, null);
             Assert.Equal(2, firstPage.Receipts.Count);
             Assert.NotNull(firstPage.ContinuationToken);
 
             // Use the continuation token to get the next batch
-            var secondPage = await CoffeeCardClientV2.Receipt_GetReceiptsAsync(
+            var secondPage = await GetReceiptsAsync(
                 ReceiptType.Purchase,
                 2,
                 firstPage.ContinuationToken
@@ -335,11 +340,7 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2
             await Context.Vouchers.AddAsync(voucher);
             await Context.SaveChangesAsync();
 
-            var response = await CoffeeCardClientV2.Receipt_GetReceiptsAsync(
-                ReceiptType.All,
-                20,
-                null
-            );
+            var response = await GetReceiptsAsync(ReceiptType.All, 20, null);
 
             Assert.Equal(3, response.Receipts.Count);
             Assert.Single(response.Receipts.OfType<PurchaseReceipt>());
@@ -352,15 +353,11 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2
         {
             await GetAuthenticatedUserAsync();
 
-            var exception = await Assert.ThrowsAsync<ApiException>(async () =>
-                await CoffeeCardClientV2.Receipt_GetReceiptsAsync(
-                    ReceiptType.All,
-                    20,
-                    "not-a-valid-token"
-                )
+            using var response = await HttpClient.GetAsync(
+                "/api/v2/receipts?Type=All&ContinuationToken=not-a-valid-token"
             );
 
-            Assert.Equal(400, exception.StatusCode);
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
     }
 }

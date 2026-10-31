@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.MobilePay.Service.v2;
@@ -31,6 +31,7 @@ public class HealthController(
     /// <returns>pong</returns>
     /// <response code="200">Successful request</response>
     [HttpGet("ping")]
+    [Produces("text/plain")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     public IActionResult Ping()
     {
