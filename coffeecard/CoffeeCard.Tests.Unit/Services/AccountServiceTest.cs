@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Common.Errors;
+using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.Entities;
@@ -34,6 +35,21 @@ namespace CoffeeCard.Tests.Unit.Services
             MaximumLoginAttemptsWithinTimeOut = 5,
             TimeOutPeriodInSeconds = 5,
         };
+
+        private CoffeeCardContext CreateTestCoffeeCardContext()
+        {
+            var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseSqlite(
+                "DataSource=:memory:"
+            );
+            var context = new CoffeeCardContext(
+                builder.Options,
+                new DatabaseSettings { SchemaName = "main" },
+                new EnvironmentSettings { EnvironmentType = EnvironmentType.Test }
+            );
+            context.Database.OpenConnection();
+            context.Database.EnsureCreated();
+            return context;
+        }
 
         [Fact(DisplayName = "RecoverUser given malformed token returns false")]
         public async Task RecoverUserGivenMalformedTokenReturnsFalse()
@@ -598,8 +614,9 @@ namespace CoffeeCard.Tests.Unit.Services
                 .WithSortPriority(2)
                 .WithIsActive(true)
                 .Build();
-            AssertionContext.Programmes.AddRange(inactiveDefault, activeFallback);
-            await AssertionContext.SaveChangesAsync();
+            using var context = CreateTestCoffeeCardContext();
+            context.Programmes.AddRange(inactiveDefault, activeFallback);
+            await context.SaveChangesAsync();
 
             var hashService = new Mock<IHashService>();
             hashService.Setup(h => h.GenerateSalt()).Returns("salt");
@@ -618,7 +635,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 .Returns("verificationToken");
 
             var accountService = new AccountService(
-                AssertionContext,
+                context,
                 _environmentSettings,
                 tokenService.Object,
                 emailService.Object,
@@ -633,7 +650,7 @@ namespace CoffeeCard.Tests.Unit.Services
             await accountService.RegisterAccountAsync("name", "fallback@test.test", "password");
 
             // Assert
-            var user = AssertionContext.Users.Single(u => u.Email == "fallback@test.test");
+            var user = context.Users.Single(u => u.Email == "fallback@test.test");
             Assert.Equal(activeFallback.Id, user.ProgrammeId);
         }
 

@@ -24,9 +24,9 @@ namespace CoffeeCard.Tests.Unit.Services.v2
     {
         private CoffeeCardContext CreateTestCoffeeCardContext()
         {
-            // Registration consumes the token in a transaction. Use SQLite rather
-            // than the in-memory provider, which does not support transactions or
-            // ExecuteUpdate.
+            // Registration consumes the token and stores the user/profile atomically.
+            // Use SQLite rather than the in-memory provider, which does not support
+            // transactions or ExecuteUpdate.
             var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseSqlite(
                 "DataSource=:memory:"
             );
@@ -166,6 +166,40 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             Assert.Equal(expected.Programme.Id, result.Programme.Id);
             Assert.Equal(expected.Email, result.Email);
             Assert.Equal(expected.Password, result.Password);
+        }
+
+        [Fact(
+            DisplayName = "RegisterAccount assigns profile icon and background color from user id"
+        )]
+        public async Task RegisterAccountAssignsProfileIconAndBackgroundColorFromUserId()
+        {
+            // Arrange
+            var programme = ProgrammeBuilder.Simple().Build();
+
+            using var context = CreateTestCoffeeCardContext();
+            context.Programmes.Add(programme);
+            await context.SaveChangesAsync();
+
+            var hashServiceMock = new Mock<IHashService>();
+            hashServiceMock.Setup(h => h.GenerateSalt()).Returns("");
+            hashServiceMock.Setup(h => h.Hash(It.IsAny<String>())).Returns("");
+
+            // Act
+            var accountService = new AccountService(
+                context,
+                new Mock<Library.Services.ITokenService>().Object,
+                new Mock<Library.Services.IEmailService>().Object,
+                new Mock<Library.Services.v2.IEmailService>().Object,
+                new Mock<Library.Services.v2.ITokenService>().Object,
+                hashServiceMock.Object,
+                NullLogger<AccountService>.Instance
+            );
+            var result = await accountService.RegisterAccountAsync("name", "email", "pass", 1);
+
+            // Assert
+            // Id is 1: icon index = 1 % enum length, background color index = 1 % enum length
+            Assert.Equal(ProfileIcon.MokkaPot, result.ProfileIcon);
+            Assert.Equal(ProfileBackgroundColor.MintGreen, result.ProfileBackgroundColor);
         }
 
         [Fact(
@@ -358,6 +392,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             await context.SaveChangesAsync();
 
             var hashServiceMock = new Mock<IHashService>();
+            hashServiceMock.Setup(h => h.GenerateSalt()).Returns("salt");
             hashServiceMock.Setup(h => h.Hash(It.IsAny<String>())).Returns(password);
             hashServiceMock.Setup(h => h.GenerateSalt()).Returns("salt");
             var hashService = hashServiceMock.Object;
@@ -394,6 +429,88 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 Password = "password",
                 PrivacyActivated = false,
                 ProgrammeId = 2, // No prgramme with Id
+            };
+            var user = UserBuilder.DefaultCustomer().WithProgramme(programme).Build();
+
+            using var context = CreateTestCoffeeCardContext();
+            context.Users.Add(user);
+
+            context.Programmes.Add(programme);
+            await context.SaveChangesAsync();
+
+            // Act
+            var accountService = new AccountService(
+                context,
+                new Mock<Library.Services.ITokenService>().Object,
+                new Mock<Library.Services.IEmailService>().Object,
+                new Mock<Library.Services.v2.IEmailService>().Object,
+                new Mock<Library.Services.v2.ITokenService>().Object,
+                new Mock<IHashService>().Object,
+                NullLogger<AccountService>.Instance
+            );
+
+            // Assert
+            var exception = await Assert.ThrowsAsync<ApiException>(async () =>
+                await accountService.UpdateAccountAsync(user, updateUserRequest)
+            );
+            Assert.Equal(StatusCodes.Status400BadRequest, exception.StatusCode);
+        }
+
+        [Theory(DisplayName = "UpdateAccount updates profile icon and background color")]
+        [InlineData(ProfileIcon.Teabag, ProfileBackgroundColor.SteelBlue)]
+        [InlineData(ProfileIcon.CoffeeCup, ProfileBackgroundColor.Aqua)]
+        [InlineData(ProfileIcon.PortaFilter, ProfileBackgroundColor.DustyRose)]
+        public async Task UpdateAccountUpdatesProfileIconAndBackgroundColor(
+            ProfileIcon profileIcon,
+            ProfileBackgroundColor profileBackgroundColor
+        )
+        {
+            // Arrange
+            var programme = ProgrammeBuilder.Simple().Build();
+            var updateUserRequest = new UpdateUserRequest()
+            {
+                ProfileIcon = profileIcon,
+                ProfileBackgroundColor = profileBackgroundColor,
+            };
+            var user = UserBuilder.DefaultCustomer().WithProgramme(programme).Build();
+
+            using var context = CreateTestCoffeeCardContext();
+            context.Users.Add(user);
+
+            context.Programmes.Add(programme);
+            await context.SaveChangesAsync();
+
+            // Act
+            var accountService = new AccountService(
+                context,
+                new Mock<Library.Services.ITokenService>().Object,
+                new Mock<Library.Services.IEmailService>().Object,
+                new Mock<Library.Services.v2.IEmailService>().Object,
+                new Mock<Library.Services.v2.ITokenService>().Object,
+                new Mock<IHashService>().Object,
+                NullLogger<AccountService>.Instance
+            );
+            var result = await accountService.UpdateAccountAsync(user, updateUserRequest);
+
+            // Assert
+            Assert.Equal(profileIcon, result.ProfileIcon);
+            Assert.Equal(profileBackgroundColor, result.ProfileBackgroundColor);
+        }
+
+        [Theory(DisplayName = "UpdateAccount throws ApiException on invalid profile values")]
+        [InlineData(ProfileIcon.MilkCarton, (ProfileBackgroundColor)999)]
+        [InlineData((ProfileIcon)999, ProfileBackgroundColor.MossGreen)]
+        public async Task UpdateAccountThrowsApiExceptionOnInvalidProfileValues(
+            ProfileIcon? profileIcon,
+            ProfileBackgroundColor? profileBackgroundColor
+        )
+        {
+            // Arrange
+            var programme = ProgrammeBuilder.Simple().Build();
+            var updateUserRequest = new UpdateUserRequest()
+            {
+                ProfileIcon = profileIcon,
+                ProfileBackgroundColor = profileBackgroundColor,
             };
             var user = UserBuilder.DefaultCustomer().WithProgramme(programme).Build();
 
