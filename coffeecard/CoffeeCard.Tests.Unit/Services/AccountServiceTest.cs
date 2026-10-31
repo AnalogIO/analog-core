@@ -580,6 +580,63 @@ namespace CoffeeCard.Tests.Unit.Services
             Assert.Equal(StatusCodes.Status400BadRequest, exception.StatusCode);
         }
 
+        [Fact(
+            DisplayName = "RegisterAccount falls back to an active programme when the legacy default is inactive"
+        )]
+        public async Task RegisterAccountFallsBackToActiveProgrammeWhenLegacyDefaultIsInactive()
+        {
+            // Arrange
+            var inactiveDefault = ProgrammeBuilder
+                .Simple()
+                .WithId(1)
+                .WithSortPriority(1)
+                .WithIsActive(false)
+                .Build();
+            var activeFallback = ProgrammeBuilder
+                .Simple()
+                .WithId(2)
+                .WithSortPriority(2)
+                .WithIsActive(true)
+                .Build();
+            AssertionContext.Programmes.AddRange(inactiveDefault, activeFallback);
+            await AssertionContext.SaveChangesAsync();
+
+            var hashService = new Mock<IHashService>();
+            hashService.Setup(h => h.GenerateSalt()).Returns("salt");
+            hashService.Setup(h => h.Hash(It.IsAny<string>())).Returns("hash");
+
+            var emailService = new Mock<IEmailService>();
+            emailService
+                .Setup(e =>
+                    e.SendRegistrationVerificationEmailAsync(It.IsAny<User>(), It.IsAny<string>())
+                )
+                .Returns(Task.CompletedTask);
+
+            var tokenService = new Mock<ITokenService>();
+            tokenService
+                .Setup(t => t.GenerateToken(It.IsAny<IEnumerable<Claim>>()))
+                .Returns("verificationToken");
+
+            var accountService = new AccountService(
+                AssertionContext,
+                _environmentSettings,
+                tokenService.Object,
+                emailService.Object,
+                hashService.Object,
+                new Mock<IHttpContextAccessor>().Object,
+                new Mock<ILoginLimiter>().Object,
+                _loginLimiterSettings,
+                NullLogger<AccountService>.Instance
+            );
+
+            // Act
+            await accountService.RegisterAccountAsync("name", "fallback@test.test", "password");
+
+            // Assert
+            var user = AssertionContext.Users.Single(u => u.Email == "fallback@test.test");
+            Assert.Equal(activeFallback.Id, user.ProgrammeId);
+        }
+
         private static string WriteTokenString(IEnumerable<Claim> claims)
         {
             var tokenHandler = new JwtSecurityTokenHandler();

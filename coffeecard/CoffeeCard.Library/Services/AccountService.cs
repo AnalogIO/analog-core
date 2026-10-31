@@ -157,10 +157,16 @@ namespace CoffeeCard.Library.Services
             var salt = _hashService.GenerateSalt();
             var hashedPassword = _hashService.Hash(password + salt);
 
-            var chosenProgramme = _context.Programmes.FirstOrDefault(x => x.Id == programme);
-            if (chosenProgramme == null || !chosenProgramme.IsActive)
+            // The v1 endpoint does not let clients choose a programme; it
+            // historically assigned programme 1. If that default has been
+            // deactivated, keep legacy registration working by falling back to
+            // the first active programme instead of rejecting every request.
+            var chosenProgramme =
+                _context.Programmes.FirstOrDefault(x => x.Id == programme && x.IsActive)
+                ?? _context.Programmes.OrderBy(x => x.SortPriority).FirstOrDefault(x => x.IsActive);
+            if (chosenProgramme == null)
                 throw new ApiException(
-                    $"No active programme found with the id: {programme}",
+                    "No active programme found",
                     StatusCodes.Status400BadRequest
                 );
 
