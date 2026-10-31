@@ -637,6 +637,46 @@ namespace CoffeeCard.Tests.Unit.Services
             Assert.Equal(activeFallback.Id, user.ProgrammeId);
         }
 
+        [Fact(DisplayName = "RegisterAccount rejects an inactive non-default programme")]
+        public async Task RegisterAccountRejectsInactiveNonDefaultProgramme()
+        {
+            // Arrange
+            var activeDefault = ProgrammeBuilder
+                .Simple()
+                .WithId(1)
+                .WithSortPriority(1)
+                .WithIsActive(true)
+                .Build();
+            var inactiveProgramme = ProgrammeBuilder
+                .Simple()
+                .WithId(2)
+                .WithSortPriority(2)
+                .WithIsActive(false)
+                .Build();
+            AssertionContext.Programmes.AddRange(activeDefault, inactiveProgramme);
+            await AssertionContext.SaveChangesAsync();
+
+            var accountService = new AccountService(
+                AssertionContext,
+                _environmentSettings,
+                new Mock<ITokenService>().Object,
+                new Mock<IEmailService>().Object,
+                new Mock<IHashService>().Object,
+                new Mock<IHttpContextAccessor>().Object,
+                new Mock<ILoginLimiter>().Object,
+                _loginLimiterSettings,
+                NullLogger<AccountService>.Instance
+            );
+
+            // Act
+            var exception = await Assert.ThrowsAsync<ApiException>(() =>
+                accountService.RegisterAccountAsync("name", "nondefault@test.test", "password", 2)
+            );
+
+            // Assert
+            Assert.Equal(StatusCodes.Status400BadRequest, exception.StatusCode);
+        }
+
         private static string WriteTokenString(IEnumerable<Claim> claims)
         {
             var tokenHandler = new JwtSecurityTokenHandler();

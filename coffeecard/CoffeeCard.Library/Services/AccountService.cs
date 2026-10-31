@@ -161,9 +161,16 @@ namespace CoffeeCard.Library.Services
             // historically assigned programme 1. If that default has been
             // deactivated, keep legacy registration working by falling back to
             // the first active programme instead of rejecting every request.
-            var chosenProgramme =
-                _context.Programmes.FirstOrDefault(x => x.Id == programme && x.IsActive)
-                ?? _context.Programmes.OrderBy(x => x.SortPriority).FirstOrDefault(x => x.IsActive);
+            var chosenProgramme = _context.Programmes.FirstOrDefault(x =>
+                x.Id == programme && x.IsActive
+            );
+            if (chosenProgramme == null && programme == 1)
+            {
+                chosenProgramme = _context
+                    .Programmes.OrderBy(x => x.SortPriority)
+                    .FirstOrDefault(x => x.IsActive);
+            }
+
             if (chosenProgramme == null)
                 throw new ApiException(
                     "No active programme found",
