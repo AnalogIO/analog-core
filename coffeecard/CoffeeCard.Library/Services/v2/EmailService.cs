@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
@@ -38,12 +38,7 @@ namespace CoffeeCard.Library.Services.v2
             );
             var message = new MimeMessage();
             var builder = RetrieveTemplate("email_magic_link_login.html");
-            var baseUri = loginType switch
-            {
-                LoginType.Shifty => _environmentSettings.ShiftyUrl,
-                LoginType.App => _environmentSettings.AnalogAppUrl,
-                _ => throw new NotImplementedException(),
-            };
+            var baseUri = BaseUriFor(loginType);
 
             var deeplink = loginType.GetDeepLink(baseUri, magicLink);
 
@@ -55,6 +50,40 @@ namespace CoffeeCard.Library.Services.v2
             message.Body = builder.ToMessageBody();
 
             await _emailSender.SendEmailAsync(message);
+        }
+
+        public async Task SendRegistrationLink(string email, string registrationToken)
+        {
+            _logger.LogInformation("Sending registration email to {email}", email);
+
+            var message = new MimeMessage();
+            var builder = RetrieveTemplate("email_magic_link_registration.html");
+
+            // Registration is app-only, so the deep link is always built for the app.
+            var deeplink = LoginType.App.GetRegistrationDeepLink(
+                _environmentSettings.AnalogAppUrl,
+                registrationToken
+            );
+
+            builder.HtmlBody = builder.HtmlBody.Replace("{email}", email);
+            builder.HtmlBody = builder.HtmlBody.Replace("{expires}", "30 minutes");
+            builder.HtmlBody = builder.HtmlBody.Replace("{deeplink}", deeplink);
+
+            message.To.Add(new MailboxAddress(email, email));
+            message.Subject = "Welcome to Analog - complete your registration";
+            message.Body = builder.ToMessageBody();
+
+            await _emailSender.SendEmailAsync(message);
+        }
+
+        private string BaseUriFor(LoginType loginType)
+        {
+            return loginType switch
+            {
+                LoginType.Shifty => _environmentSettings.ShiftyUrl,
+                LoginType.App => _environmentSettings.AnalogAppUrl,
+                _ => throw new NotImplementedException(),
+            };
         }
 
         private static BodyBuilder BuildMagicLinkEmail(
