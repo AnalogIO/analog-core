@@ -5,16 +5,17 @@ namespace CoffeeCard.Models.Entities
     /// </summary>
     public enum ProfileIcon
     {
-        // Switching the order of enums is a breaking change since the index value is stored in the database
-        CoffeeCup,
-        MokkaPot,
-        DripCoffee,
-        TeaCup,
-        MilkCarton,
-        PortaFilter,
-        IcedDrink,
-        FilterMachine,
-        CoffeeGrinder,
-        Teabag,
+        // The explicit values are persisted in the database. Never change or
+        // renumber existing members; only append new icons with the next unused value.
+        CoffeeCup = 0,
+        MokkaPot = 1,
+        DripCoffee = 2,
+        TeaCup = 3,
+        MilkCarton = 4,
+        PortaFilter = 5,
+        IcedDrink = 6,
+        FilterMachine = 7,
+        CoffeeGrinder = 8,
+        Teabag = 9,
     }
 }
