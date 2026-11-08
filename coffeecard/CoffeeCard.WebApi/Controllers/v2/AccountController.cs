@@ -218,6 +218,8 @@ namespace CoffeeCard.WebApi.Controllers.v2
                     FullName = user.Programme.FullName,
                 },
                 PrivacyActivated = user.PrivacyActivated,
+                ProfileIcon = user.ProfileIcon,
+                ProfileBackgroundColor = user.ProfileBackgroundColor,
             };
         }
 
