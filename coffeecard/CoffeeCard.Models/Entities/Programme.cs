@@ -28,6 +28,13 @@ namespace CoffeeCard.Models.Entities
         public int SortPriority { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the programme is active and can be selected.
+        /// Inactive programmes are hidden from the list of selectable programmes but remain
+        /// valid for users who already have them.
+        /// </summary>
+        public bool IsActive { get; set; } = true;
+
+        /// <summary>
         /// Gets or sets the collection of users associated with the programme.
         /// </summary>
         public virtual ICollection<User> Users { get; set; } = new List<User>();

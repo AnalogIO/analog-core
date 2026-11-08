@@ -133,6 +133,11 @@ namespace CoffeeCard.Library.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
                     b.Property<string>("ShortName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");

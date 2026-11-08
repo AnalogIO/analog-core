@@ -230,6 +230,36 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             Assert.Equal(StatusCodes.Status400BadRequest, exception.StatusCode);
         }
 
+        [Fact(
+            DisplayName = "RegisterAccount throws ApiException with status 400 when given inactive programmeId"
+        )]
+        public async Task RegisterAccountThrowsApiExceptionWithStatus400WhenGivenInactiveProgrammeId()
+        {
+            // Arrange
+            var inactiveProgramme = ProgrammeBuilder.Simple().WithId(1).WithIsActive(false).Build();
+
+            using var context = CreateTestCoffeeCardContext();
+            context.Programmes.Add(inactiveProgramme);
+            await context.SaveChangesAsync();
+
+            // Act
+            var accountService = new AccountService(
+                context,
+                new Mock<Library.Services.ITokenService>().Object,
+                new Mock<Library.Services.IEmailService>().Object,
+                new Mock<Library.Services.v2.IEmailService>().Object,
+                new Mock<Library.Services.v2.ITokenService>().Object,
+                new Mock<IHashService>().Object,
+                NullLogger<AccountService>.Instance
+            );
+
+            // Assert
+            var exception = await Assert.ThrowsAsync<ApiException>(async () =>
+                await accountService.RegisterAccountAsync("name", "email", "pass", 1)
+            );
+            Assert.Equal(StatusCodes.Status400BadRequest, exception.StatusCode);
+        }
+
         [Fact(DisplayName = "RegisterAccount sends verification email only valid input")]
         public async Task RegisterAccountSendsVerificationEmailOnlyValidInput()
         {
@@ -389,6 +419,74 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 await accountService.UpdateAccountAsync(user, updateUserRequest)
             );
             Assert.Equal(StatusCodes.Status400BadRequest, exception.StatusCode);
+        }
+
+        [Fact(DisplayName = "UpdateAccount throws ApiException on inactive programme id")]
+        public async Task UpdateAccountThrowsApiExceptionOnInactiveProgrammeId()
+        {
+            // Arrange
+            var programme = ProgrammeBuilder.Simple().WithId(1).Build();
+            var inactiveProgramme = ProgrammeBuilder.Simple().WithId(2).WithIsActive(false).Build();
+            var updateUserRequest = new UpdateUserRequest() { ProgrammeId = 2 };
+            var user = UserBuilder.DefaultCustomer().WithProgramme(programme).Build();
+
+            using var context = CreateTestCoffeeCardContext();
+            context.Users.Add(user);
+            context.Programmes.Add(programme);
+            context.Programmes.Add(inactiveProgramme);
+            await context.SaveChangesAsync();
+
+            // Act
+            var accountService = new AccountService(
+                context,
+                new Mock<Library.Services.ITokenService>().Object,
+                new Mock<Library.Services.IEmailService>().Object,
+                new Mock<Library.Services.v2.IEmailService>().Object,
+                new Mock<Library.Services.v2.ITokenService>().Object,
+                new Mock<IHashService>().Object,
+                NullLogger<AccountService>.Instance
+            );
+
+            // Assert
+            var exception = await Assert.ThrowsAsync<ApiException>(async () =>
+                await accountService.UpdateAccountAsync(user, updateUserRequest)
+            );
+            Assert.Equal(StatusCodes.Status400BadRequest, exception.StatusCode);
+        }
+
+        [Fact(DisplayName = "UpdateAccount allows the current inactive programme")]
+        public async Task UpdateAccountAllowsCurrentInactiveProgramme()
+        {
+            // Arrange
+            var inactiveProgramme = ProgrammeBuilder.Simple().WithId(2).WithIsActive(false).Build();
+            var user = UserBuilder.DefaultCustomer().WithProgramme(inactiveProgramme).Build();
+            var updateUserRequest = new UpdateUserRequest
+            {
+                ProgrammeId = inactiveProgramme.Id,
+                Name = "Updated Name",
+            };
+
+            using var context = CreateTestCoffeeCardContext();
+            context.Users.Add(user);
+            context.Programmes.Add(inactiveProgramme);
+            await context.SaveChangesAsync();
+
+            var accountService = new AccountService(
+                context,
+                new Mock<Library.Services.ITokenService>().Object,
+                new Mock<Library.Services.IEmailService>().Object,
+                new Mock<Library.Services.v2.IEmailService>().Object,
+                new Mock<Library.Services.v2.ITokenService>().Object,
+                new Mock<IHashService>().Object,
+                NullLogger<AccountService>.Instance
+            );
+
+            // Act
+            var updatedUser = await accountService.UpdateAccountAsync(user, updateUserRequest);
+
+            // Assert
+            Assert.Equal("Updated Name", updatedUser.Name);
+            Assert.Equal(inactiveProgramme.Id, updatedUser.ProgrammeId);
         }
 
         [Fact(DisplayName = "RequestAnonymization sends email")]
@@ -892,6 +990,60 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 )
             );
             Assert.True(token.Revoked);
+        }
+
+        [Fact(DisplayName = "CompleteRegistration rejects an inactive programme")]
+        public async Task CompleteRegistrationRejectsInactiveProgramme()
+        {
+            // Arrange
+            const string email = "newuser@test.test";
+            const string registrationToken = "registrationToken";
+            var inactiveProgramme = ProgrammeBuilder
+                .Simple()
+                .WithId(42)
+                .WithIsActive(false)
+                .Build();
+
+            await using var context = CreateTestCoffeeCardContext();
+            context.Programmes.Add(inactiveProgramme);
+
+            var token = new Token("hashedRegistrationToken", TokenType.Registration)
+            {
+                Email = email,
+            };
+            context.Tokens.Add(token);
+            await context.SaveChangesAsync();
+
+            var tokenService = new Mock<Library.Services.v2.ITokenService>();
+            tokenService
+                .Setup(t => t.GetValidRegistrationTokenAsync(registrationToken))
+                .ReturnsAsync(token);
+
+            var accountService = new Library.Services.v2.AccountService(
+                context,
+                new Mock<Library.Services.ITokenService>().Object,
+                new Mock<Library.Services.IEmailService>().Object,
+                new Mock<Library.Services.v2.IEmailService>().Object,
+                tokenService.Object,
+                new Mock<IHashService>().Object,
+                NullLogger<AccountService>.Instance
+            );
+
+            // Act
+            var exception = await Assert.ThrowsAsync<BadRequestException>(() =>
+                accountService.CompleteRegistrationAsync(
+                    new CompleteRegistrationRequest
+                    {
+                        Token = registrationToken,
+                        Name = "New User",
+                        ProgrammeId = 42,
+                    }
+                )
+            );
+
+            // Assert
+            Assert.Equal(StatusCodes.Status400BadRequest, exception.StatusCode);
+            Assert.Empty(context.Users);
         }
 
         [Fact(DisplayName = "GenerateTokenPair revokes token on use")]
