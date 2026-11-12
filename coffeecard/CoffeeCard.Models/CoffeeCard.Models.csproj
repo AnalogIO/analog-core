@@ -16,6 +16,6 @@
       ExcludeAssets="all"
       PrivateAssets="all"
     />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="10.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="10.0.15" />
   </ItemGroup>
 </Project>
