@@ -11,16 +11,13 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
 
       - name: Build ARM template
-        uses: Azure/bicep-build-action@v1.0.0
-        with:
-          bicepFilePath: infrastructure/azuredeploy.bicep
-          outputFilePath: azuredeploy.json
+        run: az bicep build --file infrastructure/azuredeploy.bicep --outfile azuredeploy.json
 
       - name: Store ARM template
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: arm
           path: azuredeploy.json
