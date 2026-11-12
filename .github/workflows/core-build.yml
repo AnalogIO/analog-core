@@ -1,8 +1,5 @@
 name: Build and test solution
 
-env:
-  DOTNET_VERSION: 8
-
 on:
   workflow_call:
     inputs:
@@ -21,9 +18,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
+          global-json-file: global.json
       - name: Restore dependencies
         run: dotnet restore coffeecard/
       - name: Build CoffeeCard solution
