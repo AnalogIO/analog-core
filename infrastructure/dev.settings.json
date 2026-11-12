@@ -31,7 +31,7 @@
       },
       {
         "name": "MailgunSettings__Domain",
-        "value": "mg.cafeanalog.dk"
+        "value": "mg.dev.cafeanalog.dk"
       },
       {
         "name": "MailgunSettings__EmailBaseUrl",
