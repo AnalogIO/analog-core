@@ -46,7 +46,7 @@ jobs:
         id: vars
         run: |
           trimmed=$(echo ${GITHUB_REF#refs/*/} | tr "/" "-")
-          echo ::set-output name=branchName::$trimmed
+          echo "branchName=$trimmed" >> "$GITHUB_OUTPUT"
       - name: Print branch name
         run: |
           echo ${{ steps.vars.outputs.branchName }}
