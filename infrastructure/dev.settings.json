@@ -31,7 +31,7 @@
       },
       {
         "name": "MailgunSettings__Domain",
-        "value": "mg.cafeanalog.dk"
+        "value": "mg.dev.cafeanalog.dk"
       },
       {
         "name": "MailgunSettings__EmailBaseUrl",
@@ -55,7 +55,7 @@
       },
       {
         "name": "MailgunSettings__MailgunApiUrl",
-        "value": "https://api.mailgun.net/v3"
+        "value": "https://api.eu.mailgun.net/v3"
       },
       {
         "name": "LoginLimiterSettings__IsEnabled",
