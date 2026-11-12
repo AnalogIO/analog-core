@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Library.Persistence;
@@ -71,7 +72,11 @@ namespace CoffeeCard.WebApi
                 Log.Information("Starting web host");
                 var webhost = CreateHostBuilder(args).Build();
 
-                await PreStartupTasks(webhost);
+                // dotnet-getdocument runs Main at build time to generate the OpenAPI documents
+                if (Assembly.GetEntryAssembly()?.GetName().Name != "GetDocument.Insider")
+                {
+                    await PreStartupTasks(webhost);
+                }
 
                 await webhost.RunAsync();
                 return 0;
