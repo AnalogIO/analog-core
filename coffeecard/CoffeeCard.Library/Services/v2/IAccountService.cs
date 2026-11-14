@@ -83,8 +83,8 @@ namespace CoffeeCard.Library.Services.v2
         Task SendMagicLinkEmail(string email, LoginType loginType);
 
         /// <summary>
-        /// Completes a registration using a single-use registration token and
-        /// returns a login response so the app can sign the user in immediately.
+        /// Completes a registration using a signed, short-lived registration token
+        /// and returns a login response so the app can sign the user in immediately.
         /// </summary>
         Task<UserLoginResponse> CompleteRegistrationAsync(CompleteRegistrationRequest request);
     }

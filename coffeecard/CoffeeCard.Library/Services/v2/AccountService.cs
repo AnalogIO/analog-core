@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
+using CoffeeCard.Library.Services;
 using CoffeeCard.Models.DataTransferObjects.v2.Token;
 using CoffeeCard.Models.DataTransferObjects.v2.User;
 using CoffeeCard.Models.Entities;
@@ -55,6 +56,8 @@ namespace CoffeeCard.Library.Services.v2
                 name,
                 email
             );
+
+            using var registrationLock = await RegistrationEmailLock.LockAsync(email);
 
             if (_context.Users.Any(x => x.Email == email))
             {
@@ -358,13 +361,9 @@ namespace CoffeeCard.Library.Services.v2
                 // Never reveal whether the email is registered: the caller gets the
                 // same response either way. Registration links are only supported
                 // by the app; other clients keep the old silent no-op behaviour.
-                // Token.Email is limited to 254 characters, so an overlong address
-                // cannot be persisted as a registration token.
                 if (loginType == LoginType.App && email.Length <= 254)
                 {
-                    var registrationToken = await _tokenServiceV2.GenerateRegistrationTokenAsync(
-                        email
-                    );
+                    var registrationToken = _tokenService.GenerateRegistrationToken(email);
                     await _emailServiceV2.SendRegistrationLink(email, registrationToken);
                 }
                 return;
@@ -383,19 +382,14 @@ namespace CoffeeCard.Library.Services.v2
                 throw new BadRequestException("A name is required to complete registration");
             }
 
-            var registrationToken = await _tokenServiceV2.GetValidRegistrationTokenAsync(
-                request.Token
-            );
-            var email = registrationToken.Email!;
+            var email = _tokenService.ValidateRegistrationTokenAndGetEmail(request.Token);
+            using var registrationLock = await RegistrationEmailLock.LockAsync(email);
 
-            // The token is single-use. If the email was registered in the meantime,
-            // revoke the token and return a generic error (it must not act as an
-            // account-existence oracle).
+            // Serialize account creation for this email in this process, so two
+            // concurrent redemptions cannot both pass the existence check.
             if (await _context.Users.AnyAsync(u => u.Email == email))
             {
-                registrationToken.Revoked = true;
-                await _context.SaveChangesAsync();
-                throw new BadRequestException("Unable to complete registration");
+                throw new ConflictException("Unable to complete registration");
             }
 
             var programme = await _context.Programmes.FirstOrDefaultAsync(p =>
@@ -424,30 +418,8 @@ namespace CoffeeCard.Library.Services.v2
                 IsVerified = true,
             };
 
-            if (_context.Database.IsRelational())
-            {
-                await using var transaction = await _context.Database.BeginTransactionAsync();
-
-                var consumed = await _context
-                    .Tokens.Where(t => t.Id == registrationToken.Id && !t.Revoked)
-                    .ExecuteUpdateAsync(t => t.SetProperty(token => token.Revoked, true));
-
-                if (consumed == 0)
-                {
-                    throw new UnauthorizedException("Invalid token");
-                }
-
-                _context.Users.Add(user);
-                await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
-            }
-            else
-            {
-                // The in-memory provider supports neither transactions nor ExecuteUpdate.
-                _context.Users.Add(user);
-                registrationToken.Revoked = true;
-                await _context.SaveChangesAsync();
-            }
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
 
             _logger.LogInformation("Completed registration for {email} {userid}", email, user.Id);
 
