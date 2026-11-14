@@ -44,7 +44,6 @@ public class TokenService : ITokenService
     public Task<Token> GetValidTokenByHashAsync(string tokenString)
     {
         // /account/auth accepts both magic-link and refresh tokens.
-        // Registration tokens have no user yet and must stay out of this lookup.
         return GetValidTokenAsync(
             tokenString,
             [TokenType.MagicLink, TokenType.Refresh],

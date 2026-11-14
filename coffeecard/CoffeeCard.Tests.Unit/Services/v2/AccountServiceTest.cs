@@ -24,9 +24,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
     {
         private CoffeeCardContext CreateTestCoffeeCardContext()
         {
-            // Registration consumes the token in a transaction. Use SQLite rather
-            // than the in-memory provider, which does not support transactions or
-            // ExecuteUpdate.
+            // Use SQLite because the account service tests exercise ExecuteUpdate.
             var builder = new DbContextOptionsBuilder<CoffeeCardContext>().UseSqlite(
                 "DataSource=:memory:"
             );
@@ -865,7 +863,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             );
 
             // Act & Assert
-            await Assert.ThrowsAsync<BadRequestException>(() =>
+            await Assert.ThrowsAsync<ConflictException>(() =>
                 accountService.CompleteRegistrationAsync(
                     new CompleteRegistrationRequest
                     {
@@ -935,7 +933,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                             );
                             return true;
                         }
-                        catch (BadRequestException)
+                        catch (ConflictException)
                         {
                             return false;
                         }

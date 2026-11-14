@@ -4,7 +4,6 @@ using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.DataTransferObjects;
-using CoffeeCard.Models.DataTransferObjects.User;
 using CoffeeCard.Models.DataTransferObjects.v2.Programme;
 using CoffeeCard.Models.DataTransferObjects.v2.Token;
 using CoffeeCard.Models.DataTransferObjects.v2.User;
@@ -12,7 +11,6 @@ using CoffeeCard.Models.Entities;
 using CoffeeCard.WebApi.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoffeeCard.WebApi.Controllers.v2
@@ -88,12 +86,14 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <response code="200">Account created and the user is signed in</response>
         /// <response code="400">Invalid request, name or programme</response>
         /// <response code="401">Invalid or expired registration token</response>
+        /// <response code="409">An account already exists for the email</response>
         [HttpPost]
         [AllowAnonymous]
         [Route("register")]
         [ProducesResponseType(typeof(UserLoginResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status409Conflict)]
         public async Task<ActionResult<UserLoginResponse>> CompleteRegistration(
             [FromBody] CompleteRegistrationRequest request
         )
@@ -279,7 +279,6 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// Sends a magic link to the user's email to login
         /// </summary>
         /// <param name="request">User's email</param>
-        /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
         [Route("login")]

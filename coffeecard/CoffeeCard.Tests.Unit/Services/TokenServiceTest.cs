@@ -23,7 +23,6 @@ namespace CoffeeCard.Tests.Unit.Services
         {
             _identity = new IdentitySettings();
 
-            //creates the key for signing the token
             const string keyForHmacSha256 = "SuperLongSigningKey";
             _identity.TokenKey = new SymmetricSecurityKey(
                 Encoding.ASCII.GetBytes(keyForHmacSha256)
@@ -71,7 +70,6 @@ namespace CoffeeCard.Tests.Unit.Services
             );
 
             const string email = "register@test.test";
-            // Registration tokens are stateless but remain purpose-bound and short-lived.
             var token = tokenService.GenerateRegistrationToken(email);
             var jwt = tokenService.ReadToken(token);
 
@@ -98,7 +96,7 @@ namespace CoffeeCard.Tests.Unit.Services
                 new Claim(ClaimTypes.Email, "register@test.test"),
             ]);
 
-            Assert.Throws<ApiException>(() =>
+            Assert.Throws<UnauthorizedException>(() =>
                 tokenService.ValidateRegistrationTokenAndGetEmail(token)
             );
         }
