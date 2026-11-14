@@ -82,12 +82,12 @@ namespace CoffeeCard.WebApi.Controllers.v2
 
         /// <summary>
         /// Complete a registration that was started from an app login request.
-        /// The email is read from the single-use token, not from the request body.
+        /// The email is read from the signed registration token, not from the request body.
         /// </summary>
         /// <param name="request">Registration token, name and programme</param>
         /// <response code="200">Account created and the user is signed in</response>
         /// <response code="400">Invalid request, name or programme</response>
-        /// <response code="401">Invalid, expired or revoked registration token</response>
+        /// <response code="401">Invalid or expired registration token</response>
         [HttpPost]
         [AllowAnonymous]
         [Route("register")]

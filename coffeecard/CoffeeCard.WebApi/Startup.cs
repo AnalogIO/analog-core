@@ -338,6 +338,20 @@ namespace CoffeeCard.WebApi
 
                                 return Task.CompletedTask;
                             },
+                            OnTokenValidated = context =>
+                            {
+                                if (
+                                    context.Principal?.FindFirst("token_use")?.Value
+                                    == "registration"
+                                )
+                                {
+                                    context.Fail(
+                                        "Registration tokens cannot authenticate API requests"
+                                    );
+                                }
+
+                                return Task.CompletedTask;
+                            },
                         };
                     }
                 )

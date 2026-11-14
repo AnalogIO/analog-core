@@ -684,17 +684,17 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             await using var context = CreateTestCoffeeCardContext();
 
             var emailService = new Mock<Library.Services.v2.IEmailService>();
-            var tokenService = new Mock<Library.Services.v2.ITokenService>();
+            var tokenService = new Mock<Library.Services.ITokenService>();
             tokenService
-                .Setup(t => t.GenerateRegistrationTokenAsync(email))
-                .ReturnsAsync("registrationToken");
+                .Setup(t => t.GenerateRegistrationToken(email))
+                .Returns("registrationToken");
 
             var accountService = new Library.Services.v2.AccountService(
                 context,
-                new Mock<Library.Services.ITokenService>().Object,
+                tokenService.Object,
                 new Mock<Library.Services.IEmailService>().Object,
                 emailService.Object,
-                tokenService.Object,
+                new Mock<Library.Services.v2.ITokenService>().Object,
                 new Mock<IHashService>().Object,
                 NullLogger<AccountService>.Instance
             );
@@ -721,14 +721,14 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             await using var context = CreateTestCoffeeCardContext();
 
             var emailService = new Mock<Library.Services.v2.IEmailService>();
-            var tokenService = new Mock<Library.Services.v2.ITokenService>();
+            var tokenService = new Mock<Library.Services.ITokenService>();
 
             var accountService = new Library.Services.v2.AccountService(
                 context,
-                new Mock<Library.Services.ITokenService>().Object,
+                tokenService.Object,
                 new Mock<Library.Services.IEmailService>().Object,
                 emailService.Object,
-                tokenService.Object,
+                new Mock<Library.Services.v2.ITokenService>().Object,
                 new Mock<IHashService>().Object,
                 NullLogger<AccountService>.Instance
             );
@@ -737,10 +737,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             await accountService.SendMagicLinkEmail(email, LoginType.App);
 
             // Assert
-            tokenService.Verify(
-                t => t.GenerateRegistrationTokenAsync(It.IsAny<string>()),
-                Times.Never
-            );
+            tokenService.Verify(t => t.GenerateRegistrationToken(It.IsAny<string>()), Times.Never);
             emailService.Verify(
                 e => e.SendRegistrationLink(It.IsAny<string>(), It.IsAny<string>()),
                 Times.Never
@@ -788,23 +785,17 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             await using var context = CreateTestCoffeeCardContext();
             context.Programmes.Add(programme);
-
-            var token = new Token("hashedRegistrationToken", TokenType.Registration)
-            {
-                Email = email,
-            };
-            context.Tokens.Add(token);
             await context.SaveChangesAsync();
 
             var tokenService = new Mock<Library.Services.v2.ITokenService>();
-            tokenService
-                .Setup(t => t.GetValidRegistrationTokenAsync(registrationToken))
-                .ReturnsAsync(token);
             tokenService
                 .Setup(t => t.GenerateRefreshTokenAsync(It.IsAny<User>()))
                 .ReturnsAsync("refreshToken");
 
             var tokenServiceV1 = new Mock<Library.Services.ITokenService>();
+            tokenServiceV1
+                .Setup(t => t.ValidateRegistrationTokenAndGetEmail(registrationToken))
+                .Returns(email);
             tokenServiceV1
                 .Setup(t => t.GenerateToken(It.IsAny<IEnumerable<Claim>>()))
                 .Returns("jwtToken");
@@ -836,8 +827,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             // Assert
             Assert.Equal("jwtToken", response.Jwt);
             Assert.Equal("refreshToken", response.RefreshToken);
-            await context.Entry(token).ReloadAsync();
-            Assert.True(token.Revoked);
+            Assert.Empty(await context.Tokens.ToListAsync());
 
             var user = await context.Users.SingleAsync(u => u.Email == email);
             Assert.Equal("New User", user.Name);
@@ -857,25 +847,19 @@ namespace CoffeeCard.Tests.Unit.Services.v2
 
             await using var context = CreateTestCoffeeCardContext();
             context.Users.Add(UserBuilder.DefaultCustomer().WithEmail(email).Build());
-
-            var token = new Token("hashedRegistrationToken", TokenType.Registration)
-            {
-                Email = email,
-            };
-            context.Tokens.Add(token);
             await context.SaveChangesAsync();
 
-            var tokenService = new Mock<Library.Services.v2.ITokenService>();
+            var tokenService = new Mock<Library.Services.ITokenService>();
             tokenService
-                .Setup(t => t.GetValidRegistrationTokenAsync(registrationToken))
-                .ReturnsAsync(token);
+                .Setup(t => t.ValidateRegistrationTokenAndGetEmail(registrationToken))
+                .Returns(email);
 
             var accountService = new Library.Services.v2.AccountService(
                 context,
-                new Mock<Library.Services.ITokenService>().Object,
+                tokenService.Object,
                 new Mock<Library.Services.IEmailService>().Object,
                 new Mock<Library.Services.v2.IEmailService>().Object,
-                tokenService.Object,
+                new Mock<Library.Services.v2.ITokenService>().Object,
                 new Mock<IHashService>().Object,
                 NullLogger<AccountService>.Instance
             );
@@ -891,7 +875,75 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                     }
                 )
             );
-            Assert.True(token.Revoked);
+            Assert.Single(await context.Users.ToListAsync());
+            Assert.Empty(await context.Tokens.ToListAsync());
+        }
+
+        [Fact(DisplayName = "Concurrent registrations for the same email are serialized")]
+        public async Task ConcurrentRegistrationsForSameEmailAreSerialized()
+        {
+            const string email = "concurrent@test.test";
+            const string registrationToken = "registrationToken";
+            var programme = ProgrammeBuilder.Simple().WithId(42).Build();
+
+            await using var context = CreateTestCoffeeCardContext();
+            context.Programmes.Add(programme);
+            await context.SaveChangesAsync();
+
+            var tokenService = new Mock<Library.Services.ITokenService>();
+            tokenService
+                .Setup(t => t.ValidateRegistrationTokenAndGetEmail(registrationToken))
+                .Returns(email);
+            tokenService
+                .Setup(t => t.GenerateToken(It.IsAny<IEnumerable<Claim>>()))
+                .Returns("jwtToken");
+
+            var tokenServiceV2 = new Mock<Library.Services.v2.ITokenService>();
+            tokenServiceV2
+                .Setup(t => t.GenerateRefreshTokenAsync(It.IsAny<User>()))
+                .ReturnsAsync("refreshToken");
+
+            var hashService = new Mock<IHashService>();
+            hashService.Setup(h => h.GenerateSalt()).Returns("salt");
+            hashService.Setup(h => h.Hash(It.IsAny<string>())).Returns("hashedValue");
+
+            var accountService = new Library.Services.v2.AccountService(
+                context,
+                tokenService.Object,
+                new Mock<Library.Services.IEmailService>().Object,
+                new Mock<Library.Services.v2.IEmailService>().Object,
+                tokenServiceV2.Object,
+                hashService.Object,
+                NullLogger<AccountService>.Instance
+            );
+
+            // Competing redemptions should result in exactly one account creation.
+            var registrations = await Task.WhenAll(
+                Enumerable
+                    .Range(0, 2)
+                    .Select(async _ =>
+                    {
+                        try
+                        {
+                            await accountService.CompleteRegistrationAsync(
+                                new CompleteRegistrationRequest
+                                {
+                                    Token = registrationToken,
+                                    Name = "New User",
+                                    ProgrammeId = 42,
+                                }
+                            );
+                            return true;
+                        }
+                        catch (BadRequestException)
+                        {
+                            return false;
+                        }
+                    })
+            );
+
+            Assert.Single(registrations.Where(created => created));
+            Assert.Single(await context.Users.Where(user => user.Email == email).ToListAsync());
         }
 
         [Fact(DisplayName = "GenerateTokenPair revokes token on use")]

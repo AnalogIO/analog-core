@@ -7,10 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Common.Errors;
-using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Utils;
-using CoffeeCard.Models.DataTransferObjects.CoffeeCard;
-using CoffeeCard.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -47,6 +44,47 @@ namespace CoffeeCard.Library.Services
                 new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
             );
             return new JwtSecurityTokenHandler().WriteToken(jwt); //the method is called WriteToken but returns a string
+        }
+
+        public string GenerateRegistrationToken(string email)
+        {
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_identitySettings.TokenKey));
+            var now = DateTime.UtcNow;
+            // Purpose claim keeps registration links distinct from verification and API tokens.
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Email, email),
+                new Claim(ClaimTypes.Role, "registration_token"),
+                new Claim("token_use", "registration"),
+            };
+            var jwt = new JwtSecurityToken(
+                "AnalogIO",
+                "Everyone",
+                claims,
+                now,
+                now.AddMinutes(30),
+                new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(jwt);
+        }
+
+        public string ValidateRegistrationTokenAndGetEmail(string token)
+        {
+            if (!ValidateToken(token))
+            {
+                throw new UnauthorizedException("The token is invalid!");
+            }
+
+            var jwtToken = ReadToken(token);
+            var tokenUse = jwtToken.Claims.FirstOrDefault(x => x.Type == "token_use");
+            var emailClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
+            if (tokenUse?.Value != "registration" || string.IsNullOrWhiteSpace(emailClaim?.Value))
+            {
+                throw new UnauthorizedException("The token is invalid!");
+            }
+
+            return emailClaim.Value;
         }
 
         public JwtSecurityToken ReadToken(string token)
@@ -131,9 +169,8 @@ namespace CoffeeCard.Library.Services
 
             var jwtToken = ReadToken(token);
             if (
-                jwtToken.Claims.Any(x =>
-                    x.Type == ClaimTypes.Role && x.Value != "verification_token"
-                )
+                jwtToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value
+                != "verification_token"
             )
             {
                 _logger.LogInformation("Token validation failed. Not a verification token");

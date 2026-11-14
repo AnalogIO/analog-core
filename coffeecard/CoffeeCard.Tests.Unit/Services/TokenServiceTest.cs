@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
+using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services;
 using CoffeeCard.Library.Utils;
@@ -53,6 +54,53 @@ namespace CoffeeCard.Tests.Unit.Services
                     SortPriority = 1,
                 },
             };
+        }
+
+        [Fact(
+            DisplayName = "Registration JWT carries email and purpose and expires after 30 minutes"
+        )]
+        public async Task RegistrationTokenContainsEmailAndPurposeAndExpiresAfterThirtyMinutes()
+        {
+            await using var context = GenerateCoffeeCardContext(
+                nameof(RegistrationTokenContainsEmailAndPurposeAndExpiresAfterThirtyMinutes)
+            );
+            var tokenService = new TokenService(
+                _identity,
+                new ClaimsUtilities(context),
+                NullLogger<TokenService>.Instance
+            );
+
+            const string email = "register@test.test";
+            // Registration tokens are stateless but remain purpose-bound and short-lived.
+            var token = tokenService.GenerateRegistrationToken(email);
+            var jwt = tokenService.ReadToken(token);
+
+            Assert.Equal(email, tokenService.ValidateRegistrationTokenAndGetEmail(token));
+            Assert.Contains(
+                jwt.Claims,
+                claim => claim.Type == "token_use" && claim.Value == "registration"
+            );
+            Assert.InRange((jwt.ValidTo - jwt.ValidFrom).TotalMinutes, 29.9, 30.1);
+        }
+
+        [Fact(DisplayName = "Registration validation rejects other signed JWTs")]
+        public async Task RegistrationValidationRejectsOtherSignedTokens()
+        {
+            await using var context = GenerateCoffeeCardContext(
+                nameof(RegistrationValidationRejectsOtherSignedTokens)
+            );
+            var tokenService = new TokenService(
+                _identity,
+                new ClaimsUtilities(context),
+                NullLogger<TokenService>.Instance
+            );
+            var token = tokenService.GenerateToken([
+                new Claim(ClaimTypes.Email, "register@test.test"),
+            ]);
+
+            Assert.Throws<ApiException>(() =>
+                tokenService.ValidateRegistrationTokenAndGetEmail(token)
+            );
         }
 
         [Fact(DisplayName = "ValidateToken given invalid token returns false")]
