@@ -293,10 +293,6 @@ namespace CoffeeCard.Library.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Email")
-                        .HasMaxLength(254)
-                        .HasColumnType("nvarchar(254)");
-
                     b.Property<DateTime>("Expires")
                         .HasColumnType("datetime2");
 
@@ -317,11 +313,6 @@ namespace CoffeeCard.Library.Migrations
                         .HasColumnName("User_Id");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Email")
-                        .IsUnique()
-                        .HasDatabaseName("IX_Tokens_Email_ActiveRegistration")
-                        .HasFilter("[Type] = 'Registration' AND [Revoked] = 0");
 
                     b.HasIndex("TokenHash");
 
