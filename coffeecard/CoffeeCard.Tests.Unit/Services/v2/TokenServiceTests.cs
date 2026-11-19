@@ -138,5 +138,32 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             Assert.False(result.Revoked);
             Assert.False(Token.Expired(result.Expires));
         }
+
+        [Fact(DisplayName = "RemoveTokensByUserAsync removes only the given user's tokens")]
+        public async Task RemoveTokensByUserAsync_RemovesOnlyGivenUsersTokens()
+        {
+            // Arrange
+            var user = UserBuilder.DefaultCustomer().Build();
+            var otherUser = UserBuilder.DefaultCustomer().Build();
+            InitialContext.Users.AddRange(user, otherUser);
+            await InitialContext.SaveChangesAsync();
+
+            InitialContext.Tokens.AddRange(
+                new Token("user-refresh-token", TokenType.Refresh) { UserId = user.Id },
+                new Token("user-magic-link-token", TokenType.MagicLink) { UserId = user.Id },
+                new Token("other-user-token", TokenType.Refresh) { UserId = otherUser.Id }
+            );
+            await InitialContext.SaveChangesAsync();
+
+            var tokenService = new TokenService(InitialContext, Mock.Of<IHashService>());
+
+            // Act
+            await tokenService.RemoveTokensByUserAsync(user);
+            await InitialContext.SaveChangesAsync();
+
+            // Assert
+            var remainingToken = Assert.Single(await AssertionContext.Tokens.ToListAsync());
+            Assert.Equal(otherUser.Id, remainingToken.UserId);
+        }
     }
 }
