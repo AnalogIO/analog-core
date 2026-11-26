@@ -4,7 +4,6 @@ using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Services.v2;
 using CoffeeCard.Library.Utils;
 using CoffeeCard.Models.DataTransferObjects;
-using CoffeeCard.Models.DataTransferObjects.User;
 using CoffeeCard.Models.DataTransferObjects.v2.Programme;
 using CoffeeCard.Models.DataTransferObjects.v2.Token;
 using CoffeeCard.Models.DataTransferObjects.v2.User;
@@ -12,7 +11,6 @@ using CoffeeCard.Models.Entities;
 using CoffeeCard.WebApi.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoffeeCard.WebApi.Controllers.v2
@@ -47,6 +45,11 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <summary>
         /// Register data request. An account is required to verify its email before logging in
         /// </summary>
+        /// <remarks>
+        /// Legacy endpoint kept for the old app. It returns 409 for an existing
+        /// email, so unlike /login it can be used to probe account existence.
+        /// Remove it when the old app is retired.
+        /// </remarks>
         /// <param name="registerRequest">Register data object</param>
         /// <response code="201">Successful account creation. Verification request email sent to provided email</response>
         /// <response code="409">Email already registered</response>
@@ -73,6 +76,30 @@ namespace CoffeeCard.WebApi.Controllers.v2
                         "Your user has been created! Please check your email to verify your account.\n(Check your spam folder!)",
                 }
             );
+        }
+
+        /// <summary>
+        /// Complete a registration that was started from an app login request.
+        /// The email is read from the signed registration token, not from the request body.
+        /// </summary>
+        /// <param name="request">Registration token, name and programme</param>
+        /// <response code="200">Account created and the user is signed in</response>
+        /// <response code="400">Invalid request, name or programme</response>
+        /// <response code="401">Invalid or expired registration token</response>
+        /// <response code="409">An account already exists for the email</response>
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("register")]
+        [ProducesResponseType(typeof(UserLoginResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status409Conflict)]
+        public async Task<ActionResult<UserLoginResponse>> CompleteRegistration(
+            [FromBody] CompleteRegistrationRequest request
+        )
+        {
+            var loginResponse = await _accountService.CompleteRegistrationAsync(request);
+            return Ok(loginResponse);
         }
 
         /// <summary>
@@ -134,6 +161,10 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// <summary>
         /// Check if a given email is in use
         /// </summary>
+        /// <remarks>
+        /// Legacy endpoint used by the old app. This is an explicit
+        /// account-existence oracle and should be removed with the old app.
+        /// </remarks>
         /// <param name="request">The email that should be checked</param>
         /// <returns>Account information</returns>
         /// <response code="200">Successful request</response>
@@ -250,7 +281,6 @@ namespace CoffeeCard.WebApi.Controllers.v2
         /// Sends a magic link to the user's email to login
         /// </summary>
         /// <param name="request">User's email</param>
-        /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
         [Route("login")]

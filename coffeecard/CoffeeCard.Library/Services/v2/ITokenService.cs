@@ -7,6 +7,11 @@ namespace CoffeeCard.Library.Services.v2
     {
         Task<string> GenerateMagicLinkToken(User user);
         Task<string> GenerateRefreshTokenAsync(User user);
+
+        /// <summary>
+        /// Returns the magic link token matching <paramref name="tokenString"/>,
+        /// or throws if it is missing, revoked, expired, or not a magic link token.
+        /// </summary>
         Task<Token> GetValidTokenByHashAsync(string tokenString);
     }
 }

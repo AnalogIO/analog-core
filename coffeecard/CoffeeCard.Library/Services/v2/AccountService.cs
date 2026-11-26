@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
+using CoffeeCard.Library.Services;
 using CoffeeCard.Models.DataTransferObjects.v2.Token;
 using CoffeeCard.Models.DataTransferObjects.v2.User;
 using CoffeeCard.Models.Entities;
@@ -55,6 +56,8 @@ namespace CoffeeCard.Library.Services.v2
                 name,
                 email
             );
+
+            using var registrationLock = await RegistrationEmailLock.LockAsync(email);
 
             if (_context.Users.Any(x => x.Email == email))
             {
@@ -398,11 +401,72 @@ namespace CoffeeCard.Library.Services.v2
             var user = await _context.Users.Where(u => u.Email == email).FirstOrDefaultAsync();
             if (user is null)
             {
-                // Should not throw error to prevent showing a malicious user if an email is already registered
+                // Never reveal whether the email is registered: the caller gets the
+                // same response either way. Registration links are only supported
+                // by the app; other clients keep the old silent no-op behaviour.
+                if (loginType == LoginType.App && email.Length <= 254)
+                {
+                    var registrationToken = _tokenService.GenerateRegistrationToken(email);
+                    await _emailServiceV2.SendRegistrationLink(email, registrationToken);
+                }
                 return;
             }
             var magicLinkTokenHash = await _tokenServiceV2.GenerateMagicLinkToken(user);
             await _emailServiceV2.SendMagicLink(user, magicLinkTokenHash, loginType);
+        }
+
+        public async Task<UserLoginResponse> CompleteRegistrationAsync(
+            CompleteRegistrationRequest request
+        )
+        {
+            var name = EscapeName(request.Name ?? string.Empty);
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new BadRequestException("A name is required to complete registration");
+            }
+
+            var email = _tokenService.ValidateRegistrationTokenAndGetEmail(request.Token);
+            using var registrationLock = await RegistrationEmailLock.LockAsync(email);
+
+            // Serialize account creation for this email in this process, so two
+            // concurrent redemptions cannot both pass the existence check.
+            if (await _context.Users.AnyAsync(u => u.Email == email))
+            {
+                throw new ConflictException("Unable to complete registration");
+            }
+
+            var programme = await _context.Programmes.FirstOrDefaultAsync(p =>
+                p.Id == request.ProgrammeId
+            );
+            if (programme is null)
+            {
+                throw new BadRequestException(
+                    $"No programme found with the id: {request.ProgrammeId}"
+                );
+            }
+
+            // Accounts created through a magic link never use password login.
+            // Store a random, unguessable password so the column stays non-null.
+            var salt = _hashService.GenerateSalt();
+            var password = _hashService.Hash(Guid.NewGuid().ToString() + salt);
+
+            var user = new User
+            {
+                Name = name,
+                Email = email,
+                Password = password,
+                Salt = salt,
+                Programme = programme,
+                UserGroup = UserGroup.Customer,
+                IsVerified = true,
+            };
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Completed registration for {email} {userid}", email, user.Id);
+
+            return await GenerateUserLoginResponse(user);
         }
 
         public async Task<UserLoginResponse> GenerateUserLoginFromToken(
@@ -416,15 +480,19 @@ namespace CoffeeCard.Library.Services.v2
             foundToken.Revoked = true;
             await _context.SaveChangesAsync();
 
-            // Generate refresh token
-            var refreshToken = await _tokenServiceV2.GenerateRefreshTokenAsync(foundToken.User);
+            return await GenerateUserLoginResponse(foundToken.User!);
+        }
+
+        private async Task<UserLoginResponse> GenerateUserLoginResponse(User user)
+        {
+            var refreshToken = await _tokenServiceV2.GenerateRefreshTokenAsync(user);
 
             var claims = new[]
             {
-                new Claim(ClaimTypes.Email, foundToken.User!.Email),
-                new Claim(ClaimTypes.Name, foundToken.User.Name),
-                new Claim("UserId", foundToken.User.Id.ToString()),
-                new Claim(ClaimTypes.Role, foundToken.User.UserGroup.ToString()),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Name, user.Name),
+                new Claim("UserId", user.Id.ToString()),
+                new Claim(ClaimTypes.Role, user.UserGroup.ToString()),
             };
             // Generate JWT token with user claims
             var jwt = _tokenService.GenerateToken(claims);

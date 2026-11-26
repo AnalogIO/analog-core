@@ -1,4 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using CoffeeCard.Library.Services;
 using CoffeeCard.Models.Entities;
@@ -34,6 +36,77 @@ namespace CoffeeCard.Tests.Integration.Controllers.v2.Account
             );
             Assert.Null(exception);
             Assert.Empty(Context.Tokens);
+        }
+
+        [Fact]
+        public async Task Unknown_app_login_sends_welcome_email_without_persisting_registration_state()
+        {
+            Mock<IEmailSender> emailSenderMock = new Mock<IEmailSender>();
+            MimeMessage sentMessage = null;
+            emailSenderMock
+                .Setup(x => x.SendEmailAsync(It.IsAny<MimeMessage>()))
+                .Callback<MimeMessage>(message => sentMessage = message)
+                .Returns(Task.CompletedTask);
+            ConfigureMockService<IEmailSender>(emailSenderMock.Object);
+
+            const string email = "new-user@email.dk";
+            var loginRequest = new UserLoginRequest { Email = email, LoginType = LoginType.App };
+
+            await CoffeeCardClientV2.Account_LoginAsync(loginRequest);
+
+            Assert.Empty(await Context.Tokens.ToListAsync());
+            Assert.NotNull(sentMessage);
+            Assert.Contains("Welcome", sentMessage.Subject);
+        }
+
+        [Fact]
+        public async Task Registration_token_is_not_accepted_as_an_api_access_token()
+        {
+            var registrationToken = Context
+                .GetService<ITokenService>()
+                .GenerateRegistrationToken("new-user@email.dk");
+            HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+                "Bearer",
+                registrationToken
+            );
+
+            var response = await HttpClient.GetAsync("/api/v2/account");
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Complete_registration_creates_verified_user_and_returns_tokens()
+        {
+            var programme = ProgrammeBuilder.Simple().WithId(1).Build();
+            await Context.Programmes.AddAsync(programme);
+            await Context.SaveChangesAsync();
+
+            const string email = "new-user@email.dk";
+            var registrationToken = Context
+                .GetService<ITokenService>()
+                .GenerateRegistrationToken(email);
+
+            var response = await CoffeeCardClientV2.Account_CompleteRegistrationAsync(
+                new CompleteRegistrationRequest
+                {
+                    Token = registrationToken,
+                    Name = "New User",
+                    ProgrammeId = 1,
+                }
+            );
+
+            Assert.NotNull(response.Jwt);
+            Assert.NotNull(response.RefreshToken);
+            Assert.True(new JwtSecurityTokenHandler().CanReadToken(response.Jwt));
+
+            var user = await Context.Users.AsNoTracking().SingleAsync(u => u.Email == email);
+            Assert.Equal("New User", user.Name);
+            Assert.True(user.IsVerified);
+
+            var tokens = await Context.Tokens.AsNoTracking().ToListAsync();
+            Assert.Single(tokens);
+            Assert.Equal(TokenType.Refresh, tokens[0].Type);
         }
 
         [Fact]

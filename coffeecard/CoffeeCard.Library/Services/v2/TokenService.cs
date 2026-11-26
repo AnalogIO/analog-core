@@ -41,19 +41,42 @@ public class TokenService : ITokenService
         return refreshToken;
     }
 
-    public async Task<Token> GetValidTokenByHashAsync(string tokenString)
+    public Task<Token> GetValidTokenByHashAsync(string tokenString)
+    {
+        // /account/auth accepts both magic-link and refresh tokens.
+        return GetValidTokenAsync(
+            tokenString,
+            [TokenType.MagicLink, TokenType.Refresh],
+            includeUser: true
+        );
+    }
+
+    private async Task<Token> GetValidTokenAsync(
+        string tokenString,
+        TokenType[] types,
+        bool includeUser
+    )
     {
         var tokenHash = _hashService.Hash(tokenString);
-        var foundToken = await _context
-            .Tokens.Include(t => t.User)
-            .FirstOrDefaultAsync(t =>
-                t.TokenHash == tokenHash && !t.Revoked && !Token.Expired(t.Expires)
-            );
+        var query = _context.Tokens.Where(t =>
+            t.TokenHash == tokenHash
+            && !t.Revoked
+            && !Token.Expired(t.Expires)
+            && types.Contains(t.Type)
+        );
+
+        if (includeUser)
+        {
+            query = query.Include(t => t.User);
+        }
+
+        var foundToken = await query.FirstOrDefaultAsync();
 
         if (foundToken == null)
         {
             throw new UnauthorizedException("Invalid token");
         }
+
         return foundToken;
     }
 }

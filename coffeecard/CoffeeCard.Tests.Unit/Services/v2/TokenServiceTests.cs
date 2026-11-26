@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using CoffeeCard.Common.Configuration;
 using CoffeeCard.Common.Errors;
 using CoffeeCard.Library.Persistence;
 using CoffeeCard.Library.Services;
@@ -119,7 +118,7 @@ namespace CoffeeCard.Tests.Unit.Services.v2
         public async Task GetValidTokenByHashAsync_ReturnsTokenByValidHash()
         {
             // Arrange
-            var token = TokenBuilder.Simple().Build();
+            var token = TokenBuilder.Simple().WithType(TokenType.MagicLink).Build();
             InitialContext.Tokens.Add(token);
 
             await InitialContext.SaveChangesAsync();
@@ -137,6 +136,29 @@ namespace CoffeeCard.Tests.Unit.Services.v2
             Assert.Equal(token, result);
             Assert.False(result.Revoked);
             Assert.False(Token.Expired(result.Expires));
+        }
+
+        [Fact(DisplayName = "GetValidTokenByHashAsync accepts a refresh token")]
+        public async Task GetValidTokenByHashAsync_AcceptsRefreshToken()
+        {
+            // Arrange
+            var user = UserBuilder.DefaultCustomer().Build();
+            var token = TokenBuilder.Simple().WithType(TokenType.Refresh).WithUser(user).Build();
+            InitialContext.Users.Add(user);
+            InitialContext.Tokens.Add(token);
+            await InitialContext.SaveChangesAsync();
+
+            var hashService = new Mock<IHashService>();
+            hashService.Setup(h => h.Hash(It.IsAny<string>())).Returns(token.TokenHash);
+
+            var tokenService = new TokenService(AssertionContext, hashService.Object);
+
+            // Act
+            var result = await tokenService.GetValidTokenByHashAsync(token.TokenHash);
+
+            // Assert
+            Assert.Equal(TokenType.Refresh, result.Type);
+            Assert.NotNull(result.User);
         }
     }
 }
