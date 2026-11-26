@@ -55,18 +55,18 @@ namespace CoffeeCard.Models.Entities
         /// </summary>
         /// <param name="loginType">The application to register in</param>
         /// <param name="redirectUri">The redirect URI for the application</param>
-        /// <param name="tokenHash">The generated registration token</param>
+        /// <param name="token">A url safe registration token</param>
         /// <returns>string</returns>
         /// <exception cref="ApiException">Registration is not supported for the application</exception>
         public static string GetRegistrationDeepLink(
             this LoginType loginType,
             string redirectUri,
-            string tokenHash
+            string token
         )
         {
             return loginType switch
             {
-                LoginType.App => $"{redirectUri}register/{tokenHash}",
+                LoginType.App => $"{redirectUri}register/{token}",
                 _ => throw new ApiException(
                     "Registration deep link for the given application has not been implemented"
                 ),

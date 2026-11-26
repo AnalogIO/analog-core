@@ -141,6 +141,8 @@ namespace CoffeeCard.Library.Services
                 email
             );
 
+            using var registrationLock = await RegistrationEmailLock.LockAsync(email);
+
             if (_context.Users.Any(x => x.Email == email))
             {
                 _logger.LogInformation(
