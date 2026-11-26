@@ -76,9 +76,9 @@ namespace CoffeeCard.Library.Services.v2
             var hashedPassword = _hashService.Hash(password + salt);
 
             var chosenProgramme = _context.Programmes.FirstOrDefault(x => x.Id == programme);
-            if (chosenProgramme == null)
+            if (chosenProgramme == null || !chosenProgramme.IsActive)
                 throw new ApiException(
-                    $"No programme found with the id: {programme}",
+                    $"No active programme found with the id: {programme}",
                     StatusCodes.Status400BadRequest
                 );
 
@@ -170,9 +170,9 @@ namespace CoffeeCard.Library.Services.v2
                 var programme = _context.Programmes.FirstOrDefault(x =>
                     x.Id == updateUserRequest.ProgrammeId
                 );
-                if (programme == null)
+                if (programme == null || (!programme.IsActive && programme.Id != user.ProgrammeId))
                     throw new ApiException(
-                        $"No programme with id {updateUserRequest.ProgrammeId} exists!",
+                        $"No active programme with id {updateUserRequest.ProgrammeId} exists!",
                         400
                     );
                 _logger.LogInformation(
@@ -438,10 +438,10 @@ namespace CoffeeCard.Library.Services.v2
             var programme = await _context.Programmes.FirstOrDefaultAsync(p =>
                 p.Id == request.ProgrammeId
             );
-            if (programme is null)
+            if (programme is null || !programme.IsActive)
             {
                 throw new BadRequestException(
-                    $"No programme found with the id: {request.ProgrammeId}"
+                    $"No active programme found with the id: {request.ProgrammeId}"
                 );
             }
 

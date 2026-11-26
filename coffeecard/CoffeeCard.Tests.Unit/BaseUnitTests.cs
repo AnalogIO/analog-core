@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
 using CoffeeCard.Library.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace CoffeeCard.Tests.Unit;
 
@@ -15,7 +16,13 @@ public abstract class BaseUnitTests : IDisposable, IAsyncDisposable
     {
         var builder = new DbContextOptionsBuilder<CoffeeCardContext>()
             .EnableSensitiveDataLogging()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString());
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            // Account registration wraps its saves in a transaction to assign the
+            // profile icon. The in-memory provider cannot run transactions, which
+            // is irrelevant to these tests, so ignore the warning instead of failing.
+            .ConfigureWarnings(warnings =>
+                warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning)
+            );
 
         var databaseSettings = new DatabaseSettings { SchemaName = "test" };
         var environmentSettings = new EnvironmentSettings()
