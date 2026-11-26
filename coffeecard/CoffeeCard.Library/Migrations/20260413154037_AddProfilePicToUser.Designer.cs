@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoffeeCard.Library.Migrations
 {
     [DbContext(typeof(CoffeeCardContext))]
-    [Migration("20261019192543_AddRegistrationTokenEmail")]
-    partial class AddRegistrationTokenEmail
+    [Migration("20260413154037_AddProfilePicToUser")]
+    partial class AddProfilePicToUser
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -291,10 +291,6 @@ namespace CoffeeCard.Library.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Email")
-                        .HasMaxLength(254)
-                        .HasColumnType("nvarchar(254)");
-
                     b.Property<DateTime>("Expires")
                         .HasColumnType("datetime2");
 
@@ -355,8 +351,14 @@ namespace CoffeeCard.Library.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("ProfileBackgroundColor")
+                        .HasColumnType("int");
+
                     b.Property<bool>("PrivacyActivated")
                         .HasColumnType("bit");
+
+                    b.Property<int?>("ProfileIcon")
+                        .HasColumnType("int");
 
                     b.Property<int>("ProgrammeId")
                         .HasColumnType("int")
@@ -428,9 +430,7 @@ namespace CoffeeCard.Library.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.HasIndex("PurchaseId")
-                        .IsUnique()
-                        .HasFilter("[PurchaseId] IS NOT NULL");
+                    b.HasIndex("PurchaseId");
 
                     b.HasIndex("UserId");
 
@@ -589,8 +589,8 @@ namespace CoffeeCard.Library.Migrations
                         .IsRequired();
 
                     b.HasOne("CoffeeCard.Models.Entities.Purchase", "Purchase")
-                        .WithOne("Voucher")
-                        .HasForeignKey("CoffeeCard.Models.Entities.Voucher", "PurchaseId");
+                        .WithMany()
+                        .HasForeignKey("PurchaseId");
 
                     b.HasOne("CoffeeCard.Models.Entities.User", "User")
                         .WithMany()
@@ -623,8 +623,6 @@ namespace CoffeeCard.Library.Migrations
             modelBuilder.Entity("CoffeeCard.Models.Entities.Purchase", b =>
                 {
                     b.Navigation("Tickets");
-
-                    b.Navigation("Voucher");
                 });
 
             modelBuilder.Entity("CoffeeCard.Models.Entities.User", b =>

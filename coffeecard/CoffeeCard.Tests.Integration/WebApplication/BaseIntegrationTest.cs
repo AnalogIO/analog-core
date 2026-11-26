@@ -28,6 +28,7 @@ namespace CoffeeCard.Tests.Integration.WebApplication
         private readonly CustomWebApplicationFactory<Startup> _factory;
         private readonly IServiceScope _scope;
         private HttpClient _httpClient;
+        protected HttpClient HttpClient => _httpClient;
         protected CoffeeCardClient CoffeeCardClient => new(_httpClient);
         protected CoffeeCardClientV2 CoffeeCardClientV2 => new(_httpClient);
         protected readonly CoffeeCardContext Context;

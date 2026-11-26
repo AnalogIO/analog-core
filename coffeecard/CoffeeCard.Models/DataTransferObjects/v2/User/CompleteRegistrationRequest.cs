@@ -2,7 +2,7 @@ namespace CoffeeCard.Models.DataTransferObjects.v2.User
 {
     /// <summary>
     /// Request to complete a registration that was started from a login request.
-    /// The email address is read from the single-use registration token and is
+    /// The email address is read from the signed registration token and is
     /// deliberately not part of this request.
     /// </summary>
     /// <example>

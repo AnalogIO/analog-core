@@ -18,7 +18,7 @@ namespace CoffeeCard.Library.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("dbo")
-                .HasAnnotation("ProductVersion", "10.0.0")
+                .HasAnnotation("ProductVersion", "10.0.15")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -293,10 +293,6 @@ namespace CoffeeCard.Library.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Email")
-                        .HasMaxLength(254)
-                        .HasColumnType("nvarchar(254)");
-
                     b.Property<DateTime>("Expires")
                         .HasColumnType("datetime2");
 
@@ -317,11 +313,6 @@ namespace CoffeeCard.Library.Migrations
                         .HasColumnName("User_Id");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Email")
-                        .IsUnique()
-                        .HasDatabaseName("IX_Tokens_Email_ActiveRegistration")
-                        .HasFilter("[Type] = 'Registration' AND [Revoked] = 0");
 
                     b.HasIndex("TokenHash");
 
@@ -364,6 +355,12 @@ namespace CoffeeCard.Library.Migrations
 
                     b.Property<bool>("PrivacyActivated")
                         .HasColumnType("bit");
+
+                    b.Property<int>("ProfileBackgroundColor")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProfileIcon")
+                        .HasColumnType("int");
 
                     b.Property<int>("ProgrammeId")
                         .HasColumnType("int")

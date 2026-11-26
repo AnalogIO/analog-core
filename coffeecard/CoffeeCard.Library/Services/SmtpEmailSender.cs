@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using CoffeeCard.Common.Configuration;
+using MailKit;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Logging;
 using MimeKit;

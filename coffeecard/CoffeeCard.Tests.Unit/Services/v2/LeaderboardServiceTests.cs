@@ -54,6 +54,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 PrivacyActivated = false,
                 UserGroup = UserGroup.Customer,
                 UserState = UserState.Active,
+                ProfileIcon = ProfileIcon.CoffeeCup,
+                ProfileBackgroundColor = ProfileBackgroundColor.LavenderPink,
             };
             context.Add(user1);
 
@@ -112,6 +114,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                     Name = user1.Name,
                     Rank = 2,
                     Score = 10,
+                    ProfileIcon = ProfileIcon.CoffeeCup,
+                    ProfileBackgroundColor = ProfileBackgroundColor.LavenderPink,
                 },
                 result
             );
@@ -157,6 +161,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 PrivacyActivated = false,
                 UserGroup = UserGroup.Customer,
                 UserState = UserState.Active,
+                ProfileIcon = ProfileIcon.CoffeeCup,
+                ProfileBackgroundColor = ProfileBackgroundColor.LavenderPink,
             };
             context.Add(user1);
             await context.SaveChangesAsync();
@@ -175,6 +181,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                     Name = user1.Name,
                     Rank = 0,
                     Score = 0,
+                    ProfileIcon = ProfileIcon.CoffeeCup,
+                    ProfileBackgroundColor = ProfileBackgroundColor.LavenderPink,
                 },
                 result
             );
@@ -218,6 +226,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 PrivacyActivated = false,
                 UserGroup = UserGroup.Customer,
                 UserState = UserState.Active,
+                ProfileIcon = ProfileIcon.MokkaPot,
+                ProfileBackgroundColor = ProfileBackgroundColor.LavenderPink,
             };
             context.Add(user1);
 
@@ -233,6 +243,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                 PrivacyActivated = false,
                 UserGroup = UserGroup.Customer,
                 UserState = UserState.Active,
+                ProfileIcon = ProfileIcon.MokkaPot,
+                ProfileBackgroundColor = ProfileBackgroundColor.LavenderPink,
             };
             context.Add(user2);
 
@@ -278,6 +290,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                         Name = user2.Name,
                         Rank = 1,
                         Score = 20,
+                        ProfileIcon = ProfileIcon.MokkaPot,
+                        ProfileBackgroundColor = ProfileBackgroundColor.LavenderPink,
                     },
                     new LeaderboardEntry
                     {
@@ -285,6 +299,8 @@ namespace CoffeeCard.Tests.Unit.Services.v2
                         Name = user1.Name,
                         Rank = 2,
                         Score = 10,
+                        ProfileIcon = ProfileIcon.MokkaPot,
+                        ProfileBackgroundColor = ProfileBackgroundColor.LavenderPink,
                     },
                 },
                 result.ToList()

@@ -77,6 +77,9 @@ namespace CoffeeCard.Library.Persistence
 
             modelBuilder.Entity<User>().Property(u => u.UserState).HasConversion<string>();
 
+            modelBuilder.Entity<User>().Property(u => u.ProfileIcon).IsRequired();
+            modelBuilder.Entity<User>().Property(u => u.ProfileBackgroundColor).IsRequired();
+
             modelBuilder
                 .Entity<ProductUserGroup>()
                 .Property(pug => pug.UserGroup)
@@ -111,17 +114,6 @@ namespace CoffeeCard.Library.Persistence
             modelBuilder.Entity<Token>().Property(t => t.Expires).IsRequired();
 
             modelBuilder.Entity<Token>().Property(t => t.TokenHash).IsRequired();
-
-            modelBuilder.Entity<Token>().Property(t => t.Email).HasMaxLength(254);
-
-            // At most one usable registration link per email. Revoked and
-            // non-registration tokens are excluded from the constraint.
-            modelBuilder
-                .Entity<Token>()
-                .HasIndex(t => t.Email)
-                .HasDatabaseName("IX_Tokens_Email_ActiveRegistration")
-                .IsUnique()
-                .HasFilter("[Type] = 'Registration' AND [Revoked] = 0");
 
             modelBuilder
                 .HasDbFunction(typeof(Token).GetMethod(nameof(Token.Expired)))

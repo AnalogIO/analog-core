@@ -8,6 +8,8 @@ namespace CoffeeCard.Library.Services
     public interface ITokenService
     {
         string GenerateToken(IEnumerable<Claim> claims);
+        string GenerateRegistrationToken(string email);
+        string ValidateRegistrationTokenAndGetEmail(string token);
         JwtSecurityToken ReadToken(string token);
         bool ValidateToken(string tokenString);
         Task<bool> ValidateTokenIsUnusedAsync(string tokenString);
