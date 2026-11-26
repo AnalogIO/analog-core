@@ -9,13 +9,13 @@
     <ProjectReference Include="..\CoffeeCard.Common\CoffeeCard.Common.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NJsonSchema" Version="11.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference
       Include="Microsoft.NETCore.Targets"
       Version="5.0.0"
       ExcludeAssets="all"
       PrivateAssets="all"
     />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="10.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="10.0.15" />
   </ItemGroup>
 </Project>
